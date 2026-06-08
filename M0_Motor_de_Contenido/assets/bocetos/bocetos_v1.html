@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bocetos v1 — Motivos de carta</title>
+<style>
+  :root{
+    --paper:#EFE6D3; --card:#F6EEDC; --ink:#4f4b44; --muted:#8a8270;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper);
+    font-family:-apple-system,"Segoe UI",sans-serif; color:var(--ink);
+    padding:40px 24px 80px;
+  }
+  h1{font-weight:500; font-size:24px; letter-spacing:.04em; margin:0 0 4px}
+  .sub{color:var(--muted); font-size:13px; margin:0 0 36px; max-width:680px; line-height:1.5}
+  h2{font-weight:500; font-size:15px; letter-spacing:.18em; text-transform:uppercase;
+     color:var(--muted); margin:44px 0 18px; border-bottom:1px solid #d8cdb4; padding-bottom:8px}
+  .grid{display:flex; flex-wrap:wrap; gap:18px}
+  .tile{background:var(--card); border-radius:16px; padding:14px 14px 10px;
+        box-shadow:0 8px 22px rgba(80,60,30,.10); text-align:center; width:170px}
+  .tile svg{display:block; margin:0 auto}
+  .cap{font-size:12px; color:var(--muted); margin-top:6px}
+  .cap b{color:var(--ink); font-weight:600}
+  .badge{display:inline-block; font-size:10px; letter-spacing:.1em; font-weight:700;
+         padding:2px 7px; border-radius:99px; background:#e4d9bf; color:#6b6147; margin-bottom:6px}
+  /* sample cards */
+  .cards{display:flex; gap:26px; flex-wrap:wrap}
+  .card{width:230px; height:340px; background:var(--card); border-radius:20px;
+        box-shadow:0 14px 34px rgba(80,60,30,.16); overflow:hidden; position:relative;
+        display:flex; flex-direction:column; align-items:center}
+  .band{height:14px; width:100%}
+  .catname{margin-top:26px; font-size:13px; letter-spacing:.42em; text-transform:lowercase; color:#9a7b3f}
+  .actname{font-size:12px; letter-spacing:.36em; text-transform:lowercase; color:var(--muted); margin-bottom:26px}
+  .frase{font-family:Georgia,serif; font-size:16px; line-height:1.45; color:#46423b;
+         padding:0 26px; margin-top:22px; text-align:center; font-style:italic}
+  .prompt{font-size:13px; line-height:1.5; color:#5f5a50; padding:0 24px; margin-bottom:24px; text-align:center}
+  .spacer{flex:1}
+  .cardlabel{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); text-align:center; margin-top:10px}
+  .colwrap{display:flex; flex-direction:column; align-items:center}
+</style>
+</head>
+<body>
+
+<h1>Bocetos v1 — Motivos de carta</h1>
+<p class="sub">Para elegir <b>motivo</b> (no textura). La acuarela está aproximada en SVG; la versión final pulida la genera Claude Design a partir del prompt maestro. Colores provisorios — la paleta fina es el Paso 2. Elegí <b>A o B</b> por categoría y dame el OK a las 5 acciones.</p>
+
+<!-- shared watercolor filter -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="wc" x="-30%" y="-30%" width="160%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="6" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="5" result="d"/>
+      <feGaussianBlur in="d" stdDeviation="1.3"/>
+    </filter>
+  </defs>
+</svg>
+
+<h2>Categorías &nbsp;·&nbsp; acuarela en el color de la categoría</h2>
+<div class="grid">
+
+  <!-- GRATITUD -->
+  <div class="tile">
+    <span class="badge">A</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <path d="M60 32 q22 4 18 28 q-4 18 -26 14 q-18 -4 -12 -24 q5 -16 20 -18z" fill="#E7C684" opacity=".55" filter="url(#wc)"/>
+      <path d="M62 104 C58 84 54 66 66 46 C70 39 70 34 68 28" fill="none" stroke="#B98F3E" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M0 0 C5 -7 14 -7 19 0 C14 6 5 6 0 0Z" transform="translate(46,74) rotate(-35)" fill="#E7C684" stroke="#B98F3E" stroke-width="1.8"/>
+      <path d="M0 0 C5 -7 14 -7 19 0 C14 6 5 6 0 0Z" transform="translate(70,58) rotate(20)" fill="#E7C684" stroke="#B98F3E" stroke-width="1.8"/>
+      <path d="M0 0 C5 -7 14 -7 19 0 C14 6 5 6 0 0Z" transform="translate(50,52) rotate(-15)" fill="#E7C684" stroke="#B98F3E" stroke-width="1.8"/>
+    </svg>
+    <div class="cap"><b>Gratitud</b><br>ramita con hojas</div>
+  </div>
+  <div class="tile">
+    <span class="badge">B</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <path d="M38 80 A22 22 0 0 1 82 80 Z" fill="#E7C684" opacity=".5" filter="url(#wc)"/>
+      <path d="M40 80 A20 20 0 0 1 80 80" fill="none" stroke="#B98F3E" stroke-width="2.4" stroke-linecap="round"/>
+      <line x1="18" y1="80" x2="102" y2="80" stroke="#B98F3E" stroke-width="2.2" stroke-linecap="round"/>
+      <g stroke="#C9A35A" stroke-width="2" stroke-linecap="round">
+        <line x1="60" y1="42" x2="60" y2="33"/><line x1="40" y1="50" x2="35" y2="44"/><line x1="80" y1="50" x2="85" y2="44"/>
+      </g>
+    </svg>
+    <div class="cap"><b>Gratitud</b><br>amanecer suave</div>
+  </div>
+
+  <!-- CALMA -->
+  <div class="tile">
+    <span class="badge">A</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <ellipse cx="60" cy="64" rx="40" ry="20" fill="#AECEDA" opacity=".5" filter="url(#wc)"/>
+      <g fill="none" stroke="#5E8D9E" stroke-width="2.4" stroke-linecap="round">
+        <path d="M24 50 q12 -9 24 0 t24 0 t24 0"/>
+        <path d="M24 64 q12 -11 24 0 t24 0 t24 0"/>
+        <path d="M24 78 q12 -9 24 0 t24 0 t24 0"/>
+      </g>
+    </svg>
+    <div class="cap"><b>Calma</b><br>agua que se aquieta</div>
+  </div>
+  <div class="tile">
+    <span class="badge">B</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="60" cy="44" r="17" fill="#AECEDA" opacity=".55" filter="url(#wc)"/>
+      <circle cx="60" cy="44" r="15" fill="none" stroke="#5E8D9E" stroke-width="2.4"/>
+      <g fill="none" stroke="#5E8D9E" stroke-width="2.2" stroke-linecap="round">
+        <path d="M26 78 q10 -7 20 0 t20 0 t16 0"/>
+        <path d="M26 90 q10 -7 20 0 t20 0 t16 0"/>
+      </g>
+      <g stroke="#8FB7C4" stroke-width="2" stroke-linecap="round">
+        <line x1="60" y1="64" x2="60" y2="70"/><line x1="52" y1="66" x2="52" y2="70"/><line x1="68" y1="66" x2="68" y2="70"/>
+      </g>
+    </svg>
+    <div class="cap"><b>Calma</b><br>la luna sobre el agua</div>
+  </div>
+
+  <!-- PERSPECTIVA -->
+  <div class="tile">
+    <span class="badge">A</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <path d="M40 84 L60 50 L80 84 Z" fill="#B9C0DA" opacity=".5" filter="url(#wc)"/>
+      <line x1="18" y1="84" x2="102" y2="84" stroke="#727DA6" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M38 84 L60 48 L82 84" fill="none" stroke="#727DA6" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M70 84 L86 62 L100 84" fill="none" stroke="#9098BC" stroke-width="2.2" stroke-linejoin="round"/>
+      <circle cx="50" cy="42" r="5" fill="none" stroke="#9098BC" stroke-width="2"/>
+    </svg>
+    <div class="cap"><b>Perspectiva</b><br>montaña con horizonte</div>
+  </div>
+  <div class="tile">
+    <span class="badge">B</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <path d="M46 104 L58 80 L64 80 L78 104 Z" fill="#B9C0DA" opacity=".5" filter="url(#wc)"/>
+      <line x1="22" y1="80" x2="98" y2="80" stroke="#727DA6" stroke-width="2.2" stroke-linecap="round"/>
+      <line x1="46" y1="104" x2="59" y2="80" stroke="#727DA6" stroke-width="2.4" stroke-linecap="round"/>
+      <line x1="78" y1="104" x2="62" y2="80" stroke="#727DA6" stroke-width="2.4" stroke-linecap="round"/>
+      <g stroke="#9098BC" stroke-width="2.4" stroke-linecap="round">
+        <line x1="58" y1="96" x2="63" y2="96"/><line x1="56" y1="88" x2="62" y2="88"/>
+      </g>
+      <circle cx="60" cy="72" r="4.5" fill="none" stroke="#9098BC" stroke-width="2"/>
+    </svg>
+    <div class="cap"><b>Perspectiva</b><br>un camino al horizonte</div>
+  </div>
+
+  <!-- RESILIENCIA -->
+  <div class="tile">
+    <span class="badge">A</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <ellipse cx="84" cy="46" rx="20" ry="15" fill="#DCA088" opacity=".55" filter="url(#wc)"/>
+      <path d="M56 104 C54 84 52 68 70 58 C80 52 86 50 94 50" fill="none" stroke="#AE6248" stroke-width="2.6" stroke-linecap="round"/>
+      <g stroke="#AE6248" stroke-width="2" stroke-linecap="round">
+        <path d="M64 64 C70 60 76 58 82 58"/><path d="M60 74 C66 70 72 69 78 70"/>
+      </g>
+      <line x1="40" y1="104" x2="78" y2="104" stroke="#C68a70" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <div class="cap"><b>Resiliencia</b><br>un árbol que se dobla</div>
+  </div>
+  <div class="tile">
+    <span class="badge">B</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <ellipse cx="44" cy="92" rx="17" ry="9" fill="#DCA088" opacity=".5" filter="url(#wc)"/>
+      <ellipse cx="78" cy="95" rx="14" ry="8" fill="#DCA088" opacity=".5" filter="url(#wc)"/>
+      <ellipse cx="44" cy="92" rx="16" ry="8" fill="none" stroke="#AE6248" stroke-width="2.2"/>
+      <ellipse cx="78" cy="95" rx="13" ry="7" fill="none" stroke="#AE6248" stroke-width="2.2"/>
+      <path d="M61 92 C60 80 60 74 60 64" fill="none" stroke="#7E9E6A" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M0 0 C4 -6 11 -6 15 0 C11 4 4 4 0 0Z" transform="translate(48,62) rotate(-30)" fill="#B9D2A3" stroke="#7E9E6A" stroke-width="1.6"/>
+      <path d="M0 0 C4 -6 11 -6 15 0 C11 4 4 4 0 0Z" transform="translate(60,58) rotate(25)" fill="#B9D2A3" stroke="#7E9E6A" stroke-width="1.6"/>
+    </svg>
+    <div class="cap"><b>Resiliencia</b><br>una planta entre piedras</div>
+  </div>
+
+  <!-- AMOR PROPIO -->
+  <div class="tile">
+    <span class="badge">A</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="60" cy="58" r="26" fill="#E6B3BE" opacity=".5" filter="url(#wc)"/>
+      <g fill="#E6B3BE" stroke="#BE7585" stroke-width="1.8">
+        <ellipse cx="60" cy="40" rx="7" ry="13"/>
+        <ellipse cx="60" cy="76" rx="7" ry="13"/>
+        <ellipse cx="42" cy="58" rx="13" ry="7"/>
+        <ellipse cx="78" cy="58" rx="13" ry="7"/>
+        <ellipse cx="47" cy="45" rx="11" ry="7" transform="rotate(-45 47 45)"/>
+        <ellipse cx="73" cy="45" rx="11" ry="7" transform="rotate(45 73 45)"/>
+      </g>
+      <circle cx="60" cy="58" r="7" fill="#F6EEDC" stroke="#BE7585" stroke-width="1.8"/>
+    </svg>
+    <div class="cap"><b>Amor propio</b><br>una flor abriéndose</div>
+  </div>
+  <div class="tile">
+    <span class="badge">B</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="60" cy="58" r="30" fill="#E6B3BE" opacity=".35" filter="url(#wc)"/>
+      <circle cx="60" cy="58" r="22" fill="#E6B3BE" opacity=".5" filter="url(#wc)"/>
+      <circle cx="60" cy="58" r="22" fill="none" stroke="#BE7585" stroke-width="2.4"/>
+      <g fill="#C98293" opacity=".7">
+        <circle cx="54" cy="50" r="2.4"/><circle cx="68" cy="62" r="3"/><circle cx="58" cy="68" r="1.8"/>
+      </g>
+    </svg>
+    <div class="cap"><b>Amor propio</b><br>la luna llena (verte entero)</div>
+  </div>
+
+  <!-- VINCULOS -->
+  <div class="tile">
+    <span class="badge">A</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <ellipse cx="60" cy="58" rx="34" ry="22" fill="#B9D2A3" opacity=".45" filter="url(#wc)"/>
+      <path d="M30 52 Q40 40 50 52 Q60 40 70 52" fill="none" stroke="#6F8E5C" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M52 72 Q60 62 68 72 Q76 62 84 72" fill="none" stroke="#6F8E5C" stroke-width="2.6" stroke-linecap="round"/>
+    </svg>
+    <div class="cap"><b>Vínculos</b><br>dos pájaros cerca</div>
+  </div>
+  <div class="tile">
+    <span class="badge">B</span>
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <ellipse cx="60" cy="62" rx="30" ry="24" fill="#B9D2A3" opacity=".4" filter="url(#wc)"/>
+      <path d="M34 100 C40 74 56 70 60 50" fill="none" stroke="#6F8E5C" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M86 100 C80 74 64 70 60 50" fill="none" stroke="#6F8E5C" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M0 0 C4 -6 11 -6 15 0 C11 4 4 4 0 0Z" transform="translate(44,74) rotate(-25)" fill="#B9D2A3" stroke="#6F8E5C" stroke-width="1.6"/>
+      <path d="M0 0 C4 -6 11 -6 15 0 C11 4 4 4 0 0Z" transform="translate(72,74) rotate(25)" fill="#B9D2A3" stroke="#6F8E5C" stroke-width="1.6"/>
+    </svg>
+    <div class="cap"><b>Vínculos</b><br>dos ramas entrelazadas</div>
+  </div>
+
+</div>
+
+<h2>Acciones &nbsp;·&nbsp; glifo geométrico mínimo (se pinta del color de la categoría)</h2>
+<div class="grid">
+
+  <div class="tile">
+    <svg width="100" height="100" viewBox="0 0 90 90">
+      <path d="M26 60 L56 30" fill="none" stroke="#4f4b44" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M56 30 L50 30 M56 30 L56 36" fill="none" stroke="#4f4b44" stroke-width="2.6" stroke-linecap="round"/>
+      <line x1="28" y1="66" x2="58" y2="66" stroke="#4f4b44" stroke-width="2.6" stroke-linecap="round"/>
+    </svg>
+    <div class="cap"><b>Escribir</b><br>un trazo</div>
+  </div>
+
+  <div class="tile">
+    <svg width="100" height="100" viewBox="0 0 90 90">
+      <path d="M20 45 Q45 25 70 45 Q45 65 20 45 Z" fill="none" stroke="#4f4b44" stroke-width="2.6" stroke-linejoin="round"/>
+      <circle cx="45" cy="45" r="7" fill="#4f4b44"/>
+    </svg>
+    <div class="cap"><b>Contemplar</b><br>un ojo estilizado</div>
+  </div>
+
+  <div class="tile">
+    <svg width="100" height="100" viewBox="0 0 90 90">
+      <circle cx="45" cy="45" r="8" fill="none" stroke="#4f4b44" stroke-width="2.4"/>
+      <circle cx="45" cy="45" r="17" fill="none" stroke="#4f4b44" stroke-width="2.2" opacity=".7"/>
+      <circle cx="45" cy="45" r="26" fill="none" stroke="#4f4b44" stroke-width="2" opacity=".45"/>
+    </svg>
+    <div class="cap"><b>Respirar</b><br>círculos concéntricos</div>
+  </div>
+
+  <div class="tile">
+    <svg width="100" height="100" viewBox="0 0 90 90">
+      <g fill="none" stroke="#4f4b44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M30 56 L45 44 L60 56"/>
+        <path d="M30 44 L45 32 L60 44" opacity=".6"/>
+      </g>
+      <g fill="#4f4b44">
+        <circle cx="32" cy="64" r="1.8"/><circle cx="45" cy="64" r="1.8"/><circle cx="58" cy="64" r="1.8"/>
+      </g>
+    </svg>
+    <div class="cap"><b>Caminar</b><br>pasos / sendero</div>
+  </div>
+
+  <div class="tile">
+    <svg width="100" height="100" viewBox="0 0 90 90">
+      <path d="M32 58 L60 30" fill="none" stroke="#4f4b44" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M60 30 L51 30 M60 30 L60 39" fill="none" stroke="#4f4b44" stroke-width="2.6" stroke-linecap="round"/>
+      <circle cx="30" cy="60" r="2.4" fill="#4f4b44"/>
+    </svg>
+    <div class="cap"><b>Hacer</b><br>una flecha hacia afuera</div>
+  </div>
+
+</div>
+
+<h2>Carta de muestra ensamblada &nbsp;·&nbsp; Gratitud · Contemplar</h2>
+<div class="cards">
+
+  <div class="colwrap">
+    <div class="card">
+      <div class="band" style="background:#D9B05E"></div>
+      <div class="catname">gratitud</div>
+      <svg width="120" height="118" viewBox="0 0 120 120" style="margin-top:14px">
+        <path d="M60 32 q22 4 18 28 q-4 18 -26 14 q-18 -4 -12 -24 q5 -16 20 -18z" fill="#E7C684" opacity=".55" filter="url(#wc)"/>
+        <path d="M62 104 C58 84 54 66 66 46 C70 39 70 34 68 28" fill="none" stroke="#B98F3E" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M0 0 C5 -7 14 -7 19 0 C14 6 5 6 0 0Z" transform="translate(46,74) rotate(-35)" fill="#E7C684" stroke="#B98F3E" stroke-width="1.8"/>
+        <path d="M0 0 C5 -7 14 -7 19 0 C14 6 5 6 0 0Z" transform="translate(70,58) rotate(20)" fill="#E7C684" stroke="#B98F3E" stroke-width="1.8"/>
+        <path d="M0 0 C5 -7 14 -7 19 0 C14 6 5 6 0 0Z" transform="translate(50,52) rotate(-15)" fill="#E7C684" stroke="#B98F3E" stroke-width="1.8"/>
+      </svg>
+      <div class="spacer"></div>
+      <div class="actname">contemplar</div>
+    </div>
+    <div class="cardlabel">Frente (lo que ves primero)</div>
+  </div>
+
+  <div class="colwrap">
+    <div class="card">
+      <div class="band" style="background:#D9B05E"></div>
+      <div class="frase">"A veces lo que más sostiene la vida es eso pequeño que damos por sentado."</div>
+      <div class="spacer"></div>
+      <svg width="64" height="64" viewBox="0 0 90 90">
+        <path d="M20 45 Q45 25 70 45 Q45 65 20 45 Z" fill="none" stroke="#B98F3E" stroke-width="2.6" stroke-linejoin="round"/>
+        <circle cx="45" cy="45" r="7" fill="#B98F3E"/>
+      </svg>
+      <div class="prompt">Mirá a tu alrededor y elegí una sola cosa que esté ahí, callada, sosteniéndote. Quedate con ella un momento y anotala.</div>
+    </div>
+    <div class="cardlabel">Dorso (al girar la carta)</div>
+  </div>
+
+</div>
+
+</body>
+</html>
