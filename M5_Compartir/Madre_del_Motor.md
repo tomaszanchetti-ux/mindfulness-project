@@ -49,8 +49,35 @@ gesto de girar. Compartir sólo lo **expone**. Por eso el receptor no necesita m
    que hace que la abran: es de **una persona**, no de una marca.
 2. **La carta es interactiva y bella** — mismo gesto de girar que en la app, mismo cuidado. Un
    momento de calma de 10 segundos, no un aviso.
-3. **Un solo CTA suave abajo**, emocional, nunca un muro: *"Una carta así, cada día, para vos"*
-   → abre el onboarding (M1). Sin modal, sin pared de "descargá la app".
+3. **Un solo CTA suave abajo**, emocional, nunca un muro: *"Configurá tu cuenta para tener tus
+   propias cartas"* → abre el onboarding (M1). Sin modal, sin pared de "descargá la app".
+
+### La frontera: ver/leer (libre) vs crear algo mío (pide cuenta)
+
+**La página del link ES el destino, no un trampolín.** El que recibe aterriza en el regalo y se
+queda ahí todo lo que quiera. El CTA está **al final, es suave y opcional** — lo puede ignorar y
+cerrar la pestaña. **No se lo empuja al onboarding.**
+
+```
+abre el link → ve el regalo COMPLETO (carta o ejercicio + nota) · puede girar y leer · SIN login
+            → ...y al final, abajo: CTA suave "configurá tu cuenta…" (opcional)
+            → SÓLO si toca el CTA ↓
+            → recién acá arranca el onboarding (M1: login passwordless → slideshow → config → carta de prueba)
+```
+
+- **Sin nada (ni siquiera login):** ver la carta/ejercicio, **girar la carta** y leer frase +
+  micro-prompt + la nota. El **flip es parte de *ver*** (es cómo se lee el regalo), no es
+  "interactuar" — por eso va libre, para no matar el momento lindo justo antes de mostrarlo.
+- **Pide crear cuenta (porque genera datos en un baúl con `user_id`):** completar una carta
+  (reflexión + fotos + guardar) y tener tus propias cartas a diario.
+- **El login no es un peaje para ver.** Aparece **sólo** cuando el receptor toca el CTA porque
+  *quiere lo suyo*. Mostramos lo lindo gratis; el registro recién cuando el deseo ya se activó.
+
+> **CTA honesto (v1):** *"Configurá tu cuenta para tener tus propias cartas"* → onboarding normal;
+> su primera carta la elige M2 como a cualquiera. **No** prometemos "completá *esta* carta": la
+> carta recibida es la entrega de otra persona y puede no estar en sus categorías. *(Idea v2: que
+> la carta recibida sea su carta de prueba del onboarding — continuidad sin ensuciar M2/Baúl,
+> porque el tutorial no guarda.)*
 
 ---
 
@@ -172,6 +199,14 @@ sus joins permiten, y un CTA a M1.
 
 - **El link es un regalo completo, no un embudo.** Recibir no requiere instalar, loguear ni
   registrarse: se abre en la web, al instante. Instalar es para quien quiere el suyo a diario.
+- **La página del link es el destino, no un trampolín.** El receptor ve y se queda; el CTA es
+  suave, al final y **opcional** — no se lo empuja al onboarding. *(WS06, refinamiento Tomás)*
+- **Frontera ver vs crear:** ver/girar/leer el regalo = **libre, sin login** (el flip es parte de
+  *ver*). Completar una carta o tener las propias = **pide cuenta** (datos en un baúl con
+  `user_id`). El login aparece sólo al tocar el CTA, nunca como peaje para ver.
+- **CTA honesto:** *"Configurá tu cuenta para tener tus propias cartas"* → onboarding normal. No
+  "completá esta carta" (la recibida puede no estar en sus categorías). v2: que la recibida sea su
+  carta de prueba.
 - **Dos modos:** **carta sola** (sin datos tuyos, invitación) y **ejercicio completo** (con
   reflexión + fotos, íntimo).
 - **Aviso de privacidad explícito** antes de compartir el ejercicio completo (lo íntimo se
