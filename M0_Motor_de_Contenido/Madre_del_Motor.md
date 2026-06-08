@@ -86,12 +86,20 @@ sans fina con tracking amplio para los nombres (`g r a t i t u d`).
 
 ---
 
-## 4. Producción de los dibujos (Claude Design → SVG)
+## 4. Producción de los dibujos
 
-Se trabaja **de a uno**: se pega el bloque maestro + la línea de la categoría en
-[claude.ai/design](https://claude.ai/design), se itera, se exporta el SVG a
-`assets/categorias/cat_<nombre>.svg` (acciones a `assets/acciones/act_<nombre>.svg`),
-y se pasa al siguiente. **Gratitud es la primera** (valida el estilo de todo el set).
+Se trabaja **de a uno**. **Gratitud fue la primera** y validó el estilo del set.
+
+> **Workflow real (desde WS01):** **ChatGPT rinde mejor que Claude Design** para
+> estas ilustraciones. Salen como **PNG** (acuarela raster), a veces con un damero
+> de fondo "horneado"; Claude lo **limpia a PNG transparente** y lo recorta →
+> `assets/categorias/cat_<nombre>.png`. **Categorías = PNG** (acuarela). Los
+> **glifos de acción = SVG** (geométricos, vienen después).
+
+El bloque maestro de abajo sirve igual (para ChatGPT o Claude Design); lo que
+importa es el sistema visual. **Qué debe entregar:** dibujo a línea fina en negro
+(`#2b2925`) sobre fondo transparente, con UN solo elemento en el color de acento,
+sin texto ni marco, centrado y cuadrado.
 
 **Qué debe entregar:** SVG, fondo transparente, sin texto ni chrome de carta,
 viewBox consistente (categorías `0 0 120 120` · acciones `0 0 90 90`), dibujo en
