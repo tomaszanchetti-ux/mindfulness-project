@@ -1,0 +1,485 @@
+[
+  {
+    "id": "grat-esc-01",
+    "categoria": "gratitud",
+    "accion": "escribir",
+    "frase": "En lo pequeño también amanece.",
+    "prompt": "Escribe sobre las cosas que hoy salieron bien, por más pequeñas que parezcan."
+  },
+  {
+    "id": "grat-esc-02",
+    "categoria": "gratitud",
+    "accion": "escribir",
+    "frase": "Ningún día se marcha con las manos vacías.",
+    "prompt": "Escribe sobre los aprendizajes que te llevas del día de hoy."
+  },
+  {
+    "id": "grat-esc-03",
+    "categoria": "gratitud",
+    "accion": "escribir",
+    "frase": "Lo esencial casi siempre vive en voz baja.",
+    "prompt": "Escribe sobre aquello que tienes y que pocas veces te detienes a agradecer."
+  },
+  {
+    "id": "grat-con-01",
+    "categoria": "gratitud",
+    "accion": "contemplar",
+    "frase": "Lo que nos sostiene rara vez se deja ver.",
+    "prompt": "Observa a tu alrededor y contempla aquello que suele pasar inadvertido, pero que es un sostén de tu día a día."
+  },
+  {
+    "id": "grat-con-02",
+    "categoria": "gratitud",
+    "accion": "contemplar",
+    "frase": "La luz llega sin que la pidamos.",
+    "prompt": "Detente a mirar la luz del lugar donde estás, sin hacer nada más que agradecer su presencia, calor y energía."
+  },
+  {
+    "id": "grat-con-03",
+    "categoria": "gratitud",
+    "accion": "contemplar",
+    "frase": "Lo de siempre guarda lo que dejamos de mirar.",
+    "prompt": "Mira algo que usas a diario como si fuera la primera vez, contemplando todo su ser."
+  },
+  {
+    "id": "grat-cam-01",
+    "categoria": "gratitud",
+    "accion": "caminar",
+    "frase": "El cuerpo anda sin pedir las gracias.",
+    "prompt": "Camina enfocando tu atención en los movimientos de tu cuerpo en cada paso, pues son los que te permiten avanzar."
+  },
+  {
+    "id": "grat-cam-02",
+    "categoria": "gratitud",
+    "accion": "caminar",
+    "frase": "Caminar despacio devuelve lo que la prisa esconde.",
+    "prompt": "Camina sin prisa, pensando todo aquello que hoy agradeces."
+  },
+  {
+    "id": "grat-cam-03",
+    "categoria": "gratitud",
+    "accion": "caminar",
+    "frase": "Lo de siempre también guarda asombro.",
+    "prompt": "Camina por un lugar conocido y descubre un detalle en el que nunca habías reparado."
+  },
+  {
+    "id": "grat-hac-01",
+    "categoria": "gratitud",
+    "accion": "hacer",
+    "frase": "Toda gracia recibida pide volver al mundo.",
+    "prompt": "Haz hoy un gesto de agradecimiento hacia alguien que te importa."
+  },
+  {
+    "id": "grat-hac-02",
+    "categoria": "gratitud",
+    "accion": "hacer",
+    "frase": "Se agradece también con las manos.",
+    "prompt": "Dedica unos minutos a cuidar algo que te importa y dejarlo mejor de como estaba."
+  },
+  {
+    "id": "grat-hac-03",
+    "categoria": "gratitud",
+    "accion": "hacer",
+    "frase": "Lo simple, gozado a fondo, ya es un regalo.",
+    "prompt": "Disfruta hoy de algo cotidiano prestándole toda tu atención."
+  },
+  {
+    "id": "calm-esc-01",
+    "categoria": "calma",
+    "accion": "escribir",
+    "frase": "El agua quieta también refleja el cielo.",
+    "prompt": "Escribe sobre aquello que te transmite tranquilidad, para que sea tu principal eje de paz."
+  },
+  {
+    "id": "calm-esc-02",
+    "categoria": "calma",
+    "accion": "escribir",
+    "frase": "Lo que se nombra deja de pesar a oscuras.",
+    "prompt": "Escribe sobre aquello que ronda hoy en tu mente, sin ordenarlo ni juzgarlo."
+  },
+  {
+    "id": "calm-esc-03",
+    "categoria": "calma",
+    "accion": "escribir",
+    "frase": "No todo lo urgente merece tu prisa.",
+    "prompt": "Escribe sobre aquello que quieras soltar, para liberarte de ese espacio."
+  },
+  {
+    "id": "calm-con-01",
+    "categoria": "calma",
+    "accion": "contemplar",
+    "frase": "La quietud también tiene voz.",
+    "prompt": "Detente a observar algo que no se mueva y quédate con ello un momento."
+  },
+  {
+    "id": "calm-con-02",
+    "categoria": "calma",
+    "accion": "contemplar",
+    "frase": "El cielo devuelve a las cosas su tamaño.",
+    "prompt": "Mira el cielo durante unos minutos, sin buscar nada en particular."
+  },
+  {
+    "id": "calm-con-03",
+    "categoria": "calma",
+    "accion": "contemplar",
+    "frase": "Lo lento revela lo que la prisa borra.",
+    "prompt": "Observa cómo cambia la luz a tu alrededor, sin hacer nada más."
+  },
+  {
+    "id": "calm-rep-01",
+    "categoria": "calma",
+    "accion": "respirar",
+    "frase": "Respirar es volver a estar aquí.",
+    "prompt": "Haz diez respiraciones lentas, sintiendo cómo el aire entra y sale."
+  },
+  {
+    "id": "calm-rep-02",
+    "categoria": "calma",
+    "accion": "respirar",
+    "frase": "El aire va y viene sin que debas sostenerlo.",
+    "prompt": "Respira hondo unos minutos, alargando un poco más cada exhalación."
+  },
+  {
+    "id": "calm-rep-03",
+    "categoria": "calma",
+    "accion": "respirar",
+    "frase": "Entre una respiración y otra cabe la calma.",
+    "prompt": "Cierra los ojos y cuenta diez respiraciones, volviendo a empezar si te distraes."
+  },
+  {
+    "id": "calm-cam-01",
+    "categoria": "calma",
+    "accion": "caminar",
+    "frase": "Quien anda despacio también llega.",
+    "prompt": "Camina sin rumbo durante unos minutos, sin prisa por llegar a ningún lado."
+  },
+  {
+    "id": "calm-cam-02",
+    "categoria": "calma",
+    "accion": "caminar",
+    "frase": "Cada paso es un sitio donde descansar.",
+    "prompt": "Camina prestando atención solo al ritmo de tus pasos."
+  },
+  {
+    "id": "calm-cam-03",
+    "categoria": "calma",
+    "accion": "caminar",
+    "frase": "Afuera, el ruido de dentro se afloja.",
+    "prompt": "Sal a caminar y deja que el movimiento aquiete tus pensamientos."
+  },
+  {
+    "id": "pers-esc-01",
+    "categoria": "perspectiva",
+    "accion": "escribir",
+    "frase": "Visto de lejos, todo encuentra su medida.",
+    "prompt": "Escribe sobre aquello que hoy te preocupa, y cómo lo verás dentro de un año."
+  },
+  {
+    "id": "pers-esc-02",
+    "categoria": "perspectiva",
+    "accion": "escribir",
+    "frase": "Toda historia cambia según quién la cuente.",
+    "prompt": "Escribe sobre una situación reciente desde el punto de vista de otra persona."
+  },
+  {
+    "id": "pers-esc-03",
+    "categoria": "perspectiva",
+    "accion": "escribir",
+    "frase": "Lo que hoy es muro, mañana es paisaje.",
+    "prompt": "Escribe sobre algo que hoy te cuesta como si ya hubiera pasado."
+  },
+  {
+    "id": "pers-con-01",
+    "categoria": "perspectiva",
+    "accion": "contemplar",
+    "frase": "El horizonte recuerda que hay más mundo.",
+    "prompt": "Mira lo más lejos que puedas desde donde estás y quédate ahí un momento."
+  },
+  {
+    "id": "pers-con-02",
+    "categoria": "perspectiva",
+    "accion": "contemplar",
+    "frase": "Frente a lo vasto, lo urgente se encoge.",
+    "prompt": "Observa algo más grande que tú —el cielo, un árbol, un edificio— y deja que ocupe tu atención."
+  },
+  {
+    "id": "pers-con-03",
+    "categoria": "perspectiva",
+    "accion": "contemplar",
+    "frase": "Cada cosa cambia según la distancia.",
+    "prompt": "Elige algo que tengas cerca y obsérvalo de lejos, notando qué cambia."
+  },
+  {
+    "id": "pers-rep-01",
+    "categoria": "perspectiva",
+    "accion": "respirar",
+    "frase": "Tomar aire es también tomar distancia.",
+    "prompt": "Haz una pausa de diez respiraciones profundas y vuelve a pensar en aquello que te inquieta."
+  },
+  {
+    "id": "pers-rep-02",
+    "categoria": "perspectiva",
+    "accion": "respirar",
+    "frase": "Entre el problema y tú siempre cabe una pausa.",
+    "prompt": "Haz una pausa de diez respiraciones profundas y piensa como hubieras resuelto algo que hoy te apuraba."
+  },
+  {
+    "id": "pers-rep-03",
+    "categoria": "perspectiva",
+    "accion": "respirar",
+    "frase": "El aire que entra trae espacio.",
+    "prompt": "Respira lento y, con cada exhalación, imagina que te alejas un poco de lo que pesa."
+  },
+  {
+    "id": "pers-cam-01",
+    "categoria": "perspectiva",
+    "accion": "caminar",
+    "frase": "Al andar, los pensamientos se ordenan solos.",
+    "prompt": "Camina un rato sin pensar en nada, luego intenta resolver algo que no veías del todo claro."
+  },
+  {
+    "id": "pers-cam-02",
+    "categoria": "perspectiva",
+    "accion": "caminar",
+    "frase": "Cambiar de lugar cambia la mirada.",
+    "prompt": "Sal a caminar y observa tu día desde fuera, como si fueras un visitante."
+  },
+  {
+    "id": "pers-cam-03",
+    "categoria": "perspectiva",
+    "accion": "caminar",
+    "frase": "Lo que se mueve no se queda atascado.",
+    "prompt": "Camina hasta un punto desde donde puedas ver lejos y mira el camino recorrido."
+  },
+  {
+    "id": "resi-esc-01",
+    "categoria": "resiliencia",
+    "accion": "escribir",
+    "frase": "También eres las veces que te levantaste.",
+    "prompt": "Escribe sobre una dificultad que ya superaste y qué aprendiste de ella."
+  },
+  {
+    "id": "resi-esc-02",
+    "categoria": "resiliencia",
+    "accion": "escribir",
+    "frase": "Toda raíz creció primero a oscuras.",
+    "prompt": "Escribe sobre una fortaleza tuya que naciera de un momento difícil."
+  },
+  {
+    "id": "resi-esc-03",
+    "categoria": "resiliencia",
+    "accion": "escribir",
+    "frase": "Lo que no se rompió, se volvió más firme.",
+    "prompt": "Escribe sobre algo que hoy sostienes con esfuerzo y sigue en pie."
+  },
+  {
+    "id": "resi-rep-01",
+    "categoria": "resiliencia",
+    "accion": "respirar",
+    "frase": "Hasta en lo difícil, el aire sigue llegando.",
+    "prompt": "Respira profundamente unos minutos y nota qué de tu cuerpo logra sostenerte."
+  },
+  {
+    "id": "resi-rep-02",
+    "categoria": "resiliencia",
+    "accion": "respirar",
+    "frase": "Cada respiración es volver a empezar.",
+    "prompt": "Haz diez respiraciones lentas, soltando tensión en cada una, y, al finalizar, compara cómo te sientes versus antes de empezar."
+  },
+  {
+    "id": "resi-rep-03",
+    "categoria": "resiliencia",
+    "accion": "respirar",
+    "frase": "La calma también es una forma de fuerza.",
+    "prompt": "Haz diez respiraciones lentas, luego decide cómo quieres afrontar algo que te cuesta."
+  },
+  {
+    "id": "resi-cam-01",
+    "categoria": "resiliencia",
+    "accion": "caminar",
+    "frase": "Se avanza también cuando cuesta.",
+    "prompt": "Camina un rato recordando un momento difícil que lograste atravesar."
+  },
+  {
+    "id": "resi-cam-02",
+    "categoria": "resiliencia",
+    "accion": "caminar",
+    "frase": "Cada paso prueba que puedes seguir.",
+    "prompt": "Camina prestando atención a tu fuerza para sostener cada paso."
+  },
+  {
+    "id": "resi-cam-03",
+    "categoria": "resiliencia",
+    "accion": "caminar",
+    "frase": "Hasta entre las piedras, algo sigue creciendo.",
+    "prompt": "Camina con paso firme, sintiendo que el suelo te sostiene en cada tramo."
+  },
+  {
+    "id": "resi-hac-01",
+    "categoria": "resiliencia",
+    "accion": "hacer",
+    "frase": "Reponerse empieza por un gesto pequeño.",
+    "prompt": "Haz hoy una sola cosa que habías postergado, por pequeña que sea."
+  },
+  {
+    "id": "resi-hac-02",
+    "categoria": "resiliencia",
+    "accion": "hacer",
+    "frase": "Cuidar lo propio también es resistir.",
+    "prompt": "Dedica unos minutos a ordenar o reparar algo que tenías pendiente."
+  },
+  {
+    "id": "resi-hac-03",
+    "categoria": "resiliencia",
+    "accion": "hacer",
+    "frase": "La fuerza también se entrena en lo pequeño.",
+    "prompt": "Elige un hábito que te haga bien y cúmplelo hoy, aunque sea en su versión mínima."
+  },
+  {
+    "id": "amor-esc-01",
+    "categoria": "amor-propio",
+    "accion": "escribir",
+    "frase": "La voz con que te hablas también te forma.",
+    "prompt": "Escribe sobre algo que aprecias de ti y pocas veces te reconoces."
+  },
+  {
+    "id": "amor-esc-02",
+    "categoria": "amor-propio",
+    "accion": "escribir",
+    "frase": "Nadie florece a empujones.",
+    "prompt": "Escribe sobre algo que te gustaría darte permiso para hacer o sentir."
+  },
+  {
+    "id": "amor-esc-03",
+    "categoria": "amor-propio",
+    "accion": "escribir",
+    "frase": "Te debes la ternura que repartes.",
+    "prompt": "Escribe una nota amable para ti, como se la escribirías a alguien que quieres."
+  },
+  {
+    "id": "amor-con-01",
+    "categoria": "amor-propio",
+    "accion": "contemplar",
+    "frase": "Reconocerse es una forma de cariño.",
+    "prompt": "Obsérvate un momento con amabilidad y quédate con un rasgo que aprecies."
+  },
+  {
+    "id": "amor-con-02",
+    "categoria": "amor-propio",
+    "accion": "contemplar",
+    "frase": "Lo que florece no se apura.",
+    "prompt": "Observa una flor o una planta y nota, sin prisa, cómo simplemente es."
+  },
+  {
+    "id": "amor-con-03",
+    "categoria": "amor-propio",
+    "accion": "contemplar",
+    "frase": "Mereces la atención que regalas.",
+    "prompt": "Detente a notar cómo te sientes hoy, sin querer cambiar nada."
+  },
+  {
+    "id": "amor-rep-01",
+    "categoria": "amor-propio",
+    "accion": "respirar",
+    "frase": "Respirar es regalarte un instante.",
+    "prompt": "Haz unas respiraciones lentas dedicadas solo a ti, sin nada más que hacer."
+  },
+  {
+    "id": "amor-rep-02",
+    "categoria": "amor-propio",
+    "accion": "respirar",
+    "frase": "Descansar también es quererse.",
+    "prompt": "Respira hondo y permítete una pausa, sin culpa."
+  },
+  {
+    "id": "amor-rep-03",
+    "categoria": "amor-propio",
+    "accion": "respirar",
+    "frase": "Volver al cuerpo es volver a casa.",
+    "prompt": "Respira despacio notando tu cuerpo, dándole las gracias por estar."
+  },
+  {
+    "id": "amor-hac-01",
+    "categoria": "amor-propio",
+    "accion": "hacer",
+    "frase": "Cuidarse no es un lujo, es una raíz.",
+    "prompt": "Haz hoy una cosa amable contigo, como la harías por alguien que quieres."
+  },
+  {
+    "id": "amor-hac-02",
+    "categoria": "amor-propio",
+    "accion": "hacer",
+    "frase": "Quien se trata bien, florece mejor.",
+    "prompt": "Regálate un gusto sencillo y disfrútalo sin apuro."
+  },
+  {
+    "id": "amor-hac-03",
+    "categoria": "amor-propio",
+    "accion": "hacer",
+    "frase": "Poner un límite también es quererse.",
+    "prompt": "Di que no a algo que hoy no quieras hacer, sin justificarte de más."
+  },
+  {
+    "id": "vinc-esc-01",
+    "categoria": "vinculos",
+    "accion": "escribir",
+    "frase": "Lo que se comparte pesa la mitad.",
+    "prompt": "Escribe sobre una persona que haya dejado huella en ti."
+  },
+  {
+    "id": "vinc-esc-02",
+    "categoria": "vinculos",
+    "accion": "escribir",
+    "frase": "Nos sostienen lazos que no siempre nombramos.",
+    "prompt": "Escribe sobre alguien a quien te gustaría agradecer o decir algo pendiente."
+  },
+  {
+    "id": "vinc-esc-03",
+    "categoria": "vinculos",
+    "accion": "escribir",
+    "frase": "Volar acompañado cansa menos.",
+    "prompt": "Escribe sobre cómo te gustaría cuidar tus vínculos más importantes."
+  },
+  {
+    "id": "vinc-con-01",
+    "categoria": "vinculos",
+    "accion": "contemplar",
+    "frase": "Mirar de verdad ya es estar cerca.",
+    "prompt": "Observa a la persona que tienes o te gustaría tener al lado, sin distracciones."
+  },
+  {
+    "id": "vinc-con-02",
+    "categoria": "vinculos",
+    "accion": "contemplar",
+    "frase": "Cada persona es un mundo por descubrir.",
+    "prompt": "Piensa en alguien cercano y trae a tu mente algo que admiras de él o ella."
+  },
+  {
+    "id": "vinc-con-03",
+    "categoria": "vinculos",
+    "accion": "contemplar",
+    "frase": "Lo que une no se ve, pero se siente.",
+    "prompt": "Trae a tu mente a las personas que te hacen bien y quédate un momento con esa imagen."
+  },
+  {
+    "id": "vinc-hac-01",
+    "categoria": "vinculos",
+    "accion": "hacer",
+    "frase": "Un gesto a tiempo acorta distancias.",
+    "prompt": "Manda un mensaje a alguien con quien hace tiempo no hablas."
+  },
+  {
+    "id": "vinc-hac-02",
+    "categoria": "vinculos",
+    "accion": "hacer",
+    "frase": "El cariño crece cuando se dice.",
+    "prompt": "Dile a alguien hoy algo bueno que sientes y no sueles expresar."
+  },
+  {
+    "id": "vinc-hac-03",
+    "categoria": "vinculos",
+    "accion": "hacer",
+    "frase": "Estar cerca es el regalo más simple.",
+    "prompt": "Dedica un rato de tu día a estar con alguien, sin pantallas de por medio."
+  }
+]

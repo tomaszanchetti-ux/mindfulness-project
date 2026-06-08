@@ -47,6 +47,11 @@ Toda carta se mide contra esto. Si no las cumple, no entra.
 - Única opcionalidad: **guardar sin hacer nada y sin probar** que se hizo.
 - Sin supuestos (pareja, plata, clima, movilidad, estar bien). Cuidado emocional: invitar a mirar la fortaleza, no a abrir la herida. La frase sola ya vale.
 
+**Estilo de redacción** (calibrado en Gratitud). Frase y acción son dos piezas distintas:
+- **Frase:** corta, poética, abstracta, **memorable**. *Resuena* con la acción pero NO la explica ni la instruye — es una imagen o idea para recordar. Si puede guiñar al motivo de la categoría (amanecer, luna, montaña…) sin nombrarlo, mejor.
+- **Acción:** **genérica y libre** — realizable cualquier día, sin suponer nada (que pasó algo puntual, que te cruzaste con alguien, clima, cantidades). El foco está acá: simple, concreta, con valor real.
+- **Tono:** español neutro.
+
 ---
 
 ## 3. Estética de la carta

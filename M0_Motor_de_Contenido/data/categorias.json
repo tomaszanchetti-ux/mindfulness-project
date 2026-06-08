@@ -1,0 +1,8 @@
+[
+  { "slug": "gratitud",    "nombre": "Gratitud",    "color_accent": "#E2A93B", "color_text": "#8a6a2e", "img": "assets/categorias/cat_gratitud.png" },
+  { "slug": "calma",       "nombre": "Calma",       "color_accent": "#becdd7", "color_text": "#757f85", "img": "assets/categorias/cat_calma.png" },
+  { "slug": "perspectiva", "nombre": "Perspectiva", "color_accent": "#ac7b53", "color_text": "#6a4c33", "img": "assets/categorias/cat_perspectiva.png" },
+  { "slug": "resiliencia", "nombre": "Resiliencia", "color_accent": "#9eb55c", "color_text": "#617039", "img": "assets/categorias/cat_resiliencia.png" },
+  { "slug": "amor-propio", "nombre": "Amor propio", "color_accent": "#e47b86", "color_text": "#8d4c53", "img": "assets/categorias/cat_amor_propio.png" },
+  { "slug": "vinculos",    "nombre": "Vínculos",    "color_accent": "#cc453e", "color_text": "#7a2925", "img": "assets/categorias/cat_vinculos.png" }
+]

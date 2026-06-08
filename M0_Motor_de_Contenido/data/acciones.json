@@ -1,0 +1,7 @@
+[
+  { "slug": "escribir",   "nombre": "Escribir",   "glifo": "assets/acciones/act_escribir.svg" },
+  { "slug": "contemplar", "nombre": "Contemplar", "glifo": "assets/acciones/act_contemplar.svg" },
+  { "slug": "respirar",   "nombre": "Respirar",   "glifo": "assets/acciones/act_respirar.svg" },
+  { "slug": "caminar",    "nombre": "Caminar",    "glifo": "assets/acciones/act_caminar.svg" },
+  { "slug": "hacer",      "nombre": "Hacer",      "glifo": "assets/acciones/act_hacer.svg" }
+]
