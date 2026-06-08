@@ -81,7 +81,8 @@ se **gira con un tap** (recibís la carta cerrada y la girás para ver la consig
 | Vínculos | dos pájaros | un ala — rojo `#C8453E` | | | |
 
 Papel `#EFE6D3` · tinta `#2b2925`. La **franja superior** y el **glifo** usan el
-color de la categoría. Tipografía: serif elegante para la frase (protagonista);
+color de la categoría. Los **colores de acento reales** de las 6 categorías (ya
+dibujadas) están en `molde_carta.html`. Tipografía: serif elegante para la frase (protagonista);
 sans fina con tracking amplio para los nombres (`g r a t i t u d`).
 
 ---
