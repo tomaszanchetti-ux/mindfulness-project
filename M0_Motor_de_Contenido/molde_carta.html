@@ -23,7 +23,8 @@
   .act{letter-spacing:.42em;text-transform:lowercase;color:#9a927e;font-size:12px;margin-bottom:40px}
   .frase{font-family:Georgia,serif;font-style:italic;font-size:17px;line-height:1.5;color:#46423b;
          text-align:center;padding:0 32px;margin-top:42px}
-  .gly{flex:1;display:flex;align-items:center;justify-content:center;font-size:30px;opacity:.55}
+  .gly{flex:1;display:flex;align-items:center;justify-content:center;opacity:.9}
+  .gly svg{width:44px;height:44px}
   .prompt{font-size:13.5px;line-height:1.55;color:#5f5a50;text-align:center;padding:0 30px;margin-bottom:34px}
   .lab{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6b6147}
   .cattag{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#6b6147;text-align:center;margin:0 0 14px}
@@ -61,6 +62,13 @@ const CARTAS = [
     prompt:'Pensá en una de esas personas y, fuera de la app, decile por qué. Volvé y guardá a quién elegiste.' },
 ];
 
+const SVGS = {
+  escribir: `<svg viewBox="0 0 90 90" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M64 22 C50 26 40 40 33 58 C49 54 60 42 64 22 Z"/><path d="M64 22 C50 34 40 50 25 68"/><path d="M25 68 L21 72"/></svg>`,
+  contemplar: `<svg viewBox="0 0 90 90" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 45 Q45 25 72 45"/><path d="M18 45 Q45 63 72 45"/><circle cx="45" cy="45" r="8.5"/><circle cx="45" cy="45" r="3.2" fill="currentColor" stroke="none"/></svg>`,
+  respirar: `<svg viewBox="0 0 90 90" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 37 Q42 30 56 35 Q67 39 60 30"/><path d="M20 52 Q47 44 65 49 Q76 53 69 44"/><path d="M24 45 Q40 40 51 44"/></svg>`,
+  caminar: `<svg viewBox="0 0 90 90" fill="currentColor" stroke="none"><g transform="rotate(-16 33 56)"><ellipse cx="33" cy="56" rx="5.6" ry="8.6"/><ellipse cx="33" cy="68.5" rx="3.2" ry="3.9"/></g><g transform="rotate(-16 53 41)"><ellipse cx="53" cy="41" rx="5.6" ry="8.6"/><ellipse cx="53" cy="53.5" rx="3.2" ry="3.9"/></g></svg>`,
+  hacer: `<svg viewBox="0 0 90 90" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M45 20 C46.5 38 47 38.5 65 45 C47 51.5 46.5 52 45 70 C43.5 52 43 51.5 25 45 C43 38.5 43.5 38 45 20 Z"/><path d="M64 25 C64.6 30 64.8 30.2 70 31 C64.8 31.8 64.6 32 64 37 C63.4 32 63.2 31.8 58 31 C63.2 30.2 63.4 30 64 25 Z"/></svg>`,
+};
 const set = document.getElementById('set');
 for (const c of CARTAS){
   const block = document.createElement('div');
@@ -80,7 +88,7 @@ for (const c of CARTAS){
         <div class="card">
           <div class="band" style="background:${c.accent}"></div>
           <div class="frase">"${c.frase}"</div>
-          <div class="gly" style="color:${c.text}">${c.gly}</div>
+          <div class="gly" style="color:${c.accent}">${SVGS[c.action]||c.gly}</div>
           <div class="prompt">${c.prompt}</div>
         </div>
         <div class="lab">Dorso</div>
