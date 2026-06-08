@@ -28,17 +28,38 @@ guardá lo que viste"). Frase + micro-prompt, inseparables.
 - **Entra:** onboarding-compromiso · carta del día · foto y reflexión opcionales · Baúl de Crecimiento Personal · compartir por link · perfil.
 - **Queda para después:** círculos, IA generativa, dos rituales por día, packs.
 
-**Los tres loops**
-1. **Diario:** notificación → carta del día → se ejecuta afuera → (opcional) foto + reflexión ≤250 → al Baúl → la app se apaga.
-2. **Gesto (secundario, latente):** desde una carta o el Baúl → compartir por link con una nota → el receptor la abre sin instalar nada. Es el único canal de crecimiento, pero **no se empuja**.
-3. **Baúl:** el historial de lo vivido. Mirar atrás es la retención.
-
 **Stack:** Google Cloud + base de datos relacional + buen front, nivel Arc One
 (NO Vercel/Supabase). Plataforma v1: Web / PWA. *Simple = la ingeniería, no el stack.*
 
 ---
 
-## 2. Principios rectores
+## 2. Cómo funciona la app
+
+El usuario hace el **onboarding una sola vez**. Después, **cada día a su hora**
+recibe una **carta** (con un aviso opcional). La abre cerrada, la **gira**, lee la
+frase y el micro-prompt, **hace el ejercicio afuera del teléfono** y, si quiere,
+vuelve y sube una **foto + una reflexión ≤250**. Todo se guarda en el **Baúl**.
+Puede compartir la carta por link si le nace. Y la app **se apaga**.
+
+**Los tres loops**
+1. **Diario:** aviso → carta del día → se ejecuta afuera → (opcional) foto + reflexión → al Baúl → la app se apaga.
+2. **Gesto (secundario, latente):** compartir una carta por link con una nota; el receptor la abre sin instalar nada. Único canal de crecimiento, pero **no se empuja**.
+3. **Baúl:** mirar atrás lo vivido. Es la retención.
+
+**Los motores de la app** (cada uno puede volverse su propia carpeta, como M0)
+
+| Motor | Qué hace | Estado |
+|-------|----------|--------|
+| **M0 · Contenido** | La materia prima: las 6 categorías y las cartas (frase + micro-prompt + dibujo). | 🔨 en construcción |
+| **M1 · Onboarding y Perfil** | La entrada y las preferencias: elegir categorías (2-6), tono y horario; activar (o no) el aviso; aceptar el compromiso (diario a mano, lugar tranquilo, 10 min). Editable después. | por definir |
+| **M2 · Entrega del día** | Elige la carta del día (azar ponderado por tus categorías y tono, sin repetir ~60 días, balanceando la modalidad) y avisa (push/email opcional). Vigencia 24h o hasta completarla. | por definir |
+| **M3 · Ritual** | El momento: recibís la carta, la girás, hacés el ejercicio afuera y —opcional— subís foto + reflexión. | por definir |
+| **M4 · Baúl de Crecimiento Personal** | El historial de todo lo vivido (carta + foto + reflexión), para mirar atrás. | por definir |
+| **M5 · Compartir** | Link público con una nota personal. Secundario y latente: se ofrece, no se empuja. | por definir |
+
+---
+
+## 3. Principios rectores
 
 **El Norte: _menos consumo, más presencia._**
 
@@ -57,7 +78,7 @@ guardá lo que viste"). Frase + micro-prompt, inseparables.
 
 ---
 
-## 3. Posibles componentes v2 (más adelante)
+## 4. Posibles componentes v2 (más adelante)
 
 No entran en la v1; son la zanahoria del roadmap.
 
