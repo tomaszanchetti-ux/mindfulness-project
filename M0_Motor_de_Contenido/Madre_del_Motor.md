@@ -74,7 +74,7 @@ se **gira con un tap** (recibís la carta cerrada y la girás para ver la consig
 | Categoría | Motivo | Acento (color) | | Acción | Glifo |
 |-----------|--------|----------------|---|--------|-------|
 | Gratitud | amanecer | el sol — amarillo `#E0A92E` | | Escribir | una pluma |
-| Calma | luna sobre agua | el reflejo — blanco `#FFFFFF` | | Contemplar | un ojo |
+| Calma | luna sobre agua | la luna — azul-gris `#becdd7` | | Contemplar | un ojo |
 | Perspectiva | montañas a lo lejos | una montaña — marrón `#8A5A3B` | | Respirar | círculos concéntricos |
 | Resiliencia | planta entre piedras | la planta — verde `#5E8C4E` | | Caminar | pasos (chevrons) |
 | Amor propio | flor abriéndose | el centro — rosa `#D98AA6` | | Hacer | un destello |
@@ -138,7 +138,7 @@ ILUSTRACIÓN A GENERAR:
 ### Líneas por categoría (la variable)
 
 - **Gratitud:** Categoría "Gratitud". Motivo: un amanecer — el sol naciendo sobre un horizonte, con un par de colinas suaves y unos pocos rayos sobrios. Acento: el SOL, en amarillo opaco (#E0A92E). Sensación: calidez y agradecer lo pequeño que sostiene.
-- **Calma:** Categoría "Calma". Motivo: la luna llena sobre el agua, con olas suaves; el agua apenas sombreada para que el reflejo lea en negativo. Acento: el REFLEJO de la luna, en blanco (#FFFFFF). Sensación: quietud, bajar el ritmo.
+- **Calma:** Categoría "Calma". Motivo: la luna llena sobre el agua, con olas suaves en línea negra. Acento: la LUNA, disco de acuarela azul-gris con textura/cráteres (#becdd7); el reflejo insinuado con líneas y grises suaves. Sensación: quietud, bajar el ritmo. *(El acento era "reflejo blanco"; se cambió a luna azul-gris porque el blanco no se ve sobre transparente/crema.)*
 - **Perspectiva:** Categoría "Perspectiva". Motivo: una cadena de montañas vista desde lejos, paisaje amplio con horizonte. Acento: UNA montaña (o su cima), en marrón (#8A5A3B). Sensación: mirar lo de hoy desde más lejos.
 - **Resiliencia:** Categoría "Resiliencia". Motivo: una pequeña planta que brota entre dos piedras. Acento: la PLANTA, en verde (#5E8C4E). Sensación: sostenerse y reponerse en lo difícil.
 - **Amor propio:** Categoría "Amor propio". Motivo: una flor abriéndose. Acento: el CENTRO / un detalle de la flor, en rosa (#D98AA6). Sensación: trato amable con uno mismo.
@@ -147,6 +147,11 @@ ILUSTRACIÓN A GENERAR:
 Para los **glifos de acción** se hace lo mismo con un bloque maestro propio
 (minimalista, viewBox `0 0 90 90`, un solo color vía `currentColor`) cuando se
 cierren las categorías.
+
+**Molde de carta:** [`molde_carta.html`](molde_carta.html) arma las **cartas
+reales** (frente + dorso) por categoría a partir de los `cat_*.png`. Sirve de
+plantilla: por cada categoría nueva se agrega una entrada al array y se ve al toque.
+La **franja** de cada carta usa el color de acento de su categoría.
 
 ---
 
