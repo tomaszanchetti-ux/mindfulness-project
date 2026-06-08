@@ -101,39 +101,35 @@ importa es el sistema visual. **Qué debe entregar:** dibujo a línea fina en ne
 (`#2b2925`) sobre fondo transparente, con UN solo elemento en el color de acento,
 sin texto ni marco, centrado y cuadrado.
 
-**Qué debe entregar:** SVG, fondo transparente, sin texto ni chrome de carta,
-viewBox consistente (categorías `0 0 120 120` · acciones `0 0 90 90`), dibujo en
-`#2b2925` y el **acento recoloreable** en `<g class="accent">`.
+### Bloque maestro para ChatGPT (igual para las 6 categorías)
 
-### Bloque maestro (igual para las 6 categorías)
+Pegar este bloque + la línea de la categoría (tabla §3). Trae los aprendizajes de
+Gratitud y Calma para acertar al primer intento.
 
 ```
-Necesito una ilustración para una app de mindfulness. Voy a pedirte varias, una
-por vez, y TODAS tienen que compartir el mismo sistema visual para que sean un set
-coherente. Seguí estas reglas al pie:
+Ilustración minimalista estilo acuarela, elegante y serena, con sensibilidad
+japonesa. Dibujo a línea fina en NEGRO sobre fondo TRANSPARENTE (PNG con canal
+alfa, sin ningún fondo). UN solo elemento pintado en color (el que indico abajo);
+TODO el resto en línea negra. Composición centrada, con mucho aire, sin texto, sin
+marco. Formato cuadrado.
 
-SISTEMA VISUAL (idéntico en todas)
-- Estilo: ilustración precisa con textura de acuarela suave; elegante, serena,
-  contemplativa; sensibilidad minimalista japonesa. Trazo fino y seguro.
-- Color: TODO el dibujo en negro neutro (#2b2925). UN solo elemento se pinta en el
-  color de acento que te indico abajo; nada más lleva color. El acento es un wash
-  de acuarela suave, de valor claro y contenido (no saturado).
-- Composición centrada, con mucho aire alrededor. Mismo peso de línea y misma
-  textura de pincel en todas las ilustraciones del set.
-- Sin texto, sin marco y sin fondo: fondo 100% transparente, sólo el dibujo.
+CLAVE 1 — el elemento de color tiene que tener CUERPO Y TEXTURA desde el arranque:
+acuarela rica, con variaciones de tono, nunca plano ni pálido. Mismo "peso" visual
+que un sol o una luna bien logrados.
 
-FORMATO DE SALIDA
-- Entregá un SVG listo para descargar, con viewBox "0 0 120 120", centrado y con
-  padding parejo.
-- Para poder recolorear el acento sin tocar el resto: poné el/los elementos con
-  acento dentro de un grupo <g class="accent" fill="VAR(--accent)"> y el resto del
-  dibujo en #2b2925.
-- Si la textura de acuarela no se logra bien en vector, entregá igual el SVG (con
-  filtros) y, como alternativa, un PNG de fondo transparente en alta resolución.
+CLAVE 2 — consistencia de set: tiene que combinar con las cartas ya hechas del
+mismo set: un amanecer con el sol como disco de acuarela amarillo, y una luna como
+disco de acuarela azul-gris con textura. Mismo peso de línea, misma textura de
+acuarela, mismo nivel de detalle y de aire.
 
 ILUSTRACIÓN A GENERAR:
 {LÍNEA DE LA CATEGORÍA}
 ```
+
+> **Aprendizajes (de nuestras interacciones):** (1) Gratitud salió de una; (2)
+> Calma la primera vez salió plana/pálida → de ahí la CLAVE 1. El fondo suele venir
+> con un damero "horneado": no importa, Claude lo limpia a PNG transparente y
+> recorta. El acento va **siempre del color de la categoría**.
 
 ### Líneas por categoría (la variable)
 
