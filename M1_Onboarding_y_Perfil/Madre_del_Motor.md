@@ -80,7 +80,8 @@ Estilo carrusel de mercado, **muy simple**, una idea por pantalla. **Se desarrol
 al final**, con capturas reales:
 
 1. **Registro / la carta** — cada día recibís una carta con una consigna.
-2. **Acción diaria** — el ritual se hace **afuera del teléfono**.
+2. **Acción diaria** — el ritual se hace **afuera del teléfono**. *(Línea suave al pie:
+   "al final podés ponerle estrellas — es opcional y ayuda a que la app te conozca".)*
 3. **Baúl** — todo lo que vivís queda guardado para mirar atrás.
 4. **Compartir** — si te nace, podés compartir una carta por link. Opcional.
 5. **Compromiso** — *elegí una hora en la que sepas que tenés **10-15 min** para vos*
@@ -102,7 +103,10 @@ que enseñan el ritual paso a paso:
 1. **Girá la carta** → frase + micro-prompt.
 2. **Escribí tu reflexión** (≤250).
 3. **Subí una foto** (opcional).
-4. **Guardá.**
+4. **Ponele estrellas** (1-5, opcional) → con la frasecita *"ayuda a que la app te
+   conozca"*. Lo **practica en vivo** acá; lo usa de verdad en cada ritual (M3) y lo
+   aprovecha M2.
+5. **Guardá.**
 
 Es un **ensayo**: enseña la mecánica de **M3 (Ritual)** sin guardar nada en el Baúl.
 La **primera carta real** llega después, **a su horario**, vía **M2 (Entrega)** — así

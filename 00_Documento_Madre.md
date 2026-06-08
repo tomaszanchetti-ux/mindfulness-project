@@ -52,9 +52,9 @@ Puede compartir la carta por link si le nace. Y la app **se apaga**.
 |-------|----------|--------|
 | **M0 · Contenido** | La materia prima: las 6 categorías y las cartas (frase + micro-prompt + dibujo). | ✅ cerrado v1 (69 cartas) |
 | **M1 · Onboarding y Perfil** | La entrada y las preferencias: login sin contraseña; elegir categorías (2-6) y horario; activar (o no) el aviso; aceptar términos; explicar la app y el compromiso (diario a mano, 10-15 min). Editable después. | ✅ lógica cerrada v1 ([M1](M1_Onboarding_y_Perfil/Madre_del_Motor.md)) |
-| **M2 · Entrega del día** | Elige la carta del día (azar ponderado por tus categorías y tono, sin repetir ~60 días, balanceando la modalidad) y avisa (push/email opcional). Vigencia 24h o hasta completarla. | por definir |
-| **M3 · Ritual** | El momento: recibís la carta, la girás, hacés el ejercicio afuera y —opcional— subís foto + reflexión. | por definir |
-| **M4 · Baúl de Crecimiento Personal** | El historial de todo lo vivido (carta + foto + reflexión), para mirar atrás. | por definir |
+| **M2 · Entrega del día** | Elige la carta del día (azar ponderado: filtro duro por tus categorías + preferencia blanda de acción que aprende de tus estrellas; sin repetir la última semana) y avisa (push/email opcional). Vigencia 24h o hasta completarla. | ✅ lógica cerrada v1 ([M2](M2_Entrega_del_Dia/Madre_del_Motor.md)) |
+| **M3 · Ritual** | El momento: recibís la carta, la girás, hacés el ejercicio afuera y —opcional— subís foto + reflexión + le ponés **estrellas (1-5, opcional)**. | por definir |
+| **M4 · Baúl de Crecimiento Personal** | El historial de todo lo vivido (carta + foto + reflexión), para mirar atrás. Se puede ordenar por fecha o **por estrella** (mejores primero). | por definir |
 | **M5 · Compartir** | Link público con una nota personal. Secundario y latente: se ofrece, no se empuja. | por definir |
 
 ---
