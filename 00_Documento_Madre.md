@@ -51,7 +51,7 @@ Puede compartir la carta por link si le nace. Y la app **se apaga**.
 | Motor | Qué hace | Estado |
 |-------|----------|--------|
 | **M0 · Contenido** | La materia prima: las 6 categorías y las cartas (frase + micro-prompt + dibujo). | ✅ cerrado v1 (69 cartas) |
-| **M1 · Onboarding y Perfil** | La entrada y las preferencias: elegir categorías (2-6), tono y horario; activar (o no) el aviso; aceptar el compromiso (diario a mano, lugar tranquilo, 10 min). Editable después. | por definir |
+| **M1 · Onboarding y Perfil** | La entrada y las preferencias: login sin contraseña; elegir categorías (2-6) y horario; activar (o no) el aviso; aceptar términos; explicar la app y el compromiso (diario a mano, 10-15 min). Editable después. | ✅ lógica cerrada v1 ([M1](M1_Onboarding_y_Perfil/Madre_del_Motor.md)) |
 | **M2 · Entrega del día** | Elige la carta del día (azar ponderado por tus categorías y tono, sin repetir ~60 días, balanceando la modalidad) y avisa (push/email opcional). Vigencia 24h o hasta completarla. | por definir |
 | **M3 · Ritual** | El momento: recibís la carta, la girás, hacés el ejercicio afuera y —opcional— subís foto + reflexión. | por definir |
 | **M4 · Baúl de Crecimiento Personal** | El historial de todo lo vivido (carta + foto + reflexión), para mirar atrás. | por definir |
@@ -125,3 +125,8 @@ globales (y re-seedea si sumamos cartas). Las fotos del Baúl van a Cloud Storag
 DB guarda solo la ruta.
 
 > Confianza sobre Arc One: alta en *Google Cloud · PostgreSQL · Cloud Run · React+TS · Firebase*. Pendiente menor: confirmar versiones/servicios exactos contra el repo de Arc One antes de codear.
+
+> **Pivot de secuencia (WS03):** salimos **primero como PWA instalable** (Expo for Web)
+> y después el **nativo a las stores**, desde el **mismo proyecto Expo**. El stack no
+> cambia; cambia el orden de salida. Consecuencia: el **aviso principal es email**
+> (el push web en iPhone sólo anda con la app instalada al inicio). Detalle en M1 §7.
