@@ -18,6 +18,8 @@ del teléfono**; el teléfono es guía + baúl.
 | 🚪 [`M1_Onboarding_y_Perfil/`](M1_Onboarding_y_Perfil/) | **Motor de onboarding y perfil:** login, configuración, explicación y compromiso. ✅ lógica cerrada v1. |
 | 🎴 [`M2_Entrega_del_Dia/`](M2_Entrega_del_Dia/) | **Motor de entrega del día:** elige la carta de cada día y avisa. ✅ lógica cerrada v1 (+ script). |
 | 🕯️ [`M3_Ritual/`](M3_Ritual/) | **Motor del ritual:** recibir/girar la carta, hacer el ejercicio afuera, cerrar con reflexión + fotos + estrellas. ✅ lógica cerrada v1. |
+| 🧰 [`M4_Baul/`](M4_Baul/) | **Baúl de Crecimiento Personal:** historial ordenable (Reciente / Más valoradas), borrado para siempre con modal. ✅ lógica cerrada v1. |
+| 🔗 [`M5_Compartir/`](M5_Compartir/) | **Compartir:** link público (carta sola / ejercicio completo), el receptor lo abre sin instalar. ✅ lógica cerrada v1. |
 
 ## Estado
 
@@ -26,4 +28,6 @@ del teléfono**; el teléfono es guía + baúl.
 - **M1 — Onboarding y perfil:** ✅ lógica conceptual cerrada v1.
 - **M2 — Entrega del día:** ✅ lógica cerrada v1 + script de referencia.
 - **M3 — Ritual:** ✅ lógica conceptual cerrada v1.
-- Próximo: definir **M4 (Baúl)** → **M5 (Compartir)** · después build.
+- **M4 — Baúl:** ✅ lógica conceptual cerrada v1.
+- **M5 — Compartir:** ✅ lógica conceptual cerrada v1.
+- **Funnel de uso completo (M1→M5).** Próximo: **build (N4)** — confirmar versiones del stack contra Arc One y arrancar.

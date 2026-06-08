@@ -54,8 +54,8 @@ Puede compartir la carta por link si le nace. Y la app **se apaga**.
 | **M1 · Onboarding y Perfil** | La entrada y las preferencias: login sin contraseña; elegir categorías (2-6) y horario; activar (o no) el aviso; aceptar términos; explicar la app y el compromiso (diario a mano, 10-15 min). Editable después. | ✅ lógica cerrada v1 ([M1](M1_Onboarding_y_Perfil/Madre_del_Motor.md)) |
 | **M2 · Entrega del día** | Elige la carta del día (azar ponderado: filtro duro por tus categorías + preferencia blanda de acción que aprende de tus estrellas; sin repetir la última semana) y avisa (push/email opcional). Vigencia 24h o hasta completarla. | ✅ lógica cerrada v1 ([M2](M2_Entrega_del_Dia/Madre_del_Motor.md)) |
 | **M3 · Ritual** | El momento: recibís la carta, la girás, hacés el ejercicio afuera y volvés a cerrarlo — **reflexión** ≤250 (protagonista, no bloquea Guardar), **hasta 3 fotos** y **estrellas** 1-5 (opcionales). Una sola superficie (scroll en el dorso). **Sin gate:** la próxima carta llega siempre; lo dejado a medias se autoguarda sin culpa. | ✅ lógica cerrada v1 ([M3](M3_Ritual/Madre_del_Motor.md)) |
-| **M4 · Baúl de Crecimiento Personal** | El historial de todo lo vivido (carta + foto + reflexión), para mirar atrás. Se puede ordenar por fecha o **por estrella** (mejores primero). | por definir |
-| **M5 · Compartir** | Link público con una nota personal. Secundario y latente: se ofrece, no se empuja. | por definir |
+| **M4 · Baúl de Crecimiento Personal** | El historial de todo lo vivido (carta + foto + reflexión). Dos modos de orden: **Reciente** (default) y **Más valoradas**. Se puede **borrar** una entrada para siempre (modal claro + botón rojo; limpia DB + fotos + link). Casi sólo lectura. | ✅ lógica cerrada v1 ([M4](M4_Baul/Madre_del_Motor.md)) |
+| **M5 · Compartir** | Link público con nota personal. **Carta sola** (sin datos tuyos) o **ejercicio completo** (con reflexión + fotos → aviso de privacidad). El que recibe lo abre **sin instalar ni loguear**; un CTA suave al final. El link **muere si borrás la entrada**. Secundario y latente: se ofrece, no se empuja. | ✅ lógica cerrada v1 ([M5](M5_Compartir/Madre_del_Motor.md)) |
 
 ---
 
@@ -116,8 +116,10 @@ acciones    (5)   ├─ GLOBALES, compartidas  →  M0 vive acá
 cartas      (69)  ┘     (seed = los 3 JSON de M0_Motor_de_Contenido/data/)
 ──────────────────────────────────────────────────────────
 usuarios               ┐
-usuario_categorias     ├─ PRIVADAS, todo con user_id
-entregas / Baúl        ┘
+usuario_categorias     │
+entregas / Baúl        ├─ PRIVADAS, todo con user_id
+fotos                  │     (entregas+fotos: M2/M3 · compartidos: M5)
+compartidos            ┘
 ```
 
 Los **JSON del repo son el seed maestro**: un script los carga una vez a las 3 tablas
