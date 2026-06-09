@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from .config import settings
 from .db.base import get_session
 from .db.models import Carta, Categoria
+from .routers import perfil
 
 app = FastAPI(title="Mindful API", version="0.0.1")
 
@@ -24,6 +25,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(perfil.router)
 
 
 @app.get("/health")

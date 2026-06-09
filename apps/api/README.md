@@ -40,10 +40,30 @@ verdad del contenido.
   `fotos`, `compartidos`): **toda fila lleva `usuario_id`**; el filtro vive en el
   backend, nunca en el cliente.
 
+## Auth (dos modos)
+
+- `MINDFUL_AUTH_MODE=dev` (default local) → sin token. Se simula el usuario con headers
+  `X-Debug-Sub` / `X-Debug-Email`. Para construir y testear sin Firebase.
+- `MINDFUL_AUTH_MODE=firebase` → valida el `Authorization: Bearer <id_token>` de Firebase.
+
+El aislamiento empieza en `auth.py:get_current_user`: cada request resuelve **un**
+usuario (auto-provisión en el primer login) y el resto de la API filtra por su id.
+
+## Endpoints
+
+| Método | Ruta | Qué hace |
+|--------|------|----------|
+| GET | `/health` | Salud. |
+| GET | `/api/contenido/categorias` | Las 6 categorías globales (Mundo 1). |
+| GET | `/api/contenido/resumen` | Conteo de cartas (chequeo del seed). |
+| GET | `/api/perfil` | Perfil del usuario logueado + sus categorías + `onboarding_completo`. |
+| PUT | `/api/perfil` | Actualiza horario/TZ/aviso y acepta términos. |
+| PUT | `/api/perfil/categorias` | Fija las **2-6** categorías elegidas. |
+
 ## Estado del build (N4)
 
 - ✅ **Paso 1 — Seed + esquema:** las 8 tablas + el contenido de M0 cargado y servido.
-- ⏭️ **Paso 1b — Auth:** validar Firebase ID token (`MINDFUL_AUTH_MODE=firebase`) +
-  endpoints de perfil (M1).
+- ✅ **Paso 1b — Auth + Perfil (M1):** dependency de auth (dev/firebase) + onboarding
+  (categorías 2-6 · horario/TZ/aviso · términos). Aislamiento testeado.
 - ⏭️ **Paso 2 — Entrega + Ritual:** `elegir_carta()` (ya en `M2_Entrega_del_Dia/`) +
   worker RQ + cierre M3.
