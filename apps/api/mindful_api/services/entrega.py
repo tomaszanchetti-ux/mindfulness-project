@@ -17,7 +17,15 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ..db.models import Accion, Carta, Categoria, Entrega, Usuario, UsuarioCategoria
+from ..db.models import (
+    Accion,
+    Carta,
+    Categoria,
+    Entrega,
+    Usuario,
+    UsuarioAccion,
+    UsuarioCategoria,
+)
 from .seleccion import Entrega as EntregaMotor
 from .seleccion import Perfil, elegir_carta
 
@@ -82,6 +90,13 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
             "Onboarding incompleto: elegí al menos 2 categorías antes de recibir cartas.",
         )
 
+    # WS10: actividades elegidas (filtro duro). Sin filas = sin filtro = todas.
+    acciones = list(s.scalars(
+        select(UsuarioAccion.accion_slug).where(
+            UsuarioAccion.usuario_id == usuario.id
+        )
+    ).all())
+
     # Historial del usuario (con la categoría/acción de cada carta), ordenado por fecha.
     rows = s.execute(
         select(Entrega, Carta.categoria_slug, Carta.accion_slug)
@@ -105,7 +120,7 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
         )
         for (e, cat, acc) in rows
     ]
-    perfil = Perfil(categorias=categorias, historial=historial)
+    perfil = Perfil(categorias=categorias, acciones=acciones, historial=historial)
 
     # Pool global como dicts con las keys que el motor espera.
     pool = [

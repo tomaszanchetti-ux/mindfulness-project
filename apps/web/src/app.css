@@ -289,6 +289,38 @@
   color: var(--warm-taupe);
   margin: 18px 0 8px;
 }
+/* WS10 · el cierre constante: escribir en el diario físico (el fin). */
+.cierre-constante {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  text-align: center;
+  margin: 0 6px 14px;
+}
+.cierre-diario {
+  border: 1px solid var(--sand-line);
+  background: var(--soft-ivory);
+  border-radius: 18px;
+  padding: 16px 18px;
+  margin: 18px 0 14px;
+  text-align: center;
+}
+.cierre-diario-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--deep-umber);
+  margin: 0 0 4px;
+}
+.cierre-diario-sub {
+  font-size: 13px;
+  color: var(--warm-taupe);
+  margin: 0;
+}
+.reflect-helper-mem {
+  font-size: 13px;
+  color: var(--warm-taupe);
+  margin: 0 0 8px;
+}
 .textarea {
   width: 100%;
   background: var(--soft-ivory);
@@ -805,6 +837,21 @@
   border-color: var(--sage);
   background: #fff;
   box-shadow: 0 6px 16px var(--warm-shadow);
+}
+/* WS10 · actividad "escribir": piso garantizado, siempre incluida y bloqueada. */
+.cat-opt.locked {
+  justify-content: space-between;
+  cursor: default;
+  opacity: 0.92;
+}
+.cat-opt-tag {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sage);
+  background: rgba(125, 150, 100, 0.12);
+  border-radius: 999px;
+  padding: 2px 9px;
 }
 .opt-list {
   display: flex;

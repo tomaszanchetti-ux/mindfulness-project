@@ -9,7 +9,7 @@ import { useStore } from "../store";
 
 export function Profile() {
   const navigate = useNavigate();
-  const { perfil, categorias, refrescarPerfil } = useStore();
+  const { perfil, categorias, acciones, refrescarPerfil } = useStore();
   const [hora, setHora] = useState("");
   const [aviso, setAviso] = useState(true);
   const [nombre, setNombre] = useState("");
@@ -29,6 +29,11 @@ export function Profile() {
   if (!perfil) return <div className="center-note">…</div>;
 
   const misCategorias = categorias.filter((c) => perfil.categorias.includes(c.slug));
+  // WS10: actividades elegidas. Si no eligió ninguna todavía, valen todas.
+  const misAcciones =
+    perfil.acciones.length > 0
+      ? acciones.filter((a) => perfil.acciones.includes(a.slug))
+      : acciones;
 
   const guardarAviso = async (v: boolean) => {
     setAviso(v);
@@ -135,6 +140,21 @@ export function Profile() {
             </span>
           ))}
         </div>
+      </div>
+
+      <div className="profile-section">
+        <h3>Cómo hacés tu pausa</h3>
+        <div className="cat-pills">
+          {misAcciones.map((a) => (
+            <span key={a.slug} className="cat-pill">
+              {a.nombre}
+              {a.slug === "escribir" && <span className="cat-opt-tag">siempre</span>}
+            </span>
+          ))}
+        </div>
+        <p className="meta" style={{ marginTop: 8 }}>
+          Hagas la que hagas, siempre cerrás escribiendo en tu diario.
+        </p>
       </div>
 
       <div className="profile-section">

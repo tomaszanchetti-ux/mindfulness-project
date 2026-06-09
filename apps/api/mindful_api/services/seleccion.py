@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 # ── Parámetros del motor (un solo lugar para tocarlos) ───────────────────────
+ACCION_PISO = "escribir"      # WS10: siempre en el pool, elija lo que elija el usuario
 VENTANA_NO_REPETIR = 7        # días: no repetir una carta vista en esta ventana
 PISO_AFINIDAD = 0.35          # peso mínimo de cualquier modalidad: nunca llega a 0
 CASTIGO_MISMA_ACCION = 0.5    # multiplicador si la acción es la de ayer (variedad)
@@ -38,6 +39,9 @@ class Entrega:
 @dataclass
 class Perfil:
     categorias: list[str]
+    # WS10: actividades elegidas (filtro duro). Vacío = sin filtro = todas.
+    # "escribir" cuenta siempre como piso, esté o no en la lista.
+    acciones: list[str] = field(default_factory=list)
     historial: list[Entrega] = field(default_factory=list)
 
 
@@ -62,8 +66,12 @@ def elegir_carta(perfil: Perfil, cartas: list[dict], modo: str = "v1",
                  rng: Optional[random.Random] = None) -> dict:
     rng = rng or random.Random()
 
-    # 2. Pool = sólo mis categorías (filtro duro)
+    # 2. Pool = filtro duro: mis categorías Y (mis actividades + "escribir" piso).
+    #    Sin actividades elegidas (lista vacía) = sin filtro de actividad = todas.
     pool = [c for c in cartas if c["categoria"] in perfil.categorias]
+    if perfil.acciones:
+        permitidas = set(perfil.acciones) | {ACCION_PISO}
+        pool = [c for c in pool if c["accion"] in permitidas]
 
     # 1. ¿Primera carta? Historial vacío → sorteo limpio.
     if not perfil.historial:

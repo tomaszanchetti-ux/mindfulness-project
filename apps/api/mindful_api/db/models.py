@@ -90,6 +90,9 @@ class Usuario(Base):
     categorias: Mapped[list["UsuarioCategoria"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
     )
+    acciones: Mapped[list["UsuarioAccion"]] = relationship(
+        back_populates="usuario", cascade="all, delete-orphan"
+    )
 
 
 class UsuarioCategoria(Base):
@@ -105,6 +108,25 @@ class UsuarioCategoria(Base):
     categoria_slug: Mapped[str] = mapped_column(ForeignKey("categorias.slug"), nullable=False)
 
     usuario: Mapped["Usuario"] = relationship(back_populates="categorias")
+
+
+class UsuarioAccion(Base):
+    """Las actividades elegidas en el onboarding (filtro duro de M2, WS10).
+
+    "escribir" siempre cuenta como piso garantizado del pool, esté o no en esta tabla.
+    Sin filas (usuario nuevo o nunca elegido) = sin filtro de actividad = todas.
+    """
+
+    __tablename__ = "usuario_acciones"
+    __table_args__ = (UniqueConstraint("usuario_id", "accion_slug"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    usuario_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    accion_slug: Mapped[str] = mapped_column(ForeignKey("acciones.slug"), nullable=False)
+
+    usuario: Mapped["Usuario"] = relationship(back_populates="acciones")
 
 
 class Entrega(Base):

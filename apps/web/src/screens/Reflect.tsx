@@ -60,9 +60,18 @@ export function Reflect() {
 
       <p className="reflect-prompt">{data?.carta.prompt}</p>
 
+      {/* WS10 · el cierre constante: el fin es escribir en tu diario (afuera). */}
+      <div className="cierre-diario">
+        <p className="cierre-diario-title">Escribí en tu diario lo que sentiste.</p>
+        <p className="cierre-diario-sub">
+          En tu cuaderno, fuera del teléfono. Eso es la pausa.
+        </p>
+      </div>
+
+      <p className="reflect-helper-mem">Y si querés, dejá una nota corta acá para tu Baúl:</p>
       <textarea
         className="textarea"
-        placeholder="Escribí una línea para volver a esto más tarde…"
+        placeholder="Una nota de ayuda-memoria (opcional)…"
         maxLength={LIMITE}
         value={texto}
         onChange={(e) => setTexto(e.target.value)}

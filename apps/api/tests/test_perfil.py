@@ -61,6 +61,27 @@ def test_validaciones():
     assert r.status_code == 422
 
 
+def test_acciones_filtro_y_piso_escribir():
+    """WS10 · actividades elegibles. "escribir" es el piso garantizado."""
+    h = _headers("test|acciones")
+
+    # Usuario fresco: sin actividades elegidas (= sin filtro).
+    assert client.get("/api/perfil", headers=h).json()["acciones"] == []
+
+    # Elijo sólo "caminar" → el backend agrega "escribir" como piso.
+    r = client.put("/api/perfil/acciones", headers=h, json={"acciones": ["caminar"]})
+    assert r.status_code == 200
+    assert set(r.json()["acciones"]) == {"caminar", "escribir"}
+
+    # Si no elijo nada, queda sólo el piso "escribir".
+    r = client.put("/api/perfil/acciones", headers=h, json={"acciones": []})
+    assert set(r.json()["acciones"]) == {"escribir"}
+
+    # Actividad inexistente → 422.
+    r = client.put("/api/perfil/acciones", headers=h, json={"acciones": ["volar"]})
+    assert r.status_code == 422
+
+
 def test_aislamiento_entre_usuarios():
     ha = _headers("test|aisla-a", "a@mindful.local")
     hb = _headers("test|aisla-b", "b@mindful.local")

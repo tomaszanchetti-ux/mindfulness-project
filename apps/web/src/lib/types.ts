@@ -22,6 +22,13 @@ export interface AccionCarta {
   glifo: string; // ruta a un .svg (assets/acciones/...)
 }
 
+// Catálogo de actividades global (Mundo 1), para elegir en onboarding/perfil.
+export interface AccionContenido {
+  slug: string;
+  nombre: string;
+  glifo: string;
+}
+
 export interface Carta {
   id: string;
   frase: string;
@@ -64,6 +71,7 @@ export interface Perfil {
   aviso_activo: boolean;
   terminos_aceptados: boolean;
   categorias: string[];
+  acciones: string[]; // WS10: actividades elegidas ("escribir" siempre incluida)
   onboarding_completo: boolean;
 }
 

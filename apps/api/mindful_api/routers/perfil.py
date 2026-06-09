@@ -14,8 +14,9 @@ from sqlalchemy.orm import Session
 
 from ..auth import get_current_user
 from ..db.base import get_session
-from ..db.models import Categoria, Usuario, UsuarioCategoria
-from ..schemas import CategoriasUpdate, PerfilOut, PerfilUpdate
+from ..db.models import Accion, Categoria, Usuario, UsuarioAccion, UsuarioCategoria
+from ..schemas import AccionesUpdate, CategoriasUpdate, PerfilOut, PerfilUpdate
+from ..services.seleccion import ACCION_PISO
 
 router = APIRouter(prefix="/api/perfil", tags=["perfil"])
 
@@ -29,8 +30,18 @@ def _categorias_de(s: Session, usuario_id: str) -> list[str]:
     return list(rows)
 
 
+def _acciones_de(s: Session, usuario_id: str) -> list[str]:
+    rows = s.scalars(
+        select(UsuarioAccion.accion_slug).where(
+            UsuarioAccion.usuario_id == usuario_id
+        )
+    ).all()
+    return list(rows)
+
+
 def _a_salida(s: Session, usuario: Usuario) -> PerfilOut:
     cats = _categorias_de(s, usuario.id)
+    accs = _acciones_de(s, usuario.id)
     terminos = usuario.terminos_aceptados_at is not None
     return PerfilOut(
         email=usuario.email,
@@ -42,6 +53,7 @@ def _a_salida(s: Session, usuario: Usuario) -> PerfilOut:
         aviso_activo=usuario.aviso_activo,
         terminos_aceptados=terminos,
         categorias=cats,
+        acciones=accs,
         # Onboarding completo = términos aceptados + al menos 2 categorías (regla M1).
         onboarding_completo=terminos and len(cats) >= 2,
     )
@@ -101,6 +113,34 @@ def fijar_categorias(
     s.query(UsuarioCategoria).filter(UsuarioCategoria.usuario_id == usuario.id).delete()
     for slug in body.categorias:
         s.add(UsuarioCategoria(usuario_id=usuario.id, categoria_slug=slug))
+    s.commit()
+    s.refresh(usuario)
+    return _a_salida(s, usuario)
+
+
+@router.put("/acciones", response_model=PerfilOut)
+def fijar_acciones(
+    body: AccionesUpdate,
+    s: Session = Depends(get_session),
+    usuario: Usuario = Depends(get_current_user),
+) -> PerfilOut:
+    """WS10 · fija las actividades elegidas (filtro duro de M2). "escribir" siempre entra."""
+    # Validar que cada slug exista en el contenido global (Mundo 1).
+    validas = set(s.scalars(select(Accion.slug)).all())
+    invalidas = [a for a in body.acciones if a not in validas]
+    if invalidas:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"actividades inexistentes: {', '.join(invalidas)}",
+        )
+
+    # "escribir" es el piso garantizado: la agregamos siempre, venga o no.
+    slugs = list(dict.fromkeys([*body.acciones, ACCION_PISO]))
+
+    # Reemplazo total: borro las actuales y dejo exactamente las nuevas.
+    s.query(UsuarioAccion).filter(UsuarioAccion.usuario_id == usuario.id).delete()
+    for slug in slugs:
+        s.add(UsuarioAccion(usuario_id=usuario.id, accion_slug=slug))
     s.commit()
     s.refresh(usuario)
     return _a_salida(s, usuario)

@@ -52,6 +52,9 @@ export function Home() {
         </div>
       ) : (
         <div className="actions-stack">
+          <p className="cierre-constante">
+            Hacé tu pausa afuera. Al volver, escribí en tu diario lo que sentiste.
+          </p>
           <Button
             variant="primary"
             full

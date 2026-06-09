@@ -5,6 +5,7 @@
 // Authorization: Bearer <token> — el resto del contrato no cambia.
 
 import type {
+  AccionContenido,
   CartaDelDia,
   CategoriaContenido,
   Compartido,
@@ -46,6 +47,7 @@ async function req<T>(path: string, init: RequestInit = {}): Promise<T> {
 export const api = {
   // —— Contenido global (Mundo 1) ——
   categorias: () => req<CategoriaContenido[]>("/api/contenido/categorias"),
+  acciones: () => req<AccionContenido[]>("/api/contenido/acciones"),
 
   // —— Perfil / onboarding (M1) ——
   perfil: () => req<Perfil>("/api/perfil"),
@@ -53,6 +55,11 @@ export const api = {
     req<Perfil>("/api/perfil/categorias", {
       method: "PUT",
       body: JSON.stringify({ categorias }),
+    }),
+  setAcciones: (acciones: string[]) =>
+    req<Perfil>("/api/perfil/acciones", {
+      method: "PUT",
+      body: JSON.stringify({ acciones }),
     }),
   setPerfil: (body: Partial<{
     nombre: string;

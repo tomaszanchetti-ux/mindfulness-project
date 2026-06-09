@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from .config import settings
 from .db.base import get_session
-from .db.models import Carta, Categoria
+from .db.models import Accion, Carta, Categoria
 from .routers import baul, compartir, entregas, perfil
 
 app = FastAPI(title="Mindful API", version="0.0.1")
@@ -52,6 +52,15 @@ def listar_categorias(s: Session = Depends(get_session)) -> list[dict]:
         }
         for c in rows
     ]
+
+
+@app.get("/api/contenido/acciones")
+def listar_acciones(s: Session = Depends(get_session)) -> list[dict]:
+    """Las 5 actividades globales (Mundo 1). "escribir" primero = el piso (WS10)."""
+    rows = s.scalars(select(Accion)).all()
+    orden = {"escribir": 0, "contemplar": 1, "respirar": 2, "caminar": 3, "hacer": 4}
+    rows = sorted(rows, key=lambda a: orden.get(a.slug, 99))
+    return [{"slug": a.slug, "nombre": a.nombre, "glifo": a.glifo} for a in rows]
 
 
 @app.get("/api/contenido/resumen")

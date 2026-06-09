@@ -4,11 +4,12 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { api } from "./lib/api";
-import type { CategoriaContenido, Perfil } from "./lib/types";
+import type { AccionContenido, CategoriaContenido, Perfil } from "./lib/types";
 
 interface Store {
   perfil: Perfil | null;
   categorias: CategoriaContenido[];
+  acciones: AccionContenido[];
   loading: boolean;
   refrescarPerfil: () => Promise<Perfil | null>;
 }
@@ -18,6 +19,7 @@ const Ctx = createContext<Store | null>(null);
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [categorias, setCategorias] = useState<CategoriaContenido[]>([]);
+  const [acciones, setAcciones] = useState<AccionContenido[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refrescarPerfil = useCallback(async () => {
@@ -33,17 +35,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const [, cats] = await Promise.all([
+      const [, cats, accs] = await Promise.all([
         refrescarPerfil(),
         api.categorias().catch(() => [] as CategoriaContenido[]),
+        api.acciones().catch(() => [] as AccionContenido[]),
       ]);
       setCategorias(cats);
+      setAcciones(accs);
       setLoading(false);
     })();
   }, [refrescarPerfil]);
 
   return (
-    <Ctx.Provider value={{ perfil, categorias, loading, refrescarPerfil }}>
+    <Ctx.Provider value={{ perfil, categorias, acciones, loading, refrescarPerfil }}>
       {children}
     </Ctx.Provider>
   );
