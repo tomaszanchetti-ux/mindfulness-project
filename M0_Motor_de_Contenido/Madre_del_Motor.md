@@ -13,9 +13,20 @@ La unidad es la **carta**: `categoría + modalidad + frase + micro-prompt + tono
 
 **Dos ejes (no un árbol):**
 - **Categoría** = el *qué* (tema). La elige el usuario en el onboarding: **de 2 a 6**.
-- **Modalidad** = el *cómo* (ejercicio). Es **propiedad de la carta**; el usuario NO la elige, la recibe.
+- **Modalidad** = el *cómo* (ejercicio). Es **propiedad de la carta** y, además, el
+  usuario **elige qué modalidades quiere recibir** (filtro elegible, espejo de las
+  categorías). *Cambio WS10: antes la modalidad no se elegía; ahora sí, para que nadie
+  pierda el día por una actividad que no hará. La capa blanda que aprende de las ⭐ sigue
+  viva, pero **dentro** del menú que el usuario eligió (lógica en M2).*
+- **"Escribir" es el piso garantizado:** siempre disponible, no se puede sacar del menú.
+  Es la puerta de fricción cero para el día sin tiempo/ganas — porque el **fin** es escribir
+  en el diario, y escribir directamente siempre cumple ese fin.
 
 **6 categorías × 5 modalidades.** El tono es interno (curaduría/filtrado), no se muestra.
+
+> **El fin último es escribir en el diario físico (afuera).** La modalidad es el *medio*
+> que provoca eso; por eso ahora se elige y por eso "escribir" nunca falta. El cierre de
+> todo ritual invita siempre a escribir lo que sentiste (marco fijo, ver M3).
 
 **Matriz de afinidad** (✅ fuerte · ○ posible · · evitar) → **23 moldes viables**:
 

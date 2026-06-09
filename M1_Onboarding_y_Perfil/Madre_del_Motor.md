@@ -26,7 +26,7 @@
 ```
 1. Bienvenida + Login    →  Google  /  Magic link
 2. Slideshow explicativo →  registro · acción diaria · baúl · compartir · compromiso · privacidad
-3. Configurar la cuenta  →  nombre · apodo · categorías (2-6) · horario · aviso → check de términos al cerrar
+3. Configurar la cuenta  →  nombre · apodo · categorías (2-6) · actividades · horario · aviso → check de términos al cerrar
 4. Carta de prueba       →  tutorial guiado con pop-ups (girar · reflexión · foto · guardar)
                             └─ luego la carta REAL llega a su horario (la entrega M2)
 ```
@@ -63,6 +63,7 @@ Eso es lo que hace que "se sienta seguro y real" — no un paso de seguridad ext
 | **Nombre y apellido** | Identificación básica. |
 | **Apodo** | Cómo lo llama la app ("Hola, {apodo}"). |
 | **Categorías** | Elige **2 a 6** de las 6 de M0, mostradas con sus dibujos. Mínimo 2 para que M2 tenga pool. |
+| **Actividades** | Elige qué modalidades quiere recibir (caminar, contemplar, respirar, hacer). **"Escribir" siempre está incluida y no se puede sacar** — se muestra como el piso garantizado: *"Escribir siempre está disponible, para los días sin tiempo o ganas de salir."* El menú filtra el pool de M2; la app sigue aprendiendo dentro de él con las ⭐. |
 | **Horario de la carta** | Hora local a la que quiere recibir la carta. *(Guarda también su zona horaria — M2 entrega en hora local.)* |
 | **Aviso** | Un solo interruptor **sí/no**. Si **sí**: email siempre + push donde se pueda. Si **no**: la carta aparece en silencio al abrir la app. |
 
@@ -80,8 +81,10 @@ Estilo carrusel de mercado, **muy simple**, una idea por pantalla. **Se desarrol
 al final**, con capturas reales:
 
 1. **Registro / la carta** — cada día recibís una carta con una consigna.
-2. **Acción diaria** — el ritual se hace **afuera del teléfono**. *(Línea suave al pie:
-   "al final podés ponerle estrellas — es opcional y ayuda a que la app te conozca".)*
+2. **Acción diaria** — el ritual se hace **afuera del teléfono**, y **siempre cerrás
+   escribiendo en tu diario lo que sentiste** (esa es la idea de fondo: la actividad es la
+   excusa, escribir es el fin). *(Línea suave al pie: "al final podés ponerle estrellas —
+   es opcional y ayuda a que la app te conozca".)*
 3. **Baúl** — todo lo que vivís queda guardado para mirar atrás.
 4. **Compartir** — si te nace, podés compartir una carta por link. Opcional.
 5. **Compromiso** — *elegí una hora en la que sepas que tenés **10-15 min** para vos*
@@ -136,10 +139,11 @@ El aviso diario es el corazón, así que lo cubrimos en capas:
 ## 8. Perfil editable (Ajustes)
 
 Todo lo del paso 2 queda **editable** después en una pantalla de Ajustes: apodo,
-categorías, horario, aviso. (Nombre/apellido también.)
+categorías, actividades, horario, aviso. (Nombre/apellido también.)
 
-- **Cambiar categorías** acá **cambia el pool de M2** en el acto (sacar una = sale del
-  pool, el Baúl queda intacto; sumar una = entra ya).
+- **Cambiar categorías o actividades** acá **cambia el pool de M2** en el acto (sacar una =
+  sale del pool, el Baúl queda intacto; sumar una = entra ya). *("Escribir" no se puede
+  sacar.)*
 - **Cambiar horario/aviso** redefine cuándo y cómo avisa M2.
 
 ---
@@ -160,7 +164,13 @@ usuarios
 
 usuario_categorias        (2 a 6 filas por usuario)
   user_id · categoria_id   → FK a la tabla GLOBAL categorias (M0)
+
+usuario_acciones          (1 a 5 filas por usuario · "escribir" siempre presente)
+  user_id · accion_id      → FK a la tabla GLOBAL acciones (M0)
 ```
+
+> **"Escribir" se guarda siempre** (aunque el usuario no la toque), porque es el piso
+> garantizado del pool (M2). En la UI se muestra incluida y bloqueada.
 
 Las fotos del Baúl (M3/M4) van a Cloud Storage; M1 sólo crea al usuario.
 
@@ -176,6 +186,8 @@ Las fotos del Baúl (M3/M4) van a Cloud Storage; M1 sólo crea al usuario.
 - **Orden del embudo:** login → slideshow → configuración → demo (el slideshow precede a la config para que el compromiso enmarque el horario).
 - **Privacidad en dos toques**: pantalla expresa de cierre del slideshow + check de términos al cerrar la configuración.
 - **"Tono" se elimina del onboarding** — M0 canonizó español neutro único (ya no hay selector).
+- **Elegir actividades (WS10):** además de categorías, el usuario elige qué modalidades quiere (filtro elegible). **"Escribir" siempre incluida y bloqueada** (piso garantizado). Cambiar actividades en Ajustes edita el pool de M2 en el acto, igual que las categorías.
+- **El onboarding promete el cierre constante (WS10):** se aclara desde el slideshow que *todo ritual termina escribiendo en tu diario* — la actividad es el medio, escribir es el fin.
 
 ---
 

@@ -1,8 +1,9 @@
 # M3 — Motor del Ritual · Madre del Motor
 
 > **El único momento en que el usuario toca el teléfono.** Recibe la carta que eligió M2,
-> la gira, hace el ejercicio **afuera**, y vuelve a cerrar el ritual: una reflexión, fotos
-> y estrellas. Tiene que sentirse como cerrar un cuaderno, no como usar una app. Devuelve a
+> la gira, hace el ejercicio **afuera**, y vuelve a cerrar el ritual: el cierre lo invita
+> siempre a **escribir en su diario** (el fin, afuera), y en la app deja el rastro opcional
+> — una nota de ayuda-memoria, fotos y estrellas. Tiene que sentirse como cerrar un cuaderno, no como usar una app. Devuelve a
 > M2 la estrella y el "completada", y deja el rastro que mira M4 (Baúl). Se rige por el
 > [`Documento Madre`](../00_Documento_Madre.md).
 >
@@ -60,9 +61,12 @@ queda protegido: *hacé afuera → volvé → cerrá.*
 4. Volvés y tocás      → "Terminé" despliega la zona de cierre ↓
       "Terminé"
 5. Cerrás el ritual:
-      • Reflexión   → recuadro ≤250 caracteres. PROTAGONISTA (el cursor te espera),
-                      pero NO bloquea Guardar (invitar, nunca exigir).
-      • Fotos       → hasta 3, opcional. Tomar o subir.
+      • EL CIERRE (marco fijo) → siempre lo mismo: "Escribí en tu diario lo que sentiste."
+                      Es el FIN del ritual y no cambia entre cartas (WS10). El diario es
+                      físico, afuera de la app. Lo de abajo es el rastro opcional en la app.
+      • Reflexión   → recuadro ≤250 caracteres, una nota de AYUDA-MEMORIA del Baúl.
+                      NO bloquea Guardar (invitar, nunca exigir).
+      • Fotos       → hasta 3, opcional. Tomar o subir (de lo que escribiste o viviste).
       • Estrellas   → 1-5, opcional. "¿cuánto te llegó?" (alimenta M2).
 6. Guardar            → va al Baúl. (Al lado, discreto: Compartir → M5.)
 ```
@@ -73,12 +77,20 @@ queda protegido: *hacé afuera → volvé → cerrá.*
 
 ---
 
-## 4. La reflexión: protagonista, pero nunca un peaje
+## 4. El cierre: escribí en tu diario (el fin) + reflexión de ayuda-memoria
+
+**El protagonista del cierre es un marco fijo, idéntico en cada carta (WS10):** *"Escribí
+en tu diario lo que sentiste."* El **diario es físico, afuera de la app** — ahí está el
+fin último; la actividad fue sólo el medio. La app no reemplaza ese diario: lo enmarca y
+guarda el rastro. *(La promesa de este cierre constante se anticipa en el onboarding, M1 §5.)*
+
+La **reflexión en la app** es el rastro opcional, una **nota de ayuda-memoria** para el Baúl:
 
 - **Recuadro de hasta 250 caracteres.** Corto a propósito: una interacción *sutil* con la
-  app, no un editor de texto. No hay mínimo — una línea, una palabra, lo que salga.
-- **Es el paso protagonista del cierre:** visualmente es lo primero y lo más prominente, el
-  cursor te espera. La app *invita con todo el peso* a dejar una línea.
+  app, no un editor de texto (para eso está tu diario). No hay mínimo — una línea, una
+  palabra, lo que salga.
+- **Acompaña al marco fijo:** debajo del "escribí en tu diario", el cursor te espera por si
+  querés dejar una nota corta acá también. La app *invita*, no obliga.
 - **Pero Guardar nunca se bloquea por ella.** Podés guardar sin escribir nada. Esa es la
   única opcionalidad canónica del Motor de Contenido ("guardar sin hacer nada"), y la
   respetamos. *Invitar, nunca exigir.*
@@ -198,8 +210,12 @@ fotos     (privada · 0-3 por entrega · la agrega M3)
 
 - **Sin gate:** la próxima carta llega siempre, completes o no. La entrega es por tiempo
   (M2), no por mérito. *(invitar, nunca exigir · menos consumo, más presencia)*
-- **Reflexión soft:** protagonista del cierre y de hasta 250 caracteres, pero **no bloquea
-  Guardar** y no tiene mínimo. La fricción de ritual la pone el diseño, no un candado.
+- **Cierre constante (WS10):** el cierre invita SIEMPRE, con el mismo marco fijo, a
+  **escribir en tu diario físico** lo que sentiste — ese es el fin del ritual. Vive como
+  chrome de la app (no se mete en los 69 micro-prompts, que quedan limpios) + se promete en
+  el onboarding.
+- **Reflexión soft = ayuda-memoria:** recuadro ≤250 que acompaña al cierre, **no bloquea
+  Guardar** y no tiene mínimo. Es el rastro opcional en la app, no reemplaza al diario.
 - **Hasta 3 fotos**, opcional, sin cobrar por cantidad en v1.
 - **Estrellas 1-5 opcional**, transparente; M3 las escribe, M2 las usa (mismo dato ya
   esperado).

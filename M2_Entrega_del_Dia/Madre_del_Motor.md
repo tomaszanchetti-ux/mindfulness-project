@@ -16,7 +16,7 @@
 |---------|---------|
 | Elegir **una** carta por día, de tus categorías | Inventar cartas (eso es M0) |
 | No repetir lo de la última semana | Garantizar no-repetición de 60 días (no hace falta) |
-| Aprender qué **acción** te gusta más y inclinarse | Cambiar tus categorías (eso lo elegís vos en M1) |
+| Aprender qué **acción** te gusta más y inclinarse | Cambiar tus categorías o actividades (eso lo elegís vos en M1) |
 | Avisarte (email/push) a tu horario local | Mostrar el ritual (eso es M3) |
 | Dejar la carta vigente 24h o hasta completarla | Encerrarte en una sola modalidad (siempre deja variedad) |
 
@@ -29,23 +29,27 @@ te conozca un poco más** — sin volverse predecible ni un eco de vos mismo.
 
 Pensalo como un **sommelier de cartas**. Trabaja en **dos capas**:
 
-1. **Lo que vos elegís (filtro duro): la categoría.** El pool del día son sólo las
-   cartas de tus categorías elegidas (2-6). Es sagrado: nunca te llega algo de fuera.
-2. **Lo que la app aprende (preferencia blanda): la acción.** Dentro de ese pool, va
-   notando si te gusta más *escribir*, *caminar*, *contemplar*, *respirar* o *hacer*,
-   y **inclina** la balanza hacia eso. No manda del todo: **empuja** las probabilidades.
-   El azar siempre tiene la última palabra, para que el ritual no se vuelva predecible.
+1. **Lo que vos elegís (filtro duro): categoría Y actividad.** El pool del día son sólo
+   las cartas que cruzan tus **categorías** (2-6) **y** tus **actividades** elegidas. Es
+   sagrado: nunca te llega algo de fuera de tu menú. **"Escribir" está siempre en el pool**
+   (piso garantizado), elijas lo que elijas.
+2. **Lo que la app aprende (preferencia blanda): la afinidad de actividad.** *Dentro* de tu
+   menú, va notando cuál de tus actividades te llega más (por las ⭐) y **inclina** la
+   balanza hacia eso. No manda del todo: **empuja** las probabilidades. El azar siempre
+   tiene la última palabra, para que el ritual no se vuelva predecible.
 
-> La categoría la decidís **vos** (M1). La acción la **descubre la app** con el tiempo.
+> Categoría y actividad las decidís **vos** (M1, *cambio WS10*). Dentro de tu menú, la app
+> **descubre** con el tiempo cuál preferís. Antes la actividad no se elegía; ahora se
+> elige para que nadie pierda el día por una modalidad que no hará.
 
 ---
 
 ## 3. El flujo de cada día
 
 ```
-1. ¿Es tu PRIMERA carta?  → SÍ: 100% al azar dentro de tus categorías.   ◄ el script lo sabe: tu historial está vacío
+1. ¿Es tu PRIMERA carta?  → SÍ: 100% al azar dentro de tu menú.   ◄ el script lo sabe: tu historial está vacío
                             NO: seguí ↓
-2. Armo el pool           → todas las cartas de tus categorías elegidas
+2. Armo el pool           → cartas que cruzan tus categorías Y tus actividades elegidas (+ "escribir" siempre)
 3. Saco las repetidas     → las que ya viste en los últimos 7 días
 4. Le doy un peso a cada candidata:
       • + afinidad de acción   (las modalidades que venís puntuando alto pesan más)
@@ -69,8 +73,9 @@ con una ventana adaptativa: era complejidad que no aporta — *Simpleza*.)
 
 > **Borde cubierto:** si alguien tuviera un pool minúsculo y los últimos 7 días lo
 > vaciaran, el motor relaja la regla a *"que no sea la carta de ayer"* y sigue. Nunca
-> se queda sin carta. Con 2 categorías el pool es ~21 cartas, así que en la práctica
-> esto casi nunca pasa.
+> se queda sin carta. **El filtro de actividad (WS10) achica el pool**, pero **"escribir"
+> siempre presente** garantiza un piso de cartas, y la regla relajada cubre el resto.
+> Aun el menú más chico (2 categorías + sólo "escribir") tiene cartas de sobra.
 
 ---
 
@@ -120,6 +125,12 @@ lo dispara **tu propio historial**.
 > Lema: **"el motor te conoce, pero no te subestima."** Concentra ~80% en lo tuyo,
 > reserva ~20% para sorprenderte y hacerte crecer.
 
+> **Ajuste WS10 (actividades elegibles):** el comodín opera **dentro del menú que el
+> usuario eligió** — sorprende con una actividad *elegida pero descuidada*, nunca
+> reintroduce una que el usuario sacó a propósito (*invitar, nunca exigir*). El menú es
+> sagrado; la sorpresa vive adentro. Si alguien quiere volver a una modalidad que sacó, la
+> re-agrega en Ajustes.
+
 **v1 es lo que codeamos y lanzamos.** v2 queda especificada acá para cuando la app tenga
 rodaje y datos reales; no la activamos hasta tener evidencia de uso.
 
@@ -129,6 +140,7 @@ rodaje y datos reales; no la activamos hasta tener evidencia de uso.
 
 **Lee** (privado, todo con `user_id`):
 - `usuario_categorias` → tus 2-6 categorías (de M1)
+- `usuario_acciones` → tus actividades elegidas (de M1; "escribir" siempre cuenta) ◄ **WS10**
 - `usuarios` → horario, zona horaria, aviso on/off (de M1)
 - `entregas` → tu historial: qué cartas, qué días, con qué estrella (la última semana
   para no-repetir; todo el histórico para la afinidad)
@@ -167,8 +179,10 @@ entregas  (privada, una fila por carta entregada)
 ## 9. Decisiones canónicas / pivots
 
 - **No-repetición = 7 días** (no 60; no ventana adaptativa). *Simpleza.*
-- **Dos capas:** categoría = filtro duro (la elige el user) · acción = preferencia
-  blanda (la aprende la app).
+- **Dos capas (actualizado WS10):** filtro duro = categoría **Y** actividad (las dos las
+  elige el user) · preferencia blanda = afinidad de actividad *dentro* del menú (la aprende
+  la app de las ⭐). **"Escribir" = piso siempre en el pool.** El comodín de v2 sorprende
+  sólo dentro del menú elegido.
 - **Primera carta = random**, sin rama especial (el motor lo deduce del historial vacío).
 - **Sorteo ponderado, no "elegir la mejor":** la preferencia inclina, el azar decide.
   Mantiene viva la sorpresa.
