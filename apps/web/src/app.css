@@ -853,8 +853,8 @@
 }
 .cat-opt.on {
   border-color: var(--sage);
-  background: #fff;
-  box-shadow: 0 6px 16px var(--warm-shadow);
+  background: rgba(143, 165, 138, 0.14);
+  box-shadow: inset 0 0 0 1px var(--sage), 0 4px 12px var(--warm-shadow);
 }
 /* WS10 · "escribir": piso garantizado, siempre seleccionada y no se puede quitar. */
 .cat-opt.locked {
