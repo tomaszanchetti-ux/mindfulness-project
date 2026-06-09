@@ -133,7 +133,7 @@ export function Onboarding() {
               </li>
               <li>
                 <span className="ob-step-n">2</span>
-                <span>Realiza la actividad</span>
+                <span>Realiza la pausa</span>
               </li>
               <li>
                 <span className="ob-step-n">3</span>
@@ -240,8 +240,8 @@ export function Onboarding() {
           <div className="ob-body">
             <h2 className="ob-q">¿Cómo te gusta hacer tu pausa?</h2>
             <p className="ob-hint">
-              Elige las que más te gusten. Cada actividad es una excusa para
-              detenerte, sentir y escribir lo que despierta en ti.
+              Cada pausa es una excusa para detenerte, sentir y escribir lo que
+              despierta en ti.
             </p>
             <div className="cat-grid">
               {acciones.map((a) => {

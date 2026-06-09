@@ -41,7 +41,6 @@ export function Home() {
 
       <div className="home-card-wrap">
         <Card carta={carta} flipped={flipped} onFlip={() => setFlipped(true)} />
-        {!flipped && <p className="flip-hint">Toca la carta para descubrirla</p>}
       </div>
 
       {!flipped ? (
@@ -52,10 +51,6 @@ export function Home() {
         </div>
       ) : (
         <div className="actions-stack">
-          <p className="cierre-constante">
-            Haz tu pausa afuera del teléfono y escribe tus sentimientos en tu diario
-            personal. Al volver, guarda la actividad con una reflexión.
-          </p>
           <Button
             variant="primary"
             full

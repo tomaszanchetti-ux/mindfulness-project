@@ -297,6 +297,25 @@
   text-align: center;
   margin: 0 6px 14px;
 }
+/* La pausa del día (la consigna), presentada con cuidado — no como texto plano. */
+.pausa-block {
+  margin: 18px 0 6px;
+  padding-left: 14px;
+  border-left: 2px solid var(--sage);
+}
+.pausa-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sage-deep);
+  margin: 0 0 5px;
+}
+.pausa-text {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--deep-umber);
+  margin: 0;
+}
 .reflect-invite {
   font-family: var(--font-serif);
   font-size: 18px;

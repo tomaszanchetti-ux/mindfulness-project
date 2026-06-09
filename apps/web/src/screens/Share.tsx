@@ -27,12 +27,26 @@ export function Share() {
       .catch(() => setItem(null));
   }, [id]);
 
+  // Recordar el enlace ya generado: si el remitente va al preview y vuelve, sigue acá
+  // (no pierde el botón Copiar ni tiene que generar otro).
+  useEffect(() => {
+    const saved = sessionStorage.getItem(`share:${id}`);
+    if (saved) {
+      try {
+        setLink(JSON.parse(saved));
+      } catch {
+        /* ignorar */
+      }
+    }
+  }, [id]);
+
   const generar = async () => {
     setGenerando(true);
     try {
       // v1 free: siempre "carta sola" (la carta + tu nota, sin tus datos).
       const c = await api.compartir(id, "carta_sola", nota.trim() || undefined);
       setLink(c);
+      sessionStorage.setItem(`share:${id}`, JSON.stringify(c));
     } catch (e) {
       alert((e as Error).message);
     } finally {

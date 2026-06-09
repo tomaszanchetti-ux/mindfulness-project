@@ -41,8 +41,8 @@ export function PublicShare() {
   return (
     <>
       {preview && (
-        <button className="back-link" onClick={() => navigate("/hoy")}>
-          ← Inicio
+        <button className="back-link" onClick={() => navigate(-1)}>
+          ← Volver
         </button>
       )}
       <div className="gift">

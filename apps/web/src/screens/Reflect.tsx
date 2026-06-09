@@ -58,7 +58,10 @@ export function Reflect() {
         </div>
       )}
 
-      <p className="reflect-prompt">{data?.carta.prompt}</p>
+      <div className="pausa-block">
+        <p className="pausa-label">Tu pausa de hoy</p>
+        <p className="pausa-text">{data?.carta.prompt}</p>
+      </div>
 
       {/* WS10 · paso de vuelta a la app: reflexionar sobre la actividad → puntuar → foto opcional. */}
       <p className="reflect-invite">Tómate un momento para reflexionar sobre tu pausa.</p>

@@ -152,7 +152,7 @@ export function Profile() {
           ))}
         </div>
         <p className="meta" style={{ marginTop: 8 }}>
-          Cada actividad es una excusa para sentir y escribirlo en tu diario.
+          Cada pausa es una excusa para sentir y escribirlo en tu diario.
         </p>
       </div>
 
