@@ -86,23 +86,24 @@ queda protegido: *hacé afuera → volvé → cerrá.*
 
 ---
 
-## 4. El cierre: guardar en la app con una reflexión de ayuda-memoria
+## 4. El cierre: la reflexión sobre la pausa (en la app)
 
 **El FIN (escribir en tu diario físico, afuera) ya pasó** — la consigna constante que lo
 nombra vive **al salir** (§3 paso 2 · "hacé tu pausa afuera y escribí en tu diario lo que
 sentiste"), anticipada en el onboarding (M1 §5). El **diario es físico, afuera de la app**;
-la actividad fue sólo el medio. La app no reemplaza ese diario: lo enmarca y guarda el rastro.
+la actividad fue sólo el medio. La app no reemplaza ese diario.
 
-Cuando volvés a la app, **el cierre es sólo guardar la pausa con una reflexión** — el rastro
-opcional, una **nota de ayuda-memoria** para el Baúl (*"lo que sentiste ya quedó en tu
-diario; acá dejás una reflexión para recordar esta pausa"*):
+Cuando volvés a la app, la pantalla **invita a reflexionar sobre la pausa** (no es una "nota
+de ayuda-memoria": es una reflexión genuina, *"¿qué te dejó?"*). Tres gestos, en orden, todos
+opcionales: **reflexionar → puntuar → conmemorar con una foto.** *(Refinamiento WS10: la
+pantalla NO repite "escribí en tu diario"; eso ya se dijo al salir.)*
 
-- **Recuadro de hasta 250 caracteres.** Corto a propósito: una interacción *sutil* con la
-  app, no un editor de texto (para eso está tu diario). No hay mínimo — una línea, una
-  palabra, lo que salga.
-- **Es lo único que se escribe en la app:** una reflexión breve para recordar; el cursor te
-  espera, pero la app *invita*, no obliga.
-- **Pero Guardar nunca se bloquea por ella.** Podés guardar sin escribir nada. Esa es la
+- **Reflexión: recuadro de hasta 250 caracteres.** Corto a propósito: una interacción *sutil*
+  con la app, no un editor de texto (para eso está tu diario). No hay mínimo — una línea, una
+  palabra, lo que salga. *"¿Qué te dejó?"*
+- **Puntuación 1-5 ⭐** ("¿cuánto te llegó?") y **hasta 3 fotos** ("conmemórala con una foto"),
+  ambas opcionales (detalle en §5 y §6).
+- **Guardar nunca se bloquea.** Podés guardar sin escribir/puntuar/fotografiar nada. Esa es la
   única opcionalidad canónica del Motor de Contenido ("guardar sin hacer nada"), y la
   respetamos. *Invitar, nunca exigir.*
 - Es **tuya y privada** (*intimidad como producto*). Vive en el Baúl; nadie más la ve salvo
@@ -225,11 +226,12 @@ fotos     (privada · 0-3 por entrega · la agrega M3)
   mismo — *"hacé tu pausa afuera y escribí en tu diario lo que sentiste; al volver, guardala
   con una reflexión"*. Nombra el fin (diario físico) + el regreso a guardar. Vive como chrome
   (no se mete en los 69 micro-prompts) + se promete en el onboarding.
-- **El cierre en la app = guardar con reflexión (refinamiento WS10):** cuando volvés ya
-  escribiste en tu diario; la pantalla de cierre es sólo guardar + una **reflexión de
-  ayuda-memoria** ≤250. NO repite "escribí en tu diario" (ya estás de vuelta en la app).
-- **Reflexión soft = ayuda-memoria:** **no bloquea Guardar** y no tiene mínimo. Es el rastro
-  opcional en la app, no reemplaza al diario.
+- **El cierre en la app = reflexión sobre la pausa (refinamiento WS10):** cuando volvés ya
+  escribiste en tu diario; la pantalla invita a **reflexionar → puntuar → foto** (no repite
+  "escribí en tu diario", ni se llama "ayuda-memoria"; es una reflexión genuina, *"¿qué te
+  dejó?"*).
+- **Reflexión soft:** **no bloquea Guardar** y no tiene mínimo. Es opcional en la app, no
+  reemplaza al diario físico.
 - **Hasta 3 fotos**, opcional, sin cobrar por cantidad en v1.
 - **Estrellas 1-5 opcional**, transparente; M3 las escribe, M2 las usa (mismo dato ya
   esperado).
