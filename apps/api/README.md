@@ -61,6 +61,11 @@ usuario (auto-provisión en el primer login) y el resto de la API filtra por su 
 | PUT | `/api/perfil/categorias` | Fija las **2-6** categorías elegidas. |
 | GET | `/api/carta-del-dia` | La carta de hoy (M2: sortea + crea, o devuelve la ya entregada · 1/día por TZ). |
 | PUT | `/api/entregas/{id}/cierre` | M3: cierra el ritual (estrellas/reflexión/completada). |
+| GET | `/api/baul?orden=reciente\|valoradas` | M4: el historial vivido (carta + reflexión + fotos). |
+| DELETE | `/api/baul/{id}` | M4: borrado real para siempre (+ apaga el link). |
+| POST | `/api/compartir` | M5: crea un link (`carta_sola` o `ejercicio`) con nota. |
+| DELETE | `/api/compartir/{id}` | M5: revoca un link. |
+| GET | `/api/c/{token}` | **M5 público (sin login):** el regalo que abre el receptor. |
 
 ## Estado del build (N4)
 
@@ -69,6 +74,9 @@ usuario (auto-provisión en el primer login) y el resto de la API filtra por su 
   (categorías 2-6 · horario/TZ/aviso · términos). Aislamiento testeado.
 - ✅ **Paso 2 — Entrega (M2) + Ritual (M3):** `elegir_carta()` portado fiel a
   `services/seleccion.py` (lee `cartas` global + `entregas` por user_id) + carta del día
-  (1/día por TZ) + cierre del ritual. **Falta:** worker RQ + Cloud Scheduler (el aviso) y
-  fotos (Cloud Storage) — ambos necesitan infra/GCP.
-- ⏭️ **Paso 3 — Baúl (M4) + Compartir (M5):** lectura del historial + links públicos.
+  (1/día por TZ) + cierre del ritual.
+- ✅ **Paso 3 — Baúl (M4) + Compartir (M5):** historial ordenable (Reciente/Más valoradas) +
+  borrado real + links públicos `/c/{token}` (carta_sola sobrevive, ejercicio muere con la
+  entrada). **Funnel backend M1→M5 completo.**
+- ⏭️ **Falta (necesita GCP):** login real (Firebase) · aviso diario (worker RQ + Cloud
+  Scheduler) · fotos del Baúl (Cloud Storage). Más el **front (Expo)**.

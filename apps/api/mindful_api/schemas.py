@@ -57,3 +57,11 @@ class CierreRitual(BaseModel):
     estrellas: Optional[int] = Field(default=None, ge=1, le=5)
     reflexion: Optional[str] = Field(default=None, max_length=250)
     completada: bool = True
+
+
+class CompartirCreate(BaseModel):
+    """M5 · crear un link. carta_sola (sin datos tuyos) o ejercicio (reflexión + fotos)."""
+
+    entrega_id: str
+    modo: str = Field(pattern="^(carta_sola|ejercicio)$")
+    nota: Optional[str] = Field(default=None, max_length=500)
