@@ -267,6 +267,14 @@
 .home-card-wrap {
   margin: 4px 0 16px;
 }
+/* Modo "hecho": la pausa de hoy ya está guardada. Mensaje en calma. */
+.home-done-note {
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 0 8px 16px;
+}
 /* En la Home la carta se achica un poco para que las acciones entren sin scroll. */
 .home-card-wrap .card-scene {
   max-width: 268px;

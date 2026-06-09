@@ -1,5 +1,6 @@
 // Home / Hoy (§19). El lugar más simple de la app: recibir la consigna y decidir
 // qué hacer con ella. Carta cerrada (frente) → "Ver mi pausa" revela el dorso.
+// Si ya guardaste la pausa de hoy, la Home pasa a modo "hecho" (en calma).
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +21,11 @@ export function Home() {
   useEffect(() => {
     api
       .cartaDelDia()
-      .then(setData)
+      .then((d) => {
+        setData(d);
+        // Modo "hecho": si ya guardaste hoy, mostramos la carta girada (la frase a la vista).
+        if (d.entrega.completada) setFlipped(true);
+      })
       .catch((e) => setError((e as Error).message));
   }, []);
 
@@ -28,6 +33,7 @@ export function Home() {
   if (!data) return <div className="center-note">Preparando tu pausa…</div>;
 
   const { carta, entrega } = data;
+  const hecha = entrega.completada;
 
   return (
     <div>
@@ -40,10 +46,26 @@ export function Home() {
       </div>
 
       <div className="home-card-wrap">
-        <Card carta={carta} flipped={flipped} onFlip={() => setFlipped(true)} />
+        <Card carta={carta} flipped={flipped} onFlip={() => setFlipped((f) => !f)} />
       </div>
 
-      {!flipped ? (
+      {hecha ? (
+        // —— Modo "hecho": pausa de hoy ya guardada. En calma, sin nada que exigir. ——
+        <>
+          <p className="home-done-note">
+            Ya viviste tu pausa de hoy. Mañana te espera una nueva.
+          </p>
+          <div className="actions-stack">
+            <Button
+              variant="primary"
+              full
+              onClick={() => navigate(`/baul/${entrega.id}`)}
+            >
+              {entrega.reflexion ? "Ver mi reflexión" : "Ver mi pausa de hoy"}
+            </Button>
+          </div>
+        </>
+      ) : !flipped ? (
         <div className="actions-stack">
           <Button variant="primary" full onClick={() => setFlipped(true)}>
             Ver mi pausa
