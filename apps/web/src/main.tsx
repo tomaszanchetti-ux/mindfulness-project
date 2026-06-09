@@ -15,6 +15,7 @@ import { Frame } from "./components/Frame";
 import { TourController } from "./components/TourController";
 import { StoreProvider, useStore } from "./store";
 import { TutorialProvider } from "./tutorial";
+import { initInstallPrompt } from "./pwa";
 
 import { Login } from "./screens/Login";
 import { Onboarding } from "./screens/Onboarding";
@@ -74,6 +75,14 @@ function App() {
       </StoreProvider>
     </BrowserRouter>
   );
+}
+
+// PWA: capturar el prompt de instalación + registrar el service worker.
+initInstallPrompt();
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
 }
 
 createRoot(document.getElementById("root")!).render(

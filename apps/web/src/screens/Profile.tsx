@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { api, reiniciarDemo } from "../lib/api";
 import { useStore } from "../store";
+import { canInstall, isIOS, isStandalone, promptInstall } from "../pwa";
 
 export function Profile() {
   const navigate = useNavigate();
@@ -15,6 +16,17 @@ export function Profile() {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [apodo, setApodo] = useState("");
+  const [installable, setInstallable] = useState(canInstall());
+
+  useEffect(() => {
+    const sync = () => setInstallable(canInstall());
+    window.addEventListener("pwa:can-install", sync);
+    window.addEventListener("pwa:installed", sync);
+    return () => {
+      window.removeEventListener("pwa:can-install", sync);
+      window.removeEventListener("pwa:installed", sync);
+    };
+  }, []);
 
   useEffect(() => {
     if (perfil) {
@@ -185,6 +197,33 @@ export function Profile() {
         <h3>Privacidad</h3>
         <p className="meta">Lo que escribes y tus fotos quedan solo para ti.</p>
       </div>
+
+      {!isStandalone() && (
+        <div className="profile-section">
+          <h3>Instalar Dwellia</h3>
+          {installable ? (
+            <>
+              <p className="meta">
+                Tenla como app en tu teléfono, sin pasar por el navegador.
+              </p>
+              <div className="actions-stack" style={{ marginTop: 10 }}>
+                <Button variant="secondary" full onClick={() => promptInstall()}>
+                  Instalar app
+                </Button>
+              </div>
+            </>
+          ) : isIOS() ? (
+            <p className="meta">
+              En iPhone: toca <b>Compartir</b> y luego <b>Añadir a pantalla de inicio</b>.
+            </p>
+          ) : (
+            <p className="meta">
+              Desde el menú del navegador (⋮) elige <b>Instalar app</b> o{" "}
+              <b>Agregar a pantalla de inicio</b>.
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="profile-section">
         <h3>Demo</h3>
