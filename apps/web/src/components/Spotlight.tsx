@@ -38,34 +38,43 @@ function useTargetRect(selector: string | null): Rect | null {
       setRect(null);
       return;
     }
-    let raf = 0;
-    let tries = 0;
     let cancelado = false;
 
     const medir = () => {
-      const el = document.querySelector(selector);
-      if (el) {
-        const r = el.getBoundingClientRect();
-        setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
-        return true;
-      }
-      return false;
-    };
-
-    const loop = () => {
       if (cancelado) return;
-      if (!medir() && tries++ < 90) raf = requestAnimationFrame(loop);
+      const el = document.querySelector(selector);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      // Solo actualiza si de verdad se movió (evita renders inútiles).
+      setRect((prev) =>
+        prev &&
+        Math.abs(prev.top - r.top) < 0.5 &&
+        Math.abs(prev.left - r.left) < 0.5 &&
+        Math.abs(prev.width - r.width) < 0.5 &&
+        Math.abs(prev.height - r.height) < 0.5
+          ? prev
+          : { top: r.top, left: r.left, width: r.width, height: r.height },
+      );
     };
-    loop();
 
-    const onMove = () => medir();
-    window.addEventListener("resize", onMove);
-    window.addEventListener("scroll", onMove, true);
+    // 1) Medición sincrónica (el caso común: el elemento ya está en la pantalla).
+    medir();
+    // 2) Re-mide cada 200ms mientras el recuadro está abierto. Clave: en la primera
+    //    carga la fuente Fraunces aún se descarga; al terminar, el texto reacomoda y
+    //    el elemento baja → el recuadro lo sigue. (setInterval corre aun con la
+    //    pestaña en segundo plano; requestAnimationFrame no.)
+    const iv = setInterval(medir, 200);
+    // 3) Disparo explícito cuando terminan de cargar las fuentes.
+    if (document.fonts?.ready) document.fonts.ready.then(medir);
+    // 4) Y ante scroll/resize, para seguirlo en vivo.
+    window.addEventListener("resize", medir);
+    window.addEventListener("scroll", medir, true);
+
     return () => {
       cancelado = true;
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", onMove);
-      window.removeEventListener("scroll", onMove, true);
+      clearInterval(iv);
+      window.removeEventListener("resize", medir);
+      window.removeEventListener("scroll", medir, true);
     };
   }, [selector]);
 
