@@ -39,9 +39,18 @@ def test_baul_lista_y_ordenes():
     assert client.get("/api/baul?orden=loquesea", headers=h).status_code == 422
 
 
+def test_baul_no_lista_entrega_sin_vivir():
+    # La carta del día entregada pero aún no completada NO aparece en el Baúl.
+    h = _onboard("baul|sinvivir", ["gratitud", "calma"])
+    _entrega_de_hoy(h)
+    assert client.get("/api/baul", headers=h).json() == []
+
+
 def test_borrado_real():
     h = _onboard("baul|borrado", ["gratitud", "calma"])
     eid = _entrega_de_hoy(h)
+    # El Baúl solo lista pausas vividas: hay que cerrar el ritual antes de verla.
+    client.put(f"/api/entregas/{eid}/cierre", headers=h, json={"completada": True})
     assert len(client.get("/api/baul", headers=h).json()) == 1
 
     r = client.delete(f"/api/baul/{eid}", headers=h)

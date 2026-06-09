@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
-import { api } from "../lib/api";
+import { api, reiniciarDemo } from "../lib/api";
 import { useStore } from "../store";
 
 export function Profile() {
@@ -184,6 +184,19 @@ export function Profile() {
       <div className="profile-section">
         <h3>Privacidad</h3>
         <p className="meta">Lo que escribes y tus fotos quedan solo para ti.</p>
+      </div>
+
+      <div className="profile-section">
+        <h3>Demo</h3>
+        <p className="meta">
+          Esto reinicia la demo desde cero: nueva cuenta vacía y el funnel completo
+          otra vez, ideal para mostrársela a alguien de nuevo.
+        </p>
+        <div className="actions-stack" style={{ marginTop: 10 }}>
+          <Button variant="secondary" full onClick={reiniciarDemo}>
+            Reiniciar demo desde cero
+          </Button>
+        </div>
       </div>
 
       <div className="actions-stack" style={{ marginTop: 2 }}>

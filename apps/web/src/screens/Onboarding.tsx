@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { api } from "../lib/api";
 import { useStore } from "../store";
+import { useTutorial } from "../tutorial";
 
 const ACCION_PISO = "escribir"; // siempre incluida y bloqueada (WS10)
 
@@ -27,6 +28,7 @@ const PRIMER_CONFIG = 2;
 export function Onboarding() {
   const navigate = useNavigate();
   const { categorias, acciones, refrescarPerfil } = useStore();
+  const tutorial = useTutorial();
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Madrid";
 
   const [step, setStep] = useState(0);
@@ -89,6 +91,8 @@ export function Onboarding() {
         aceptar_terminos: true,
       });
       await refrescarPerfil();
+      // Última etapa del onboarding (canon M1): el tour guiado sobre el funnel real.
+      tutorial.start();
       navigate("/hoy", { replace: true });
     } catch (e) {
       setGuardando(false);

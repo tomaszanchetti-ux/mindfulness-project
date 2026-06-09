@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Stars } from "../components/Stars";
 import { api } from "../lib/api";
+import { CARTA_DEMO, TOUR_ID, useTutorial } from "../tutorial";
 import type { CartaDelDia } from "../lib/types";
 
 const LIMITE = 250;
@@ -13,6 +14,7 @@ const LIMITE = 250;
 export function Reflect() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const tut = useTutorial();
 
   const [data, setData] = useState<CartaDelDia | null>(null);
   const [texto, setTexto] = useState("");
@@ -21,8 +23,27 @@ export function Reflect() {
   const [guardando, setGuardando] = useState(false);
 
   useEffect(() => {
+    // Modo tutorial: carta de ejemplo, sin API.
+    if (tut.activo || id === TOUR_ID) {
+      setData({
+        carta: CARTA_DEMO,
+        entrega: {
+          id: TOUR_ID,
+          fecha: new Date().toISOString(),
+          estrellas: null,
+          completada: false,
+          reflexion: null,
+        },
+      });
+      return;
+    }
     api.cartaDelDia().then(setData).catch(() => setData(null));
-  }, []);
+  }, [tut.activo, id]);
+
+  // Edge: ruta del tour abierta sin tour activo (recarga) → volver a Hoy.
+  useEffect(() => {
+    if (id === TOUR_ID && !tut.activo) navigate("/hoy", { replace: true });
+  }, [id, tut.activo, navigate]);
 
   const agregarFoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -30,6 +51,7 @@ export function Reflect() {
   };
 
   const guardar = async () => {
+    if (tut.activo) return; // en el tour, el avance lo maneja el recorrido
     setGuardando(true);
     try {
       await api.cerrarRitual(id, {
@@ -67,6 +89,7 @@ export function Reflect() {
       <p className="reflect-invite">Tómate un momento para reflexionar sobre tu pausa.</p>
       <textarea
         className="textarea"
+        data-tour="refl-text"
         placeholder="¿Qué te dejó? Escribe tu reflexión…"
         maxLength={LIMITE}
         value={texto}
@@ -77,13 +100,13 @@ export function Reflect() {
       </div>
       <p className="helper" style={{ marginTop: 2 }}>Una palabra, una frase o nada. Esto es tuyo.</p>
 
-      <div style={{ textAlign: "center", margin: "20px 0 14px" }}>
+      <div style={{ textAlign: "center", margin: "20px 0 14px" }} data-tour="refl-stars">
         <p className="completion-stars-label">¿Cuánto te llegó? (opcional)</p>
         <Stars value={estrellas} onChange={setEstrellas} />
       </div>
 
       <p className="reflect-helper-mem">Conmemórala con una foto (opcional):</p>
-      <div className="photo-row">
+      <div className="photo-row" data-tour="refl-photo">
         {fotos.map((src, i) => (
           <img key={i} className="photo-thumb" src={src} alt="" />
         ))}
@@ -95,14 +118,15 @@ export function Reflect() {
           </label>
         )}
       </div>
-      {fotos.length > 0 && (
-        <p className="photo-note">
-          Las fotos se ven aquí pero todavía no se guardan (falta el endpoint de subida).
-        </p>
-      )}
 
       <div className="actions-stack">
-        <Button variant="primary" full disabled={guardando} onClick={guardar}>
+        <Button
+          variant="primary"
+          full
+          data-tour="refl-save"
+          disabled={guardando}
+          onClick={guardar}
+        >
           {guardando ? "Guardando…" : "Guardar en mi Baúl"}
         </Button>
       </div>

@@ -6,18 +6,21 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/Button";
 import { api } from "../lib/api";
+import { TOUR_ID, useTutorial } from "../tutorial";
 
 export function Completion() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const tut = useTutorial();
   const marcada = useRef(false);
 
   useEffect(() => {
+    if (tut.activo || id === TOUR_ID) return; // en el tour no se persiste nada
     if (marcada.current) return;
     marcada.current = true;
     // Sólo confirma "completada"; reflexión/estrellas (si las hubo) quedan intactas.
     api.cerrarRitual(id, { completada: true }).catch(() => {});
-  }, [id]);
+  }, [id, tut.activo]);
 
   return (
     <div className="completion">
@@ -33,7 +36,11 @@ export function Completion() {
         <Button variant="primary" full onClick={() => navigate("/hoy", { replace: true })}>
           Cerrar
         </Button>
-        <Button variant="tertiary" onClick={() => navigate(`/compartir/${id}`)}>
+        <Button
+          variant="tertiary"
+          data-tour="send-btn"
+          onClick={() => navigate(`/compartir/${id}`)}
+        >
           Enviar a alguien
         </Button>
       </div>

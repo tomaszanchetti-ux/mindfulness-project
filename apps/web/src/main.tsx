@@ -12,7 +12,9 @@ import "./theme.css";
 import "./app.css";
 
 import { Frame } from "./components/Frame";
+import { TourController } from "./components/TourController";
 import { StoreProvider, useStore } from "./store";
+import { TutorialProvider } from "./tutorial";
 
 import { Login } from "./screens/Login";
 import { Onboarding } from "./screens/Onboarding";
@@ -46,6 +48,7 @@ function App() {
   return (
     <BrowserRouter>
       <StoreProvider>
+        <TutorialProvider>
         <Frame>
           <Routes>
             <Route path="/" element={<Gate />} />
@@ -65,7 +68,9 @@ function App() {
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <TourController />
         </Frame>
+        </TutorialProvider>
       </StoreProvider>
     </BrowserRouter>
   );

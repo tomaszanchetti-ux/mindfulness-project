@@ -35,7 +35,13 @@ def _item(s: Session, entrega: Entrega) -> dict:
 
 
 def listar_baul(s: Session, usuario_id: str, orden: str = "reciente") -> list[dict]:
-    q = select(Entrega).where(Entrega.usuario_id == usuario_id)
+    # El Baúl es la colección de pausas VIVIDAS: solo entregas completadas.
+    # (La carta del día entregada pero aún no vivida no aparece — coherente con
+    # el vacío "cuando completes tu primera consigna, va a aparecer aquí".)
+    q = select(Entrega).where(
+        Entrega.usuario_id == usuario_id,
+        Entrega.completada.is_(True),
+    )
     if orden == "valoradas":
         # Más valoradas primero; sin estrella al fondo; desempate por fecha reciente.
         q = q.order_by(Entrega.estrellas.desc().nullslast(), Entrega.fecha.desc())

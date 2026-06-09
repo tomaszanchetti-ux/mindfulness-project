@@ -14,9 +14,49 @@ import type {
   Regalo,
 } from "./types";
 
+// —— Identidad efímera por sesión (modo demo) ——
+// Cada vez que se ABRE la app se genera un usuario nuevo (`demo|<uuid>`), aislado.
+// Así cada interesado ve el funnel desde cero y dos personas pueden probarla a la
+// vez sin pisarse. Vive en sessionStorage: un refresh accidental no corta el demo
+// a la mitad, pero reabrir (cerrar y volver a entrar) arranca un funnel nuevo.
+// Cuando exista Firebase (front Expo), esto se reemplaza por el ID token real.
+const SUB_KEY = "dwellia-demo-sub";
+
+function nuevoSub(): string {
+  const rnd =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
+  return `demo|${rnd}`;
+}
+
+function demoSub(): string {
+  try {
+    let sub = sessionStorage.getItem(SUB_KEY);
+    if (!sub) {
+      sub = nuevoSub();
+      sessionStorage.setItem(SUB_KEY, sub);
+    }
+    return sub;
+  } catch {
+    // sessionStorage no disponible (modo privado raro): identidad por carga.
+    return nuevoSub();
+  }
+}
+
+// Borra la identidad de demo y recarga: arranca un funnel completamente nuevo.
+export function reiniciarDemo(): void {
+  try {
+    sessionStorage.removeItem(SUB_KEY);
+  } catch {
+    /* ignorar */
+  }
+  window.location.href = "/";
+}
+
 const DEV_HEADERS: Record<string, string> = {
-  "X-Debug-Sub": "dev|user",
-  "X-Debug-Email": "dev@mindful.local",
+  "X-Debug-Sub": demoSub(),
+  "X-Debug-Email": "demo@dwellia.local",
 };
 
 async function req<T>(path: string, init: RequestInit = {}): Promise<T> {
