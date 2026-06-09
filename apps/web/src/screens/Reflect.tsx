@@ -60,19 +60,11 @@ export function Reflect() {
 
       <p className="reflect-prompt">{data?.carta.prompt}</p>
 
-      {/* WS10 · este es el paso "volver a la app a guardar". El fin (escribir en el
-          diario físico) ya pasó afuera; aquí queda una reflexión de ayuda-memoria. */}
-      <div className="cierre-diario">
-        <p className="cierre-diario-title">Guárdala en tu Baúl</p>
-        <p className="cierre-diario-sub">
-          Lo que sentiste ya quedó en tu diario, fuera del teléfono. Aquí dejas una
-          reflexión para recordar esta pausa.
-        </p>
-      </div>
-
+      {/* WS10 · paso de vuelta a la app: reflexionar sobre la actividad → puntuar → foto opcional. */}
+      <p className="reflect-invite">Tómate un momento para reflexionar sobre tu pausa.</p>
       <textarea
         className="textarea"
-        placeholder="Tu reflexión (opcional)…"
+        placeholder="¿Qué te dejó? Escribe tu reflexión…"
         maxLength={LIMITE}
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
@@ -80,7 +72,14 @@ export function Reflect() {
       <div className={`counter ${near ? "near" : ""}`}>
         {texto.length} / {LIMITE}
       </div>
+      <p className="helper" style={{ marginTop: 2 }}>Una palabra, una frase o nada. Esto es tuyo.</p>
 
+      <div style={{ textAlign: "center", margin: "20px 0 14px" }}>
+        <p className="completion-stars-label">¿Cuánto te llegó? (opcional)</p>
+        <Stars value={estrellas} onChange={setEstrellas} />
+      </div>
+
+      <p className="reflect-helper-mem">Conmemórala con una foto (opcional):</p>
       <div className="photo-row">
         {fotos.map((src, i) => (
           <img key={i} className="photo-thumb" src={src} alt="" />
@@ -98,13 +97,6 @@ export function Reflect() {
           Las fotos se ven aquí pero todavía no se guardan (falta el endpoint de subida).
         </p>
       )}
-
-      <div style={{ textAlign: "center", margin: "8px 0 20px" }}>
-        <p className="completion-stars-label">¿Quieres valorar esta pausa? (opcional)</p>
-        <Stars value={estrellas} onChange={setEstrellas} />
-      </div>
-
-      <p className="helper">Puede ser una palabra, una frase o nada. Esto es tuyo.</p>
 
       <div className="actions-stack">
         <Button variant="primary" full disabled={guardando} onClick={guardar}>

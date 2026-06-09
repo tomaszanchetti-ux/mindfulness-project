@@ -297,24 +297,11 @@
   text-align: center;
   margin: 0 6px 14px;
 }
-.cierre-diario {
-  border: 1px solid var(--sand-line);
-  background: var(--soft-ivory);
-  border-radius: 18px;
-  padding: 16px 18px;
-  margin: 18px 0 14px;
-  text-align: center;
-}
-.cierre-diario-title {
+.reflect-invite {
   font-family: var(--font-serif);
   font-size: 18px;
   color: var(--deep-umber);
-  margin: 0 0 4px;
-}
-.cierre-diario-sub {
-  font-size: 13px;
-  color: var(--warm-taupe);
-  margin: 0;
+  margin: 20px 0 10px;
 }
 .reflect-helper-mem {
   font-size: 13px;

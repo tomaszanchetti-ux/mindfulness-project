@@ -272,7 +272,7 @@ export function Onboarding() {
         <>
           <div className="ob-body">
             <h2 className="ob-q">¿Cuándo quieres recibir tu pausa?</h2>
-            <p className="ob-hint">Usamos la hora de tu teléfono.</p>
+            <p className="ob-hint">Es el horario en que te llegará la carta del día.</p>
             <div className="opt-list">
               {MOMENTOS.map((m) => (
                 <button
