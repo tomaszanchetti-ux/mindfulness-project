@@ -148,12 +148,11 @@ export function Profile() {
           {misAcciones.map((a) => (
             <span key={a.slug} className="cat-pill">
               {a.nombre}
-              {a.slug === "escribir" && <span className="cat-opt-tag">siempre</span>}
             </span>
           ))}
         </div>
         <p className="meta" style={{ marginTop: 8 }}>
-          Hagas la que hagas, siempre cierras escribiendo en tu diario.
+          Cada actividad es una excusa para sentir y escribirlo en tu diario.
         </p>
       </div>
 

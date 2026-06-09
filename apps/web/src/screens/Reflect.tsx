@@ -60,18 +60,19 @@ export function Reflect() {
 
       <p className="reflect-prompt">{data?.carta.prompt}</p>
 
-      {/* WS10 · el cierre constante: el fin es escribir en tu diario (afuera). */}
+      {/* WS10 · este es el paso "volver a la app a guardar". El fin (escribir en el
+          diario físico) ya pasó afuera; aquí queda una reflexión de ayuda-memoria. */}
       <div className="cierre-diario">
-        <p className="cierre-diario-title">Escribe en tu diario lo que sentiste.</p>
+        <p className="cierre-diario-title">Guárdala en tu Baúl</p>
         <p className="cierre-diario-sub">
-          En tu cuaderno, fuera del teléfono. Eso es la pausa.
+          Lo que sentiste ya quedó en tu diario, fuera del teléfono. Aquí dejas una
+          reflexión para recordar esta pausa.
         </p>
       </div>
 
-      <p className="reflect-helper-mem">Y si quieres, deja una nota corta aquí para tu Baúl:</p>
       <textarea
         className="textarea"
-        placeholder="Una nota de ayuda-memoria (opcional)…"
+        placeholder="Tu reflexión (opcional)…"
         maxLength={LIMITE}
         value={texto}
         onChange={(e) => setTexto(e.target.value)}

@@ -240,8 +240,8 @@ export function Onboarding() {
           <div className="ob-body">
             <h2 className="ob-q">¿Cómo te gusta hacer tu pausa?</h2>
             <p className="ob-hint">
-              Elige las actividades que quieres recibir. Hagas la que hagas, siempre cierras
-              escribiendo en tu diario lo que sentiste.
+              Elige las que más te gusten. Cada actividad es una excusa para
+              detenerte, sentir y escribir lo que despierta en ti.
             </p>
             <div className="cat-grid">
               {acciones.map((a) => {
@@ -254,14 +254,10 @@ export function Onboarding() {
                     disabled={piso}
                   >
                     {a.nombre}
-                    {piso && <span className="cat-opt-tag">siempre</span>}
                   </button>
                 );
               })}
             </div>
-            <p className="ob-hint" style={{ marginTop: 14 }}>
-              "Escribir" siempre está disponible, para los días sin tiempo o ganas de salir.
-            </p>
           </div>
           <div className="ob-foot">
             <Button variant="primary" full onClick={() => setStep(5)}>

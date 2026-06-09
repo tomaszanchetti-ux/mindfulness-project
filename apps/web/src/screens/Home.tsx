@@ -53,7 +53,8 @@ export function Home() {
       ) : (
         <div className="actions-stack">
           <p className="cierre-constante">
-            Haz tu pausa afuera. Al volver, escribe en tu diario lo que sentiste.
+            Haz tu pausa afuera y escribe en tu diario lo que sentiste. Al volver,
+            guárdala aquí con una reflexión.
           </p>
           <Button
             variant="primary"

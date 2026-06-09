@@ -869,20 +869,9 @@
   background: #fff;
   box-shadow: 0 6px 16px var(--warm-shadow);
 }
-/* WS10 · actividad "escribir": piso garantizado, siempre incluida y bloqueada. */
+/* WS10 · "escribir": piso garantizado, siempre seleccionada y no se puede quitar. */
 .cat-opt.locked {
-  justify-content: space-between;
   cursor: default;
-  opacity: 0.92;
-}
-.cat-opt-tag {
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--sage);
-  background: rgba(125, 150, 100, 0.12);
-  border-radius: 999px;
-  padding: 2px 9px;
 }
 .opt-list {
   display: flex;
