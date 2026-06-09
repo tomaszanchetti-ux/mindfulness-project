@@ -129,25 +129,24 @@ export function Onboarding() {
             <ol className="ob-steps">
               <li>
                 <span className="ob-step-n">1</span>
-                <span>Recibí una carta diaria</span>
+                <span>Recibe una carta</span>
               </li>
               <li>
                 <span className="ob-step-n">2</span>
-                <span>Realizá la actividad</span>
+                <span>Realiza la actividad</span>
               </li>
               <li>
                 <span className="ob-step-n">3</span>
-                <span>Escribí lo que sentiste</span>
+                <span>Escribe lo que sentiste</span>
               </li>
             </ol>
             <p className="ob-explain-accent">
               Sin feed ni likes.
               <br />
-              Por fuera del teléfono.
+              Fuera del teléfono.
             </p>
             <p className="ob-explain-tip">
-              Te recomendamos tener un diario personal físico y al menos 15 minutos
-              de tranquilidad por día para las actividades.
+              Recomendamos tener un diario físico y 15 minutos de calma al día.
             </p>
           </div>
           <div className="ob-foot">
