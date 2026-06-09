@@ -140,11 +140,7 @@ export function Onboarding() {
                 <span>Escribe lo que sentiste</span>
               </li>
             </ol>
-            <p className="ob-explain-accent">
-              Sin feed ni likes.
-              <br />
-              Fuera del teléfono.
-            </p>
+            <p className="ob-explain-accent">Sin feed ni likes.</p>
             <p className="ob-explain-tip">
               Recomendamos tener un diario físico y 15 minutos de calma al día.
             </p>
