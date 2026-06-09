@@ -73,6 +73,11 @@ class Usuario(Base):
     # El sub de Firebase Auth: donde EMPIEZA el aislamiento.
     firebase_uid: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(255), nullable=False)
+    # Datos básicos. nombre se pide en el onboarding; apellido es opcional.
+    nombre: Mapped[Optional[str]] = mapped_column(String(80))
+    apellido: Mapped[Optional[str]] = mapped_column(String(80))
+    # Cómo nos referimos al usuario en toda la app (saludo, firma del regalo M5).
+    apodo: Mapped[Optional[str]] = mapped_column(String(40))
 
     # M1 · configuración (TZ autodetectada+editable · aviso 1 toggle).
     tz: Mapped[str] = mapped_column(String(64), nullable=False, default="Europe/Madrid")

@@ -34,6 +34,9 @@ def _a_salida(s: Session, usuario: Usuario) -> PerfilOut:
     terminos = usuario.terminos_aceptados_at is not None
     return PerfilOut(
         email=usuario.email,
+        nombre=usuario.nombre,
+        apellido=usuario.apellido,
+        apodo=usuario.apodo,
         tz=usuario.tz,
         hora_aviso=usuario.hora_aviso,
         aviso_activo=usuario.aviso_activo,
@@ -58,6 +61,12 @@ def actualizar_perfil(
     s: Session = Depends(get_session),
     usuario: Usuario = Depends(get_current_user),
 ) -> PerfilOut:
+    if body.nombre is not None:
+        usuario.nombre = body.nombre.strip() or None
+    if body.apellido is not None:
+        usuario.apellido = body.apellido.strip() or None
+    if body.apodo is not None:
+        usuario.apodo = body.apodo.strip() or None
     if body.tz is not None:
         usuario.tz = body.tz
     if body.hora_aviso is not None:

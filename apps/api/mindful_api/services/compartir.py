@@ -15,7 +15,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ..db.models import Carta, Compartido, Entrega, Foto
+from ..db.models import Carta, Compartido, Entrega, Foto, Usuario
 from .entrega import _carta_enriquecida
 
 
@@ -49,9 +49,12 @@ def leer_publico(s: Session, token: str) -> dict:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Este regalo ya no está disponible")
 
     carta = s.get(Carta, comp.carta_id)
+    remitente = s.get(Usuario, comp.usuario_id)
     regalo = {
         "modo": comp.modo,
         "nota": comp.nota,
+        # Cómo firmamos el regalo: el apodo del remitente (o None → "Alguien" en el front).
+        "de": remitente.apodo if remitente else None,
         "carta": _carta_enriquecida(s, carta),
     }
 

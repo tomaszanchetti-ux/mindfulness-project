@@ -1,0 +1,98 @@
+/*
+  Sistema de diseño — "un cuaderno de calma digital".
+  Tokens calcados del doc UX/UI (§7 color, §8 tipografía, §9 layout).
+  Regla de color: 80% fondos cálidos · 15% texto/bordes · 5% acento de categoría.
+*/
+
+:root {
+  /* —— Paleta base (§7.1) —— */
+  --warm-cream: #f7f1e7; /* fondo principal, tipo papel */
+  --sand: #ded3be; /* fondo alternativo, más profundo */
+  --soft-ivory: #fff8ea; /* superficie de cards y paneles */
+  --oat-milk: #efe3d0; /* superficie secundaria */
+  --card-body: #efe6d3; /* cuerpo de carta (igual al molde ya hecho) */
+
+  --deep-umber: #2f2923; /* texto principal (no negro puro) */
+  --warm-taupe: #756b5e; /* texto secundario, labels, fechas */
+  --dust-taupe: #9a8f80; /* metadata, baja jerarquía */
+  --sand-line: #d8cbb8; /* líneas y divisores */
+  --warm-shadow: rgba(70, 55, 35, 0.1);
+  --warm-shadow-soft: rgba(70, 55, 35, 0.06);
+
+  --sage: #8fa58a; /* acción principal (botón primario) */
+  --sage-deep: #6f8a69; /* hover/pressed del primario */
+
+  /* —— Tipografía (§8) —— */
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-ui: "Inter", -apple-system, "Segoe UI", system-ui, sans-serif;
+
+  /* —— Layout (§9) —— */
+  --pad-x: 24px;
+  --radius-card: 30px;
+  --radius-pill: 999px;
+  --radius-soft: 20px;
+  --frame-max: 460px; /* contenedor centrado en desktop (§24) */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  /* fondo amplio cálido alrededor del marco (§24) */
+  background: var(--sand);
+  color: var(--deep-umber);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+textarea,
+input {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+/* —— Tipografía utilitaria —— */
+.frase {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  line-height: 1.42;
+  letter-spacing: 0.002em;
+  color: var(--deep-umber);
+}
+
+.label {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--warm-taupe);
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--dust-taupe);
+}
+
+/* Respeta el motion reducido (§23 accesibilidad). */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

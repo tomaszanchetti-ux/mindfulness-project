@@ -14,6 +14,9 @@ class PerfilOut(BaseModel):
     """El perfil del usuario logueado (lo que ve M1)."""
 
     email: str
+    nombre: Optional[str] = None
+    apellido: Optional[str] = None
+    apodo: Optional[str] = None
     tz: str
     hora_aviso: str
     aviso_activo: bool
@@ -23,8 +26,11 @@ class PerfilOut(BaseModel):
 
 
 class PerfilUpdate(BaseModel):
-    """Actualización parcial del perfil (horario / TZ / aviso / términos)."""
+    """Actualización parcial del perfil (apodo / horario / TZ / aviso / términos)."""
 
+    nombre: Optional[str] = Field(default=None, max_length=80)
+    apellido: Optional[str] = Field(default=None, max_length=80)
+    apodo: Optional[str] = Field(default=None, max_length=40)
     tz: Optional[str] = None
     hora_aviso: Optional[str] = None
     aviso_activo: Optional[bool] = None
@@ -60,8 +66,12 @@ class CierreRitual(BaseModel):
 
 
 class CompartirCreate(BaseModel):
-    """M5 · crear un link. carta_sola (sin datos tuyos) o ejercicio (reflexión + fotos)."""
+    """M5 · crear un link. carta_sola (sin datos tuyos) o ejercicio (reflexión + fotos).
+
+    En v1 free el front sólo ofrece `carta_sola`; `ejercicio` queda soportado en el
+    backend para reactivarlo en premium. La nota personal va junto a la carta (≤250).
+    """
 
     entrega_id: str
     modo: str = Field(pattern="^(carta_sola|ejercicio)$")
-    nota: Optional[str] = Field(default=None, max_length=500)
+    nota: Optional[str] = Field(default=None, max_length=250)

@@ -1,0 +1,1192 @@
+/* Estilos de componentes y pantallas. Calma, aire, baja saturación. */
+
+/* ——————————————————————————————————————————————— Marco / layout */
+.frame {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.frame-inner {
+  position: relative;
+  width: 100%;
+  max-width: var(--frame-max);
+  background: var(--warm-cream);
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0 var(--pad-x);
+  padding-top: max(36px, env(safe-area-inset-top));
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  box-shadow: 0 0 80px rgba(70, 55, 35, 0.12);
+}
+.frame-inner.with-tabs {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
+}
+
+/* ——————————————————————————————————————————————— Tab bar */
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: var(--frame-max);
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255, 248, 234, 0.92);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--sand-line);
+  padding: 10px 0 calc(12px + env(safe-area-inset-bottom));
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--dust-taupe);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 4px 18px;
+  border-radius: 14px;
+  transition: color 0.25s ease;
+}
+.tab-active {
+  color: var(--sage-deep);
+}
+
+/* ——————————————————————————————————————————————— Encabezados de pantalla */
+.screen-head {
+  margin: 8px 0 22px;
+}
+.screen-kicker {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--warm-taupe);
+  margin: 0 0 2px;
+}
+.screen-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 26px;
+  margin: 0;
+  color: var(--deep-umber);
+}
+.screen-sub {
+  font-size: 14px;
+  color: var(--warm-taupe);
+  margin: 6px 0 0;
+}
+
+/* ——————————————————————————————————————————————— Botones (§13) */
+.btn {
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 0 24px;
+  height: 52px;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.btn-full {
+  width: 100%;
+}
+.btn-primary {
+  background: var(--sage);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(111, 138, 105, 0.28);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--sage-deep);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--deep-umber);
+  border: 1px solid var(--sand-line);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--soft-ivory);
+}
+.btn-tertiary {
+  background: transparent;
+  color: var(--warm-taupe);
+  height: 44px;
+  padding: 0 12px;
+}
+.btn-tertiary:hover:not(:disabled) {
+  color: var(--deep-umber);
+}
+.btn-danger {
+  background: #b9795f;
+  color: #fff;
+}
+
+.actions-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+.actions-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ——————————————————————————————————————————————— Carta (frente/dorso) */
+.card-scene {
+  perspective: 1600px;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  /* La carta escala su interior con su ancho (1cqw = 1% del ancho de la carta).
+     Así se ve idéntica en cualquier tamaño: Home, preview de envío, Baúl. */
+  container-type: inline-size;
+}
+.card-flip {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 300 / 440;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-flip.is-flipped {
+  transform: rotateY(180deg);
+}
+.card-flip[role="button"] {
+  cursor: pointer;
+}
+.card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--card-body);
+  border-radius: 8.7cqw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 24px 60px rgba(80, 60, 30, 0.26);
+}
+.card-back {
+  transform: rotateY(180deg);
+}
+.card-band {
+  height: 5.3cqw;
+  width: 100%;
+  flex-shrink: 0;
+}
+/* —— Frente —— */
+.card-cat {
+  margin-top: 12.7cqw;
+  letter-spacing: 0.5em;
+  text-transform: lowercase;
+  font-size: 5cqw;
+  padding-left: 0.5em;
+}
+.card-draw {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.card-draw img {
+  width: 68%;
+}
+.card-action {
+  letter-spacing: 0.42em;
+  text-transform: lowercase;
+  color: var(--dust-taupe);
+  font-size: 4cqw;
+  margin-bottom: 12.7cqw;
+  padding-left: 0.42em;
+}
+/* —— Dorso —— */
+.card-frase {
+  font-style: italic;
+  font-size: 6.33cqw;
+  line-height: 1.5;
+  text-align: center;
+  padding: 0 10cqw;
+  margin-top: 14.7cqw;
+}
+.card-glyph {
+  flex: 1;
+  width: 15.3cqw;
+  align-self: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  opacity: 0.92;
+}
+.card-prompt {
+  font-size: 4.67cqw;
+  line-height: 1.55;
+  color: var(--warm-taupe);
+  text-align: center;
+  padding: 0 9.3cqw;
+  margin-bottom: 11.3cqw;
+}
+
+.flip-hint {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--dust-taupe);
+  margin-top: 16px;
+}
+
+/* ——————————————————————————————————————————————— Home / Hoy */
+.home-greet {
+  margin: 2px 0 10px;
+}
+.home-greet .screen-kicker {
+  margin-bottom: 0;
+}
+.home-date {
+  font-size: 13px;
+  color: var(--dust-taupe);
+}
+.home-card-wrap {
+  margin: 4px 0 16px;
+}
+/* En la Home la carta se achica un poco para que las acciones entren sin scroll. */
+.home-card-wrap .card-scene {
+  max-width: 268px;
+}
+
+/* ——————————————————————————————————————————————— Reflexión (workspace) */
+.reflect-recap {
+  background: var(--oat-milk);
+  border-radius: var(--radius-soft);
+  padding: 16px 18px;
+  margin-bottom: 22px;
+}
+.reflect-recap .frase {
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.45;
+}
+.reflect-prompt {
+  font-size: 14px;
+  color: var(--warm-taupe);
+  margin: 18px 0 8px;
+}
+.textarea {
+  width: 100%;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: 22px;
+  padding: 18px 20px;
+  min-height: 150px;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--deep-umber);
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.textarea:focus {
+  border-color: var(--sage);
+}
+.textarea::placeholder {
+  color: var(--dust-taupe);
+}
+.counter {
+  text-align: right;
+  font-size: 12px;
+  color: var(--dust-taupe);
+  margin: 6px 2px 0;
+}
+.counter.near {
+  color: #b9795f;
+}
+.helper {
+  font-size: 13px;
+  color: var(--dust-taupe);
+  margin: 14px 0 22px;
+  text-align: center;
+}
+.photo-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 4px 0 14px;
+}
+.photo-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid var(--sand-line);
+}
+/* Tile para sumar foto: mismo tamaño que la miniatura, borde punteado suave. */
+.photo-add {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  border: 1px dashed var(--sand-line);
+  background: var(--soft-ivory);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--warm-taupe);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.photo-add:hover {
+  border-color: var(--sage);
+  background: #fff;
+}
+.photo-add .plus {
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 300;
+  color: var(--dust-taupe);
+}
+.photo-note {
+  font-size: 12px;
+  color: var(--dust-taupe);
+  text-align: center;
+  margin: 0 0 18px;
+}
+
+/* ——————————————————————————————————————————————— Cierre del ritual */
+.completion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 8vh;
+  min-height: 70vh;
+}
+.completion-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sage);
+  color: var(--sage-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  margin-bottom: 26px;
+  animation: bloom 0.6s ease;
+}
+@keyframes bloom {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.completion-title {
+  font-family: var(--font-serif);
+  font-size: 27px;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+.completion-body {
+  font-size: 15px;
+  color: var(--warm-taupe);
+  line-height: 1.6;
+  max-width: 280px;
+  margin: 0 0 30px;
+}
+.completion-stars {
+  margin-bottom: 34px;
+}
+.completion-stars-label {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--dust-taupe);
+  margin-bottom: 10px;
+}
+
+/* ——————————————————————————————————————————————— Estrellas */
+.stars {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.star {
+  background: none;
+  border: none;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--sand-line);
+  padding: 2px;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.star-on {
+  color: var(--sage);
+}
+.star:not(:disabled):hover {
+  transform: scale(1.12);
+}
+.stars-sm .star {
+  font-size: 16px;
+}
+
+/* ——————————————————————————————————————————————— Baúl */
+.baul-filters {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+.chip {
+  background: transparent;
+  border: 1px solid var(--sand-line);
+  color: var(--warm-taupe);
+  border-radius: var(--radius-pill);
+  padding: 7px 16px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+.chip-active {
+  background: var(--oat-milk);
+  color: var(--deep-umber);
+  border-color: var(--oat-milk);
+}
+.entry {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 14px;
+  margin-bottom: 12px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.entry:hover {
+  box-shadow: 0 8px 22px var(--warm-shadow);
+}
+.entry:active {
+  transform: scale(0.995);
+}
+.entry-spine {
+  width: 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.entry-body {
+  flex: 1;
+  min-width: 0;
+}
+.entry-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.entry-cat {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.entry-date {
+  font-size: 11px;
+  color: var(--dust-taupe);
+}
+.entry-frase {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--deep-umber);
+  margin: 0;
+}
+.entry-refl {
+  font-size: 13px;
+  color: var(--warm-taupe);
+  margin: 7px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.entry-marks {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 9px;
+  color: var(--dust-taupe);
+  font-size: 12px;
+}
+.entry-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ——————————————————————————————————————————————— Detalle de entrada (pager) */
+/* Cada experiencia ocupa una pantalla; el scroll-snap pasa a la siguiente. */
+.baul-pager {
+  position: relative;
+  height: calc(100dvh - 118px);
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  margin: 0 calc(-1 * var(--pad-x)); /* páginas a todo el ancho del marco */
+  scrollbar-width: none;
+}
+.baul-pager::-webkit-scrollbar {
+  display: none;
+}
+.baul-page {
+  height: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 var(--pad-x);
+  box-sizing: border-box;
+  position: relative;
+  /* Una experiencia por página: nada se filtra a la siguiente. */
+  overflow: hidden;
+}
+.baul-page-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.baul-page-inner .card-scene {
+  max-width: 184px;
+}
+.baul-page-inner .detail-block {
+  margin: 12px 0 0;
+}
+.baul-page-inner .detail-photos {
+  justify-content: center;
+  margin-top: 12px;
+}
+.baul-page-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+/* El indicador de "hay más" va fijo abajo: no suma altura al contenido centrado. */
+.baul-more {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  text-align: center;
+  color: var(--dust-taupe);
+  font-size: 20px;
+  line-height: 1;
+  margin: 0;
+  pointer-events: none;
+  animation: nudge 1.8s ease-in-out infinite;
+}
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(3px); opacity: 0.9; }
+}
+.detail-meta {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: 0 0 14px;
+  color: var(--dust-taupe);
+  font-size: 13px;
+}
+.detail-block {
+  background: var(--oat-milk);
+  border-radius: var(--radius-soft);
+  padding: 18px 20px;
+  margin: 18px 0;
+}
+.detail-block h4 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--warm-taupe);
+  font-weight: 600;
+}
+.detail-block p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--deep-umber);
+}
+.detail-photos {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.detail-photos img {
+  width: 90px;
+  height: 90px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+/* ——————————————————————————————————————————————— Onboarding */
+.ob {
+  display: flex;
+  flex-direction: column;
+  min-height: 84vh;
+}
+.ob-progress {
+  display: flex;
+  gap: 6px;
+  margin: 4px 0 30px;
+}
+.ob-dot {
+  height: 4px;
+  flex: 1;
+  border-radius: 4px;
+  background: var(--sand-line);
+  transition: background 0.3s ease;
+}
+.ob-dot.on {
+  background: var(--sage);
+}
+.ob-q {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 25px;
+  line-height: 1.3;
+  margin: 0 0 8px;
+}
+.ob-hint {
+  font-size: 14px;
+  color: var(--warm-taupe);
+  margin: 0 0 26px;
+}
+/* —— Bienvenida (marca + slogan) —— */
+.ob-welcome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 84vh;
+}
+.ob-brand {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 44px;
+  letter-spacing: 0.01em;
+  margin: 0 0 10px;
+  color: var(--deep-umber);
+}
+.ob-slogan {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--warm-taupe);
+  margin: 0;
+}
+.ob-welcome-foot {
+  position: absolute;
+  bottom: calc(40px + env(safe-area-inset-bottom));
+  left: var(--pad-x);
+  right: var(--pad-x);
+}
+/* Pantalla "qué es": centrada, con aire, pocas palabras. */
+.ob-explain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.ob-explain-lead {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 30px;
+  color: var(--deep-umber);
+  margin: 0 0 28px;
+}
+.ob-explain-body {
+  font-size: 17px;
+  line-height: 1.9;
+  color: var(--warm-taupe);
+  margin: 0 0 28px;
+}
+.ob-explain-accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--dust-taupe);
+  margin: 0 0 40px;
+}
+.ob-explain-tip {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--dust-taupe);
+  margin: 0;
+}
+.ob-field-label {
+  display: block;
+  font-size: 14px;
+  color: var(--deep-umber);
+  margin: 6px 0 8px;
+}
+.ob-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 4px;
+}
+.ob-fields .time-input {
+  width: 100%;
+}
+.ob-body {
+  flex: 1;
+}
+.ob-foot {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.cat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.cat-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--sand-line);
+  background: var(--soft-ivory);
+  border-radius: 16px;
+  padding: 14px 14px;
+  font-size: 15px;
+  color: var(--deep-umber);
+  text-align: left;
+  transition: all 0.18s ease;
+}
+.cat-opt .swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cat-opt.on {
+  border-color: var(--sage);
+  background: #fff;
+  box-shadow: 0 6px 16px var(--warm-shadow);
+}
+.opt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.opt {
+  border: 1px solid var(--sand-line);
+  background: var(--soft-ivory);
+  border-radius: 16px;
+  padding: 16px 18px;
+  font-size: 16px;
+  color: var(--deep-umber);
+  text-align: left;
+  transition: all 0.18s ease;
+}
+.opt.on {
+  border-color: var(--sage);
+  background: #fff;
+  box-shadow: 0 6px 16px var(--warm-shadow);
+}
+.time-input {
+  border: 1px solid var(--sand-line);
+  background: var(--soft-ivory);
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-size: 16px;
+  color: var(--deep-umber);
+  width: 100%;
+  outline: none;
+}
+.time-input:focus {
+  border-color: var(--sage);
+}
+/* Input de horario personalizado: integrado como la opción activa, centrado. */
+.opt-list .time-input {
+  margin-top: 2px;
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  background: #fff;
+  border-color: var(--sage);
+  box-shadow: 0 6px 16px var(--warm-shadow);
+  color: var(--deep-umber);
+  /* centra el contenido del input nativo de hora */
+  display: flex;
+  justify-content: center;
+}
+.opt-list .time-input::-webkit-datetime-edit {
+  text-align: center;
+}
+.opt-list .time-input::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+}
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+.terms-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: var(--warm-taupe);
+  line-height: 1.5;
+  margin-top: 16px;
+}
+.terms-row input {
+  margin-top: 3px;
+}
+
+/* Switch */
+.switch {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  flex-shrink: 0;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.switch .slider {
+  position: absolute;
+  inset: 0;
+  background: var(--sand-line);
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+.switch .slider::before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+.switch input:checked + .slider {
+  background: var(--sage);
+}
+.switch input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+/* ——————————————————————————————————————————————— Login */
+.login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 86vh;
+  text-align: center;
+}
+.login-logo {
+  font-family: var(--font-serif);
+  font-size: 34px;
+  font-weight: 500;
+  margin: 0 0 6px;
+}
+.login-tag {
+  font-size: 15px;
+  color: var(--warm-taupe);
+  margin: 0 0 44px;
+  line-height: 1.5;
+}
+.login-slogan {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 17px;
+}
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.login-fine {
+  font-size: 12px;
+  color: var(--dust-taupe);
+  margin-top: 26px;
+  line-height: 1.5;
+}
+
+/* ——————————————————————————————————————————————— Compartir */
+/* En Compartir todo entra sin scroll: título más chico, carta de preview compacta. */
+.share-head {
+  margin: 6px 0 12px;
+}
+.share-head .screen-title {
+  font-size: 22px;
+}
+.share-preview {
+  margin: 0 auto 18px;
+}
+.share-preview .card-scene {
+  max-width: 250px;
+}
+.share-link {
+  display: flex;
+  gap: 8px;
+  background: var(--oat-milk);
+  border-radius: 16px;
+  padding: 6px 6px 6px 16px;
+  align-items: center;
+  margin: 6px 0 18px;
+}
+.share-link code {
+  flex: 1;
+  font-size: 13px;
+  color: var(--warm-taupe);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ——————————————————————————————————————————————— Página pública (regalo) */
+.gift {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 3vh;
+}
+.gift-intro {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 20px;
+  color: var(--warm-taupe);
+  margin: 0 0 16px;
+}
+.gift-card-wrap {
+  width: 100%;
+  margin-bottom: 6px;
+}
+.gift-card-wrap .card-scene {
+  max-width: 200px;
+}
+/* La nota como un mensaje personal, no como un cajón: comilla suave + serif. */
+.gift-message {
+  margin: 14px 0 6px;
+  padding: 0 10px;
+  position: relative;
+}
+.gift-quote {
+  font-family: var(--font-serif);
+  font-size: 40px;
+  line-height: 0;
+  color: var(--sand-line);
+  display: block;
+  height: 22px;
+}
+.gift-message-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--deep-umber);
+  margin: 0;
+}
+.gift-message-from {
+  font-size: 13px;
+  color: var(--dust-taupe);
+  margin: 10px 0 0;
+}
+.gift-cta {
+  border-top: 1px solid var(--sand-line);
+  padding-top: 18px;
+  margin-top: 20px;
+  width: 100%;
+}
+.gift-cta p {
+  font-size: 14px;
+  color: var(--warm-taupe);
+  margin: 0 0 12px;
+}
+
+/* ——————————————————————————————————————————————— Perfil */
+.profile {
+  display: flex;
+  flex-direction: column;
+}
+.profile .screen-head {
+  margin: 2px 0 10px;
+}
+.profile-section {
+  margin-bottom: 14px;
+}
+.profile-section h3 {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--warm-taupe);
+  margin: 0 0 6px;
+}
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--sand-line);
+  font-size: 15px;
+}
+/* Inputs compactos dentro del perfil (para que entre todo en una pantalla). */
+.profile-row .time-input {
+  padding: 8px 14px;
+  font-size: 15px;
+}
+.profile-row:last-child {
+  border-bottom: none;
+}
+.profile-row .val {
+  color: var(--warm-taupe);
+}
+.cat-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--sand-line);
+  border-radius: 999px;
+  padding: 6px 13px;
+  font-size: 13px;
+}
+.cat-pill .swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+/* ——————————————————————————————————————————————— Empty / estados */
+.empty {
+  text-align: center;
+  padding: 12vh 20px 0;
+  color: var(--warm-taupe);
+}
+.empty-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--deep-umber);
+  margin: 0 0 10px;
+}
+.empty-body {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 26px;
+}
+.center-note {
+  text-align: center;
+  color: var(--dust-taupe);
+  font-size: 14px;
+  padding: 14vh 0;
+}
+
+/* ——————————————————————————————————————————————— Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(47, 41, 35, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  z-index: 50;
+}
+.modal {
+  background: var(--warm-cream);
+  border-radius: 24px;
+  padding: 26px 24px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 30px 70px rgba(70, 55, 35, 0.3);
+}
+.modal h3 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 10px;
+}
+.modal p {
+  font-size: 14px;
+  color: var(--warm-taupe);
+  line-height: 1.55;
+  margin: 0 0 22px;
+}
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Link de texto suave */
+.link {
+  background: none;
+  border: none;
+  color: var(--sage-deep);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--warm-taupe);
+  font-size: 14px;
+  padding: 8px 0;
+  margin-bottom: 6px;
+}

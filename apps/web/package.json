@@ -1,0 +1,24 @@
+{
+  "name": "mindful-web",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Prototipo web del front (Vite + React). Espejo de la UX/UI canónica; se cablea a la API en modo dev. El front de producción será Expo (ver 01_Stack_Arquitectura_Infraestructura.md).",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8"
+  }
+}

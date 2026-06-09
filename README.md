@@ -32,4 +32,5 @@ del teléfono**; el teléfono es guía + baúl.
 - **M5 — Compartir:** ✅ lógica conceptual cerrada v1.
 - **Funnel de uso completo (M1→M5).**
 - **N4 — Stack confirmado vs Arc One:** ✅ doc [`01_Stack_Arquitectura_Infraestructura.md`](01_Stack_Arquitectura_Infraestructura.md).
-- **N4 — Build paso 1 (seed + esquema):** ✅ backend en [`apps/api/`](apps/api/) — 8 tablas (dos mundos) + M0 cargado (69 cartas) en Postgres, verificado. Próximo: **auth (M1)**.
+- **N4 — Backend M1→M5:** ✅ en [`apps/api/`](apps/api/) — funnel lógico completo, dos mundos, en Postgres (modo dev).
+- **N4 — Front prototipo (web):** ✅ en [`apps/web/`](apps/web/) — Vite + React, 10 pantallas (funnel M1→M5), cableado al backend, mobile-first. Marca **Dwellia · "One quiet pause a day"**. (El front de producción será **Expo**.) Próximo: **Firebase + infra para desplegar**.
