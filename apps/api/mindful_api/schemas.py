@@ -49,3 +49,11 @@ class CategoriasUpdate(BaseModel):
         if len(set(v)) != len(v):
             raise ValueError("hay categorías repetidas")
         return v
+
+
+class CierreRitual(BaseModel):
+    """M3 · cierre del ritual. Todo opcional (no bloquea Guardar)."""
+
+    estrellas: Optional[int] = Field(default=None, ge=1, le=5)
+    reflexion: Optional[str] = Field(default=None, max_length=250)
+    completada: bool = True

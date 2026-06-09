@@ -59,11 +59,16 @@ usuario (auto-provisión en el primer login) y el resto de la API filtra por su 
 | GET | `/api/perfil` | Perfil del usuario logueado + sus categorías + `onboarding_completo`. |
 | PUT | `/api/perfil` | Actualiza horario/TZ/aviso y acepta términos. |
 | PUT | `/api/perfil/categorias` | Fija las **2-6** categorías elegidas. |
+| GET | `/api/carta-del-dia` | La carta de hoy (M2: sortea + crea, o devuelve la ya entregada · 1/día por TZ). |
+| PUT | `/api/entregas/{id}/cierre` | M3: cierra el ritual (estrellas/reflexión/completada). |
 
 ## Estado del build (N4)
 
 - ✅ **Paso 1 — Seed + esquema:** las 8 tablas + el contenido de M0 cargado y servido.
 - ✅ **Paso 1b — Auth + Perfil (M1):** dependency de auth (dev/firebase) + onboarding
   (categorías 2-6 · horario/TZ/aviso · términos). Aislamiento testeado.
-- ⏭️ **Paso 2 — Entrega + Ritual:** `elegir_carta()` (ya en `M2_Entrega_del_Dia/`) +
-  worker RQ + cierre M3.
+- ✅ **Paso 2 — Entrega (M2) + Ritual (M3):** `elegir_carta()` portado fiel a
+  `services/seleccion.py` (lee `cartas` global + `entregas` por user_id) + carta del día
+  (1/día por TZ) + cierre del ritual. **Falta:** worker RQ + Cloud Scheduler (el aviso) y
+  fotos (Cloud Storage) — ambos necesitan infra/GCP.
+- ⏭️ **Paso 3 — Baúl (M4) + Compartir (M5):** lectura del historial + links públicos.
