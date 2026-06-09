@@ -57,19 +57,28 @@ queda protegido: *hacé afuera → volvé → cerrá.*
 ```
 1. Llega la carta      → a tu hora (M2). Ves el FRENTE. La app no insiste.
 2. Tocás → gira        → ves el DORSO: frase + micro-prompt. Primera interacción.
-3. Hacés el ejercicio  → AFUERA. El teléfono no participa. (Podés volver cuando quieras dentro de las 24h.)
+      LA CONSIGNA DEL ARCO (marco fijo, WS10) → "Hacé tu pausa afuera y escribí en tu
+                      diario lo que sentiste. Al volver, guardala con una reflexión."
+                      Acá se nombra el FIN (escribir en el diario FÍSICO, afuera) y el
+                      regreso a la app para guardar. No cambia entre cartas.
+3. Hacés el ejercicio  → AFUERA. El teléfono no participa. Escribís en tu diario físico
+      + escribís        lo que sentiste (el FIN). (Podés volver cuando quieras, 24h.)
 4. Volvés y tocás      → "Terminé" despliega la zona de cierre ↓
       "Terminé"
-5. Cerrás el ritual:
-      • EL CIERRE (marco fijo) → siempre lo mismo: "Escribí en tu diario lo que sentiste."
-                      Es el FIN del ritual y no cambia entre cartas (WS10). El diario es
-                      físico, afuera de la app. Lo de abajo es el rastro opcional en la app.
-      • Reflexión   → recuadro ≤250 caracteres, una nota de AYUDA-MEMORIA del Baúl.
-                      NO bloquea Guardar (invitar, nunca exigir).
+5. Cerrás el ritual (guardás en la app):
+      • Reflexión   → recuadro ≤250 caracteres, una nota de AYUDA-MEMORIA del Baúl
+                      ("lo que sentiste ya quedó en tu diario; acá una reflexión para
+                      recordarlo"). NO bloquea Guardar (invitar, nunca exigir).
       • Fotos       → hasta 3, opcional. Tomar o subir (de lo que escribiste o viviste).
       • Estrellas   → 1-5, opcional. "¿cuánto te llegó?" (alimenta M2).
 6. Guardar            → va al Baúl. (Al lado, discreto: Compartir → M5.)
 ```
+
+> **Refinamiento del flujo (WS10, post-build):** la consigna constante "escribí en tu
+> diario" vive **al salir** (paso 2, antes de irte), NO en la pantalla de cierre. Cuando
+> volvés a la app (paso 5) ya escribiste en tu diario afuera; ese paso es sólo **guardar
+> con una reflexión** de ayuda-memoria. Así no se repite "escribí en tu diario" cuando ya
+> estás de vuelta en la app.
 
 > **Lo que ves al volver depende de si ya cerraste.** Si ya guardaste hoy, la carta se ve
 > en modo "hecho" (tu reflexión y fotos a la vista, en calma). No hay nada más que hacer
@@ -77,20 +86,22 @@ queda protegido: *hacé afuera → volvé → cerrá.*
 
 ---
 
-## 4. El cierre: escribí en tu diario (el fin) + reflexión de ayuda-memoria
+## 4. El cierre: guardar en la app con una reflexión de ayuda-memoria
 
-**El protagonista del cierre es un marco fijo, idéntico en cada carta (WS10):** *"Escribí
-en tu diario lo que sentiste."* El **diario es físico, afuera de la app** — ahí está el
-fin último; la actividad fue sólo el medio. La app no reemplaza ese diario: lo enmarca y
-guarda el rastro. *(La promesa de este cierre constante se anticipa en el onboarding, M1 §5.)*
+**El FIN (escribir en tu diario físico, afuera) ya pasó** — la consigna constante que lo
+nombra vive **al salir** (§3 paso 2 · "hacé tu pausa afuera y escribí en tu diario lo que
+sentiste"), anticipada en el onboarding (M1 §5). El **diario es físico, afuera de la app**;
+la actividad fue sólo el medio. La app no reemplaza ese diario: lo enmarca y guarda el rastro.
 
-La **reflexión en la app** es el rastro opcional, una **nota de ayuda-memoria** para el Baúl:
+Cuando volvés a la app, **el cierre es sólo guardar la pausa con una reflexión** — el rastro
+opcional, una **nota de ayuda-memoria** para el Baúl (*"lo que sentiste ya quedó en tu
+diario; acá dejás una reflexión para recordar esta pausa"*):
 
 - **Recuadro de hasta 250 caracteres.** Corto a propósito: una interacción *sutil* con la
   app, no un editor de texto (para eso está tu diario). No hay mínimo — una línea, una
   palabra, lo que salga.
-- **Acompaña al marco fijo:** debajo del "escribí en tu diario", el cursor te espera por si
-  querés dejar una nota corta acá también. La app *invita*, no obliga.
+- **Es lo único que se escribe en la app:** una reflexión breve para recordar; el cursor te
+  espera, pero la app *invita*, no obliga.
 - **Pero Guardar nunca se bloquea por ella.** Podés guardar sin escribir nada. Esa es la
   única opcionalidad canónica del Motor de Contenido ("guardar sin hacer nada"), y la
   respetamos. *Invitar, nunca exigir.*
@@ -210,12 +221,15 @@ fotos     (privada · 0-3 por entrega · la agrega M3)
 
 - **Sin gate:** la próxima carta llega siempre, completes o no. La entrega es por tiempo
   (M2), no por mérito. *(invitar, nunca exigir · menos consumo, más presencia)*
-- **Cierre constante (WS10):** el cierre invita SIEMPRE, con el mismo marco fijo, a
-  **escribir en tu diario físico** lo que sentiste — ese es el fin del ritual. Vive como
-  chrome de la app (no se mete en los 69 micro-prompts, que quedan limpios) + se promete en
-  el onboarding.
-- **Reflexión soft = ayuda-memoria:** recuadro ≤250 que acompaña al cierre, **no bloquea
-  Guardar** y no tiene mínimo. Es el rastro opcional en la app, no reemplaza al diario.
+- **Consigna constante del arco (WS10):** al SALIR (no en el cierre), la app dice siempre lo
+  mismo — *"hacé tu pausa afuera y escribí en tu diario lo que sentiste; al volver, guardala
+  con una reflexión"*. Nombra el fin (diario físico) + el regreso a guardar. Vive como chrome
+  (no se mete en los 69 micro-prompts) + se promete en el onboarding.
+- **El cierre en la app = guardar con reflexión (refinamiento WS10):** cuando volvés ya
+  escribiste en tu diario; la pantalla de cierre es sólo guardar + una **reflexión de
+  ayuda-memoria** ≤250. NO repite "escribí en tu diario" (ya estás de vuelta en la app).
+- **Reflexión soft = ayuda-memoria:** **no bloquea Guardar** y no tiene mínimo. Es el rastro
+  opcional en la app, no reemplaza al diario.
 - **Hasta 3 fotos**, opcional, sin cobrar por cantidad en v1.
 - **Estrellas 1-5 opcional**, transparente; M3 las escribe, M2 las usa (mismo dato ya
   esperado).
