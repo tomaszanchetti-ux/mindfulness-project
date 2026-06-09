@@ -1,0 +1,19 @@
+# Solo necesitamos apps/api + M0_Motor_de_Contenido/data en la imagen.
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.ruff_cache
+**/node_modules
+apps/web
+.git
+.deploy
+WS
+M1_Onboarding_y_Perfil
+M2_Entrega_del_Dia
+M3_Ritual
+M4_Baul
+M5_Compartir
+M0_Motor_de_Contenido/assets
+**/.DS_Store
+*.md
