@@ -126,16 +126,28 @@ export function Onboarding() {
         <>
           <div className="ob-explain">
             <p className="ob-explain-lead">Una pausa al día.</p>
-            <p className="ob-explain-body">
+            <ol className="ob-steps">
+              <li>
+                <span className="ob-step-n">1</span>
+                <span>Recibí una carta diaria</span>
+              </li>
+              <li>
+                <span className="ob-step-n">2</span>
+                <span>Realizá la actividad</span>
+              </li>
+              <li>
+                <span className="ob-step-n">3</span>
+                <span>Escribí lo que sentiste</span>
+              </li>
+            </ol>
+            <p className="ob-explain-accent">
+              Sin feed ni likes.
+              <br />
               Por fuera del teléfono.
-              <br />
-              La app es para recibir y guardar
-              <br />
-              lo que vivís.
             </p>
-            <p className="ob-explain-accent">Sin feed ni likes.</p>
             <p className="ob-explain-tip">
-              Tené un diario cerca y date unos minutos.
+              Te recomendamos tener un diario personal físico y al menos 15 minutos
+              de tranquilidad por día para las actividades.
             </p>
           </div>
           <div className="ob-foot">
