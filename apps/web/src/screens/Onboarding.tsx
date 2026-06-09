@@ -43,10 +43,10 @@ export function Onboarding() {
   const [terminos, setTerminos] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
-  // Por defecto: todas las actividades seleccionadas (lo más permisivo).
+  // Por defecto: solo "Escribir" seleccionada (el piso). El usuario suma las que quiera.
   useEffect(() => {
     if (!actInit && acciones.length > 0) {
-      setSelAct(acciones.map((a) => a.slug));
+      setSelAct([ACCION_PISO]);
       setActInit(true);
     }
   }, [acciones, actInit]);
