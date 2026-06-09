@@ -28,7 +28,7 @@ export function fechaCorta(iso: string): string {
  */
 export function saludo(hora?: string): string {
   const h = hora ? parseInt(hora.slice(0, 2), 10) : new Date().getHours();
-  if (h < 13) return "Buen día";
+  if (h < 13) return "Buenos días";
   if (h < 20) return "Buenas tardes";
   return "Buenas noches";
 }

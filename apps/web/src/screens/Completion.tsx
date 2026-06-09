@@ -26,7 +26,7 @@ export function Completion() {
       <p className="completion-body">
         Guardamos esta pausa en tu Baúl.
         <br />
-        Podés volver cuando quieras.
+        Puedes volver cuando quieras.
       </p>
 
       <div className="actions-stack" style={{ width: "100%" }}>

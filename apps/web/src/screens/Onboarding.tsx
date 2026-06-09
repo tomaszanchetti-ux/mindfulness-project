@@ -157,7 +157,7 @@ export function Onboarding() {
       {step === 2 && (
         <>
           <div className="ob-body">
-            <h2 className="ob-q">¿Cómo te llamás?</h2>
+            <h2 className="ob-q">¿Cómo te llamas?</h2>
             <p className="ob-hint">Así es como te vamos a llamar dentro de la app.</p>
 
             <div className="ob-fields">
@@ -189,7 +189,7 @@ export function Onboarding() {
                   className="time-input"
                   type="text"
                   maxLength={40}
-                  placeholder="Cómo querés que te llamemos"
+                  placeholder="Cómo quieres que te llamemos"
                   value={apodoEdited ? apodo : nombre}
                   onChange={(e) => {
                     setApodoEdited(true);
@@ -211,8 +211,8 @@ export function Onboarding() {
       {step === 3 && (
         <>
           <div className="ob-body">
-            <h2 className="ob-q">¿Qué querés cultivar estos días?</h2>
-            <p className="ob-hint">Elegí entre 2 y 6. Podés cambiarlo cuando quieras.</p>
+            <h2 className="ob-q">¿Qué quieres cultivar estos días?</h2>
+            <p className="ob-hint">Elige entre 2 y 6. Puedes cambiarlo cuando quieras.</p>
             <div className="cat-grid">
               {categorias.map((c) => (
                 <button
@@ -228,7 +228,7 @@ export function Onboarding() {
           </div>
           <div className="ob-foot">
             <Button variant="primary" full disabled={sel.length < 2} onClick={() => setStep(4)}>
-              {sel.length < 2 ? "Elegí al menos 2" : "Continuar"}
+              {sel.length < 2 ? "Elige al menos 2" : "Continuar"}
             </Button>
           </div>
         </>
@@ -240,7 +240,7 @@ export function Onboarding() {
           <div className="ob-body">
             <h2 className="ob-q">¿Cómo te gusta hacer tu pausa?</h2>
             <p className="ob-hint">
-              Elegí las actividades que querés recibir. Hagas la que hagas, siempre cerrás
+              Elige las actividades que quieres recibir. Hagas la que hagas, siempre cierras
               escribiendo en tu diario lo que sentiste.
             </p>
             <div className="cat-grid">
@@ -275,7 +275,7 @@ export function Onboarding() {
       {step === 5 && (
         <>
           <div className="ob-body">
-            <h2 className="ob-q">¿Cuándo querés recibir tu pausa?</h2>
+            <h2 className="ob-q">¿Cuándo quieres recibir tu pausa?</h2>
             <p className="ob-hint">Usamos la hora de tu teléfono.</p>
             <div className="opt-list">
               {MOMENTOS.map((m) => (
@@ -315,9 +315,9 @@ export function Onboarding() {
       {step === 6 && (
         <>
           <div className="ob-body">
-            <h2 className="ob-q">¿Querés que te avisemos?</h2>
+            <h2 className="ob-q">¿Quieres que te avisemos?</h2>
             <p className="ob-hint">
-              Podés entrar por tu cuenta cuando quieras. Si preferís, te avisamos a la
+              Puedes entrar por tu cuenta cuando quieras. Si prefieres, te avisamos a la
               hora que elegiste.
             </p>
             <label className="toggle-row">

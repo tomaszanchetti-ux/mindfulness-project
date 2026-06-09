@@ -41,7 +41,7 @@ export function Home() {
 
       <div className="home-card-wrap">
         <Card carta={carta} flipped={flipped} onFlip={() => setFlipped(true)} />
-        {!flipped && <p className="flip-hint">Tocá la carta para descubrirla</p>}
+        {!flipped && <p className="flip-hint">Toca la carta para descubrirla</p>}
       </div>
 
       {!flipped ? (
@@ -53,7 +53,7 @@ export function Home() {
       ) : (
         <div className="actions-stack">
           <p className="cierre-constante">
-            Hacé tu pausa afuera. Al volver, escribí en tu diario lo que sentiste.
+            Haz tu pausa afuera. Al volver, escribe en tu diario lo que sentiste.
           </p>
           <Button
             variant="primary"

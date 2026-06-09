@@ -1,4 +1,4 @@
-// Compartir (§12.5). El gesto íntimo: "Vi esto y pensé en vos."
+// Compartir (§12.5). El gesto íntimo: "Vi esto y pensé en ti."
 // v1 free: se envía SÓLO la carta + una nota personal (≤250). El modo "ejercicio"
 // (sumar reflexión/fotos) queda para premium — el backend lo sigue soportando.
 
@@ -59,7 +59,7 @@ export function Share() {
       <button className="back-link" onClick={() => navigate(-1)}>← Volver</button>
 
       <div className="screen-head share-head">
-        <h1 className="screen-title">Vi esto y pensé en vos.</h1>
+        <h1 className="screen-title">Vi esto y pensé en ti.</h1>
       </div>
 
       {item && (
@@ -72,7 +72,7 @@ export function Share() {
         <>
           <textarea
             className="textarea"
-            placeholder="Agregá una nota personal (opcional)…"
+            placeholder="Agrega una nota personal (opcional)…"
             maxLength={LIMITE}
             value={nota}
             onChange={(e) => setNota(e.target.value)}

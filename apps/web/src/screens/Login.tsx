@@ -29,7 +29,7 @@ export function Login() {
       </div>
 
       <p className="login-fine">
-        Sin contraseñas. Entrás con un toque.
+        Sin contraseñas. Entras con un toque.
         <br />
         Lo que escribas y guardes es tuyo.
       </p>

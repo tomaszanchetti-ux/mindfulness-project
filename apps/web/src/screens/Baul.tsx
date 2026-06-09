@@ -72,7 +72,7 @@ export function Baul() {
         <div className="empty">
           <p className="empty-title">Todavía no guardaste ninguna pausa.</p>
           <p className="empty-body">
-            Cuando completes tu primera consigna, va a aparecer acá.
+            Cuando completes tu primera consigna, va a aparecer aquí.
           </p>
           <Button variant="primary" onClick={() => navigate("/hoy")}>
             Ir a mi pausa de hoy

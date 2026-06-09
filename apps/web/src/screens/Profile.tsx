@@ -131,7 +131,7 @@ export function Profile() {
       </div>
 
       <div className="profile-section">
-        <h3>Lo que cultivás</h3>
+        <h3>Lo que cultivas</h3>
         <div className="cat-pills">
           {misCategorias.map((c) => (
             <span key={c.slug} className="cat-pill">
@@ -143,7 +143,7 @@ export function Profile() {
       </div>
 
       <div className="profile-section">
-        <h3>Cómo hacés tu pausa</h3>
+        <h3>Cómo haces tu pausa</h3>
         <div className="cat-pills">
           {misAcciones.map((a) => (
             <span key={a.slug} className="cat-pill">
@@ -153,7 +153,7 @@ export function Profile() {
           ))}
         </div>
         <p className="meta" style={{ marginTop: 8 }}>
-          Hagas la que hagas, siempre cerrás escribiendo en tu diario.
+          Hagas la que hagas, siempre cierras escribiendo en tu diario.
         </p>
       </div>
 
@@ -184,7 +184,7 @@ export function Profile() {
 
       <div className="profile-section">
         <h3>Privacidad</h3>
-        <p className="meta">Lo que escribís y tus fotos quedan solo para vos.</p>
+        <p className="meta">Lo que escribes y tus fotos quedan solo para ti.</p>
       </div>
 
       <div className="actions-stack" style={{ marginTop: 2 }}>

@@ -46,11 +46,11 @@ export function PublicShare() {
         </button>
       )}
       <div className="gift">
-        <p className="gift-intro">{de} pensó en vos.</p>
+        <p className="gift-intro">{de} pensó en ti.</p>
 
       <div className="gift-card-wrap">
         <Card carta={regalo.carta} flipped={flipped} onFlip={() => setFlipped((f) => !f)} />
-        {!flipped && <p className="flip-hint">Tocá la carta para abrirla</p>}
+        {!flipped && <p className="flip-hint">Toca la carta para abrirla</p>}
       </div>
 
       {regalo.nota && (
@@ -76,9 +76,9 @@ export function PublicShare() {
       )}
 
       <div className="gift-cta">
-        <p>¿Querés recibir una pausa así, cada día?</p>
+        <p>¿Quieres recibir una pausa así, cada día?</p>
         <Button variant="secondary" full onClick={() => navigate("/login")}>
-          Configurá tu cuenta para tener tus propias cartas
+          Configura tu cuenta para tener tus propias cartas
         </Button>
         </div>
       </div>

@@ -62,13 +62,13 @@ export function Reflect() {
 
       {/* WS10 · el cierre constante: el fin es escribir en tu diario (afuera). */}
       <div className="cierre-diario">
-        <p className="cierre-diario-title">Escribí en tu diario lo que sentiste.</p>
+        <p className="cierre-diario-title">Escribe en tu diario lo que sentiste.</p>
         <p className="cierre-diario-sub">
           En tu cuaderno, fuera del teléfono. Eso es la pausa.
         </p>
       </div>
 
-      <p className="reflect-helper-mem">Y si querés, dejá una nota corta acá para tu Baúl:</p>
+      <p className="reflect-helper-mem">Y si quieres, deja una nota corta aquí para tu Baúl:</p>
       <textarea
         className="textarea"
         placeholder="Una nota de ayuda-memoria (opcional)…"
@@ -94,12 +94,12 @@ export function Reflect() {
       </div>
       {fotos.length > 0 && (
         <p className="photo-note">
-          Las fotos se ven acá pero todavía no se guardan (falta el endpoint de subida).
+          Las fotos se ven aquí pero todavía no se guardan (falta el endpoint de subida).
         </p>
       )}
 
       <div style={{ textAlign: "center", margin: "8px 0 20px" }}>
-        <p className="completion-stars-label">¿Querés valorar esta pausa? (opcional)</p>
+        <p className="completion-stars-label">¿Quieres valorar esta pausa? (opcional)</p>
         <Stars value={estrellas} onChange={setEstrellas} />
       </div>
 
