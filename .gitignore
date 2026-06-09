@@ -6,3 +6,16 @@
 .idea/
 .vscode/
 Thumbs.db
+
+# Python / backend
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+.env
+
+# Node / front
+node_modules/
+.expo/
+dist/

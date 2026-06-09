@@ -30,4 +30,6 @@ del teléfono**; el teléfono es guía + baúl.
 - **M3 — Ritual:** ✅ lógica conceptual cerrada v1.
 - **M4 — Baúl:** ✅ lógica conceptual cerrada v1.
 - **M5 — Compartir:** ✅ lógica conceptual cerrada v1.
-- **Funnel de uso completo (M1→M5).** Próximo: **build (N4)** — confirmar versiones del stack contra Arc One y arrancar.
+- **Funnel de uso completo (M1→M5).**
+- **N4 — Stack confirmado vs Arc One:** ✅ doc [`01_Stack_Arquitectura_Infraestructura.md`](01_Stack_Arquitectura_Infraestructura.md).
+- **N4 — Build paso 1 (seed + esquema):** ✅ backend en [`apps/api/`](apps/api/) — 8 tablas (dos mundos) + M0 cargado (69 cartas) en Postgres, verificado. Próximo: **auth (M1)**.

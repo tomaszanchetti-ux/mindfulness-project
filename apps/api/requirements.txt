@@ -1,0 +1,23 @@
+# Web framework
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+httpx==0.28.1
+
+# Validación / settings
+pydantic==2.11.4
+pydantic-settings==2.9.1
+
+# DB (espejo Arc One)
+SQLAlchemy==2.0.41
+alembic==1.15.2
+psycopg[binary]==3.2.9
+psycopg-pool==3.2.6
+
+# Auth (Firebase ID token) — se usa en M1
+firebase-admin==6.6.0
+
+# Seed JSON de M0
+# (json es stdlib; no hace falta lib extra)
+
+# Tests
+pytest==8.3.4

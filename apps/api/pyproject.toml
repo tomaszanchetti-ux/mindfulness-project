@@ -1,0 +1,13 @@
+[tool.ruff]
+# Prod target = py312 (Cloud Run). El código corre también en 3.9 local.
+target-version = "py39"
+line-length = 100
+src = ["mindful_api", "tests"]
+
+[tool.ruff.lint]
+# Foco en errores reales; ampliar (I/UP) cuando el repo lo adopte de forma global.
+select = ["E4", "E7", "E9", "F"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
