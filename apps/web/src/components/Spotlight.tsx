@@ -1,9 +1,14 @@
-// Spotlight: oscurece la pantalla, recorta/resalta el elemento objetivo y muestra
-// el globo explicativo al lado. Si no hay objetivo, centra el globo (paso final).
+// Spotlight: desatura la pantalla (gris) y deja a color SOLO el elemento objetivo,
+// con el globo explicativo al lado. Si no hay objetivo, centra el globo (paso final).
 // Patrón de "product tour": el resto de la pantalla queda inerte (el overlay captura
 // los clics); solo se avanza con los botones del globo.
+//
+// El gris se logra con 4 paneles `backdrop-filter: grayscale()` alrededor del hueco
+// (no con mask/clip-path: combinarlos con backdrop-filter tiene bugs en Safari iOS).
+// Los paneles comparten aristas exactas — sin gaps ni solapes que dupliquen el tinte.
 
 import { useEffect, useLayoutEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { Button } from "./Button";
 
 interface SpotlightProps {
@@ -95,9 +100,13 @@ export function Spotlight({
 }: SpotlightProps) {
   const rect = useTargetRect(targetSelector);
   const [vh, setVh] = useState(() => window.innerHeight);
+  const [vw, setVw] = useState(() => window.innerWidth);
 
   useEffect(() => {
-    const onR = () => setVh(window.innerHeight);
+    const onR = () => {
+      setVh(window.innerHeight);
+      setVw(window.innerWidth);
+    };
     window.addEventListener("resize", onR);
     return () => window.removeEventListener("resize", onR);
   }, []);
@@ -121,34 +130,30 @@ export function Spotlight({
     ? Math.max(140, (ponerAbajo ? espacioAbajo : espacioArriba) - 26)
     : undefined;
 
+  // Caret del globo: apunta al centro del hueco. El globo está centrado en la
+  // pantalla (left:50%), así que la posición del caret dentro del globo es el
+  // centro del hueco menos el borde izquierdo del globo, acotada a sus bordes.
+  const tipW = Math.min(vw * 0.92, 360);
+  const caretX = hole
+    ? Math.min(Math.max(hole.x + hole.w / 2 - (vw - tipW) / 2, 18), tipW - 18)
+    : undefined;
+
   return (
     <div className="spot" role="dialog" aria-modal="true">
-      {/* Capa oscura con recorte (o plena, en el paso final) */}
-      <svg className="spot-mask" width="100%" height="100%" aria-hidden>
-        <defs>
-          <mask id="spot-hole">
-            <rect x="0" y="0" width="100%" height="100%" fill="white" />
-            {hole && (
-              <rect
-                x={hole.x}
-                y={hole.y}
-                width={hole.w}
-                height={hole.h}
-                rx="16"
-                fill="black"
-              />
-            )}
-          </mask>
-        </defs>
-        <rect
-          x="0"
-          y="0"
-          width="100%"
-          height="100%"
-          fill="rgba(36, 30, 22, 0.62)"
-          mask="url(#spot-hole)"
-        />
-      </svg>
+      {/* Velo gris alrededor del hueco (o pleno, en el paso final) */}
+      {hole ? (
+        <>
+          <div className="spot-veil" style={{ top: 0, left: 0, right: 0, height: hole.y }} />
+          <div className="spot-veil" style={{ top: hole.y, left: 0, width: hole.x, height: hole.h }} />
+          <div
+            className="spot-veil"
+            style={{ top: hole.y, left: hole.x + hole.w, right: 0, height: hole.h }}
+          />
+          <div className="spot-veil" style={{ top: hole.y + hole.h, left: 0, right: 0, bottom: 0 }} />
+        </>
+      ) : (
+        <div className="spot-veil" style={{ inset: 0 }} />
+      )}
 
       {/* Anillo de resaltado sobre el elemento */}
       {hole && (
@@ -163,9 +168,14 @@ export function Spotlight({
         className={`spot-tip ${hole ? (ponerAbajo ? "below" : "above") : "center"}`}
         style={
           hole
-            ? ponerAbajo
-              ? { top: hole.y + hole.h + 14, maxHeight: maxAlto }
-              : { bottom: vh - hole.y + 14, maxHeight: maxAlto }
+            ? {
+                ...(ponerAbajo
+                  ? { top: hole.y + hole.h + 14, maxHeight: maxAlto }
+                  : { bottom: vh - hole.y + 14, maxHeight: maxAlto }),
+                ...(caretX !== undefined
+                  ? ({ "--caret-x": `${caretX}px` } as CSSProperties)
+                  : {}),
+              }
             : undefined
         }
       >

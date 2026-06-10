@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { api, reiniciarDemo } from "../lib/api";
+import { cerrarSesion } from "../lib/firebase";
 import { useStore } from "../store";
 import { canInstall, isIOS, isStandalone, promptInstall } from "../pwa";
 
@@ -225,21 +226,29 @@ export function Profile() {
         </div>
       )}
 
-      <div className="profile-section">
-        <h3>Demo</h3>
-        <p className="meta">
-          Esto reinicia la demo desde cero: nueva cuenta vacía y el funnel completo
-          otra vez, ideal para mostrársela a alguien de nuevo.
-        </p>
-        <div className="actions-stack" style={{ marginTop: 10 }}>
-          <Button variant="secondary" full onClick={reiniciarDemo}>
-            Reiniciar demo desde cero
-          </Button>
+      {import.meta.env.DEV && (
+        <div className="profile-section">
+          <h3>Demo (solo dev)</h3>
+          <p className="meta">
+            Esto reinicia la demo desde cero: nueva cuenta vacía y el funnel completo
+            otra vez, ideal para mostrársela a alguien de nuevo.
+          </p>
+          <div className="actions-stack" style={{ marginTop: 10 }}>
+            <Button variant="secondary" full onClick={reiniciarDemo}>
+              Reiniciar demo desde cero
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="actions-stack" style={{ marginTop: 2 }}>
-        <Button variant="tertiary" onClick={() => navigate("/login")}>
+        <Button
+          variant="tertiary"
+          onClick={async () => {
+            await cerrarSesion().catch(() => {});
+            navigate("/login");
+          }}
+        >
           Cerrar sesión
         </Button>
       </div>

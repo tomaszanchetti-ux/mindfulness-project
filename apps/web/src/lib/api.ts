@@ -1,8 +1,10 @@
 // Cliente de la API. En local pega a /api (Vite lo proxea a :8000).
 //
-// Modo dev: la API auto-provisiona el usuario `dev|user` por los headers X-Debug-*.
-// Cuando exista Firebase (front Expo), esto se reemplaza por el ID token en
-// Authorization: Bearer <token> — el resto del contrato no cambia.
+// Identidad:
+//  - dev (vite dev): la API auto-provisiona un usuario efímero por X-Debug-*.
+//  - producción: Firebase ID token en Authorization: Bearer <token>.
+
+import { auth, cerrarSesion } from "./firebase";
 
 import type {
   AccionContenido,
@@ -14,12 +16,11 @@ import type {
   Regalo,
 } from "./types";
 
-// —— Identidad efímera por sesión (modo demo) ——
-// Cada vez que se ABRE la app se genera un usuario nuevo (`demo|<uuid>`), aislado.
-// Así cada interesado ve el funnel desde cero y dos personas pueden probarla a la
-// vez sin pisarse. Vive en sessionStorage: un refresh accidental no corta el demo
-// a la mitad, pero reabrir (cerrar y volver a entrar) arranca un funnel nuevo.
-// Cuando exista Firebase (front Expo), esto se reemplaza por el ID token real.
+// —— Identidad efímera por sesión (SOLO dev) ——
+// En vite dev cada apertura genera un usuario nuevo (`demo|<uuid>`), aislado, para
+// probar el funnel desde cero. Vive en sessionStorage: un refresh no corta la
+// prueba, reabrir arranca de nuevo. En producción la identidad es Firebase.
+const DEV = import.meta.env.DEV;
 const SUB_KEY = "dwellia-demo-sub";
 
 function nuevoSub(): string {
@@ -54,20 +55,44 @@ export function reiniciarDemo(): void {
   window.location.href = "/";
 }
 
-const DEV_HEADERS: Record<string, string> = {
-  "X-Debug-Sub": demoSub(),
-  "X-Debug-Email": "demo@dwellia.local",
-};
+// Headers de identidad. En dev: X-Debug-*. En prod: Bearer con el ID token de
+// Firebase (el SDK lo cachea y refresca solo). Sin usuario (página pública
+// /c/:token) la request va sin Authorization.
+async function authHeaders(forzarRefresh = false): Promise<Record<string, string>> {
+  if (DEV) {
+    return { "X-Debug-Sub": demoSub(), "X-Debug-Email": "demo@dwellia.local" };
+  }
+  const user = auth.currentUser;
+  if (!user) return {};
+  return { Authorization: `Bearer ${await user.getIdToken(forzarRefresh)}` };
+}
 
-async function req<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const res = await fetch(path, {
+async function hacerFetch(
+  path: string,
+  init: RequestInit,
+  forzarRefresh: boolean,
+): Promise<Response> {
+  return fetch(path, {
     ...init,
     headers: {
       "Content-Type": "application/json",
-      ...DEV_HEADERS,
+      ...(await authHeaders(forzarRefresh)),
       ...(init.headers || {}),
     },
   });
+}
+
+async function req<T>(path: string, init: RequestInit = {}): Promise<T> {
+  let res = await hacerFetch(path, init, false);
+  // 401 en prod con sesión: un reintento con token refrescado a la fuerza;
+  // si persiste, la sesión ya no vale → cerrar y volver al login.
+  if (res.status === 401 && !DEV && auth.currentUser) {
+    res = await hacerFetch(path, init, true);
+    if (res.status === 401) {
+      await cerrarSesion().catch(() => {});
+      window.location.href = "/login";
+    }
+  }
   if (!res.ok) {
     let detail = res.statusText;
     try {
