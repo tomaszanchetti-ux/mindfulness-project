@@ -5,11 +5,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/Button";
+import { FotoPrivada } from "../components/FotoPrivada";
 import { Stars } from "../components/Stars";
 import { api } from "../lib/api";
-import type { CartaDelDia } from "../lib/types";
+import type { CartaDelDia, FotoSubida } from "../lib/types";
 
 const LIMITE = 250;
+const MAX_FOTOS = 3;
 
 export function Reflect() {
   const { id = "" } = useParams();
@@ -18,16 +20,33 @@ export function Reflect() {
   const [data, setData] = useState<CartaDelDia | null>(null);
   const [texto, setTexto] = useState("");
   const [estrellas, setEstrellas] = useState<number | null>(null);
-  const [fotos, setFotos] = useState<string[]>([]); // preview local (sin endpoint aún)
+  // WS16: las fotos se suben a Storage apenas se eligen (y se pueden quitar).
+  const [fotos, setFotos] = useState<FotoSubida[]>([]);
+  const [subiendo, setSubiendo] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
   useEffect(() => {
     api.cartaDelDia().then(setData).catch(() => setData(null));
   }, [id]);
 
-  const agregarFoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const agregarFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && fotos.length < 3) setFotos((f) => [...f, URL.createObjectURL(file)]);
+    e.target.value = ""; // permite volver a elegir el mismo archivo
+    if (!file || fotos.length >= MAX_FOTOS || subiendo) return;
+    setSubiendo(true);
+    try {
+      const f = await api.subirFoto(id, file);
+      setFotos((cur) => [...cur, f]);
+    } catch (err) {
+      alert((err as Error).message);
+    } finally {
+      setSubiendo(false);
+    }
+  };
+
+  const quitarFoto = (f: FotoSubida) => {
+    setFotos((cur) => cur.filter((x) => x.id !== f.id));
+    api.borrarFoto(f.id).catch(() => {});
   };
 
   const guardar = async () => {
@@ -91,14 +110,30 @@ export function Reflect() {
 
       <p className="reflect-helper-mem">Conmemórala con una foto (opcional):</p>
       <div className="photo-row">
-        {fotos.map((src, i) => (
-          <img key={i} className="photo-thumb" src={src} alt="" />
+        {fotos.map((f) => (
+          <span key={f.id} className="photo-thumb-wrap">
+            <FotoPrivada className="photo-thumb" src={f.url} />
+            <button
+              type="button"
+              className="photo-remove"
+              aria-label="Quitar foto"
+              onClick={() => quitarFoto(f)}
+            >
+              ×
+            </button>
+          </span>
         ))}
-        {fotos.length < 3 && (
-          <label className="photo-add">
-            <span className="plus">+</span>
-            <span>Foto</span>
-            <input type="file" accept="image/*" hidden onChange={agregarFoto} />
+        {fotos.length < MAX_FOTOS && (
+          <label className={`photo-add ${subiendo ? "busy" : ""}`}>
+            <span className="plus">{subiendo ? "…" : "+"}</span>
+            <span>{subiendo ? "Subiendo" : "Foto"}</span>
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              disabled={subiendo}
+              onChange={agregarFoto}
+            />
           </label>
         )}
       </div>

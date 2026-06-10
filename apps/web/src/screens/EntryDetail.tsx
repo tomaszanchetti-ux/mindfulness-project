@@ -8,7 +8,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "../components/Card";
 import { Button } from "../components/Button";
 import { Stars } from "../components/Stars";
-import { api, assetUrl } from "../lib/api";
+import { api } from "../lib/api";
+import { FotoPrivada } from "../components/FotoPrivada";
 import { fechaLarga } from "../lib/format";
 import type { ItemBaul } from "../lib/types";
 
@@ -136,8 +137,8 @@ function BaulPage({
 
       {item.fotos.length > 0 && (
         <div className="detail-photos">
-          {item.fotos.map((src, i) => (
-            <img key={i} src={assetUrl(src)} alt="" />
+          {item.fotos.map((src) => (
+            <FotoPrivada key={src} src={src} />
           ))}
         </div>
       )}

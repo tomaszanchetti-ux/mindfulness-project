@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from .config import settings
 from .db.base import get_session
 from .db.models import Accion, Carta, Categoria
-from .routers import baul, compartir, entregas, perfil
+from .routers import baul, compartir, entregas, fotos, perfil
 
 app = FastAPI(title="Mindful API", version="0.0.1")
 
@@ -28,6 +28,7 @@ app.add_middleware(
 
 app.include_router(perfil.router)
 app.include_router(entregas.router)
+app.include_router(fotos.router)
 app.include_router(baul.router)
 app.include_router(compartir.router)
 app.include_router(compartir.public_router)

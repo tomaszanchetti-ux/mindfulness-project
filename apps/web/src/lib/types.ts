@@ -57,8 +57,14 @@ export interface ItemBaul {
   estrellas: number | null;
   completada: boolean;
   reflexion: string | null;
-  fotos: string[];
+  fotos: string[]; // URLs de la API (/api/fotos/{id}) — privadas, se piden con auth
   carta: Carta;
+}
+
+// Respuesta al subir una foto de la pausa (hasta 3 por entrega).
+export interface FotoSubida {
+  id: string;
+  url: string;
 }
 
 export interface Perfil {

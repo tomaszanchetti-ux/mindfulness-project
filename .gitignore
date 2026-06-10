@@ -23,3 +23,6 @@ dist/
 # Deploy
 .deploy/
 .firebase/
+
+# Fotos en modo storage local (dev)
+apps/api/var/

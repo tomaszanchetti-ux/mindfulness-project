@@ -414,6 +414,49 @@
   border-radius: 16px;
   object-fit: cover;
   border: 1px solid var(--sand-line);
+  display: block;
+}
+/* WS16 · miniatura subida con su botón de quitar. */
+.photo-thumb-wrap {
+  position: relative;
+  display: inline-block;
+}
+.photo-remove {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--sand-line);
+  background: var(--soft-ivory);
+  color: var(--warm-taupe);
+  font-size: 15px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 2px 6px var(--warm-shadow-soft);
+}
+.photo-remove:hover {
+  color: var(--deep-umber);
+}
+.photo-add.busy {
+  opacity: 0.6;
+  pointer-events: none;
+}
+/* Placeholder mientras la imagen privada baja (fetch con auth). */
+.foto-cargando {
+  display: block;
+  background: var(--oat-milk);
+  border: 1px solid var(--sand-line);
+  border-radius: 16px;
+  width: 72px;
+  height: 72px;
+  animation: foto-pulso 1.4s ease-in-out infinite;
+}
+@keyframes foto-pulso {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
 }
 /* Tile para sumar foto: mismo tamaño que la miniatura, borde punteado suave. */
 .photo-add {
@@ -724,7 +767,8 @@
   gap: 10px;
   flex-wrap: wrap;
 }
-.detail-photos img {
+.detail-photos img,
+.detail-photos .foto-cargando {
   width: 90px;
   height: 90px;
   border-radius: 14px;

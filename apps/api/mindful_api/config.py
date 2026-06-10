@@ -21,6 +21,11 @@ class Settings(BaseSettings):
     auth_mode: str = "dev"
     google_cloud_project: str = ""
 
+    # Fotos (M3/M4): local = disco (dev/tests) | gcs = bucket privado Cloud Storage.
+    storage_mode: str = "local"
+    storage_dir: str = "var/fotos"  # raíz del modo local (relativa a apps/api)
+    fotos_bucket: str = ""  # nombre del bucket en modo gcs
+
     # CORS para la PWA / app (Expo dev server).
     cors_origins: str = "http://localhost:8081,http://localhost:19006,http://127.0.0.1:8081"
 

@@ -11,6 +11,7 @@ import type {
   CartaDelDia,
   CategoriaContenido,
   Compartido,
+  FotoSubida,
   ItemBaul,
   Perfil,
   Regalo,
@@ -72,10 +73,12 @@ async function hacerFetch(
   init: RequestInit,
   forzarRefresh: boolean,
 ): Promise<Response> {
+  // Con FormData el navegador pone solo el Content-Type multipart (con boundary).
+  const esForm = init.body instanceof FormData;
   return fetch(path, {
     ...init,
     headers: {
-      "Content-Type": "application/json",
+      ...(esForm ? {} : { "Content-Type": "application/json" }),
       ...(await authHeaders(forzarRefresh)),
       ...(init.headers || {}),
     },
@@ -151,6 +154,18 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
+  // —— Fotos de la pausa (M3 captura / M4 muestra) ——
+  subirFoto: (entregaId: string, file: File) => {
+    const fd = new FormData();
+    fd.append("foto", file);
+    return req<FotoSubida>(`/api/entregas/${entregaId}/fotos`, {
+      method: "POST",
+      body: fd,
+    });
+  },
+  borrarFoto: (fotoId: string) =>
+    req<void>(`/api/fotos/${fotoId}`, { method: "DELETE" }),
+
   // —— Baúl (M4) ——
   baul: (orden: "reciente" | "valoradas" = "reciente") =>
     req<ItemBaul[]>(`/api/baul?orden=${orden}`),
@@ -173,4 +188,23 @@ export const api = {
 export function assetUrl(path: string): string {
   if (!path) return "";
   return path.startsWith("/") ? path : `/${path}`;
+}
+
+// —— Fotos privadas ——
+// Un <img> no puede mandar el Bearer/X-Debug, así que la imagen se baja con
+// fetch autenticado y se sirve como object URL. Cache por sesión de página.
+const fotoCache = new Map<string, Promise<string>>();
+
+export function fotoPrivadaUrl(url: string): Promise<string> {
+  let p = fotoCache.get(url);
+  if (!p) {
+    p = (async () => {
+      const res = await fetch(url, { headers: await authHeaders() });
+      if (!res.ok) throw new Error("No pudimos cargar la foto");
+      return URL.createObjectURL(await res.blob());
+    })();
+    fotoCache.set(url, p);
+    p.catch(() => fotoCache.delete(url));
+  }
+  return p;
 }

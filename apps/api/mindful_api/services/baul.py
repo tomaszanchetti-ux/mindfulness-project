@@ -12,13 +12,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db.models import Carta, Compartido, Entrega, Foto
+from . import storage
 from .entrega import _carta_enriquecida
-
-
-def _fotos_de(s: Session, entrega_id: str) -> list[str]:
-    return list(s.scalars(
-        select(Foto.storage_path).where(Foto.entrega_id == entrega_id)
-    ).all())
+from .fotos import urls_de
 
 
 def _item(s: Session, entrega: Entrega) -> dict:
@@ -29,7 +25,8 @@ def _item(s: Session, entrega: Entrega) -> dict:
         "estrellas": entrega.estrellas,
         "completada": entrega.completada,
         "reflexion": entrega.reflexion,
-        "fotos": _fotos_de(s, entrega.id),
+        # URLs de la API (las imágenes son privadas; se sirven con login).
+        "fotos": urls_de(s, entrega.id),
         "carta": _carta_enriquecida(s, carta),
     }
 
@@ -61,6 +58,11 @@ def borrar_entrega(s: Session, usuario_id: str, entrega_id: str) -> None:
     ).all():
         comp.activo = False
 
-    # Borrado real: la fila + sus fotos (cascade por FK). Sin papelera.
+    # Borrado real: primero los ARCHIVOS de las fotos (Storage), después la fila
+    # (las filas de fotos caen por cascade del FK). Sin papelera.
+    rutas = list(s.scalars(
+        select(Foto.storage_path).where(Foto.entrega_id == entrega_id)
+    ).all())
+    storage.borrar(rutas)
     s.delete(entrega)
     s.commit()
