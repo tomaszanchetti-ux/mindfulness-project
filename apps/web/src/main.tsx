@@ -12,10 +12,8 @@ import "./theme.css";
 import "./app.css";
 
 import { Frame } from "./components/Frame";
-import { TourController } from "./components/TourController";
 import { AuthProvider, useAuth } from "./auth";
 import { StoreProvider, useStore } from "./store";
-import { TutorialProvider } from "./tutorial";
 import { initInstallPrompt } from "./pwa";
 
 import { Login } from "./screens/Login";
@@ -71,7 +69,6 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
       <StoreProvider>
-        <TutorialProvider>
         <Frame>
           <Routes>
             <Route path="/" element={<RequireAuth><Gate /></RequireAuth>} />
@@ -92,9 +89,7 @@ function App() {
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-          <TourController />
         </Frame>
-        </TutorialProvider>
       </StoreProvider>
       </AuthProvider>
     </BrowserRouter>

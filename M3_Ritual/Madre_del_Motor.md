@@ -80,6 +80,16 @@ queda protegido: *hacé afuera → volvé → cerrá.*
 > con una reflexión** de ayuda-memoria. Así no se repite "escribí en tu diario" cuando ya
 > estás de vuelta en la app.
 
+> **Refinamiento WS14 (testing en vida real — el flujo no se entendía):** tres cambios.
+> **(1) El diario vive AHORA DENTRO de cada prompt** (deroga parcialmente WS10): cada
+> carta termina con su propia vuelta al diario, redactada a medida ("…Después escribe en
+> tu diario qué se aquietó en ti."). La carta sola ya cuenta el ritual completo.
+> **(2) El CTA "Reflexionar" desaparece**: el primario de la Home girada es **"Guardar"**
+> (lleva a la pantalla de guardado, donde la reflexión/fotos/estrellas son opcionales) y
+> el secundario es **"Compartir"**. **(3) Loop Guardar↔Compartir**: quien guarda es
+> invitado a compartir en el cierre; quien comparte primero es invitado a guardar al
+> generar el enlace. Cualquiera de los dos caminos te lleva al otro.
+
 > **Lo que ves al volver depende de si ya cerraste.** Si ya guardaste hoy, la carta se ve
 > en modo "hecho" (tu reflexión y fotos a la vista, en calma). No hay nada más que hacer
 > hasta mañana.

@@ -1,26 +1,24 @@
 // Cierre del ritual (§12.3). Materializa "la mejor sesión termina".
 // Marca la entrega como completada (idempotente; no pisa la reflexión ya escrita).
-// Acción primaria = Cerrar. Enviar es secundaria.
+// Acción primaria = Cerrar. Compartir queda bien visible (loop WS14: quien guarda
+// es invitado a compartir).
 
 import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/Button";
 import { api } from "../lib/api";
-import { TOUR_ID, useTutorial } from "../tutorial";
 
 export function Completion() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
-  const tut = useTutorial();
   const marcada = useRef(false);
 
   useEffect(() => {
-    if (tut.activo || id === TOUR_ID) return; // en el tour no se persiste nada
     if (marcada.current) return;
     marcada.current = true;
     // Sólo confirma "completada"; reflexión/estrellas (si las hubo) quedan intactas.
     api.cerrarRitual(id, { completada: true }).catch(() => {});
-  }, [id, tut.activo]);
+  }, [id]);
 
   return (
     <div className="completion">
@@ -37,11 +35,11 @@ export function Completion() {
           Cerrar
         </Button>
         <Button
-          variant="tertiary"
-          data-tour="send-btn"
+          variant="secondary"
+          full
           onClick={() => navigate(`/compartir/${id}`)}
         >
-          Enviar a alguien
+          Compartir
         </Button>
       </div>
     </div>

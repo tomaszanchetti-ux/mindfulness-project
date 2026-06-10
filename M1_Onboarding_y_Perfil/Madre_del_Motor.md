@@ -100,6 +100,19 @@ al final**, con capturas reales:
 
 ## 6. La carta de prueba (tutorial guiado) → handoff a M2/M3
 
+> **⚠️ DEROGADO EN WS14** (testing en vida real: el tour de 11 pop-ups sobre una carta
+> de ejemplo confundía y retrasaba el primer uso real). Reemplazo:
+> **(a)** la intro del onboarding pasa a ser un **storyboard visual de 5 viñetas
+> ilustradas** (recibe carta · vive la pausa · escribe en su diario · guarda en el Baúl ·
+> comparte si quiere) — ahí vive ahora la explicación del ritual;
+> **(b)** al terminar la configuración el usuario cae directo en **su carta REAL del
+> día** (M2 la entrega en el momento) con solo **2 nudges contextuales** la primera vez
+> (señalan la carta y el botón Guardar; se marcan vistos en el dispositivo y no
+> reaparecen). No hay carta de ensayo: los prompts ya cuentan el ritual completo (WS14,
+> diario integrado) y la pantalla de guardado es autoexplicativa (todo opcional).
+
+<details><summary>Texto original (histórico, pre-WS14)</summary>
+
 Al terminar la configuración mostramos **una carta real en modo práctica**, con pop-ups
 que enseñan el ritual paso a paso:
 
@@ -112,6 +125,8 @@ que enseñan el ritual paso a paso:
 5. **Guardá.**
 
 Es un **ensayo**: enseña la mecánica de **M3 (Ritual)** sin guardar nada en el Baúl.
+
+</details>
 La **primera carta real** llega después, **a su horario**, vía **M2 (Entrega)** — así
 el Baúl arranca limpio con algo que sí vivió.
 

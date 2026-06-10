@@ -1,12 +1,12 @@
-// Reflexionar (§12.2). Convertir la consigna en algo propio, sin presión.
-// Todo opcional: se puede guardar sin escribir ni una palabra (regla M3).
+// Guardar la pausa (§12.2, reframe WS14). El usuario ya vivió la pausa y escribió
+// en su diario afuera; acá la guarda en el Baúl con extras OPCIONALES (nota,
+// estrellas, foto). Se puede guardar sin escribir ni una palabra (regla M3).
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Stars } from "../components/Stars";
 import { api } from "../lib/api";
-import { CARTA_DEMO, TOUR_ID, useTutorial } from "../tutorial";
 import type { CartaDelDia } from "../lib/types";
 
 const LIMITE = 250;
@@ -14,7 +14,6 @@ const LIMITE = 250;
 export function Reflect() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
-  const tut = useTutorial();
 
   const [data, setData] = useState<CartaDelDia | null>(null);
   const [texto, setTexto] = useState("");
@@ -23,27 +22,8 @@ export function Reflect() {
   const [guardando, setGuardando] = useState(false);
 
   useEffect(() => {
-    // Modo tutorial: carta de ejemplo, sin API.
-    if (tut.activo || id === TOUR_ID) {
-      setData({
-        carta: CARTA_DEMO,
-        entrega: {
-          id: TOUR_ID,
-          fecha: new Date().toISOString(),
-          estrellas: null,
-          completada: false,
-          reflexion: null,
-        },
-      });
-      return;
-    }
     api.cartaDelDia().then(setData).catch(() => setData(null));
-  }, [tut.activo, id]);
-
-  // Edge: ruta del tour abierta sin tour activo (recarga) → volver a Hoy.
-  useEffect(() => {
-    if (id === TOUR_ID && !tut.activo) navigate("/hoy", { replace: true });
-  }, [id, tut.activo, navigate]);
+  }, [id]);
 
   const agregarFoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,7 +31,6 @@ export function Reflect() {
   };
 
   const guardar = async () => {
-    if (tut.activo) return; // en el tour, el avance lo maneja el recorrido
     setGuardando(true);
     try {
       await api.cerrarRitual(id, {
@@ -74,6 +53,10 @@ export function Reflect() {
         ← Volver
       </button>
 
+      <div className="screen-head">
+        <h1 className="screen-title">Guarda tu pausa de hoy</h1>
+      </div>
+
       {data && (
         <div className="reflect-recap">
           <div className="frase">{data.carta.frase}</div>
@@ -85,12 +68,13 @@ export function Reflect() {
         <p className="pausa-text">{data?.carta.prompt}</p>
       </div>
 
-      {/* WS10 · paso de vuelta a la app: reflexionar sobre la actividad → puntuar → foto opcional. */}
-      <p className="reflect-invite">Tómate un momento para reflexionar sobre tu pausa.</p>
+      {/* WS14 · guardar con extras opcionales: nota → puntuar → foto. */}
+      <p className="reflect-invite">
+        Si escribiste en tu diario, puedes dejar aquí una nota para tu Baúl.
+      </p>
       <textarea
         className="textarea"
-        data-tour="refl-text"
-        placeholder="¿Qué te dejó? Escribe tu reflexión…"
+        placeholder="¿Qué te dejó esta pausa? (opcional)…"
         maxLength={LIMITE}
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
@@ -100,13 +84,13 @@ export function Reflect() {
       </div>
       <p className="helper" style={{ marginTop: 2 }}>Una palabra, una frase o nada. Esto es tuyo.</p>
 
-      <div style={{ textAlign: "center", margin: "20px 0 14px" }} data-tour="refl-stars">
+      <div style={{ textAlign: "center", margin: "20px 0 14px" }}>
         <p className="completion-stars-label">¿Cuánto te llegó? (opcional)</p>
         <Stars value={estrellas} onChange={setEstrellas} />
       </div>
 
       <p className="reflect-helper-mem">Conmemórala con una foto (opcional):</p>
-      <div className="photo-row" data-tour="refl-photo">
+      <div className="photo-row">
         {fotos.map((src, i) => (
           <img key={i} className="photo-thumb" src={src} alt="" />
         ))}
@@ -123,7 +107,6 @@ export function Reflect() {
         <Button
           variant="primary"
           full
-          data-tour="refl-save"
           disabled={guardando}
           onClick={guardar}
         >

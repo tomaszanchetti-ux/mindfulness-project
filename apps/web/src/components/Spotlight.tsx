@@ -1,7 +1,7 @@
 // Spotlight: desatura la pantalla (gris) y deja a color SOLO el elemento objetivo,
-// con el globo explicativo al lado. Si no hay objetivo, centra el globo (paso final).
-// Patrón de "product tour": el resto de la pantalla queda inerte (el overlay captura
-// los clics); solo se avanza con los botones del globo.
+// con el globo explicativo al lado (la "voz de guía"). Si no hay objetivo, centra
+// el globo. El resto de la pantalla queda inerte (el overlay captura los clics);
+// se cierra con el CTA del globo. Lo usan los nudges de primer uso (WS14).
 //
 // El gris se logra con 4 paneles `backdrop-filter: grayscale()` alrededor del hueco
 // (no con mask/clip-path: combinarlos con backdrop-filter tiene bugs en Safari iOS).
@@ -15,13 +15,8 @@ interface SpotlightProps {
   targetSelector: string | null;
   titulo: string;
   cuerpo: string;
-  paso: number; // índice 0-based
-  total: number;
-  esFinal: boolean;
-  ctaSiguiente: string;
-  onNext: () => void;
-  onPrev: () => void;
-  onSkip: () => void;
+  cta?: string;
+  onDone: () => void;
 }
 
 interface Rect {
@@ -90,13 +85,8 @@ export function Spotlight({
   targetSelector,
   titulo,
   cuerpo,
-  paso,
-  total,
-  esFinal,
-  ctaSiguiente,
-  onNext,
-  onPrev,
-  onSkip,
+  cta = "Entendido",
+  onDone,
 }: SpotlightProps) {
   const rect = useTargetRect(targetSelector);
   const [vh, setVh] = useState(() => window.innerHeight);
@@ -179,29 +169,12 @@ export function Spotlight({
             : undefined
         }
       >
-        <div className="spot-dots">
-          {Array.from({ length: total }).map((_, i) => (
-            <span key={i} className={`coach-dot ${i === paso ? "on" : ""}`} />
-          ))}
-        </div>
         <h3 className="coach-title">{titulo}</h3>
         <p className="coach-body">{cuerpo}</p>
         <div className="spot-actions">
-          <Button variant="primary" full onClick={onNext}>
-            {ctaSiguiente}
+          <Button variant="primary" full onClick={onDone}>
+            {cta}
           </Button>
-          <div className="spot-subnav">
-            {paso > 0 && !esFinal && (
-              <button className="spot-link" onClick={onPrev}>
-                Atrás
-              </button>
-            )}
-            {!esFinal && (
-              <button className="spot-link" onClick={onSkip}>
-                Saltar
-              </button>
-            )}
-          </div>
         </div>
       </div>
     </div>

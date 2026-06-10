@@ -8,9 +8,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
+import { StoryArt } from "../components/StoryArt";
+import type { Escena } from "../components/StoryArt";
 import { api } from "../lib/api";
 import { useStore } from "../store";
-import { useTutorial } from "../tutorial";
+
+// El ritual contado en 5 viñetas (WS14, reemplaza la lista numerada y el tour).
+const VINETAS: { escena: Escena; texto: string }[] = [
+  { escena: "recibe", texto: "Recibe una carta cada día" },
+  { escena: "pausa", texto: "Vive tu pausa, lejos del teléfono" },
+  { escena: "diario", texto: "Escribe en tu diario lo que sentiste" },
+  { escena: "guarda", texto: "Guárdala en tu Baúl" },
+  { escena: "comparte", texto: "Compártela si quieres" },
+];
 
 const ACCION_PISO = "escribir"; // siempre incluida y bloqueada (WS10)
 
@@ -28,7 +38,6 @@ const PRIMER_CONFIG = 2;
 export function Onboarding() {
   const navigate = useNavigate();
   const { categorias, acciones, refrescarPerfil } = useStore();
-  const tutorial = useTutorial();
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Madrid";
 
   const [step, setStep] = useState(0);
@@ -91,8 +100,7 @@ export function Onboarding() {
         aceptar_terminos: true,
       });
       await refrescarPerfil();
-      // Última etapa del onboarding (canon M1): el tour guiado sobre el funnel real.
-      tutorial.start();
+      // WS14: directo a la carta real del día; los nudges de la Home hacen el resto.
       navigate("/hoy", { replace: true });
     } catch (e) {
       setGuardando(false);
@@ -130,20 +138,16 @@ export function Onboarding() {
         <>
           <div className="ob-explain">
             <p className="ob-explain-lead">Una pausa al día.</p>
-            <ol className="ob-steps">
-              <li>
-                <span className="ob-step-n">1</span>
-                <span>Recibe una carta</span>
-              </li>
-              <li>
-                <span className="ob-step-n">2</span>
-                <span>Realiza la pausa</span>
-              </li>
-              <li>
-                <span className="ob-step-n">3</span>
-                <span>Escribe lo que sentiste</span>
-              </li>
-            </ol>
+            <div className="ob-story">
+              {VINETAS.map((v) => (
+                <div key={v.escena} className="ob-story-row">
+                  <span className="ob-story-icon">
+                    <StoryArt escena={v.escena} />
+                  </span>
+                  <span className="ob-story-text">{v.texto}</span>
+                </div>
+              ))}
+            </div>
             <p className="ob-explain-accent">Sin feed ni likes.</p>
             <p className="ob-explain-tip">
               Recomendamos tener un diario físico y 15 minutos de calma al día.

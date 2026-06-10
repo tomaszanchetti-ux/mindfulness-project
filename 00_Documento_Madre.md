@@ -41,9 +41,11 @@ guardá lo que viste"). Frase + micro-prompt, inseparables.
 El usuario hace el **onboarding una sola vez**. Después, **cada día a su hora**
 recibe una **carta** (con un aviso opcional). La abre cerrada, la **gira**, lee la
 frase y el micro-prompt, **hace el ejercicio afuera del teléfono**, **escribe en su
-diario lo que sintió** (el cierre siempre invita a eso) y, si quiere, vuelve y sube
-una **foto + una reflexión corta ≤250 de ayuda-memoria**. Todo se guarda en el **Baúl**.
-Puede compartir la carta por link si le nace. Y la app **se apaga**.
+diario lo que sintió** (desde WS14 cada prompt lo pide expresamente, con redacción
+propia por carta) y, si quiere, vuelve, toca **Guardar** y suma una **foto + una
+reflexión corta ≤250 opcional**. Todo se guarda en el **Baúl**. Puede **Compartir**
+la carta por link si le nace — y guardar↔compartir se invitan mutuamente (loop WS14).
+Y la app **se apaga**.
 
 **Los tres loops**
 1. **Diario:** aviso → carta del día → se ejecuta afuera → (opcional) foto + reflexión → al Baúl → la app se apaga.

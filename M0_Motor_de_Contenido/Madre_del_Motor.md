@@ -61,7 +61,8 @@ Toda carta se mide contra esto. Si no las cumple, no entra.
 **Estilo de redacción** (calibrado en Gratitud). Frase y acción son dos piezas distintas:
 - **Frase:** corta, poética, abstracta, **memorable**. *Resuena* con la acción pero NO la explica ni la instruye — es una imagen o idea para recordar. Si puede guiñar al motivo de la categoría (amanecer, luna, montaña…) sin nombrarlo, mejor.
 - **Acción:** **genérica y libre** — realizable cualquier día, sin suponer nada (que pasó algo puntual, que te cruzaste con alguien, clima, cantidades). El foco está acá: simple, concreta, con valor real.
-- **Tono:** español neutro.
+- **El prompt integra el diario (WS14, deroga la regla WS10 de "cierre fuera de los prompts"):** todo prompt termina (o teje) la vuelta al **diario físico** con redacción ÚNICA por carta, conectada a su contenido — nunca una coletilla idéntica pegada. En las cartas de acción "escribir", el diario va dentro de la consigna ("Escribe en tu diario sobre…"). La pregunta de diario debe ser respondible y concreta (no binaria, no cuantificar metáforas).
+- **Tono:** español de España, neutro (tú: "escribe", "te gustaría"). Sin localismos americanos (apurarse, acomodarse, postergar, "afuera" estático, "a ningún lado") ni calcos del inglés ("cómo se siente + infinitivo").
 
 ---
 
