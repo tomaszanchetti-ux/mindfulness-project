@@ -2,6 +2,10 @@
 // qué hacer con ella. Carta cerrada (frente) → "Ver mi pausa" revela el dorso.
 // Si ya guardaste la pausa de hoy, la Home pasa a modo "hecho" (en calma).
 //
+// QA 10/06: la carta "llega" al horario elegido (hora_aviso). Antes de esa hora la
+// Home muestra una espera con cuenta regresiva — salvo que la pausa de hoy ya esté
+// guardada (p. ej. cambiaste el horario después de vivirla), donde manda "hecho".
+//
 // Primer uso (WS14): dos nudges contextuales sobre la carta REAL — señalan la carta
 // y el botón Guardar. Se ven una sola vez por usuario/dispositivo (lib/nudges).
 
@@ -10,9 +14,10 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "../components/Card";
 import { Button } from "../components/Button";
 import { Spotlight } from "../components/Spotlight";
+import { StoryArt } from "../components/StoryArt";
 import { useAuth } from "../auth";
 import { api } from "../lib/api";
-import { fechaLarga, saludo } from "../lib/format";
+import { cuentaRegresiva, fechaLarga, horaAvisoDeHoy, saludo } from "../lib/format";
 import { marcarNudgeVisto, nudgeVisto } from "../lib/nudges";
 import { useStore } from "../store";
 import type { CartaDelDia } from "../lib/types";
@@ -24,6 +29,7 @@ export function Home() {
   const [data, setData] = useState<CartaDelDia | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [flipped, setFlipped] = useState(false);
+  const [ahora, setAhora] = useState(() => new Date());
   const [nudgeCarta, setNudgeCarta] = useState(() => !nudgeVisto(uid, "carta"));
   const [nudgeGuardar, setNudgeGuardar] = useState(() => !nudgeVisto(uid, "guardar"));
 
@@ -38,17 +44,50 @@ export function Home() {
       .catch((e) => setError((e as Error).message));
   }, []);
 
+  // Tic del reloj: mantiene vivos el saludo y la cuenta regresiva de la espera.
+  useEffect(() => {
+    const t = setInterval(() => setAhora(new Date()), 20_000);
+    return () => clearInterval(t);
+  }, []);
+
   if (error) return <div className="center-note">{error}</div>;
   if (!data) return <div className="center-note">Preparando tu pausa…</div>;
 
   const { carta, entrega } = data;
   const hecha = entrega.completada;
 
+  // ¿El horario elegido aún no llegó hoy? → la carta todavía "no llegó".
+  const horaCarta = horaAvisoDeHoy(perfil?.hora_aviso);
+  const esperando = !hecha && horaCarta !== null && ahora < horaCarta;
+
+  if (esperando) {
+    return (
+      <div>
+        <div className="home-greet">
+          <p className="screen-kicker">
+            {saludo()}
+            {perfil?.apodo ? `, ${perfil.apodo}` : ""}.
+          </p>
+          <p className="home-date">{fechaLarga(entrega.fecha)}</p>
+        </div>
+        <div className="home-wait">
+          <div className="home-wait-art">
+            <StoryArt escena="recibe" />
+          </div>
+          <p className="home-wait-title">
+            A las {perfil?.hora_aviso?.slice(0, 5)} te llegará tu carta de hoy.
+          </p>
+          <p className="home-wait-count">{cuentaRegresiva(horaCarta, ahora)}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="home-greet">
         <p className="screen-kicker">
-          {saludo(perfil?.hora_aviso)}
+          {saludo()}
           {perfil?.apodo ? `, ${perfil.apodo}` : ""}.
         </p>
         <p className="home-date">{fechaLarga(entrega.fecha)}</p>
@@ -62,7 +101,10 @@ export function Home() {
         // —— Modo "hecho": pausa de hoy ya guardada. En calma, sin nada que exigir. ——
         <>
           <p className="home-done-note">
-            Ya viviste tu pausa de hoy. Mañana te espera una nueva.
+            Ya viviste tu pausa de hoy.{" "}
+            {perfil?.hora_aviso
+              ? `Mañana a las ${perfil.hora_aviso.slice(0, 5)} te espera una nueva.`
+              : "Mañana te espera una nueva."}
           </p>
           <div className="actions-stack">
             <Button

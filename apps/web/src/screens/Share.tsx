@@ -45,12 +45,15 @@ export function Share() {
   }, [id]);
 
   // Recordar el enlace ya generado: si el remitente va al preview y vuelve, sigue acá
-  // (no pierde el botón Copiar ni tiene que generar otro).
+  // (no pierde el botón Copiar ni tiene que generar otro). Se guarda también la nota
+  // para poder mostrarla y retocarla (QA 10/06: antes quedaba inaccesible).
   useEffect(() => {
     const saved = sessionStorage.getItem(`share:${id}`);
     if (saved) {
       try {
-        setLink(JSON.parse(saved));
+        const c = JSON.parse(saved) as Compartido & { nota?: string };
+        setLink(c);
+        if (c.nota) setNota(c.nota);
       } catch {
         /* ignorar */
       }
@@ -61,14 +64,26 @@ export function Share() {
     setGenerando(true);
     try {
       // v1 free: siempre "carta sola" (la carta + tu nota, sin tus datos).
-      const c = await api.compartir(id, "carta_sola", nota.trim() || undefined);
+      const notaLimpia = nota.trim();
+      const c = await api.compartir(id, "carta_sola", notaLimpia || undefined);
       setLink(c);
-      sessionStorage.setItem(`share:${id}`, JSON.stringify(c));
+      sessionStorage.setItem(
+        `share:${id}`,
+        JSON.stringify({ ...c, nota: notaLimpia }),
+      );
     } catch (e) {
       alert((e as Error).message);
     } finally {
       setGenerando(false);
     }
+  };
+
+  // Volver a escribir: descarta el enlace de la vista (el regalo es el enlace nuevo
+  // que se genere con la nota retocada) y reabre el campo de la nota.
+  const cambiarNota = () => {
+    sessionStorage.removeItem(`share:${id}`);
+    setLink(null);
+    setCopiado(false);
   };
 
   const urlCompleta = link ? `${window.location.origin}${link.url}` : "";
@@ -123,10 +138,21 @@ export function Share() {
         </>
       ) : (
         <>
+          {nota.trim() && (
+            <p className="share-nota">
+              <span className="share-nota-label">Tu nota · </span>
+              {nota.trim()}
+            </p>
+          )}
           <div className="share-link">
             <code>{urlCompleta}</code>
             <Button variant="secondary" onClick={copiar}>
               {copiado ? "Copiado ✓" : "Copiar"}
+            </Button>
+          </div>
+          <div className="actions-stack-pre">
+            <Button variant="tertiary" onClick={cambiarNota}>
+              {nota.trim() ? "Cambiar la nota" : "Agregar una nota"}
             </Button>
           </div>
           <div className="actions-stack">

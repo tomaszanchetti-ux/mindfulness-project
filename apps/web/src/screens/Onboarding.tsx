@@ -1,11 +1,11 @@
 // Onboarding (M1). "Preparar un ritual", no configurar una app.
 // Flujo canónico: Login → SLIDESHOW (qué es + compromiso) → CONFIGURACIÓN.
-//   Intro (sin progreso):  0 Bienvenida (marca + slogan) · 1 Qué es + compromiso
+//   Intro (sin progreso):  0 Bienvenida (marca + slogan) · 1 Slideshow del ritual
 //   Config (5 pasos):      2 Datos · 3 Categorías · 4 Actividades · 5 Momento · 6 Aviso + términos
 // (El "Tono" del doc UX fue eliminado del onboarding por canon M1.)
 // WS10: el fin es escribir en tu diario; las actividades se ELIGEN ("escribir" siempre).
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { StoryArt } from "../components/StoryArt";
@@ -13,13 +13,59 @@ import type { Escena } from "../components/StoryArt";
 import { api } from "../lib/api";
 import { useStore } from "../store";
 
-// El ritual contado en 5 viñetas (WS14, reemplaza la lista numerada y el tour).
-const VINETAS: { escena: Escena; texto: string }[] = [
-  { escena: "recibe", texto: "Recibe una carta cada día" },
-  { escena: "pausa", texto: "Vive tu pausa, lejos del teléfono" },
-  { escena: "diario", texto: "Escribe en tu diario lo que sentiste" },
-  { escena: "guarda", texto: "Guárdala en tu Baúl" },
-  { escena: "comparte", texto: "Compártela si quieres" },
+// El ritual contado paso a paso: carrusel de 7 pantallas (QA 10/06, reemplaza la
+// lista de viñetas). Se puede deslizar o avanzar con el botón.
+const SLIDES: {
+  escena: Escena;
+  kicker?: string;
+  titulo: string;
+  cuerpo: string;
+  tip?: string;
+}[] = [
+  {
+    escena: "amanecer",
+    titulo: "Una pausa al día.",
+    cuerpo:
+      "Dwellia es un espacio para conectar contigo: al menos 15 minutos al día, lejos de las distracciones.",
+    tip: "Te recomendamos tener un diario personal físico y entre 15 y 30 minutos disponibles cada día.",
+  },
+  {
+    escena: "recibe",
+    kicker: "Paso 1",
+    titulo: "Recibe tu carta",
+    cuerpo: "Cada día, Dwellia te envía una carta con una pausa para realizar.",
+  },
+  {
+    escena: "pausa",
+    kicker: "Paso 2",
+    titulo: "Vive tu pausa",
+    cuerpo: "Lejos del móvil y a tu manera. Ese momento es solo tuyo.",
+  },
+  {
+    escena: "diario",
+    kicker: "Paso 3",
+    titulo: "Escribe lo que sentiste",
+    cuerpo:
+      "Al terminar, escribe en tu diario personal lo que la pausa despertó en ti.",
+  },
+  {
+    escena: "guarda",
+    kicker: "Paso 4",
+    titulo: "Guárdala en tu Baúl",
+    cuerpo:
+      "Vuelve a Dwellia para guardar la experiencia en tu Baúl de crecimiento personal.",
+  },
+  {
+    escena: "comparte",
+    kicker: "Paso 5",
+    titulo: "Compártela si quieres",
+    cuerpo: "Regala tu experiencia a tus seres queridos.",
+  },
+  {
+    escena: "amanecer",
+    titulo: "¿Comenzamos?",
+    cuerpo: "Sin feed ni likes. Solo una pausa al día.",
+  },
 ];
 
 const ACCION_PISO = "escribir"; // siempre incluida y bloqueada (WS10)
@@ -41,6 +87,8 @@ export function Onboarding() {
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Madrid";
 
   const [step, setStep] = useState(0);
+  const [slide, setSlide] = useState(0);
+  const slidesRef = useRef<HTMLDivElement>(null);
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [apodo, setApodo] = useState("");
@@ -110,6 +158,27 @@ export function Onboarding() {
 
   const mostrarProgreso = step >= PRIMER_CONFIG;
 
+  // —— Slideshow (paso 1): swipe nativo con scroll-snap + botón que avanza. ——
+  const onSlidesScroll = () => {
+    const el = slidesRef.current;
+    if (!el) return;
+    setSlide(Math.round(el.scrollLeft / el.clientWidth));
+  };
+
+  const irASlide = (i: number) => {
+    const el = slidesRef.current;
+    if (!el) return;
+    el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+  };
+
+  const avanzarSlide = () => {
+    if (slide >= SLIDES.length - 1) {
+      setStep(2);
+      return;
+    }
+    irASlide(slide + 1);
+  };
+
   return (
     <div className="ob">
       {mostrarProgreso && (
@@ -133,29 +202,35 @@ export function Onboarding() {
         </div>
       )}
 
-      {/* —— 1 · Qué es + compromiso (suave, con aire) —— */}
+      {/* —— 1 · El ritual contado paso a paso (slideshow deslizable) —— */}
       {step === 1 && (
         <>
-          <div className="ob-explain">
-            <p className="ob-explain-lead">Una pausa al día.</p>
-            <div className="ob-story">
-              {VINETAS.map((v) => (
-                <div key={v.escena} className="ob-story-row">
-                  <span className="ob-story-icon">
-                    <StoryArt escena={v.escena} />
-                  </span>
-                  <span className="ob-story-text">{v.texto}</span>
+          <div className="ob-slides" ref={slidesRef} onScroll={onSlidesScroll}>
+            {SLIDES.map((s, i) => (
+              <section className="ob-slide" key={i}>
+                <div className="ob-slide-art">
+                  <StoryArt escena={s.escena} />
                 </div>
-              ))}
-            </div>
-            <p className="ob-explain-accent">Sin feed ni likes.</p>
-            <p className="ob-explain-tip">
-              Recomendamos tener un diario físico y 15 minutos de calma al día.
-            </p>
+                {s.kicker && <p className="ob-slide-kicker">{s.kicker}</p>}
+                <h2 className="ob-slide-title">{s.titulo}</h2>
+                <p className="ob-slide-body">{s.cuerpo}</p>
+                {s.tip && <p className="ob-slide-tip">{s.tip}</p>}
+              </section>
+            ))}
+          </div>
+          <div className="ob-slides-dots">
+            {SLIDES.map((_, i) => (
+              <button
+                key={i}
+                className={`ob-sdot ${i === slide ? "on" : ""}`}
+                aria-label={`Pantalla ${i + 1}`}
+                onClick={() => irASlide(i)}
+              />
+            ))}
           </div>
           <div className="ob-foot">
-            <Button variant="primary" full onClick={() => setStep(2)}>
-              Continuar
+            <Button variant="primary" full onClick={avanzarSlide}>
+              {slide >= SLIDES.length - 1 ? "Sí, comencemos" : "Siguiente"}
             </Button>
           </div>
         </>

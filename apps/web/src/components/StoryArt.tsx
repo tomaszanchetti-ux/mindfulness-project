@@ -1,8 +1,16 @@
-// Viñetas del onboarding (WS14): 5 ilustraciones de línea fina, dibujadas inline
-// para poder usar las variables de color del tema (línea umber + acento sage).
-// Estilo: trazo 2px redondeado, sin rellenos salvo el acento, mucho aire.
+// Escenas ilustradas del onboarding (slideshow) y estados de espera.
+// Línea fina de la marca (umber + acento sage), dibujadas inline para poder usar
+// las variables de color del tema. Trazo redondeado, sin rellenos salvo el acento.
+// Referencias de contenido: NewCo - Proyectos/Mindfulness App/Onboarding/*.png
+// (allí el estilo es flat-color; acá se traduce al estilo Dwellia).
 
-export type Escena = "recibe" | "pausa" | "diario" | "guarda" | "comparte";
+export type Escena =
+  | "amanecer"
+  | "recibe"
+  | "pausa"
+  | "diario"
+  | "guarda"
+  | "comparte";
 
 const LINEA = "var(--deep-umber)";
 const ACENTO = "var(--sage)";
@@ -11,10 +19,10 @@ const ACENTO_PROFUNDO = "var(--sage-deep)";
 function Lienzo({ children }: { children: React.ReactNode }) {
   return (
     <svg
-      viewBox="0 0 64 64"
+      viewBox="0 0 180 132"
       fill="none"
       stroke={LINEA}
-      strokeWidth="2"
+      strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
@@ -24,96 +32,156 @@ function Lienzo({ children }: { children: React.ReactNode }) {
   );
 }
 
-// 1 · Recibes una carta en el teléfono.
+// Estrella de 4 puntas (el "momento para ti").
+function Destello({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
+  return (
+    <path
+      d={`M${x} ${y - 6 * s}l${1.8 * s} ${4.2 * s} ${4.2 * s} ${1.8 * s} ${-4.2 * s} ${1.8 * s} ${-1.8 * s} ${4.2 * s} ${-1.8 * s} ${-4.2 * s} ${-4.2 * s} ${-1.8 * s} ${4.2 * s} ${-1.8 * s}z`}
+      fill={ACENTO}
+      stroke="none"
+    />
+  );
+}
+
+// — El amanecer de la marca: abre y cierra el slideshow.
+function Amanecer() {
+  return (
+    <Lienzo>
+      <path d="M24 96h132" />
+      <path d="M62 96a28 28 0 0 1 56 0" stroke={ACENTO} strokeWidth="2.6" />
+      <circle cx="90" cy="87" r="6.5" fill={ACENTO} stroke="none" />
+      {/* rayos */}
+      <path d="M90 54V43M65 61l-7.5-7.5M115 61l7.5-7.5M52 80H39M128 80h13" stroke={ACENTO_PROFUNDO} strokeWidth="2.2" />
+      {/* nubes suaves y colinas */}
+      <path d="M34 40c6-4 13-4 19 0" opacity="0.45" />
+      <path d="M124 32c7-4 15-4 22 0" opacity="0.45" />
+      <path d="M28 112c16-7 34-7 50 0" opacity="0.35" />
+      <path d="M102 112c16-7 34-7 50 0" opacity="0.35" />
+    </Lienzo>
+  );
+}
+
+// — Paso 1 · La carta del día llega a tu teléfono.
 function Recibe() {
   return (
     <Lienzo>
-      <rect x="20" y="18" width="24" height="40" rx="5" />
-      <circle cx="32" cy="51" r="1.6" fill={LINEA} stroke="none" />
-      {/* la carta entrando, con el amanecer de la marca */}
-      <g transform="rotate(8 44 10)">
-        <rect x="35" y="3" width="18" height="13" rx="2" fill="var(--soft-ivory)" />
-        <circle cx="44" cy="8" r="2.4" fill={ACENTO} stroke="none" />
-        <path d="M39 12h10" stroke={ACENTO_PROFUNDO} strokeWidth="1.5" />
+      {/* teléfono */}
+      <rect x="104" y="28" width="46" height="78" rx="9" />
+      <path d="M119 36h16" opacity="0.5" />
+      <circle cx="127" cy="95" r="2.6" fill={LINEA} stroke="none" />
+      {/* la carta en viaje, con el amanecer de la marca */}
+      <g transform="rotate(-8 52 64)">
+        <rect x="28" y="48" width="48" height="34" rx="4" fill="var(--soft-ivory)" />
+        <path d="M28 51l24 15 24-15" />
+        <circle cx="52" cy="73" r="3.4" fill={ACENTO} stroke="none" />
       </g>
-      <path d="M30 8c-3 1-5 3-6 6" stroke={ACENTO} strokeWidth="1.5" />
-      <path d="M27 3c-5 2-8 5-9 10" stroke={ACENTO} strokeWidth="1.5" opacity="0.55" />
+      {/* líneas de viaje */}
+      <path d="M8 46h13M4 62h11M10 78h9" stroke={ACENTO_PROFUNDO} strokeWidth="2.2" />
+      {/* sol asomando */}
+      <path d="M118 14c5-6 14-6 19 0" stroke={ACENTO} strokeWidth="2" />
     </Lienzo>
   );
 }
 
-// 2 · Vives la pausa (respirar), lejos del teléfono.
+// — Paso 2 · Vives la pausa lejos del móvil, a tu manera.
 function Pausa() {
   return (
     <Lienzo>
-      <circle cx="30" cy="19" r="7" />
-      <path d="M16 48c0-12 6-17 14-17s14 5 14 17" />
-      {/* el aire que va y viene */}
-      <path d="M44 16c2.5-1.6 5-1.6 7.5 0" stroke={ACENTO} strokeWidth="1.8" />
-      <path d="M45 22c3-1.8 6-1.8 9 0" stroke={ACENTO} strokeWidth="1.8" opacity="0.7" />
-      <path d="M12 54h40" stroke={LINEA} opacity="0.35" />
+      {/* la persona, en calma */}
+      <circle cx="96" cy="42" r="10" />
+      <path d="M80 94c0-22 6-34 16-34s16 12 16 34" />
+      {/* piernas cruzadas */}
+      <path d="M64 100c9-9 18-12 32-12s23 3 32 12" />
+      <path d="M64 100h64" />
+      {/* la respiración */}
+      <path d="M118 34c3-2 6-2 9 0" stroke={ACENTO} strokeWidth="2" />
+      <path d="M119 41c4-2.4 8-2.4 12 0" stroke={ACENTO} strokeWidth="2" opacity="0.7" />
+      {/* suelo */}
+      <path d="M52 110h84" opacity="0.5" />
+      {/* el teléfono quedó lejos, boca abajo */}
+      <rect x="16" y="101" width="22" height="9" rx="3" />
+      {/* el momento para ti */}
+      <Destello x={52} y={34} />
+      <Destello x={140} y={58} s={0.75} />
     </Lienzo>
   );
 }
 
-// 3 · Escribes en tu diario físico lo que sentiste.
+// — Paso 3 · Escribes en tu diario físico lo que sentiste.
 function Diario() {
   return (
     <Lienzo>
-      <path d="M8 22c8-4 16-4 24-1 8-3 16-3 24 1" />
-      <path d="M8 22v24c8-4 16-4 24-1 8-3 16-3 24 1V22" />
-      <path d="M32 21v24" />
+      {/* mesa */}
+      <path d="M16 110h148" opacity="0.4" />
+      {/* cuaderno abierto */}
+      <path d="M40 66c14-7 28-7 42-2 14-5 28-5 42 2" />
+      <path d="M40 66v36c14-7 28-7 42-2 14-5 28-5 42 2V66" />
+      <path d="M82 64v36" />
       {/* lo escrito */}
-      <path d="M14 30h11M14 36h9" stroke={ACENTO_PROFUNDO} strokeWidth="1.6" />
-      {/* el lápiz sobre la página derecha */}
-      <path d="M40 36 52 24" strokeWidth="2.2" />
-      <path d="M40 36l-2.5 3 3-1z" fill={ACENTO} stroke="none" />
+      <path d="M50 76h22M50 84h18M50 92h20" stroke={ACENTO_PROFUNDO} strokeWidth="2" />
+      {/* el lápiz, escribiendo la página derecha */}
+      <path d="M104 90l24-30" strokeWidth="2.6" />
+      <path d="M104 90l-4.5 6.5 7-2.2z" fill={ACENTO} stroke="none" />
+      <path d="M124 56l6.5 5" />
+      {/* una taza acompañando */}
+      <path d="M146 94h16v7a8 8 0 0 1-16 0z" />
+      <path d="M151 84c-1.5 3 1.5 4 0 7M158 84c-1.5 3 1.5 4 0 7" opacity="0.5" />
     </Lienzo>
   );
 }
 
-// 4 · La guardas en tu Baúl.
+// — Paso 4 · Guardas la experiencia en tu Baúl.
 function Guarda() {
   return (
     <Lienzo>
-      <rect x="14" y="34" width="36" height="18" rx="4" />
-      <path d="M14 34c0-8 36-8 36 0" />
-      <circle cx="32" cy="42" r="2" fill={ACENTO} stroke="none" />
+      {/* baúl */}
+      <rect x="52" y="74" width="76" height="38" rx="6" />
+      <path d="M52 74c0-9 76-9 76 0" />
+      <circle cx="90" cy="88" r="2.8" fill={ACENTO} stroke="none" />
       {/* la carta bajando */}
-      <g transform="rotate(-6 32 10)">
-        <rect x="25" y="4" width="14" height="10" rx="2" fill="var(--soft-ivory)" />
-        <circle cx="32" cy="8" r="1.8" fill={ACENTO} stroke="none" />
+      <g transform="rotate(-6 90 28)">
+        <rect x="70" y="14" width="40" height="27" rx="4" fill="var(--soft-ivory)" />
+        <circle cx="90" cy="25" r="4.2" fill={ACENTO} stroke="none" />
+        <path d="M80 33h20" stroke={ACENTO_PROFUNDO} strokeWidth="1.8" />
       </g>
-      <path d="M32 17v9" stroke={ACENTO_PROFUNDO} strokeWidth="1.8" />
-      <path d="M29 23l3 4 3-4" stroke={ACENTO_PROFUNDO} strokeWidth="1.8" fill="none" />
+      <path d="M90 48v12" stroke={ACENTO_PROFUNDO} strokeWidth="2.2" />
+      <path d="M85 56l5 7 5-7" stroke={ACENTO_PROFUNDO} strokeWidth="2.2" />
+      {/* lo que se va juntando brilla */}
+      <Destello x={38} y={62} s={0.7} />
+      <Destello x={142} y={56} s={0.85} />
     </Lienzo>
   );
 }
 
-// 5 · La compartes si quieres: el regalo viaja a otra persona.
+// — Paso 5 · La compartes con tus seres queridos.
 function Comparte() {
   return (
     <Lienzo>
-      <g transform="rotate(-4 21 30)">
-        <rect x="8" y="22" width="22" height="16" rx="2" fill="var(--soft-ivory)" />
+      {/* la carta-regalo */}
+      <g transform="rotate(-6 44 60)">
+        <rect x="20" y="44" width="48" height="34" rx="4" fill="var(--soft-ivory)" />
         <path
-          d="M19 33c-2.6-1.8-4-3.4-4-5a2.3 2.3 0 0 1 4-1.5 2.3 2.3 0 0 1 4 1.5c0 1.6-1.4 3.2-4 5z"
+          d="M44 70c-5-3.5-8-6.5-8-9.6a4.4 4.4 0 0 1 8-2.6 4.4 4.4 0 0 1 8 2.6c0 3.1-3 6.1-8 9.6z"
           fill={ACENTO}
           stroke="none"
         />
       </g>
       {/* el viaje del regalo */}
-      <path d="M34 28c7-6 12-6 18-2" stroke={ACENTO_PROFUNDO} strokeWidth="1.8" strokeDasharray="3 4" />
-      <path d="M50 22l3 4-5 .5" stroke={ACENTO_PROFUNDO} strokeWidth="1.8" fill="none" />
-      {/* quien lo recibe */}
-      <circle cx="50" cy="40" r="5" />
-      <path d="M41 56c0-8 4.5-11 9-11s9 3 9 11" />
+      <path d="M76 50c18-15 34-17 50-7" strokeDasharray="4 6" stroke={ACENTO_PROFUNDO} strokeWidth="2.2" />
+      <path d="M120 38l9 6-10 3.5" stroke={ACENTO_PROFUNDO} strokeWidth="2.2" />
+      {/* quienes lo reciben */}
+      <circle cx="128" cy="72" r="9" />
+      <path d="M112 110c0-14 7-19 16-19s16 5 16 19" />
+      <circle cx="155" cy="79" r="7" />
+      <path d="M143 110c0-11 5.5-15 12-15s12 4 12 15" />
     </Lienzo>
   );
 }
 
 export function StoryArt({ escena }: { escena: Escena }) {
   switch (escena) {
+    case "amanecer":
+      return <Amanecer />;
     case "recibe":
       return <Recibe />;
     case "pausa":

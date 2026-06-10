@@ -23,12 +23,32 @@ export function fechaCorta(iso: string): string {
 }
 
 /**
- * Saludo que matchea el momento que el usuario eligió (su `hora_aviso`, HH:MM).
- * Si no hay horario, cae a la hora local actual.
+ * Saludo según la hora local REAL del dispositivo.
+ * (QA 10/06: antes usaba la `hora_aviso` elegida y a las 13:56 decía "Buenas
+ * noches" a quien eligió el turno noche.)
  */
-export function saludo(hora?: string): string {
-  const h = hora ? parseInt(hora.slice(0, 2), 10) : new Date().getHours();
+export function saludo(): string {
+  const h = new Date().getHours();
   if (h < 13) return "Buenos días";
   if (h < 20) return "Buenas tardes";
   return "Buenas noches";
+}
+
+/** "21:00" de hoy como Date local; null si no hay horario válido. */
+export function horaAvisoDeHoy(hora?: string | null): Date | null {
+  if (!hora || !/^\d{2}:\d{2}/.test(hora)) return null;
+  const d = new Date();
+  d.setHours(parseInt(hora.slice(0, 2), 10), parseInt(hora.slice(3, 5), 10), 0, 0);
+  return d;
+}
+
+/** "Faltan 7 h 4 min" / "Falta menos de un minuto" hasta `objetivo`. */
+export function cuentaRegresiva(objetivo: Date, ahora: Date): string {
+  const min = Math.ceil((objetivo.getTime() - ahora.getTime()) / 60000);
+  if (min <= 1) return "Falta menos de un minuto";
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (h === 0) return `Faltan ${m} min`;
+  if (m === 0) return `Faltan ${h} h`;
+  return `Faltan ${h} h ${m} min`;
 }
