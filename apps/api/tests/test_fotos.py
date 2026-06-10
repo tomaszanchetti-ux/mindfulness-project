@@ -63,13 +63,16 @@ def test_subir_servir_y_listar_en_baul():
     assert item["fotos"] == [url]
 
 
-def test_limite_3_y_formatos():
+def test_limite_free_y_formatos():
     h = _onboard("fotos|limites")
     eid = _entrega_de_hoy(h)
 
-    for _ in range(3):
-        assert _subir(h, eid).status_code == 201
-    assert _subir(h, eid).status_code == 409  # la 4ª no entra
+    # Free: 1 foto por pausa (WS16). Quitar la que está libera el cupo.
+    primera = _subir(h, eid)
+    assert primera.status_code == 201
+    assert _subir(h, eid).status_code == 409  # la 2ª no entra
+    client.delete(primera.json()["url"], headers=h)
+    assert _subir(h, eid).status_code == 201  # con el cupo libre, entra
 
     assert _subir(h, eid, mime="text/plain").status_code == 415
     r = client.post(f"/api/entregas/{eid}/fotos", headers=h,
@@ -109,9 +112,8 @@ def test_borrar_entrega_limpia_storage():
     h = _onboard("fotos|borrado")
     eid = _entrega_de_hoy(h)
     _subir(h, eid)
-    _subir(h, eid)
     client.put(f"/api/entregas/{eid}/cierre", headers=h, json={"completada": True})
 
-    assert len(list(Path(settings.storage_dir).rglob("*.png"))) == 2
+    assert len(list(Path(settings.storage_dir).rglob("*.png"))) == 1
     assert client.delete(f"/api/baul/{eid}", headers=h).status_code == 204
     assert list(Path(settings.storage_dir).rglob("*.png")) == []

@@ -116,6 +116,7 @@ function BaulPage({
   onDelete: () => void;
 }) {
   const [flipped, setFlipped] = useState(true); // mostramos el dorso (la frase)
+  const [zoom, setZoom] = useState<string | null>(null); // foto a pantalla completa
 
   return (
     <div className="baul-page-inner">
@@ -138,8 +139,24 @@ function BaulPage({
       {item.fotos.length > 0 && (
         <div className="detail-photos">
           {item.fotos.map((src) => (
-            <FotoPrivada key={src} src={src} />
+            <button
+              key={src}
+              type="button"
+              className="detail-photo-btn"
+              aria-label="Ver la foto en grande"
+              onClick={() => setZoom(src)}
+            >
+              <FotoPrivada src={src} />
+            </button>
           ))}
+        </div>
+      )}
+
+      {/* La foto en grande: toca cualquier lado para volver. */}
+      {zoom && (
+        <div className="lightbox" onClick={() => setZoom(null)}>
+          <FotoPrivada className="lightbox-img" src={zoom} />
+          <button className="lightbox-close" aria-label="Cerrar">×</button>
         </div>
       )}
 

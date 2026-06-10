@@ -11,7 +11,7 @@ import { api } from "../lib/api";
 import type { CartaDelDia, FotoSubida } from "../lib/types";
 
 const LIMITE = 250;
-const MAX_FOTOS = 3;
+const MAX_FOTOS = 1; // free: una foto por pausa (WS16); premium subirá a 3
 
 export function Reflect() {
   const { id = "" } = useParams();

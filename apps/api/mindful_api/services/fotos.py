@@ -1,8 +1,9 @@
 """M3 captura / M4 muestra · las fotos de una pausa.
 
-Reglas (canon M3): hasta 3 por entrega, opcionales, sin cobrar por cantidad.
-Solo imágenes, ≤8 MB. Siempre del usuario logueado — las fotos jamás se sirven
-sin login (el modo ejercicio público de M5 queda para v2/premium).
+Reglas: en la versión free es **1 foto por pausa** (decisión Tomás WS16; subir a
+3 queda para premium — ajusta el "hasta 3" del canon M3). Solo imágenes, ≤8 MB.
+Siempre del usuario logueado — las fotos jamás se sirven sin login (el modo
+ejercicio público de M5 queda para v2/premium).
 """
 
 from __future__ import annotations
@@ -16,7 +17,7 @@ from sqlalchemy.orm import Session
 from ..db.models import Entrega, Foto
 from . import storage
 
-MAX_FOTOS = 3
+MAX_FOTOS = 1  # free; premium (v2) sube a 3
 MAX_BYTES = 8 * 1024 * 1024  # 8 MB
 
 
@@ -70,9 +71,12 @@ def subir_foto(
         select(func.count()).select_from(Foto).where(Foto.entrega_id == entrega_id)
     )
     if cuantas >= MAX_FOTOS:
-        raise HTTPException(
-            status.HTTP_409_CONFLICT, f"Esta pausa ya tiene {MAX_FOTOS} fotos"
+        detalle = (
+            "Esta pausa ya tiene su foto"
+            if MAX_FOTOS == 1
+            else f"Esta pausa ya tiene {MAX_FOTOS} fotos"
         )
+        raise HTTPException(status.HTTP_409_CONFLICT, detalle)
 
     foto_id = str(uuid4())
     ruta = storage.ruta_canonica(usuario_id, entrega_id, foto_id, ext)
