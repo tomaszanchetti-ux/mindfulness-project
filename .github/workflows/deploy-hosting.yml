@@ -1,0 +1,37 @@
+# Auto-deploy del front a Firebase Hosting (clásico) en cada push a main.
+# El backend (Cloud Run) NO se despliega acá: sigue siendo manual (ver WS09/WS13).
+name: Deploy Hosting
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/web/**"
+      - "firebase.json"
+      - ".github/workflows/deploy-hosting.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Build
+        working-directory: apps/web
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy a Firebase Hosting (live)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DWELLIA_APP }}
+          projectId: dwellia-app
+          channelId: live
