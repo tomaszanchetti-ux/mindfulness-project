@@ -10,7 +10,7 @@ import { Stars } from "../components/Stars";
 import { api } from "../lib/api";
 import type { CartaDelDia, FotoSubida } from "../lib/types";
 
-const LIMITE = 250;
+const LIMITE = 150; // free (WS19); premium subirá a ~500
 const MAX_FOTOS = 1; // free: una foto por pausa (WS16); premium subirá a 3
 
 export function Reflect() {

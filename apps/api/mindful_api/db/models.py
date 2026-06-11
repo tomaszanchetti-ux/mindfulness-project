@@ -147,7 +147,7 @@ class Entrega(Base):
     # M3: opcionales, no bloquean Guardar.
     estrellas: Mapped[Optional[int]] = mapped_column(Integer)  # 1-5
     completada: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    reflexion: Mapped[Optional[str]] = mapped_column(Text)  # ≤250
+    reflexion: Mapped[Optional[str]] = mapped_column(Text)  # ≤150
 
     fotos: Mapped[list["Foto"]] = relationship(
         back_populates="entrega", cascade="all, delete-orphan"

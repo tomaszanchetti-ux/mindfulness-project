@@ -1,5 +1,5 @@
 // Compartir (§12.5). El gesto íntimo: "Vi esto y pensé en ti."
-// v1 free: se envía SÓLO la carta + una nota personal (≤250). El modo "ejercicio"
+// v1 free: se envía SÓLO la carta + una nota personal (≤150). El modo "ejercicio"
 // (sumar reflexión/fotos) queda para premium — el backend lo sigue soportando.
 //
 // Loop WS14: se puede compartir ANTES de guardar (camino B). En ese caso, tras
@@ -12,7 +12,7 @@ import { Button } from "../components/Button";
 import { api } from "../lib/api";
 import type { Compartido, ItemBaul } from "../lib/types";
 
-const LIMITE = 250;
+const LIMITE = 150; // free (WS19); premium subirá a ~500
 
 export function Share() {
   const { id = "" } = useParams();

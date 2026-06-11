@@ -79,7 +79,7 @@ class CierreRitual(BaseModel):
     """M3 · cierre del ritual. Todo opcional (no bloquea Guardar)."""
 
     estrellas: Optional[int] = Field(default=None, ge=1, le=5)
-    reflexion: Optional[str] = Field(default=None, max_length=250)
+    reflexion: Optional[str] = Field(default=None, max_length=150)
     completada: bool = True
 
 
@@ -87,9 +87,9 @@ class CompartirCreate(BaseModel):
     """M5 · crear un link. carta_sola (sin datos tuyos) o ejercicio (reflexión + fotos).
 
     En v1 free el front sólo ofrece `carta_sola`; `ejercicio` queda soportado en el
-    backend para reactivarlo en premium. La nota personal va junto a la carta (≤250).
+    backend para reactivarlo en premium. La nota personal va junto a la carta (≤150).
     """
 
     entrega_id: str
     modo: str = Field(pattern="^(carta_sola|ejercicio)$")
-    nota: Optional[str] = Field(default=None, max_length=250)
+    nota: Optional[str] = Field(default=None, max_length=150)

@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
+import { InstallIOSModal } from "../components/InstallIOSModal";
 import { api, reiniciarDemo } from "../lib/api";
 import { cerrarSesion } from "../lib/firebase";
 import { useStore } from "../store";
@@ -18,6 +19,7 @@ export function Profile() {
   const [apellido, setApellido] = useState("");
   const [apodo, setApodo] = useState("");
   const [installable, setInstallable] = useState(canInstall());
+  const [verComoInstalar, setVerComoInstalar] = useState(false);
 
   useEffect(() => {
     const sync = () => setInstallable(canInstall());
@@ -224,9 +226,16 @@ export function Profile() {
               </div>
             </>
           ) : isIOS() ? (
-            <p className="meta">
-              En iPhone: toca <b>Compartir</b> y luego <b>Añadir a pantalla de inicio</b>.
-            </p>
+            <>
+              <p className="meta">
+                Tenla como app en tu teléfono, sin pasar por el navegador.
+              </p>
+              <div className="actions-stack" style={{ marginTop: 10 }}>
+                <Button variant="secondary" full onClick={() => setVerComoInstalar(true)}>
+                  Cómo instalar
+                </Button>
+              </div>
+            </>
           ) : (
             <p className="meta">
               Desde el menú del navegador (⋮) elige <b>Instalar app</b> o{" "}
@@ -235,6 +244,8 @@ export function Profile() {
           )}
         </div>
       )}
+
+      {verComoInstalar && <InstallIOSModal onClose={() => setVerComoInstalar(false)} />}
 
       {import.meta.env.DEV && (
         <div className="profile-section">

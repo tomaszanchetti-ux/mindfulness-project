@@ -14,7 +14,7 @@ que persigues.
 
 | Feature | Detalle | Estado canon |
 |---|---|---|
-| Reflexión larga | Subir el límite de 250 caracteres | nuevo |
+| Reflexión y nota largas | Subir el límite free de 150 caracteres (reflexión y nota de compartir) a ~500 | nuevo (límite 150 desde WS19) |
 | Hasta 3-5 fotos por pausa | Free quedó en 1 (WS16); premium vuelve a 3 (canon M3) o sube a 5 | parcial (back ya soporta 3) |
 | Compartir el ejercicio completo | Modo `ejercicio` ya soportado en backend M5; free solo `carta_sola` | listo en back |
 | Cambiar la carta del día (1 vez/día) | Te llega, no te va hoy → la cambias UNA vez; el motor sirve otra (respetando rotación+concepto) | nuevo (WS17) |

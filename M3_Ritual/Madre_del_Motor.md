@@ -66,7 +66,7 @@ queda protegido: *hacé afuera → volvé → cerrá.*
 4. Volvés y tocás      → "Terminé" despliega la zona de cierre ↓
       "Terminé"
 5. Cerrás el ritual (guardás en la app):
-      • Reflexión   → recuadro ≤250 caracteres, una nota de AYUDA-MEMORIA del Baúl
+      • Reflexión   → recuadro ≤150 caracteres, una nota de AYUDA-MEMORIA del Baúl
                       ("lo que sentiste ya quedó en tu diario; acá una reflexión para
                       recordarlo"). NO bloquea Guardar (invitar, nunca exigir).
       • Fotos       → hasta 3, opcional. Tomar o subir (de lo que escribiste o viviste).
@@ -108,7 +108,8 @@ de ayuda-memoria": es una reflexión genuina, *"¿qué te dejó?"*). Tres gestos
 opcionales: **reflexionar → puntuar → conmemorar con una foto.** *(Refinamiento WS10: la
 pantalla NO repite "escribí en tu diario"; eso ya se dijo al salir.)*
 
-- **Reflexión: recuadro de hasta 250 caracteres.** Corto a propósito: una interacción *sutil*
+- **Reflexión: recuadro de hasta 150 caracteres** (WS19; antes 250 — se bajó para dar
+  contraste con la reflexión larga del premium v2, ~500). Corto a propósito: una interacción *sutil*
   con la app, no un editor de texto (para eso está tu diario). No hay mínimo — una línea, una
   palabra, lo que salga. *"¿Qué te dejó?"*
 - **Puntuación 1-5 ⭐** ("¿cuánto te llegó?") y **hasta 3 fotos** ("conmemórala con una foto"),
@@ -191,7 +192,7 @@ pantalla NO repite "escribí en tu diario"; eso ya se dijo al salir.)*
 **Escribe** (sobre la entrega del día):
 - `estrellas` (1-5, NULL si no puntuó) ◄ lo espera M2
 - `completada` (bool) ◄ lo espera M2
-- `reflexion` (texto ≤250, NULL si no escribió) ◄ **columna nueva, la agrega M3**
+- `reflexion` (texto ≤150, NULL si no escribió) ◄ **columna nueva, la agrega M3**
 - una o varias filas en `fotos` (0-3) ◄ **tabla nueva, la agrega M3**
 
 ```
@@ -201,7 +202,7 @@ entregas  (privada · M2 la crea · M3 le escribe el cierre)
   fecha_entrega · vigente_hasta   (pilar/actividad/concepto se joinean desde cartas, no se copian)
   estrellas (1-5, NULL)        ◄ M3
   completada (bool)            ◄ M3   (true = guardó · false = autoguardado a medias)
-  reflexion (varchar 250, NULL) ◄ M3  ← columna NUEVA respecto de M2
+  reflexion (texto ≤150, NULL) ◄ M3  ← columna NUEVA respecto de M2
 
 fotos     (privada · 0-3 por entrega · la agrega M3)
   id · user_id

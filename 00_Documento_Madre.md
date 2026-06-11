@@ -50,7 +50,7 @@ recibe una **carta** (con un aviso opcional). La abre cerrada, la **gira**, lee 
 frase y el micro-prompt, **hace el ejercicio afuera del teléfono**, **escribe en su
 diario lo que sintió** (desde WS14 cada prompt lo pide expresamente, con redacción
 propia por carta) y, si quiere, vuelve, toca **Guardar** y suma una **foto + una
-reflexión corta ≤250 opcional**. Todo se guarda en el **Baúl**. Puede **Compartir**
+reflexión corta ≤150 opcional**. Todo se guarda en el **Baúl**. Puede **Compartir**
 la carta por link si le nace — y guardar↔compartir se invitan mutuamente (loop WS14).
 Y la app **se apaga**.
 
@@ -66,7 +66,7 @@ Y la app **se apaga**.
 | **M0 · Contenido** | La materia prima: los 6 pilares y las cartas (frase + micro-prompt + concepto + dibujo). Reglas en [`canon_cartas.md`](M0_Motor_de_Contenido/canon_cartas.md) (SoT del judge). | ✅ cerrado v1 (69 cartas) |
 | **M1 · Onboarding y Perfil** | La entrada: login sin contraseña; el slideshow storytelling (pilares + escribir como pausa); elegir **actividades de desconexión** (complementos — escribir no es opción, es el núcleo) y horario; activar (o no) el aviso; aceptar términos. Editable después. | ✅ lógica cerrada ([M1](M1_Onboarding_y_Perfil/Madre_del_Motor.md)) |
 | **M2 · Entrega del día** | Elige la carta del día: **rotación 6+1 de pilares** (los 6, cada semana, en orden mezclado + día comodín) × tus actividades elegidas (escritura pura siempre) + preferencia blanda que aprende de tus ⭐; **sin repetir ni carta ni concepto en la semana**. Avisa (push/email opcional). Vigencia 24h. | ✅ lógica cerrada ([M2](M2_Entrega_del_Dia/Madre_del_Motor.md)) |
-| **M3 · Ritual** | El momento: recibís la carta, la girás, hacés el ejercicio afuera y volvés a cerrarlo — **reflexión** ≤250 (protagonista, no bloquea Guardar), **hasta 3 fotos** y **estrellas** 1-5 (opcionales). Una sola superficie (scroll en el dorso). **Sin gate:** la próxima carta llega siempre; lo dejado a medias se autoguarda sin culpa. | ✅ lógica cerrada v1 ([M3](M3_Ritual/Madre_del_Motor.md)) |
+| **M3 · Ritual** | El momento: recibís la carta, la girás, hacés el ejercicio afuera y volvés a cerrarlo — **reflexión** ≤150 (protagonista, no bloquea Guardar), **hasta 3 fotos** y **estrellas** 1-5 (opcionales). Una sola superficie (scroll en el dorso). **Sin gate:** la próxima carta llega siempre; lo dejado a medias se autoguarda sin culpa. | ✅ lógica cerrada v1 ([M3](M3_Ritual/Madre_del_Motor.md)) |
 | **M4 · Baúl de Crecimiento Personal** | El historial de todo lo vivido (carta + foto + reflexión). Dos modos de orden: **Reciente** (default) y **Más valoradas**. Se puede **borrar** una entrada para siempre (modal claro + botón rojo; limpia DB + fotos + link). Casi sólo lectura. | ✅ lógica cerrada v1 ([M4](M4_Baul/Madre_del_Motor.md)) |
 | **M5 · Compartir** | Link público con nota personal. **Carta sola** (sin datos tuyos) o **ejercicio completo** (con reflexión + fotos → aviso de privacidad). El que recibe lo abre **sin instalar ni loguear**; un CTA suave al final. El link **muere si borrás la entrada**. Secundario y latente: se ofrece, no se empuja. | ✅ lógica cerrada v1 ([M5](M5_Compartir/Madre_del_Motor.md)) |
 

@@ -71,10 +71,10 @@ def test_cierre_valida_aislamiento():
     assert r.status_code == 404
 
 
-def test_reflexion_max_250():
+def test_reflexion_max_150():
     h = _onboard("ent|larga")
     entrega_id = client.get("/api/carta-del-dia", headers=h).json()["entrega"]["id"]
     r = client.put(
-        f"/api/entregas/{entrega_id}/cierre", headers=h, json={"reflexion": "x" * 251}
+        f"/api/entregas/{entrega_id}/cierre", headers=h, json={"reflexion": "x" * 151}
     )
     assert r.status_code == 422
