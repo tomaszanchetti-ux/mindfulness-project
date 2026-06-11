@@ -10,15 +10,21 @@ on:
       - "firebase.json"
       - ".github/workflows/deploy-hosting.yml"
 
+# GitHub deja de soportar Node 20 en los runners (forzado a 24 el 16/06/2026).
+# checkout/setup-node v5 ya corren en Node 24; la action de Firebase sigue en @v0
+# (tag flotante), así que forzamos Node 24 ahora para detectar roturas con tiempo.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
 
