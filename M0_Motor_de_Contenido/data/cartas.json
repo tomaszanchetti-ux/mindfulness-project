@@ -5,7 +5,7 @@
     "accion": "escribir",
     "concepto": "balance-del-dia",
     "frase": "En lo pequeño también amanece.",
-    "prompt": "Escribe en tu diario sobre las cosas que hoy salieron bien, por pequeñas que parezcan."
+    "prompt": "Escribe en tu diario qué salió bien hoy — y si el día vino torcido, qué lograste sostener a pesar de todo."
   },
   {
     "id": "grat-esc-02",
@@ -37,7 +37,7 @@
     "accion": "contemplar",
     "concepto": "la-luz-recibida",
     "frase": "La luz llega sin que la pidamos.",
-    "prompt": "Detente a mirar la luz del lugar donde estás, sin hacer nada más. Luego escribe en tu diario qué despertó en ti ese momento."
+    "prompt": "Dedica unos minutos a mirar la luz del lugar donde estás, sin hacer nada más. Después escribe en tu diario cómo te sentó ese rato de no hacer nada — aunque haya costado."
   },
   {
     "id": "grat-con-03",
@@ -61,7 +61,7 @@
     "accion": "caminar",
     "concepto": "repaso-andando",
     "frase": "Caminar despacio devuelve lo que la prisa esconde.",
-    "prompt": "Camina sin prisa, repasando todo aquello que hoy agradeces. Después escribe en tu diario lo que apareció."
+    "prompt": "Camina despacio, repasando lo que hoy agradeces. Al volver, escribe en tu diario qué motivo se hizo más nítido al andar — o cuál seguía escondido."
   },
   {
     "id": "grat-cam-03",
@@ -69,7 +69,7 @@
     "accion": "caminar",
     "concepto": "redescubrir-lo-conocido",
     "frase": "Hay caminos nuevos dentro de los de siempre.",
-    "prompt": "Camina por un lugar conocido y busca un detalle en el que nunca habías reparado. Luego escribe en tu diario qué encontraste."
+    "prompt": "Camina por un lugar conocido y busca un detalle en el que nunca habías reparado. Luego escribe en tu diario qué encontraste y qué te hace sentir saber que siempre estuvo ahí."
   },
   {
     "id": "grat-hac-01",
@@ -101,7 +101,7 @@
     "accion": "escribir",
     "concepto": "refugios-de-calma",
     "frase": "Hay aguas a las que siempre se puede volver.",
-    "prompt": "Escribe en tu diario sobre aquello que te transmite calma, para volver a ello cuando lo necesites."
+    "prompt": "Trae a la memoria un lugar, momento o gesto que te dé calma. Descríbelo en tu diario con detalle —qué se ve, se oye o se siente allí— para poder volver a leerlo cuando lo necesites."
   },
   {
     "id": "calm-esc-02",
@@ -141,7 +141,7 @@
     "accion": "contemplar",
     "concepto": "escucha-sensorial",
     "frase": "Bajo el ruido hay sonidos que esperan.",
-    "prompt": "Cierra los ojos y escucha lo que te rodea, de lo más cercano a lo más lejano. Después escribe en tu diario qué sonido no habías notado y cómo cambia el lugar cuando lo escuchas."
+    "prompt": "Cierra los ojos y escucha lo que te rodea, de lo más cercano a lo más lejano. Después escribe en tu diario qué sonido no habías notado y qué cambia en ti al escuchar así."
   },
   {
     "id": "calm-rep-01",
@@ -149,7 +149,7 @@
     "accion": "respirar",
     "concepto": "volver-al-presente",
     "frase": "Respirar es volver a estar aquí.",
-    "prompt": "Haz diez respiraciones lentas, sintiendo cómo el aire entra y sale. Después escribe en tu diario qué se aquietó en ti."
+    "prompt": "Haz diez respiraciones lentas, sintiendo cómo el aire entra y sale. Después escribe en tu diario qué se aquietó en ti — o qué sigue inquieto."
   },
   {
     "id": "calm-rep-02",
@@ -165,7 +165,7 @@
     "accion": "respirar",
     "concepto": "contar-respiraciones",
     "frase": "Entre una respiración y otra cabe la calma.",
-    "prompt": "Cierra los ojos y cuenta diez respiraciones; si te distraes, vuelve a empezar. Después escribe en tu diario qué encontraste en esa pausa."
+    "prompt": "Cierra los ojos y cuenta diez respiraciones; si te distraes, retoma donde ibas, con amabilidad. Después escribe en tu diario qué encontraste en esa pausa."
   },
   {
     "id": "calm-cam-01",
@@ -221,7 +221,7 @@
     "accion": "contemplar",
     "concepto": "mirar-al-horizonte",
     "frase": "El horizonte recuerda que hay más mundo.",
-    "prompt": "Mira lo más lejos que puedas desde donde estás y quédate ahí un momento. Después escribe en tu diario qué se abrió al mirar lejos."
+    "prompt": "Mira lo más lejos que puedas desde donde estás y quédate ahí un momento. Después escribe en tu diario qué notaste al mirar lejos, aunque nada cambiara."
   },
   {
     "id": "pers-con-02",
@@ -229,7 +229,7 @@
     "accion": "contemplar",
     "concepto": "lo-vasto-encoge-lo-urgente",
     "frase": "Frente a lo vasto, lo urgente se encoge.",
-    "prompt": "Observa algo más grande que tú —el cielo, un árbol, un edificio— y deja que ocupe tu atención. Luego escribe en tu diario qué se hizo más pequeño."
+    "prompt": "Observa algo más grande que tú —el cielo, un árbol, un edificio— y deja que ocupe tu atención. Luego escribe en tu diario qué preocupación tenías al empezar y cómo la ves después de mirar."
   },
   {
     "id": "pers-con-03",
@@ -245,7 +245,7 @@
     "accion": "respirar",
     "concepto": "respirar-para-tomar-distancia",
     "frase": "Tomar aire es también tomar distancia.",
-    "prompt": "Haz diez respiraciones profundas y vuelve a mirar algo que te ronde la cabeza. Luego escribe en tu diario qué ha cambiado en cómo lo ves."
+    "prompt": "Haz diez respiraciones profundas y vuelve a mirar algo que te ronde la cabeza. Luego escribe en tu diario cómo lo ves ahora, aunque sea igual que antes."
   },
   {
     "id": "pers-rep-02",
@@ -269,7 +269,7 @@
     "accion": "caminar",
     "concepto": "ordenar-ideas-andando",
     "frase": "Al andar, los pensamientos se ordenan solos.",
-    "prompt": "Camina un rato con la mente suelta y retoma luego algo que no veías del todo claro. Después escribe en tu diario qué se aclaró."
+    "prompt": "Camina un rato con la mente suelta y retoma luego algo que no veías del todo claro. Al volver, escribe en tu diario cómo lo ves ahora, o qué sigue enredado."
   },
   {
     "id": "pers-cam-02",
@@ -277,7 +277,7 @@
     "accion": "caminar",
     "concepto": "mirarse-como-visitante",
     "frase": "Cambiar de lugar cambia la mirada.",
-    "prompt": "Sal a caminar y observa tu día desde fuera, como si fueras un visitante. Luego escribe en tu diario qué viste con esa mirada nueva."
+    "prompt": "Sal a caminar y observa tu día desde fuera, como si fueras un visitante. Luego escribe en tu diario qué viste con esa mirada nueva y qué te hizo sentir mirarlo desde fuera."
   },
   {
     "id": "pers-cam-03",
@@ -293,7 +293,7 @@
     "accion": "escribir",
     "concepto": "dificultad-superada",
     "frase": "También eres las veces que te levantaste.",
-    "prompt": "Escribe en tu diario sobre una dificultad que ya superaste y qué aprendiste de ella."
+    "prompt": "Escribe en tu diario sobre una dificultad que ya quedó atrás: qué te ayudó a sostenerte mientras duraba."
   },
   {
     "id": "resi-esc-02",
@@ -365,7 +365,7 @@
     "accion": "hacer",
     "concepto": "atender-lo-pendiente",
     "frase": "Reponerse empieza por un gesto pequeño.",
-    "prompt": "Haz hoy una sola cosa que llevabas tiempo dejando para luego, por pequeña que sea. Después escribe en tu diario qué sientes al haberla hecho."
+    "prompt": "Haz hoy una sola cosa que llevabas tiempo dejando para luego, aunque sea mínima. Al cerrar el día, escribe en tu diario cómo fue ocuparte de ella, o qué te frenaba."
   },
   {
     "id": "resi-hac-02",
@@ -373,7 +373,7 @@
     "accion": "hacer",
     "concepto": "atender-lo-pendiente",
     "frase": "Quien cuida lo suyo, resiste.",
-    "prompt": "Dedica unos minutos a ordenar o reparar algo que tenías pendiente. Luego escribe en tu diario qué se asentó también en ti."
+    "prompt": "Dedica unos minutos a ordenar o reparar algo que tenías pendiente. Luego escribe en tu diario qué pusiste en orden — afuera y, si lo notas, adentro."
   },
   {
     "id": "resi-hac-03",
@@ -381,7 +381,7 @@
     "accion": "hacer",
     "concepto": "habito-en-version-minima",
     "frase": "La fuerza también se entrena en lo pequeño.",
-    "prompt": "Elige un hábito que te haga bien y cúmplelo hoy, aunque sea en su versión mínima. Después escribe en tu diario qué notas al haber cumplido contigo."
+    "prompt": "Elige un hábito que te haga bien y cúmplelo hoy, aunque sea en su versión mínima. Al cerrar el día, anota en tu diario cómo fue acercarte a él, o qué se interpuso si no llegaste."
   },
   {
     "id": "amor-esc-01",
@@ -405,7 +405,7 @@
     "accion": "escribir",
     "concepto": "nota-amable-a-uno-mismo",
     "frase": "Te debes la ternura que repartes.",
-    "prompt": "Escribe en tu diario una nota amable para ti, como se la escribirías a alguien que quieres."
+    "prompt": "Escribe en tu diario una nota amable para ti, con las palabras que ofrecerías a quien más cuidas."
   },
   {
     "id": "amor-con-01",
@@ -413,7 +413,7 @@
     "accion": "contemplar",
     "concepto": "reconocerse-el-merito",
     "frase": "Reconocerse es una forma de cariño.",
-    "prompt": "Recuerda algo que hiciste bien últimamente, por pequeño que sea, y reconócete el mérito sin restarle valor. Luego escribe en tu diario qué fue y qué dice de ti."
+    "prompt": "Recuerda algo que hiciste bien últimamente y date un momento para reconocértelo. Luego escribe en tu diario qué fue y qué dice de ti."
   },
   {
     "id": "amor-con-02",
@@ -437,7 +437,7 @@
     "accion": "respirar",
     "concepto": "un-momento-para-ti",
     "frase": "Respirar es regalarte un instante.",
-    "prompt": "Haz unas respiraciones lentas dedicadas solo a ti, sin nada más que hacer. Después escribe en tu diario qué sientes al regalarte ese momento."
+    "prompt": "Haz unas respiraciones lentas dedicadas solo a ti, sin nada más que hacer. Al terminar, escribe en tu diario qué notaste al apartar ese rato para ti, aunque sea solo que cuesta hacerlo."
   },
   {
     "id": "amor-rep-02",
@@ -445,7 +445,7 @@
     "accion": "respirar",
     "concepto": "descansar-sin-culpa",
     "frase": "Descansar también es quererse.",
-    "prompt": "Respira hondo y permítete una pausa, sin culpa. Luego escribe en tu diario qué descansó en ti."
+    "prompt": "Respira hondo y permítete una pausa, sin culpa. Luego escribe en tu diario qué descansó en ti — o qué no se deja aún."
   },
   {
     "id": "amor-rep-03",
@@ -461,7 +461,7 @@
     "accion": "hacer",
     "concepto": "tratarse-bien-en-acto",
     "frase": "Cuidarse no es un lujo, es una raíz.",
-    "prompt": "Haz hoy algo amable contigo, como lo harías por alguien que quieres. Luego escribe en tu diario cómo te sentiste al cuidarte."
+    "prompt": "Ten hoy un gesto amable contigo, del tipo que sueles reservar para los demás. Luego escribe en tu diario qué gesto fue y qué tal te sienta recibirlo de ti."
   },
   {
     "id": "amor-hac-02",
@@ -469,7 +469,7 @@
     "accion": "hacer",
     "concepto": "tratarse-bien-en-acto",
     "frase": "Tratarte bien no necesita motivo.",
-    "prompt": "Date un capricho sencillo que solo dependa de ti y disfrútalo sin prisa. Después escribe en tu diario cómo lo viviste."
+    "prompt": "Date un capricho sencillo que solo dependa de ti y vívelo despacio. Después escribe en tu diario qué notaste al concedértelo — o qué se te hizo difícil."
   },
   {
     "id": "amor-hac-03",
@@ -525,7 +525,7 @@
     "accion": "contemplar",
     "concepto": "presencia-de-los-que-importan",
     "frase": "Lo que une no se ve, pero se siente.",
-    "prompt": "Trae a tu mente a las personas que te hacen bien y quédate un momento con esa imagen. Luego escribe en tu diario qué despertó en ti."
+    "prompt": "Trae a tu mente a las personas que te hacen bien y quédate un momento con esa imagen. Al cerrar el día, escribe en tu diario qué sensación dejó pensar en ellas, o qué echaste de menos."
   },
   {
     "id": "vinc-hac-01",
@@ -533,7 +533,7 @@
     "accion": "hacer",
     "concepto": "retomar-contacto",
     "frase": "Un gesto a tiempo acorta distancias.",
-    "prompt": "Manda un mensaje a alguien con quien hace tiempo que no hablas. Después escribe en tu diario cómo te quedaste al enviarlo."
+    "prompt": "Manda un mensaje a alguien con quien hace tiempo que no hablas. Después escribe en tu diario qué se acortó al enviarlo — o qué sigue pendiente de decir."
   },
   {
     "id": "vinc-hac-02",

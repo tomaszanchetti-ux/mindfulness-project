@@ -260,9 +260,12 @@ def juzgar(cartas_a_juzgar: list[dict], mazo: list[dict], modelo: str,
 
     client = anthropic.Anthropic()
     canon = CANON.read_text(encoding="utf-8")
-    # Resumen del mazo para R5 (dedup de concepto): id·cat·accion·concepto·frase.
+    # Mazo completo para R5 (dedup de concepto Y guion físico): el judge necesita
+    # los prompts, no solo las frases. Va cacheado, el tamaño no duele.
     resumen = "\n".join(
-        f"{c['id']} · {c['categoria']} · {c['accion']} · {c['concepto']} · «{c['frase']}»"
+        f"{c['id']} · {c['categoria']} · {c['accion']} · {c['concepto']}\n"
+        f"  frase: «{c['frase']}»\n"
+        f"  prompt: «{c['prompt']}»"
         for c in mazo
     )
     calibracion = (
