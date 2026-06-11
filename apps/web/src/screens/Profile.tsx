@@ -143,7 +143,7 @@ export function Profile() {
       </div>
 
       <div className="profile-section">
-        <h3>Los campos que recorres</h3>
+        <h3>Los pilares que recorres</h3>
         <div className="cat-pills">
           {categorias.map((c) => (
             <span key={c.slug} className="cat-pill">
@@ -153,22 +153,29 @@ export function Profile() {
           ))}
         </div>
         <p className="meta" style={{ marginTop: 8 }}>
-          Cada semana, Dwellia te lleva por los seis campos del crecimiento — uno
+          Cada semana, Dwellia te lleva por los seis pilares del crecimiento — uno
           distinto cada día, más un día sorpresa.
         </p>
       </div>
 
       <div className="profile-section">
-        <h3>Cómo haces tu pausa</h3>
+        <h3>Cómo complementas tu pausa</h3>
         <div className="cat-pills">
-          {misAcciones.map((a) => (
-            <span key={a.slug} className="cat-pill">
-              {a.nombre}
-            </span>
-          ))}
+          {misAcciones.filter((a) => a.slug !== "escribir").length === 0 ? (
+            <span className="cat-pill">Solo escritura, por ahora</span>
+          ) : (
+            misAcciones
+              .filter((a) => a.slug !== "escribir")
+              .map((a) => (
+                <span key={a.slug} className="cat-pill">
+                  {a.nombre}
+                </span>
+              ))
+          )}
         </div>
         <p className="meta" style={{ marginTop: 8 }}>
-          Cada pausa es una excusa para sentir y escribirlo en tu diario.
+          La escritura es la pausa misma: siempre presente. Estas actividades la
+          disparan.
         </p>
       </div>
 

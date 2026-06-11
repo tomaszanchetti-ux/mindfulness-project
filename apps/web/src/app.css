@@ -947,6 +947,17 @@
   height: auto;
   display: block;
 }
+/* Visuales educativos del storytelling (pilares / escritura): más grandes que
+   las escenas, porque llevan etiquetas legibles. */
+.ob-slide-viz {
+  width: min(330px, 92vw);
+  margin: 0 0 14px;
+}
+.ob-slide-viz svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 .ob-slide-kicker {
   font-size: 12px;
   font-weight: 600;

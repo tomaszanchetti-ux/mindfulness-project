@@ -1,0 +1,85 @@
+— capa judge (claude-opus-4-8) · modo regresión sobre el mazo · 69 carta(s) —
+  ✅ grat-esc-01: aprueba
+  ✅ grat-esc-02: aprueba
+  ✅ grat-esc-03: aprueba
+  ✅ grat-con-01: aprueba
+  ✅ grat-con-02: aprueba
+  ✅ grat-con-03: aprueba
+  ✅ grat-cam-01: aprueba
+  ✅ grat-cam-02: aprueba
+  ✅ grat-cam-03: aprueba
+  ✅ grat-hac-01: aprueba
+  ✅ grat-hac-02: aprueba
+  ✅ grat-hac-03: aprueba
+  ✅ calm-esc-01: aprueba
+  ✅ calm-esc-02: aprueba
+  ✅ calm-esc-03: aprueba
+  ✅ calm-con-01: aprueba
+  ✅ calm-con-02: aprueba
+  ✅ calm-con-03: aprueba
+  ✅ calm-rep-01: aprueba
+  ✅ calm-rep-02: aprueba
+  ✅ calm-rep-03: aprueba
+  ✅ calm-cam-01: aprueba
+  ✅ calm-cam-02: aprueba
+  ✅ calm-cam-03: aprueba
+  ✅ pers-esc-01: aprueba
+  ✅ pers-esc-02: aprueba
+  ✅ pers-esc-03: aprueba
+  ✅ pers-con-01: aprueba
+  ✅ pers-con-02: aprueba
+  ✅ pers-con-03: aprueba
+  ✅ pers-rep-01: aprueba
+  ✅ pers-rep-02: aprueba
+  ✅ pers-rep-03: aprueba
+  ✅ pers-cam-01: aprueba
+  ✅ pers-cam-02: aprueba
+  ✅ pers-cam-03: aprueba
+  ✅ resi-esc-01: aprueba
+  ✅ resi-esc-02: aprueba
+  ✅ resi-esc-03: aprueba
+  ✅ resi-rep-01: aprueba
+  ✅ resi-rep-02: aprueba
+  ✅ resi-rep-03: aprueba
+  ✅ resi-cam-01: aprueba
+  ✅ resi-cam-02: aprueba
+  ✅ resi-cam-03: aprueba
+  ✅ resi-hac-01: aprueba
+  ✅ resi-hac-02: aprueba — 1 hallazgo(s)
+  ✅ resi-hac-03: aprueba
+  ✅ amor-esc-01: aprueba
+  ✅ amor-esc-02: aprueba
+  ✅ amor-esc-03: aprueba
+  ✅ amor-con-01: aprueba
+  ✅ amor-con-02: aprueba
+  ✅ amor-con-03: aprueba — 1 hallazgo(s)
+  ✅ amor-rep-01: aprueba
+  ✅ amor-rep-02: aprueba
+  ✅ amor-rep-03: aprueba
+  ✅ amor-hac-01: aprueba
+  ✅ amor-hac-02: aprueba
+  ✅ amor-hac-03: aprueba
+  ✅ vinc-esc-01: aprueba
+  ✅ vinc-esc-02: aprueba
+  ✅ vinc-esc-03: aprueba
+  ✅ vinc-con-01: aprueba
+  ✅ vinc-con-02: aprueba
+  ✅ vinc-con-03: aprueba
+  ✅ vinc-hac-01: aprueba
+  ✅ vinc-hac-02: aprueba
+  ✅ vinc-hac-03: aprueba
+
+=== VALIDADOR DE CARTAS · 69 carta(s) ===
+
+ERRORES (gate): 0
+
+AVISOS (revisar): 0
+
+OBSERVACIONES: 5
+  · muletilla «también» ×2 en calma: calm-con-01, calm-cam-01
+  · muletilla «también» ×2 en gratitud: grat-esc-01, grat-hac-02
+  · muletilla «también» ×2 en resiliencia: resi-esc-01, resi-hac-03
+  · conectores al diario: Después escribe… 23 · (acción escribir — integrado) 17 · Luego escribe… 16 · tejido/otro 13
+  · conceptos compartidos (variantes deliberadas): 9 → atender-lo-pendiente, balance-del-dia, dificultad-superada, distancia-temporal, expresar-aprecio-a-alguien, gratitud-por-lo-invisible, registrar-sin-juzgar, soltar-al-exhalar, tratarse-bien-en-acto
+
+JUDGE: 69 aprueban · 0 con reparos

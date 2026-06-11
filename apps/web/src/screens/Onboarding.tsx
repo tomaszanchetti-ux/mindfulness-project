@@ -1,23 +1,25 @@
 // Onboarding (M1). "Preparar un ritual", no configurar una app.
-// Flujo canónico: Login → SLIDESHOW (qué es + compromiso) → CONFIGURACIÓN.
-//   Intro (sin progreso):  0 Bienvenida (marca + slogan) · 1 Slideshow del ritual
-//   Config (5 pasos):      2 Datos · 3 Los 6 campos (promesa) · 4 Actividades · 5 Momento · 6 Aviso + términos
-// WS10: el fin es escribir en tu diario; las actividades se ELIGEN ("escribir" siempre).
-// WS17: las categorías YA NO se eligen — son la tesis de Dwellia (los 6 campos del
-// crecimiento) y el motor las rota todas, cada semana. El paso 3 las PRESENTA.
+// Flujo canónico (storytelling WS18): Login → SLIDESHOW → CONFIGURACIÓN.
+//   Intro (sin progreso):  0 Bienvenida (marca + slogan) · 1 Slideshow storytelling
+//     (una pausa al día · los 6 pilares · escribir es tu pausa · pasos 1-5 · ¿comenzamos?)
+//   Config (4 pasos):      2 Datos · 3 Actividades (complementos) · 4 Momento · 5 Aviso + términos
+// Los pilares NO se eligen (rotación 6+1 de M2). Escribir NO es opción del menú:
+// es el núcleo de toda pausa (canon §0); las actividades la complementan.
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
+import { EscrituraCirculo, PilaresCirculo } from "../components/CirculosStory";
 import { StoryArt } from "../components/StoryArt";
 import type { Escena } from "../components/StoryArt";
 import { api } from "../lib/api";
 import { useStore } from "../store";
 
-// El ritual contado paso a paso: carrusel de 7 pantallas (QA 10/06, reemplaza la
-// lista de viñetas). Se puede deslizar o avanzar con el botón.
+// El storytelling contado pantalla a pantalla (carrusel deslizable, WS18):
+// qué es Dwellia → los pilares → escribir como pausa → los 5 pasos → comenzar.
 const SLIDES: {
-  escena: Escena;
+  escena?: Escena;
+  viz?: "pilares" | "escritura";
   kicker?: string;
   titulo: string;
   cuerpo: string;
@@ -27,8 +29,26 @@ const SLIDES: {
     escena: "amanecer",
     titulo: "Una pausa al día.",
     cuerpo:
-      "Dwellia es un espacio para conectar contigo: al menos 15 minutos al día, lejos de las distracciones.",
-    tip: "Te recomendamos tener un diario personal físico y entre 15 y 30 minutos disponibles cada día.",
+      "Dwellia es un espacio de crecimiento personal: una pausa diaria para conectar contigo, con tu alrededor y con la naturaleza — lejos de las distracciones.",
+    tip: "Para aprovecharla al máximo: ten un diario personal físico y reserva entre 15 y 30 minutos cada día.",
+  },
+  {
+    viz: "pilares",
+    titulo: "Seis pilares, un recorrido",
+    cuerpo:
+      "El crecimiento se cultiva en seis pilares que se conectan entre sí, contigo en el centro. Cada semana los recorres todos: uno distinto cada día, más un día sorpresa.",
+  },
+  {
+    viz: "escritura",
+    titulo: "Escribir es tu pausa",
+    cuerpo:
+      "Escribir a mano, en tu diario y lejos del teléfono, es el motor del crecimiento: pone nombre a lo que sientes. Las actividades son disparadores que preparan tu escritura.",
+  },
+  {
+    // Divisoria (QA Tomás WS18): cierra el "qué es" y abre el "cómo funciona".
+    escena: "amanecer",
+    titulo: "¿Cómo funciona?",
+    cuerpo: "Así es Dwellia en tu día a día — cinco pasos, una pausa.",
   },
   {
     escena: "recibe",
@@ -69,7 +89,9 @@ const SLIDES: {
   },
 ];
 
-const ACCION_PISO = "escribir"; // siempre incluida y bloqueada (WS10)
+// "Escribir" no es opción del menú: es el núcleo (canon §0). El backend la fuerza
+// siempre en usuario_acciones; acá solo se eligen los complementos.
+const NUCLEO = "escribir";
 
 const MOMENTOS: { key: string; label: string; hora: string }[] = [
   { key: "manana", label: "A la mañana", hora: "08:00" },
@@ -78,9 +100,13 @@ const MOMENTOS: { key: string; label: string; hora: string }[] = [
   { key: "noche", label: "A la noche", hora: "21:00" },
 ];
 
-// Los 5 pasos de configuración (los que muestran progreso).
-const CONFIG_STEPS = 5;
+// Los 4 pasos de configuración (los que muestran progreso).
+const CONFIG_STEPS = 4;
 const PRIMER_CONFIG = 2;
+
+// Los puntitos del slideshow solo viven durante los pasos del ritual.
+const PRIMER_PASO = SLIDES.findIndex((s) => s.kicker);
+const PASOS = SLIDES.filter((s) => s.kicker).length;
 
 export function Onboarding() {
   const navigate = useNavigate();
@@ -95,23 +121,16 @@ export function Onboarding() {
   const [apodo, setApodo] = useState("");
   const [apodoEdited, setApodoEdited] = useState(false);
   const [selAct, setSelAct] = useState<string[]>([]);
-  const [actInit, setActInit] = useState(false);
   const [momento, setMomento] = useState<string>("manana");
   const [horaCustom, setHoraCustom] = useState<string>("");
   const [aviso, setAviso] = useState(true);
   const [terminos, setTerminos] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
-  // Por defecto: solo "Escribir" seleccionada (el piso). El usuario suma las que quiera.
-  useEffect(() => {
-    if (!actInit && acciones.length > 0) {
-      setSelAct([ACCION_PISO]);
-      setActInit(true);
-    }
-  }, [acciones, actInit]);
+  // Solo complementos: la escritura no se elige (siempre está, la fuerza el backend).
+  const complementos = acciones.filter((a) => a.slug !== NUCLEO);
 
   const toggleAct = (slug: string) => {
-    if (slug === ACCION_PISO) return; // "escribir" no se puede sacar
     setSelAct((cur) =>
       cur.includes(slug) ? cur.filter((a) => a !== slug) : [...cur, slug],
     );
@@ -125,10 +144,8 @@ export function Onboarding() {
   const finalizar = async () => {
     setGuardando(true);
     try {
-      // "escribir" siempre entra (el backend la fuerza igual); mando lo elegido.
-      await api.setAcciones(
-        selAct.includes(ACCION_PISO) ? selAct : [...selAct, ACCION_PISO],
-      );
+      // Mando solo los complementos elegidos; el backend agrega "escribir" siempre.
+      await api.setAcciones(selAct);
       await api.setPerfil({
         nombre: nombre.trim(),
         apellido: apellido.trim(),
@@ -199,9 +216,19 @@ export function Onboarding() {
           <div className="ob-slides" ref={slidesRef} onScroll={onSlidesScroll}>
             {SLIDES.map((s, i) => (
               <section className="ob-slide" key={i}>
-                <div className="ob-slide-art">
-                  <StoryArt escena={s.escena} />
-                </div>
+                {s.viz ? (
+                  <div className="ob-slide-viz">
+                    {s.viz === "pilares" ? (
+                      <PilaresCirculo pilares={categorias} />
+                    ) : (
+                      <EscrituraCirculo acciones={acciones} />
+                    )}
+                  </div>
+                ) : (
+                  <div className="ob-slide-art">
+                    <StoryArt escena={s.escena!} />
+                  </div>
+                )}
                 {s.kicker && <p className="ob-slide-kicker">{s.kicker}</p>}
                 <h2 className="ob-slide-title">{s.titulo}</h2>
                 <p className="ob-slide-body">{s.cuerpo}</p>
@@ -209,15 +236,20 @@ export function Onboarding() {
               </section>
             ))}
           </div>
-          <div className="ob-slides-dots">
-            {SLIDES.map((_, i) => (
-              <button
-                key={i}
-                className={`ob-sdot ${i === slide ? "on" : ""}`}
-                aria-label={`Pantalla ${i + 1}`}
-                onClick={() => irASlide(i)}
-              />
-            ))}
+          {/* Puntitos SOLO durante los pasos 1-5 (QA Tomás WS18): diez puntos
+              gritaban "esto es largo"; acá funcionan como "paso X de 5". El
+              contenedor queda siempre (min-height) para que nada salte. */}
+          <div className="ob-slides-dots" style={{ minHeight: 8 }}>
+            {slide >= PRIMER_PASO &&
+              slide < PRIMER_PASO + PASOS &&
+              Array.from({ length: PASOS }).map((_, i) => (
+                <button
+                  key={i}
+                  className={`ob-sdot ${PRIMER_PASO + i === slide ? "on" : ""}`}
+                  aria-label={`Paso ${i + 1}`}
+                  onClick={() => irASlide(PRIMER_PASO + i)}
+                />
+              ))}
           </div>
           <div className="ob-foot">
             <Button variant="primary" full onClick={avanzarSlide}>
@@ -281,24 +313,30 @@ export function Onboarding() {
         </>
       )}
 
-      {/* —— 3 · Los 6 campos (promesa, WS17: se presentan, no se eligen) —— */}
+      {/* —— 3 · Actividades de desconexión (complementos de la escritura, WS18) —— */}
       {step === 3 && (
         <>
           <div className="ob-body">
-            <h2 className="ob-q">Los seis campos que vamos a recorrer</h2>
+            <h2 className="ob-q">¿Cómo te gustaría complementar tu pausa?</h2>
             <p className="ob-hint">
-              Cada semana, Dwellia te lleva por los seis campos del crecimiento
-              personal — uno distinto cada día, más un día sorpresa. Tú no tienes
-              que elegir: la variedad es parte del ritual.
+              La escritura siempre está: es la pausa misma. Elige las actividades
+              de desconexión que quieres recibir como disparadores.
             </p>
             <div className="cat-grid">
-              {categorias.map((c) => (
-                <span key={c.slug} className="cat-opt on" style={{ cursor: "default" }}>
-                  <span className="swatch" style={{ background: c.color_accent }} />
-                  {c.nombre}
-                </span>
+              {complementos.map((a) => (
+                <button
+                  key={a.slug}
+                  className={`cat-opt ${selAct.includes(a.slug) ? "on" : ""}`}
+                  onClick={() => toggleAct(a.slug)}
+                >
+                  {a.nombre}
+                </button>
               ))}
             </div>
+            <p className="ob-hint" style={{ marginTop: 14 }}>
+              Puedes no elegir ninguna: recibirás solo pausas de escritura.
+              Y cambiarlo cuando quieras, desde tu Perfil.
+            </p>
           </div>
           <div className="ob-foot">
             <Button variant="primary" full onClick={() => setStep(4)}>
@@ -308,41 +346,8 @@ export function Onboarding() {
         </>
       )}
 
-      {/* —— 4 · Actividades (WS10) —— */}
+      {/* —— 4 · Momento —— */}
       {step === 4 && (
-        <>
-          <div className="ob-body">
-            <h2 className="ob-q">¿Cómo te gusta hacer tu pausa?</h2>
-            <p className="ob-hint">
-              Cada pausa es una excusa para detenerte, sentir y escribir lo que
-              despierta en ti.
-            </p>
-            <div className="cat-grid">
-              {acciones.map((a) => {
-                const piso = a.slug === ACCION_PISO;
-                return (
-                  <button
-                    key={a.slug}
-                    className={`cat-opt ${selAct.includes(a.slug) ? "on" : ""} ${piso ? "locked" : ""}`}
-                    onClick={() => toggleAct(a.slug)}
-                    disabled={piso}
-                  >
-                    {a.nombre}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          <div className="ob-foot">
-            <Button variant="primary" full onClick={() => setStep(5)}>
-              Continuar
-            </Button>
-          </div>
-        </>
-      )}
-
-      {/* —— 5 · Momento —— */}
-      {step === 5 && (
         <>
           <div className="ob-body">
             <h2 className="ob-q">¿Cuándo quieres recibir tu pausa?</h2>
@@ -374,15 +379,15 @@ export function Onboarding() {
             </div>
           </div>
           <div className="ob-foot">
-            <Button variant="primary" full onClick={() => setStep(6)}>
+            <Button variant="primary" full onClick={() => setStep(5)}>
               Continuar
             </Button>
           </div>
         </>
       )}
 
-      {/* —— 6 · Aviso + términos —— */}
-      {step === 6 && (
+      {/* —— 5 · Aviso + términos —— */}
+      {step === 5 && (
         <>
           <div className="ob-body">
             <h2 className="ob-q">¿Quieres que te avisemos?</h2>
