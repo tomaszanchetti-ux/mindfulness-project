@@ -1511,6 +1511,15 @@
   text-align: left;
 }
 
+/* Texto escrito por el usuario (nota de compartir, reflexión): una "palabra" más
+   larga que la pantalla debe quebrar, no desbordar (WS19). */
+.share-nota,
+.gift-message-text,
+.detail-block p,
+.entry-refl {
+  overflow-wrap: anywhere;
+}
+
 /* Link de texto suave */
 .link {
   background: none;
