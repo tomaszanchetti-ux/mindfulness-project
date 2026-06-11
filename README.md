@@ -14,9 +14,9 @@ del teléfono**; el teléfono es guía + baúl.
 |---|--------|
 | 📜 [`00_Documento_Madre.md`](00_Documento_Madre.md) | **Empezá por acá.** La idea, los principios rectores y los componentes de v2. |
 | 🗂️ [`WS/`](WS/) | Bitácoras de trabajo — qué se hizo y qué sigue, sesión por sesión. |
-| ⚙️ [`M0_Motor_de_Contenido/`](M0_Motor_de_Contenido/) | **Motor de contenido:** categorías, cartas y estética. ✅ cerrado v1 (69 cartas). |
-| 🚪 [`M1_Onboarding_y_Perfil/`](M1_Onboarding_y_Perfil/) | **Motor de onboarding y perfil:** login, configuración, explicación y compromiso. ✅ lógica cerrada v1. |
-| 🎴 [`M2_Entrega_del_Dia/`](M2_Entrega_del_Dia/) | **Motor de entrega del día:** elige la carta de cada día y avisa. ✅ lógica cerrada v1 (+ script). |
+| ⚙️ [`M0_Motor_de_Contenido/`](M0_Motor_de_Contenido/) | **Motor de contenido:** pilares, cartas, estética y el [`canon`](M0_Motor_de_Contenido/canon_cartas.md) (SoT del validador/judge). ✅ cerrado (69 cartas). |
+| 🚪 [`M1_Onboarding_y_Perfil/`](M1_Onboarding_y_Perfil/) | **Motor de onboarding y perfil:** login, storytelling (pilares + escribir como pausa), configuración. ✅ lógica cerrada. |
+| 🎴 [`M2_Entrega_del_Dia/`](M2_Entrega_del_Dia/) | **Motor de entrega del día:** rotación 6+1 de pilares × actividades; sin repetir carta ni concepto en la semana. ✅ lógica cerrada. |
 | 🕯️ [`M3_Ritual/`](M3_Ritual/) | **Motor del ritual:** recibir/girar la carta, hacer el ejercicio afuera, cerrar con reflexión + fotos + estrellas. ✅ lógica cerrada v1. |
 | 🧰 [`M4_Baul/`](M4_Baul/) | **Baúl de Crecimiento Personal:** historial ordenable (Reciente / Más valoradas), borrado para siempre con modal. ✅ lógica cerrada v1. |
 | 🔗 [`M5_Compartir/`](M5_Compartir/) | **Compartir:** link público (carta sola / ejercicio completo), el receptor lo abre sin instalar. ✅ lógica cerrada v1. |
@@ -26,7 +26,7 @@ del teléfono**; el teléfono es guía + baúl.
 - **N0 — Identidad y principios:** ✅
 - **M0 — Motor de contenido:** ✅ cerrado v1 (69 cartas + seed + estética).
 - **M1 — Onboarding y perfil:** ✅ lógica conceptual cerrada v1.
-- **M2 — Entrega del día:** ✅ lógica cerrada v1 + script de referencia.
+- **M2 — Entrega del día:** ✅ lógica cerrada (rotación 6+1; implementación en apps/api).
 - **M3 — Ritual:** ✅ lógica conceptual cerrada v1.
 - **M4 — Baúl:** ✅ lógica conceptual cerrada v1.
 - **M5 — Compartir:** ✅ lógica conceptual cerrada v1.

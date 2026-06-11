@@ -75,7 +75,7 @@ abre el link → ve el regalo COMPLETO (carta o ejercicio + nota) · puede girar
 
 > **CTA honesto (v1):** *"Configurá tu cuenta para tener tus propias cartas"* → onboarding normal;
 > su primera carta la elige M2 como a cualquiera. **No** prometemos "completá *esta* carta": la
-> carta recibida es la entrega de otra persona y puede no estar en sus categorías. *(Idea v2: que
+> carta recibida es la entrega de otra persona y rompería su rotación de pilares (M2). *(Idea v2: que
 > la carta recibida sea su carta de prueba del onboarding — continuidad sin ensuciar M2/Baúl,
 > porque el tutorial no guarda.)*
 
@@ -205,7 +205,7 @@ sus joins permiten, y un CTA a M1.
   *ver*). Completar una carta o tener las propias = **pide cuenta** (datos en un baúl con
   `user_id`). El login aparece sólo al tocar el CTA, nunca como peaje para ver.
 - **CTA honesto:** *"Configurá tu cuenta para tener tus propias cartas"* → onboarding normal. No
-  "completá esta carta" (la recibida puede no estar en sus categorías). v2: que la recibida sea su
+  "completá esta carta" (la recibida rompería su rotación de pilares). v2: que la recibida sea su
   carta de prueba.
 - **Dos modos:** **carta sola** (sin datos tuyos, invitación) y **ejercicio completo** (con
   reflexión + fotos, íntimo).

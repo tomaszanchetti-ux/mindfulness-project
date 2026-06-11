@@ -2,7 +2,7 @@
 
 > Lista viva de funcionalidades v2 (acordada WS17 · 11/06/2026). La v1 free queda
 > cerrada con: rotación 6+1 · concepto/dedup · validador de cartas · onboarding sin
-> elección de categorías. Todo lo de abajo se encara **después**, como segunda ola.
+> elección de pilares. Todo lo de abajo se encara **después**, como segunda ola.
 
 ## Principio rector
 
@@ -18,14 +18,14 @@ que persigues.
 | Hasta 3-5 fotos por pausa | Free quedó en 1 (WS16); premium vuelve a 3 (canon M3) o sube a 5 | parcial (back ya soporta 3) |
 | Compartir el ejercicio completo | Modo `ejercicio` ya soportado en backend M5; free solo `carta_sola` | listo en back |
 | Cambiar la carta del día (1 vez/día) | Te llega, no te va hoy → la cambias UNA vez; el motor sirve otra (respetando rotación+concepto) | nuevo (WS17) |
-| Comodín aprendido | El día 7 deja de ser azar: pondera por las ⭐ del usuario (afinidad por categoría, espejo de la capa de acciones) | nuevo (WS17) |
+| Comodín aprendido | El día 7 deja de ser azar: pondera por las ⭐ del usuario (afinidad por pilar, espejo de la capa de actividades) | nuevo (WS17) |
 | Fotos en el regalo (M5) | Compartir con fotos | canon WS16 |
 
 ## Ola 2 — Creación de cartas por usuarios (UGC curado)
 
 La feature insignia del premium. El pipeline ya existe desde v1:
 
-1. **El usuario crea** frase + prompt (+ categoría y modalidad) en la app.
+1. **El usuario crea** frase + prompt (+ pilar y actividad) en la app.
 2. **Capa 1 determinística** (`scripts/validar_cartas.py`): feedback inmediato
    (estructura, diario, localismos, similitud con el mazo).
 3. **Capa 2 LLM-judge** (mismo script, `--judge`): evalúa contra
@@ -52,5 +52,5 @@ Diseño acordado (WS17):
 - OG dinámico por token compartido · WS09.
 - Baúl: orden compuesto y edición de entradas · canon M4.
 - Compresión de imágenes + limpieza de huérfanas · WS16.
-- Atenuar un campo (rotación quincenal de 1 categoría elegida) — válvula de
+- Atenuar un pilar (rotación quincenal de 1 pilar elegido) — válvula de
   escape descartada para v1, reconsiderar con feedback real · WS17.

@@ -1,7 +1,7 @@
 # M1 — Motor de Onboarding y Perfil
 
-La **entrada a la app**: login, configuración del perfil, explicación y compromiso.
-Toma las categorías de M0 y deja al usuario listo para M2 (entrega) y M3 (ritual).
+La **entrada a la app**: login, storytelling (los 6 pilares + escribir como pausa),
+configuración del perfil. Deja al usuario listo para M2 (entrega) y M3 (ritual).
 
 ## Índice
 

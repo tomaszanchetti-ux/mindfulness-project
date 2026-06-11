@@ -1,6 +1,6 @@
 # M0 — Motor de Contenido
 
-El **motor del producto**: las categorías y las cartas. Todo lo demás se construye
+El **motor del producto**: los pilares y las cartas. Todo lo demás se construye
 encima.
 
 ## Índice

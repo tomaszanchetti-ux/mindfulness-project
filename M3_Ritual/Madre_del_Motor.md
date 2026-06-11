@@ -35,7 +35,7 @@ ESTADO 1 — La carta espera        ESTADO 2 — La carta abierta        ESTADO 
 │  (frente)   │   tocás / girás   │   (dorso)   │   tocás "Terminé"  │   (dorso)   │
 │  color +    │  ───────────────► │  frase +    │  ────────────────► │  reflexión  │
 │  dibujo     │                   │  micro-     │   (volviste de     │  + fotos    │
-│  categoría  │                   │  prompt     │    hacerlo afuera) │  + estrellas│
+│  pilar      │                   │  prompt     │    hacerlo afuera) │  + estrellas│
 └─────────────┘                   └─────────────┘                    │  + Guardar  │
    llega a tu hora (M2)              "andá y hacelo                   └─────────────┘
    y espera, sin ruido               afuera" → soltás
@@ -198,7 +198,7 @@ pantalla NO repite "escribí en tu diario"; eso ya se dijo al salir.)*
 entregas  (privada · M2 la crea · M3 le escribe el cierre)
   id · user_id
   carta_id        → FK a cartas (global, M0)
-  categoria · accion · fecha_entrega · vigente_hasta
+  fecha_entrega · vigente_hasta   (pilar/actividad/concepto se joinean desde cartas, no se copian)
   estrellas (1-5, NULL)        ◄ M3
   completada (bool)            ◄ M3   (true = guardó · false = autoguardado a medias)
   reflexion (varchar 250, NULL) ◄ M3  ← columna NUEVA respecto de M2

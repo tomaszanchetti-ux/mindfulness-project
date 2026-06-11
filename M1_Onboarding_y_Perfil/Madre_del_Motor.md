@@ -1,19 +1,10 @@
 # M1 — Motor de Onboarding y Perfil · Madre del Motor
 
-> **La entrada a la app.** Define cómo la persona crea su cuenta, configura sus
-> preferencias, entiende de qué se trata y queda lista para recibir su carta diaria.
-> Toma de M0 las categorías; entrega a M2 (entrega) y M3 (ritual) un usuario
-> configurado. Se rige por el [`Documento Madre`](../00_Documento_Madre.md).
-
-> ## ⚠️ DEROGACIÓN WS17 (11/06/2026) — las categorías ya no se eligen
->
-> Donde este documento diga "elegir 2-6 categorías": **derogado**. Desde WS17,
-> M2 rota los 6 campos completos cada semana (ver Madre de M2). En el onboarding,
-> el paso de categorías es una **pantalla de promesa** ("Los seis campos que
-> vamos a recorrer") — se presentan, no se eligen. El usuario solo elige la
-> **forma** de la pausa (actividades, WS10) + horario + aviso + términos.
-> `onboarding_completo` = términos aceptados (ya no exige categorías). El
-> endpoint `PUT /api/perfil/categorias` queda deprecado por compatibilidad.
+> **La entrada a la app.** Define cómo la persona crea su cuenta, entiende la tesis de
+> Dwellia (los 6 pilares, escribir como pausa), configura su forma de pausar y queda
+> lista para recibir su carta diaria. Entrega a M2 (entrega) y M3 (ritual) un usuario
+> configurado. Se rige por el [`Documento Madre`](../00_Documento_Madre.md) y el
+> storytelling del [`canon de cartas §0`](../M0_Motor_de_Contenido/canon_cartas.md).
 
 ---
 
@@ -22,29 +13,42 @@
 | Sí hace | No hace |
 |---------|---------|
 | Login sin contraseña (Google + magic link) | Manejar pagos / planes (eso es v2) |
-| Configurar el perfil: nombre, apodo, categorías, horario, aviso | Elegir la carta del día (eso es M2) |
-| Explicar la app y pedir el compromiso | El ritual en sí (girar/foto/reflexión real es M3) |
+| Contar el storytelling: pilares + escribir como pausa | Elegir la carta del día (eso es M2) |
+| Configurar el perfil: nombre, apodo, actividades, horario, aviso | El ritual en sí (girar/foto/reflexión real es M3) |
 | Dejar el perfil **editable** después | Mezclar datos de un usuario con otro (aislamiento) |
 
 **El norte de M1:** que en pocos toques la persona pase de "no tengo cuenta" a
-"mañana a mi hora me llega mi primera carta", entendiendo qué es y qué no es la app.
+"mañana a mi hora me llega mi primera carta", entendiendo qué es Dwellia, por qué
+escribe en un diario físico y qué recorrido la espera.
 
 ---
 
-## 2. El embudo (4 pasos)
+## 2. El embudo (storytelling WS18)
 
 ```
-1. Bienvenida + Login    →  Google  /  Magic link
-2. Slideshow explicativo →  registro · acción diaria · baúl · compartir · compromiso · privacidad
-3. Configurar la cuenta  →  nombre · apodo · categorías (2-6) · actividades · horario · aviso → check de términos al cerrar
-4. Carta de prueba       →  tutorial guiado con pop-ups (girar · reflexión · foto · guardar)
-                            └─ luego la carta REAL llega a su horario (la entrega M2)
+1. Bienvenida + Login    →  Google / Magic link
+2. Slideshow STORYTELLING (educativo, deslizable):
+     a. Una pausa al día      → espacio de crecimiento personal, lejos de las distracciones.
+                                MUCHO hincapié: diario físico + 15-30 min diarios disponibles.
+     b. Los 6 pilares         → el curriculum del crecimiento, interconectados, con la
+                                persona en el centro (círculo). Se presentan, NO se eligen:
+                                cada semana se recorren todos (rotación 6+1 de M2).
+     c. Escribir es tu pausa  → por qué escribir a mano, fuera del teléfono, es el motor
+                                del crecimiento. Las actividades de desconexión (contemplar,
+                                respirar, caminar, hacer) son disparadores que la preparan
+                                (círculo alrededor de escribir).
+     d. Los 5 pasos del ritual → recibe la carta · vive tu pausa · escribe lo que sentiste ·
+                                guárdala en tu Baúl · compártela si quieres.
+     e. ¿Comenzamos?          → "Sin feed ni likes. Solo una pausa al día."
+3. Configurar la cuenta  →  nombre/apellido/apodo · actividades de desconexión
+                            ("¿Cómo te gustaría complementar tu pausa?" — escribir NO es
+                            opción: es el núcleo, siempre presente) · horario · aviso →
+                            check de términos al cerrar
+4. Carta real del día    →  M2 la entrega en el momento; 2 nudges contextuales la 1ª vez
 ```
 
-Todo esto es la primera vez. El **slideshow va antes de configurar** a propósito: la
-pantalla de compromiso ("elegí una hora con 10-15 min") enmarca el horario que elige
-justo después. El slideshow se construye **al final del proyecto**, con ejemplos reales.
-La carta de prueba (paso 4) es práctica, **no ensucia el Baúl**.
+El **slideshow va antes de configurar** a propósito: el compromiso (diario físico +
+15-30 min) enmarca el horario que se elige justo después.
 
 ---
 
@@ -59,7 +63,6 @@ Dos vías, las dos **sin contraseña** y con el mail ya verificado (Firebase Aut
 **La regla de oro (aprendizaje del prode):** el mail tiene que **llegar siempre y
 verse real**. Por eso el correo es **branded, desde dominio propio y por buen
 proveedor de envío** (no el mail por defecto de Firebase, que es feo y cae en spam).
-Eso es lo que hace que "se sienta seguro y real" — no un paso de seguridad extra.
 
 > Sin verificación adicional tipo código: agregaría fricción y rompe *Simpleza con
 > apagado*. Lo passwordless, bien hecho, ya es la seguridad.
@@ -72,108 +75,47 @@ Eso es lo que hace que "se sienta seguro y real" — no un paso de seguridad ext
 |-------|---------|
 | **Nombre y apellido** | Identificación básica. |
 | **Apodo** | Cómo lo llama la app ("Hola, {apodo}"). |
-| **Categorías** | Elige **2 a 6** de las 6 de M0, mostradas con sus dibujos. Mínimo 2 para que M2 tenga pool. |
-| **Actividades** | Elige qué modalidades quiere recibir (caminar, contemplar, respirar, hacer). **"Escribir" siempre está incluida y no se puede sacar** — se muestra como el piso garantizado: *"Escribir siempre está disponible, para los días sin tiempo o ganas de salir."* El menú filtra el pool de M2; la app sigue aprendiendo dentro de él con las ⭐. |
+| **Actividades de desconexión** | *"¿Cómo te gustaría complementar tu pausa?"* — elige cuáles quiere recibir (contemplar, respirar, caminar, hacer). **Escribir no aparece como opción: es el núcleo de toda pausa** (canon §0) y las cartas de escritura pura siempre llegan. El menú filtra el pool de M2; la app aprende dentro de él con las ⭐. |
 | **Horario de la carta** | Hora local a la que quiere recibir la carta. *(Guarda también su zona horaria — M2 entrega en hora local.)* |
 | **Aviso** | Un solo interruptor **sí/no**. Si **sí**: email siempre + push donde se pueda. Si **no**: la carta aparece en silencio al abrir la app. |
 
-**Al cerrar la configuración, el check de términos/privacidad** — un paso final para
-aceptar: explica que **no es red social**, que **el contenido es 100% suyo** y que
-**compartir depende sólo de él**. Recién con esto aceptado se completa el perfil.
+**Al cerrar la configuración, el check de términos/privacidad** — explica que **no es
+red social**, que **el contenido es 100% suyo** y que **compartir depende sólo de él**.
+**`onboarding_completo` = términos aceptados** (no exige nada más).
 
-Es el handoff a M2: categorías + horario + aviso son justo lo que el mixer necesita.
-
----
-
-## 5. Slideshow explicativo + compromiso + privacidad
-
-Estilo carrusel de mercado, **muy simple**, una idea por pantalla. **Se desarrolla
-al final**, con capturas reales:
-
-1. **Registro / la carta** — cada día recibís una carta con una consigna.
-2. **Acción diaria** — el ritual se hace **afuera del teléfono**, y **siempre cerrás
-   escribiendo en tu diario lo que sentiste** (esa es la idea de fondo: la actividad es la
-   excusa, escribir es el fin). *(Línea suave al pie: "al final podés ponerle estrellas —
-   es opcional y ayuda a que la app te conozca".)*
-3. **Baúl** — todo lo que vivís queda guardado para mirar atrás.
-4. **Compartir** — si te nace, podés compartir una carta por link. Opcional.
-5. **Compromiso** — *elegí una hora en la que sepas que tenés **10-15 min** para vos*
-   + *intentá tener un **diario a mano** para escribir*. (Refuerza el horario que ya eligió.)
-6. **Privacidad (mención expresa)** — *no somos una red social · tu contenido es
-   tuyo · compartir cartas o tareas depende 100% de vos*.
-
-> La privacidad aparece **dos veces**: esta pantalla expresa al cierre del slideshow y
-> el check de términos al **cerrar la configuración** (paso 3). Coherente con *intimidad
-> como producto*.
+> **Los pilares no se configuran.** Son la tesis de Dwellia (slideshow b) y M2 los
+> recorre todos, cada semana. En Perfil se *muestran* como el recorrido, no como opción.
 
 ---
 
-## 6. La carta de prueba (tutorial guiado) → handoff a M2/M3
-
-> **⚠️ DEROGADO EN WS14** (testing en vida real: el tour de 11 pop-ups sobre una carta
-> de ejemplo confundía y retrasaba el primer uso real). Reemplazo:
-> **(a)** la intro del onboarding pasa a ser un **storyboard visual de 5 viñetas
-> ilustradas** (recibe carta · vive la pausa · escribe en su diario · guarda en el Baúl ·
-> comparte si quiere) — ahí vive ahora la explicación del ritual;
-> **(b)** al terminar la configuración el usuario cae directo en **su carta REAL del
-> día** (M2 la entrega en el momento) con solo **2 nudges contextuales** la primera vez
-> (señalan la carta y el botón Guardar; se marcan vistos en el dispositivo y no
-> reaparecen). No hay carta de ensayo: los prompts ya cuentan el ritual completo (WS14,
-> diario integrado) y la pantalla de guardado es autoexplicativa (todo opcional).
-
-<details><summary>Texto original (histórico, pre-WS14)</summary>
-
-Al terminar la configuración mostramos **una carta real en modo práctica**, con pop-ups
-que enseñan el ritual paso a paso:
-
-1. **Girá la carta** → frase + micro-prompt.
-2. **Escribí tu reflexión** (≤250).
-3. **Subí una foto** (opcional).
-4. **Ponele estrellas** (1-5, opcional) → con la frasecita *"ayuda a que la app te
-   conozca"*. Lo **practica en vivo** acá; lo usa de verdad en cada ritual (M3) y lo
-   aprovecha M2.
-5. **Guardá.**
-
-Es un **ensayo**: enseña la mecánica de **M3 (Ritual)** sin guardar nada en el Baúl.
-
-</details>
-La **primera carta real** llega después, **a su horario**, vía **M2 (Entrega)** — así
-el Baúl arranca limpio con algo que sí vivió.
-
----
-
-## 7. Notificaciones y "descargar como App" (arranque PWA)
+## 5. Notificaciones y "descargar como App" (arranque PWA)
 
 Arrancamos como **PWA instalable** (Expo for Web, mismo código que el futuro nativo).
-El aviso diario es el corazón, así que lo cubrimos en capas:
 
 - **Email = aviso principal** — llega a cualquier teléfono (reusa la infra del magic link).
 - **Push web = bonus** — Android/Chrome anda bien; **en iPhone sólo si instalan la app
   al inicio** (iOS 16.4+).
-- Por eso el botón **"descargar como App"** y el aviso trabajan juntos: *"instalá la app
-  en tu inicio para recibir el aviso en el celular"*. **Instalar = desbloquear el push.**
-  En Android es un toque (prompt nativo); en iPhone, instrucción corta (*Compartir →
-  Agregar a inicio*).
+- Botón **"descargar como App"** y aviso trabajan juntos: *"instalá la app en tu inicio
+  para recibir el aviso en el celular"*. **Instalar = desbloquear el push.**
 
 > **Pivot de secuencia (no de stack):** el canon es React Native + Expo. Sale **primero
 > la web/PWA** y después el **nativo a las stores**, desde el **mismo proyecto Expo**.
-> El stack N3 queda intacto.
 
 ---
 
-## 8. Perfil editable (Ajustes)
+## 6. Perfil editable (Ajustes)
 
-Todo lo del paso 2 queda **editable** después en una pantalla de Ajustes: apodo,
-categorías, actividades, horario, aviso. (Nombre/apellido también.)
+Editable después: apodo, nombre/apellido, **actividades**, horario, aviso.
 
-- **Cambiar categorías o actividades** acá **cambia el pool de M2** en el acto (sacar una =
-  sale del pool, el Baúl queda intacto; sumar una = entra ya). *("Escribir" no se puede
-  sacar.)*
+- **Cambiar actividades** acá **cambia el pool de M2 en el acto**. (La escritura pura
+  no se puede sacar: es la pausa misma.)
 - **Cambiar horario/aviso** redefine cuándo y cómo avisa M2.
+- **Los pilares se muestran** ("Los pilares que recorres") con la leyenda de la
+  rotación semanal — informativos, no editables.
 
 ---
 
-## 9. Datos que escribe M1 (handoff al stack §5)
+## 7. Datos que escribe M1 (handoff al stack §5)
 
 Tablas **privadas** (cada fila con `user_id`, jamás se cruzan entre usuarios):
 
@@ -183,42 +125,58 @@ usuarios
   email · nombre · apellido · apodo
   horario_carta · zona_horaria
   aviso_on (bool)
-  terminos_aceptados_en · terminos_version
-  onboarding_completo (bool)
+  terminos_aceptados_en
   creado_en
 
-usuario_categorias        (2 a 6 filas por usuario)
-  user_id · categoria_id   → FK a la tabla GLOBAL categorias (M0)
-
-usuario_acciones          (1 a 5 filas por usuario · "escribir" siempre presente)
+usuario_acciones          (0 a 4 filas por usuario + "escribir" siempre presente)
   user_id · accion_id      → FK a la tabla GLOBAL acciones (M0)
 ```
 
-> **"Escribir" se guarda siempre** (aunque el usuario no la toque), porque es el piso
-> garantizado del pool (M2). En la UI se muestra incluida y bloqueada.
-
-Las fotos del Baúl (M3/M4) van a Cloud Storage; M1 sólo crea al usuario.
+> **"Escribir" se guarda siempre** en `usuario_acciones` (el backend la fuerza), aunque
+> en la UI ya no sea una opción: garantiza el invariante del pool de M2.
+>
+> **Tabla legacy:** `usuario_categorias` existe en la DB por compatibilidad (v1
+> pre-WS17) pero **nada la lee**. El endpoint `PUT /api/perfil/categorias` queda
+> deprecado por compatibilidad de clientes viejos. Se eliminan en una limpieza futura.
 
 ---
 
-## 10. Decisiones canónicas / pivots
+## 8. Decisiones canónicas vigentes
 
 - **Login passwordless** (Google + magic link), sin paso de verificación extra.
 - **Email branded por dominio propio + buen proveedor** (aprendizaje del prode).
-- **PWA primero, nativo después** desde el mismo Expo (pivot de secuencia, no de stack).
+- **PWA primero, nativo después** desde el mismo Expo.
 - **Aviso = un solo interruptor**; si está off, la carta aparece en silencio.
-- **Carta de prueba** es tutorial, **no** guarda en el Baúl; la real respeta el horario.
-- **Orden del embudo:** login → slideshow → configuración → demo (el slideshow precede a la config para que el compromiso enmarque el horario).
-- **Privacidad en dos toques**: pantalla expresa de cierre del slideshow + check de términos al cerrar la configuración.
-- **"Tono" se elimina del onboarding** — M0 canonizó español neutro único (ya no hay selector).
-- **Elegir actividades (WS10):** además de categorías, el usuario elige qué modalidades quiere (filtro elegible). **"Escribir" siempre incluida y bloqueada** (piso garantizado). Cambiar actividades en Ajustes edita el pool de M2 en el acto, igual que las categorías.
-- **El onboarding promete el cierre constante (WS10):** se aclara desde el slideshow que *todo ritual termina escribiendo en tu diario* — la actividad es el medio, escribir es el fin.
+- **Orden del embudo:** login → slideshow storytelling → configuración → carta real.
+- **Los pilares se presentan, no se eligen (WS17/WS18):** la pantalla de pilares es
+  educativa (círculo, persona en el centro); M2 rota los 6 cada semana.
+- **Escribir no es opción del menú (WS18):** es el núcleo de toda pausa; las
+  actividades de desconexión la complementan (*"¿Cómo te gustaría complementar tu
+  pausa?"*).
+- **`onboarding_completo` = términos aceptados** (WS17).
+- **Privacidad en dos toques:** cierre del slideshow + check de términos.
+- **Sin carta de ensayo (WS14):** al terminar la configuración cae la carta REAL del
+  día con 2 nudges contextuales la primera vez. El storytelling vive en el slideshow.
+- **Español de España neutro** en toda la UI (sin selector de "tono").
 
 ---
 
-## 11. Diferido a v2
+## 9. Historial (derogado — solo contexto, no usar)
 
-- Planes / pagos / freemium.
-- Verificación de identidad más fuerte (si algún día hiciera falta).
+- **Elegir categorías 2-6 (WS03-WS16):** el usuario elegía sus categorías como filtro
+  duro de M2. **Derogado en WS17** (rotación completa) y reformulado en WS18 (pilares
+  = tesis educativa del onboarding).
+- **"Escribir" como opción bloqueada del menú (WS10-WS17):** se mostraba incluida y
+  bloqueada ("piso garantizado"). **Reformulado en WS18:** ya no es opción — es el
+  núcleo; el menú solo lista los complementos.
+- **Carta de prueba / tutorial de 11 pop-ups (WS03-WS13):** derogado en WS14 por los
+  2 nudges sobre la carta real.
+- **Selector de "tono" del onboarding:** eliminado cuando M0 canonizó español neutro.
+
+---
+
+## 10. Diferido a v2
+
+- Planes / pagos / freemium (`ROADMAP_v2_PREMIUM.md`).
 - Más de un horario / dos rituales por día.
 - Login con Apple (lo agrega Firebase fácil cuando salga el nativo a la App Store).

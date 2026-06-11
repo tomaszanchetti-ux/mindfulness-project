@@ -9,28 +9,32 @@ producen las cartas. Es la referencia única del módulo.
 
 ## 1. Modelo de contenido
 
-La unidad es la **carta**: `categoría + modalidad + frase + micro-prompt + tono + color + dibujo`.
+La unidad es la **carta**: `pilar + actividad + concepto + frase + micro-prompt + color + dibujo`.
+(En la DB los campos se llaman `categoria` y `accion` — los slugs no cambian.)
 
-**Dos ejes (no un árbol):**
-- **Categoría** = el *qué* (tema). La elige el usuario en el onboarding: **de 2 a 6**.
-- **Modalidad** = el *cómo* (ejercicio). Es **propiedad de la carta** y, además, el
-  usuario **elige qué modalidades quiere recibir** (filtro elegible, espejo de las
-  categorías). *Cambio WS10: antes la modalidad no se elegía; ahora sí, para que nadie
-  pierda el día por una actividad que no hará. La capa blanda que aprende de las ⭐ sigue
-  viva, pero **dentro** del menú que el usuario eligió (lógica en M2).*
-- **"Escribir" es el piso garantizado:** siempre disponible, no se puede sacar del menú.
-  Es la puerta de fricción cero para el día sin tiempo/ganas — porque el **fin** es escribir
-  en el diario, y escribir directamente siempre cumple ese fin.
+**Dos ejes (no un árbol), según el storytelling ([canon §0](canon_cartas.md)):**
+- **Pilar** = el *qué* (el curriculum del crecimiento personal). Los 6 están
+  interconectados, con la persona en el centro. **No se eligen:** M2 los recorre
+  todos, cada semana (rotación 6+1).
+- **Actividad de desconexión** = el *cómo* (el disparador que prepara la escritura).
+  Es propiedad de la carta y el usuario **elige cuáles quiere recibir** como
+  complemento de su pausa. La capa blanda que aprende de las ⭐ vive **dentro** de
+  ese menú (lógica en M2).
+- **La escritura es la pausa misma:** las cartas de acción "escribir" son la pausa
+  de escritura pura (conexión directa, el día sin tiempo) y **siempre están en el
+  pool** — no son una opción del menú, son el núcleo.
+- **Concepto** = la huella de deduplicación: cartas que producen la misma experiencia
+  comparten etiqueta y M2 no repite concepto en la semana (canon R5).
 
-**6 categorías × 5 modalidades.** El tono es interno (curaduría/filtrado), no se muestra.
+**6 pilares × 5 actividades.**
 
-> **El fin último es escribir en el diario físico (afuera).** La modalidad es el *medio*
-> que provoca eso; por eso ahora se elige y por eso "escribir" nunca falta. El cierre de
-> todo ritual invita siempre a escribir lo que sentiste (marco fijo, ver M3).
+> **La pausa = actividad de desconexión + escribir lo sentido (canon §0).** La
+> actividad dispara; el diario recoge. Toda carta termina (o teje) la vuelta al
+> diario físico.
 
 **Matriz de afinidad** (✅ fuerte · ○ posible · · evitar) → **23 moldes viables**:
 
-| Categoría | Escribir | Contemplar | Respirar | Caminar | Hacer |
+| Pilar | Escribir | Contemplar | Respirar | Caminar | Hacer |
 |-----------|:--:|:--:|:--:|:--:|:--:|
 | Gratitud | ✅ | ✅ | · | ○ | ✅ |
 | Calma | ○ | ✅ | ✅ | ✅ | · |
@@ -39,49 +43,25 @@ La unidad es la **carta**: `categoría + modalidad + frase + micro-prompt + tono
 | Amor propio | ✅ | ○ | ○ | · | ✅ |
 | Vínculos | ✅ | ○ | · | · | ✅ |
 
-**Profundidad:** arrancar con **3 a 5 cartas por molde**, sin agotar. El algoritmo
-del día no repite carta (ventana ~60 días) **y** balancea la modalidad (que no
-caigan varios días seguidos de la misma).
+**Profundidad:** arrancar con **3 a 5 cartas por molde**, sin agotar. El motor del
+día (M2) no repite **ni carta ni concepto** en una ventana de 7 días y balancea la
+actividad (que no caigan varios días seguidos de la misma).
 
 ---
 
-## 2. Reglas del Motor
+## 2. Reglas del Motor → viven en el canon (una sola fuente)
 
-Toda carta se mide contra esto. Si no las cumple, no entra.
+**Las reglas de toda carta viven en [`canon_cartas.md`](canon_cartas.md)** — el SoT
+único que consume el validador (`scripts/validar_cartas.py`: capa determinística +
+LLM-judge) y que rige también las cartas de usuarios (premium). Acá no se duplican
+(WS18, *Simpleza*: dos copias = dos idiomas).
 
-**Calidad sobre cantidad.** Menos cartas pero coherentes y que de verdad ayuden.
-- Cada carta justifica su existencia (si no aporta algo distinto, no entra).
-- Una sola idea por carta. Micro-prompt concreto, hacible en ~10 min. Sin clichés.
-
-**Invitación, nunca obligación.** Nadie se siente forzado.
-- La actividad sugerida se mantiene **pura** (caminar es caminar; sin actividad supletoria).
-- Única opcionalidad: **guardar sin hacer nada y sin probar** que se hizo.
-- Sin supuestos (pareja, plata, clima, movilidad, estar bien). Cuidado emocional: invitar a mirar la fortaleza, no a abrir la herida. La frase sola ya vale.
-
-**Estilo de redacción** (calibrado en Gratitud). Frase y acción son dos piezas distintas:
-- **Frase:** corta, poética, abstracta, **memorable**. *Resuena* con la acción pero NO la explica ni la instruye — es una imagen o idea para recordar. Si puede guiñar al motivo de la categoría (amanecer, luna, montaña…) sin nombrarlo, mejor.
-- **Acción:** **genérica y libre** — realizable cualquier día, sin suponer nada (que pasó algo puntual, que te cruzaste con alguien, clima, cantidades). El foco está acá: simple, concreta, con valor real.
-- **El prompt integra el diario (WS14, deroga la regla WS10 de "cierre fuera de los prompts"):** todo prompt termina (o teje) la vuelta al **diario físico** con redacción ÚNICA por carta, conectada a su contenido — nunca una coletilla idéntica pegada. En las cartas de acción "escribir", el diario va dentro de la consigna ("Escribe en tu diario sobre…"). La pregunta de diario debe ser respondible y concreta (no binaria, no cuantificar metáforas).
-- **Tono:** español de España, neutro (tú: "escribe", "te gustaría"). Sin localismos americanos (apurarse, acomodarse, postergar, "afuera" estático, "a ningún lado") ni calcos del inglés ("cómo se siente + infinitivo").
-
-**Reglas de variedad (WS17 — salen de la revisión punta a punta de las 69):**
-- **Un concepto = una experiencia.** Cada carta lleva un `concepto` (campo en la DB). Dos
-  cartas con la misma experiencia emocional —aunque cambien categoría o palabras— comparten
-  etiqueta, y el motor de entrega (M2) no repite concepto dentro de la ventana semanal. Una
-  carta nueva que duplica un concepto existente sin aportar nada distinto, no entra.
-- **El guion físico varía dentro de cada modalidad.** "Haz diez respiraciones lentas" no puede
-  ser el cuerpo de media modalidad: cambiar el *cómo* (alargar la exhalación, una mano en el
-  pecho, acompasar el paso…), no solo la pregunta de diario.
-- **La pregunta de diario pide contenido, no confirma el efecto.** Nada de "escribe qué se
-  aquietó en ti" a secas: si el ejercicio no le hizo nada al usuario, la pregunta tiene que
-  seguir siendo respondible ("…o qué se resiste a salir", "cómo estaba antes y cómo está ahora").
-- **Sin muletillas de mazo:** una palabra o estructura que se repite entre frases ("también",
-  "prisa", "Detente a…", "qué despertó en ti") delata la fórmula en días consecutivos. Máximo
-  un uso por categoría; en lo posible, ninguno nuevo.
-
-> **Versión ejecutable:** estas reglas + las de arriba están bajadas a rubric formal en
-> [`canon_cartas.md`](canon_cartas.md) — es la rule base que usa el validador
-> (`scripts/validar_cartas.py`, capa LLM-judge) para aprobar/observar/rechazar cartas.
+El espíritu, en tres líneas:
+- **Calidad sobre cantidad** — cada carta justifica su existencia; una sola idea.
+- **Invitación, nunca obligación** — sin supuestos, sin presión; mirar la fortaleza,
+  no abrir la herida. La frase sola ya vale.
+- **La actividad dispara, el diario recoge** — toda carta vuelve al diario físico con
+  redacción única, y la pregunta abre a lo sentido (canon §0 y R3).
 
 ---
 
@@ -102,12 +82,12 @@ se **gira con un tap** (recibís la carta cerrada y la girás para ver la consig
 ```
 
 **Dos capas de estilo (regla clave):**
-- **Dibujo de categoría:** preciso, acuarela, **todo en negro neutro** (`#2b2925`); el **color de la categoría pinta UN solo elemento**. Mismo valor y textura en las 6.
+- **Dibujo del pilar:** preciso, acuarela, **todo en negro neutro** (`#2b2925`); el **color de la categoría pinta UN solo elemento**. Mismo valor y textura en las 6.
 - **Glifo de acción:** minimalista, geométrico, un color (se pinta del color de la categoría), chico. No le roba protagonismo a la frase.
 
 **Vocabulario cerrado**
 
-| Categoría | Motivo | Acento (color) | | Acción | Glifo |
+| Pilar | Motivo | Acento (color) | | Actividad | Glifo |
 |-----------|--------|----------------|---|--------|-------|
 | Gratitud | amanecer | el sol — amarillo `#E0A92E` | | Escribir | una pluma |
 | Calma | luna sobre agua | la luna — azul-gris `#becdd7` | | Contemplar | un ojo |

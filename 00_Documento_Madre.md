@@ -5,19 +5,26 @@
 
 ---
 
-## 1. La idea
+## 1. La idea (storytelling WS18)
 
-Una app de **micro-rituales diarios de presencia, gratitud y conexión humana**. El
-**fin último**: que el usuario **escriba, al menos una vez por día, en su diario
-físico** lo que sintió — **fuera del teléfono**. La **actividad** (caminar,
-respirar, contemplar, hacer… o simplemente escribir) es el **medio** que se lo
-provoca; así nadie queda afuera por no tener tiempo o ganas de una actividad
-puntual. El teléfono es **guía** (le trae la consigna) y **baúl** (guarda el
-rastro: foto + una nota corta de ayuda-memoria), nunca el destino.
+**Dwellia es un espacio de crecimiento personal**, construido sobre **una pausa
+diaria** que conecta a la persona **consigo misma, con su alrededor y con la
+naturaleza**, y la invita a **reconocer las emociones y sentimientos** que esa
+conexión genera.
+
+**La pausa = actividad de desconexión + escribir lo sentido.** Escribir en el
+**diario físico, fuera del teléfono, ES la pausa** — el motor del crecimiento. Las
+**actividades de desconexión** (contemplar, respirar, caminar, hacer) son
+disparadores que la preparan; la escritura pura es la pausa mínima del día sin
+tiempo. El crecimiento se recorre por **6 pilares interconectados** (gratitud,
+calma, perspectiva, resiliencia, amor propio, vínculos), con la persona en el
+centro: **cada semana se recorren todos** (rotación 6+1 de M2). El teléfono es
+**guía** (trae la carta) y **baúl** (guarda el rastro), nunca el destino.
 
 La unidad de contenido es la **carta del día**: una **frase** breve que invita a
-frenar + un **micro-prompt** que la vuelve acción concreta ("salí, mirá la luna,
-guardá lo que viste"). Frase + micro-prompt, inseparables.
+frenar + un **micro-prompt** que dispara la pausa y vuelve al diario. Frase +
+micro-prompt, inseparables. (SoT del contenido:
+[`canon_cartas.md`](M0_Motor_de_Contenido/canon_cartas.md).)
 
 **Qué es / qué no es**
 
@@ -56,9 +63,9 @@ Y la app **se apaga**.
 
 | Motor | Qué hace | Estado |
 |-------|----------|--------|
-| **M0 · Contenido** | La materia prima: las 6 categorías y las cartas (frase + micro-prompt + dibujo). | ✅ cerrado v1 (69 cartas) |
-| **M1 · Onboarding y Perfil** | La entrada y las preferencias: login sin contraseña; elegir categorías (2-6), **actividades** y horario; activar (o no) el aviso; aceptar términos; explicar la app y el compromiso (diario a mano, 10-15 min). Editable después. | ✅ lógica cerrada v1 ([M1](M1_Onboarding_y_Perfil/Madre_del_Motor.md)) |
-| **M2 · Entrega del día** | Elige la carta del día (azar ponderado: filtro duro por tus categorías **y tus actividades elegidas** — con **"escribir" siempre disponible** como piso — + preferencia blanda de acción que aprende de tus estrellas; sin repetir la última semana) y avisa (push/email opcional). Vigencia 24h o hasta completarla. | ✅ lógica cerrada v1 ([M2](M2_Entrega_del_Dia/Madre_del_Motor.md)) |
+| **M0 · Contenido** | La materia prima: los 6 pilares y las cartas (frase + micro-prompt + concepto + dibujo). Reglas en [`canon_cartas.md`](M0_Motor_de_Contenido/canon_cartas.md) (SoT del judge). | ✅ cerrado v1 (69 cartas) |
+| **M1 · Onboarding y Perfil** | La entrada: login sin contraseña; el slideshow storytelling (pilares + escribir como pausa); elegir **actividades de desconexión** (complementos — escribir no es opción, es el núcleo) y horario; activar (o no) el aviso; aceptar términos. Editable después. | ✅ lógica cerrada ([M1](M1_Onboarding_y_Perfil/Madre_del_Motor.md)) |
+| **M2 · Entrega del día** | Elige la carta del día: **rotación 6+1 de pilares** (los 6, cada semana, en orden mezclado + día comodín) × tus actividades elegidas (escritura pura siempre) + preferencia blanda que aprende de tus ⭐; **sin repetir ni carta ni concepto en la semana**. Avisa (push/email opcional). Vigencia 24h. | ✅ lógica cerrada ([M2](M2_Entrega_del_Dia/Madre_del_Motor.md)) |
 | **M3 · Ritual** | El momento: recibís la carta, la girás, hacés el ejercicio afuera y volvés a cerrarlo — **reflexión** ≤250 (protagonista, no bloquea Guardar), **hasta 3 fotos** y **estrellas** 1-5 (opcionales). Una sola superficie (scroll en el dorso). **Sin gate:** la próxima carta llega siempre; lo dejado a medias se autoguarda sin culpa. | ✅ lógica cerrada v1 ([M3](M3_Ritual/Madre_del_Motor.md)) |
 | **M4 · Baúl de Crecimiento Personal** | El historial de todo lo vivido (carta + foto + reflexión). Dos modos de orden: **Reciente** (default) y **Más valoradas**. Se puede **borrar** una entrada para siempre (modal claro + botón rojo; limpia DB + fotos + link). Casi sólo lectura. | ✅ lógica cerrada v1 ([M4](M4_Baul/Madre_del_Motor.md)) |
 | **M5 · Compartir** | Link público con nota personal. **Carta sola** (sin datos tuyos) o **ejercicio completo** (con reflexión + fotos → aviso de privacidad). El que recibe lo abre **sin instalar ni loguear**; un CTA suave al final. El link **muere si borrás la entrada**. Secundario y latente: se ofrece, no se empuja. | ✅ lógica cerrada v1 ([M5](M5_Compartir/Madre_del_Motor.md)) |
@@ -93,7 +100,7 @@ No entran en la v1; son la zanahoria del roadmap.
 - **Dos rituales por día** — mañana y noche, estilo diario guiado (palanca premium).
 - **Cartas propias por el usuario** — armar cartas vía integración con Claude Design (API).
 - **Carta sorpresa semanal** — una frase de motivación que llega de sorpresa (engagement suave, a evaluar).
-- **Freemium completo** — más categorías, almacenamiento de fotos, personalización, packs temáticos.
+- **Freemium completo** — packs temáticos, almacenamiento de fotos, personalización (ver `ROADMAP_v2_PREMIUM.md`).
 
 ---
 
@@ -112,7 +119,7 @@ con los datos de cada persona **aislados** (sobre todo el Baúl).
 
 **Dos mundos de datos** (la regla de oro del aislamiento):
 - **Contenido (compartido):** las cartas son iguales para todos. Tablas **globales**. Acá vive **M0**.
-- **Datos del usuario (privados):** perfil, categorías elegidas y Baúl son tuyos. Cada fila lleva su `user_id` y **toda consulta filtra por el usuario logueado**, así el Baúl de uno jamás toca el de otro. *(No es "una base por usuario" — eso no escala.)*
+- **Datos del usuario (privados):** perfil, actividades elegidas y Baúl son tuyos. Cada fila lleva su `user_id` y **toda consulta filtra por el usuario logueado**, así el Baúl de uno jamás toca el de otro. *(No es "una base por usuario" — eso no escala.)*
 
 **Las tablas:**
 
@@ -122,11 +129,11 @@ acciones    (5)   ├─ GLOBALES, compartidas  →  M0 vive acá
 cartas      (69)  ┘     (seed = los 3 JSON de M0_Motor_de_Contenido/data/)
 ──────────────────────────────────────────────────────────
 usuarios               ┐
-usuario_categorias     │
 usuario_acciones       │   ← actividades elegidas (M1; "escribir" siempre cuenta)
 entregas / Baúl        ├─ PRIVADAS, todo con user_id
 fotos                  │     (entregas+fotos: M2/M3 · compartidos: M5)
 compartidos            ┘
+(usuario_categorias: tabla LEGACY pre-WS17, nada la lee; se elimina en una limpieza futura)
 ```
 
 Los **JSON del repo son el seed maestro**: un script los carga una vez a las 3 tablas

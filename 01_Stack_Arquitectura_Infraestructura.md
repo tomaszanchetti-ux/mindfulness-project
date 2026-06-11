@@ -109,8 +109,8 @@ Idéntico a como Arc One aísla workspaces, pero a escala de usuario individual:
 │  → un script los carga una vez; re-seed si sumamos cartas    │
 ├─────────────────────────────────────────────────────────────┤
 │  MUNDO 2 · DATOS DEL USUARIO (privados, todo con user_id)    │
-│  usuarios · usuario_categorias · entregas (Baúl) · fotos ·   │
-│  compartidos                                                 │
+│  usuarios · usuario_acciones · entregas (Baúl) · fotos ·     │
+│  compartidos · (usuario_categorias: legacy, sin uso)         │
 │  → CADA fila lleva user_id                                    │
 │  → TODA consulta filtra por el usuario logueado              │
 └─────────────────────────────────────────────────────────────┘

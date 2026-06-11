@@ -56,9 +56,9 @@ usuario (auto-provisión en el primer login) y el resto de la API filtra por su 
 | GET | `/health` | Salud. |
 | GET | `/api/contenido/categorias` | Las 6 categorías globales (Mundo 1). |
 | GET | `/api/contenido/resumen` | Conteo de cartas (chequeo del seed). |
-| GET | `/api/perfil` | Perfil del usuario logueado + sus categorías + `onboarding_completo`. |
+| GET | `/api/perfil` | Perfil del usuario logueado + sus actividades + `onboarding_completo` (= términos). |
 | PUT | `/api/perfil` | Actualiza horario/TZ/aviso y acepta términos. |
-| PUT | `/api/perfil/categorias` | Fija las **2-6** categorías elegidas. |
+| PUT | `/api/perfil/categorias` | **DEPRECADO (WS17):** lo que guarda no afecta la entrega; queda por compatibilidad. |
 | GET | `/api/carta-del-dia` | La carta de hoy (M2: sortea + crea, o devuelve la ya entregada · 1/día por TZ). |
 | PUT | `/api/entregas/{id}/cierre` | M3: cierra el ritual (estrellas/reflexión/completada). |
 | GET | `/api/baul?orden=reciente\|valoradas` | M4: el historial vivido (carta + reflexión + fotos). |
@@ -71,7 +71,7 @@ usuario (auto-provisión en el primer login) y el resto de la API filtra por su 
 
 - ✅ **Paso 1 — Seed + esquema:** las 8 tablas + el contenido de M0 cargado y servido.
 - ✅ **Paso 1b — Auth + Perfil (M1):** dependency de auth (dev/firebase) + onboarding
-  (categorías 2-6 · horario/TZ/aviso · términos). Aislamiento testeado.
+  (actividades · horario/TZ/aviso · términos; onboarding_completo = términos). Aislamiento testeado.
 - ✅ **Paso 2 — Entrega (M2) + Ritual (M3):** `elegir_carta()` portado fiel a
   `services/seleccion.py` (lee `cartas` global + `entregas` por user_id) + carta del día
   (1/día por TZ) + cierre del ritual.

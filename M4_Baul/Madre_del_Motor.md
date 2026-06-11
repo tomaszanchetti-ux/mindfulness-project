@@ -182,7 +182,7 @@ M4 borra: entregas + fotos (DB) + archivos (Cloud Storage) + link compartido (M5
 ## 9. Diferido a v2 / más adelante
 
 - **Editar** una entrada guardada (reflexión, fotos). En v1 una entrada cerrada es fija.
-- **Buscar / filtrar** por categoría o por texto de la reflexión (cuando el Baúl crezca).
+- **Buscar / filtrar** por pilar o por texto de la reflexión (cuando el Baúl crezca).
 - **Orden compuesto** fecha → estrella, sólo si entran **dos rituales por día**.
 - **Resumen / vista de crecimiento** (IA): "tu mes en una tarjeta", patrones de lo que más te
   llegó. Es componente v2 (IA creativa).
