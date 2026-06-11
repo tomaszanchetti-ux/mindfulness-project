@@ -241,8 +241,14 @@ ESQUEMA_VEREDICTO = {
 }
 
 
-def juzgar(cartas_a_juzgar: list[dict], mazo: list[dict], modelo: str) -> list[dict]:
-    """Evalúa cada carta con Claude contra el canon. Devuelve los veredictos."""
+def juzgar(cartas_a_juzgar: list[dict], mazo: list[dict], modelo: str,
+           modo_regresion: bool = False) -> list[dict]:
+    """Evalúa cada carta con Claude contra el canon. Devuelve los veredictos.
+
+    modo_regresion=True (mazo aprobado): solo violaciones inequívocas — el mazo
+    ya pasó curaduría humana y no se re-litigan elecciones de estilo aceptadas.
+    modo_regresion=False (carta candidata nueva): severidad máxima, el gate real.
+    """
     try:
         import anthropic
     except ImportError:
@@ -259,18 +265,34 @@ def juzgar(cartas_a_juzgar: list[dict], mazo: list[dict], modelo: str) -> list[d
         f"{c['id']} · {c['categoria']} · {c['accion']} · {c['concepto']} · «{c['frase']}»"
         for c in mazo
     )
+    calibracion = (
+        # Modo regresión: el mazo ya pasó curaduría humana (WS17). No es una
+        # re-curaduría: es un detector de regresiones e incumplimientos duros.
+        "MODO REGRESIÓN: la carta que vas a evaluar YA pertenece al mazo aprobado "
+        "por curaduría humana. Señala SOLO incumplimientos claros e inequívocos — "
+        "los que justificarían rechazar la carta si fuera nueva. NO propongas "
+        "mejoras de gusto, reformulaciones opcionales ni señales 'podría ser más "
+        "concreta/única': si una elección de estilo es defendible, está aprobada. "
+        "En la duda, aprueba."
+        if modo_regresion else
+        # Modo alta: el gate real para cartas candidatas (UGC premium incluido).
+        "MODO ALTA: la carta es una candidata NUEVA que pide entrar al mazo. "
+        "Aplica el canon con severidad completa, regla por regla."
+    )
     sistema = [
         {
             "type": "text",
             "text": (
                 "Eres el juez de calidad de cartas de Dwellia, una app de pausas de "
-                "mindfulness. Evalúas cada carta candidata contra el canon (rule base) "
-                "que sigue, regla por regla. Eres exigente pero justo: señalas solo "
+                "mindfulness. Evalúas cada carta contra el canon (rule base) que "
+                "sigue, regla por regla. Eres exigente pero justo: señalas solo "
                 "incumplimientos reales, citando la regla (R1.1…S3). 'mayor' = true para "
                 "R1-R5 y S; false para R6-R8. Si el veredicto es requiere_revision, "
                 "propones un fix concreto (frase y/o prompt alternativos) que respete el "
                 "canon. Sugieres siempre el concepto (kebab-case): el existente si la "
-                "carta es variante deliberada de otra, o uno nuevo.\n\n=== CANON ===\n"
+                "carta es variante deliberada de otra, o uno nuevo.\n\n"
+                + calibracion
+                + "\n\n=== CANON ===\n"
                 + canon
                 + "\n\n=== MAZO VIGENTE (para R5: conceptos y duplicados) ===\n"
                 + resumen
@@ -327,8 +349,11 @@ def main() -> int:
 
     veredictos = []
     if args.judge:
-        print(f"— capa judge ({args.model}) sobre {len(a_validar)} carta(s) —")
-        veredictos = juzgar(a_validar, mazo, args.model)
+        # Sin --carta = mazo aprobado → modo regresión. Con --carta = alta nueva.
+        modo_regresion = not args.carta
+        etiqueta = "regresión sobre el mazo" if modo_regresion else "alta de candidata"
+        print(f"— capa judge ({args.model}) · modo {etiqueta} · {len(a_validar)} carta(s) —")
+        veredictos = juzgar(a_validar, mazo, args.model, modo_regresion=modo_regresion)
 
     if args.json:
         print(json.dumps({

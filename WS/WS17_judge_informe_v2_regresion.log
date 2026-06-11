@@ -1,0 +1,168 @@
+— capa judge (claude-opus-4-8) · modo regresión sobre el mazo · 69 carta(s) —
+  🟡 grat-esc-01: requiere_revision — 3 hallazgo(s)
+  ✅ grat-esc-02: aprueba
+  ✅ grat-esc-03: aprueba
+  ✅ grat-con-01: aprueba
+  🟡 grat-con-02: requiere_revision — 3 hallazgo(s)
+  ✅ grat-con-03: aprueba
+  ✅ grat-cam-01: aprueba
+  🟡 grat-cam-02: requiere_revision — 1 hallazgo(s)
+  ✅ grat-cam-03: aprueba
+  ✅ grat-hac-01: aprueba
+  ✅ grat-hac-02: aprueba
+  ✅ grat-hac-03: aprueba
+  🟡 calm-esc-01: requiere_revision — 1 hallazgo(s)
+  ✅ calm-esc-02: aprueba
+  ✅ calm-esc-03: aprueba
+  ✅ calm-con-01: aprueba
+  ✅ calm-con-02: aprueba
+  ✅ calm-con-03: aprueba
+  ✅ calm-rep-01: aprueba
+  ✅ calm-rep-02: aprueba
+  ✅ calm-rep-03: aprueba
+  ✅ calm-cam-01: aprueba
+  ✅ calm-cam-02: aprueba
+  ✅ calm-cam-03: aprueba
+  ✅ pers-esc-01: aprueba
+  ✅ pers-esc-02: aprueba
+  ✅ pers-esc-03: aprueba
+  ✅ pers-con-01: aprueba
+  🟡 pers-con-02: requiere_revision — 1 hallazgo(s)
+  ✅ pers-con-03: aprueba
+  🟡 pers-rep-01: requiere_revision — 1 hallazgo(s)
+  ✅ pers-rep-02: aprueba
+  ✅ pers-rep-03: aprueba
+  🟡 pers-cam-01: requiere_revision — 1 hallazgo(s)
+  ✅ pers-cam-02: aprueba
+  ✅ pers-cam-03: aprueba
+  🟡 resi-esc-01: requiere_revision — 2 hallazgo(s)
+  ✅ resi-esc-02: aprueba
+  ✅ resi-esc-03: aprueba
+  ✅ resi-rep-01: aprueba
+  ✅ resi-rep-02: aprueba
+  ✅ resi-rep-03: aprueba
+  ✅ resi-cam-01: aprueba
+  ✅ resi-cam-02: aprueba
+  ✅ resi-cam-03: aprueba
+  🟡 resi-hac-01: requiere_revision — 2 hallazgo(s)
+  ✅ resi-hac-02: aprueba
+  🟡 resi-hac-03: requiere_revision — 1 hallazgo(s)
+  ✅ amor-esc-01: aprueba
+  ✅ amor-esc-02: aprueba
+  🟡 amor-esc-03: requiere_revision — 1 hallazgo(s)
+  ✅ amor-con-01: aprueba
+  ✅ amor-con-02: aprueba
+  ✅ amor-con-03: aprueba — 1 hallazgo(s)
+  🟡 amor-rep-01: requiere_revision — 2 hallazgo(s)
+  ✅ amor-rep-02: aprueba
+  ✅ amor-rep-03: aprueba
+  🟡 amor-hac-01: requiere_revision — 2 hallazgo(s)
+  🟡 amor-hac-02: requiere_revision — 3 hallazgo(s)
+  ✅ amor-hac-03: aprueba
+  ✅ vinc-esc-01: aprueba
+  ✅ vinc-esc-02: aprueba
+  ✅ vinc-esc-03: aprueba
+  ✅ vinc-con-01: aprueba
+  ✅ vinc-con-02: aprueba
+  🟡 vinc-con-03: requiere_revision — 1 hallazgo(s)
+  ✅ vinc-hac-01: aprueba
+  ✅ vinc-hac-02: aprueba
+  ✅ vinc-hac-03: aprueba
+
+=== VALIDADOR DE CARTAS · 69 carta(s) ===
+
+ERRORES (gate): 0
+
+AVISOS (revisar): 0
+
+OBSERVACIONES: 5
+  · muletilla «también» ×2 en calma: calm-con-01, calm-cam-01
+  · muletilla «también» ×2 en gratitud: grat-esc-01, grat-hac-02
+  · muletilla «también» ×2 en resiliencia: resi-esc-01, resi-hac-03
+  · conectores al diario: Después escribe… 27 · (acción escribir — integrado) 18 · Luego escribe… 18 · tejido/otro 6
+  · conceptos compartidos (variantes deliberadas): 9 → atender-lo-pendiente, balance-del-dia, dificultad-superada, distancia-temporal, expresar-aprecio-a-alguien, gratitud-por-lo-invisible, registrar-sin-juzgar, soltar-al-exhalar, tratarse-bien-en-acto
+
+JUDGE: 54 aprueban · 15 con reparos
+
+  grat-esc-01 → requiere_revision
+    [R3.2] El prompt presupone que algo 'salió bien'; si el día fue malo, queda sin salida explícita para escribir igual.
+    [R7.1] Usa 'por pequeñas que parezcan', estructura emparentada con la muletilla de mazo 'por pequeño que sea'.
+    [R2.4 · mayor] En un día difícil, pedir solo 'lo que salió bien' puede sentirse como ignorar lo que pesa; conviene dejar margen a lo que no salió.
+    fix → frase: «En lo pequeño también amanece.»
+          prompt: «Repasa el día y escribe en tu diario tres momentos que merezcan un segundo vistazo, salieran bien o no, y qué te dejó cada uno.»
+
+  grat-con-02 → requiere_revision
+    [R3.3 · mayor] «qué despertó en ti ese momento» pide confirmación del efecto y presupone que algo se despertó; si no pasó nada, no queda qué escribir, sin salida explícita.
+    [R3.2 · mayor] La pregunta presupone que el ejercicio funcionó («qué despertó en ti»), sin alternativa para cuando no surge nada.
+    [R7.1] Usa «Detente a…» y «qué despertó en ti», ambas muletillas marcadas como ya cargadas en el mazo.
+    fix → frase: «La luz llega sin que la pidamos.»
+          prompt: «Dedica unos minutos a mirar cómo entra la luz en el lugar donde estás, sin hacer nada más. Al cerrar el día, escribe en tu diario qué viste en esa luz, o qué no llegó a moverse.»
+
+  grat-cam-02 → requiere_revision
+    [R3.2 · mayor] «lo que apareció» presupone que el ejercicio funcionó; si no surge nada en el repaso, no queda nada concreto que escribir.
+    fix → frase: «Caminar despacio devuelve lo que la prisa esconde.»
+          prompt: «Camina sin prisa repasando lo que hoy agradeces. Al volver, escribe en tu diario qué motivo de gratitud se hizo más nítido al andar, o cuál seguía escondido.»
+
+  calm-esc-01 → requiere_revision
+    [R3.2 · mayor] El prompt es vago ('aquello que te transmite calma') y no concreta qué escribir: roza una consigna genérica sin pregunta respondible delimitada.
+    fix → frase: «Hay aguas a las que siempre se puede volver.»
+          prompt: «Trae a la memoria un lugar, momento o gesto que te dé calma. Descríbelo en tu diario con detalle —qué se ve, se oye o se siente allí— para poder volver a leerlo cuando lo necesites.»
+
+  pers-con-02 → requiere_revision
+    [R3.2 · mayor] La pregunta '¿qué se hizo más pequeño?' presupone que el ejercicio funcionó: si nada se encogió, no hay qué escribir. Cuantifica/confirma la metáfora sin dejar salida.
+    fix → frase: «Frente a lo vasto, lo urgente se encoge.»
+          prompt: «Observa algo más grande que tú —el cielo, un árbol, un edificio— y deja que ocupe tu atención. Luego escribe en tu diario qué preocupación tenías al empezar y cómo la ves después de mirar.»
+
+  pers-rep-01 → requiere_revision
+    [R3.2] La pregunta '¿qué ha cambiado en cómo lo ves?' presupone que el ejercicio funcionó; si no cambió nada, no queda claro qué escribir. Debería dejar salida explícita.
+    fix → frase: «Tomar aire es también tomar distancia.»
+          prompt: «Haz diez respiraciones profundas y vuelve a mirar algo que te ronde la cabeza. Luego escribe en tu diario cómo lo ves ahora, aunque sea igual que antes.»
+
+  pers-cam-01 → requiere_revision
+    [R3.3] El cierre 'qué se aclaró' presupone que el ejercicio funcionó; si nada se aclaró, no queda salida explícita para escribir.
+    fix → frase: «Al andar, los pensamientos se ordenan solos.»
+          prompt: «Camina un rato con la mente suelta y retoma luego algo que no veías del todo claro. Al volver, escribe en tu diario cómo lo ves ahora, o qué sigue enredado.»
+
+  resi-esc-01 → requiere_revision
+    [R7.1] Uso de 'también' en la frase, palabra ya cargada en el mazo y marcada como muletilla.
+    [R3.2] El prompt es genérico y la pregunta '¿qué aprendiste?' presupone implícitamente que hubo aprendizaje; aceptable pero algo binaria/cerrada.
+    fix → frase: «Eres también las veces que te levantaste.»
+          prompt: «Escribe en tu diario sobre una dificultad que ya quedó atrás: qué hiciste para sostenerte y qué se llevó consigo, aunque no sepas aún si dejó algo.»
+
+  resi-hac-01 → requiere_revision
+    [R3.3] El cierre pide 'qué sientes al haberla hecho', presuponiendo que la acción se completó y produjo un efecto; sin salida explícita si no hubo cambio.
+    [R7.1] 'por pequeña que sea' es muletilla de mazo cargada (variante de 'por pequeño que sea').
+    fix → frase: «Reponerse empieza por un gesto pequeño.»
+          prompt: «Haz hoy una sola cosa que llevabas tiempo dejando para luego, aunque sea mínima. Al cerrar el día, escribe en tu diario cómo fue ocuparte de ella, o qué te frenaba.»
+
+  resi-hac-03 → requiere_revision
+    [R3.3 · mayor] El cierre 'qué notas al haber cumplido contigo' presupone el efecto positivo del ejercicio (que cumpliste y que eso produjo algo); no deja salida si nada pasó o si costó.
+    fix → frase: «La fuerza también se entrena en lo pequeño.»
+          prompt: «Elige un hábito que te haga bien y cúmplelo hoy, aunque sea en su versión mínima. Al cerrar el día, anota en tu diario cómo fue acercarte a él, o qué se interpuso si no llegaste.»
+
+  amor-esc-03 → requiere_revision
+    [R7.1] Usa la estructura 'como a alguien que quieres' (variante 'a alguien que quieres'), listada como muletilla cargada del mazo.
+    fix → frase: «Te debes la ternura que repartes.»
+          prompt: «Escribe en tu diario una nota amable para ti, con las palabras que ofrecerías a quien más cuidas.»
+
+  amor-rep-01 → requiere_revision
+    [R3.3] La pregunta '¿qué sientes al regalarte ese momento?' presupone que el ejercicio produjo un efecto agradable; conviene dejar salida explícita por si no surge nada.
+    [R2.2 · mayor] 'qué sientes al regalarte ese momento' presupone un estado de ánimo favorable; si la persona no logra sentir nada agradable, el diario queda sin sostén claro.
+    fix → frase: «Respirar es regalarte un instante.»
+          prompt: «Haz unas respiraciones lentas dedicadas solo a ti, sin nada más que hacer. Al terminar, escribe en tu diario qué notaste al apartar ese rato para ti, aunque sea solo que cuesta hacerlo.»
+
+  amor-hac-01 → requiere_revision
+    [R7.1] Usa 'como lo harías por alguien que quieres', muletilla de mazo listada ('como a alguien que quieres'); aceptable como un uso, pero conviene vigilarlo.
+    [R3.3] 'cómo te sentiste al cuidarte' presupone que el gesto produjo un efecto; cae cerca de pedir confirmación, aunque sigue siendo respondible.
+
+  amor-hac-02 → requiere_revision
+    [R6.2] 'Date un capricho' roza el localismo americano 'darse un gusto' que el canon lista como prohibido; 'capricho' es defendible pero la construcción es la señalada.
+    [R3.2] 'cómo lo viviste' es algo abierto pero aceptable; no bloquea.
+    [R2.4 · mayor] Cumple en cuanto a mirar lo bueno, pero el cierre 'cómo lo viviste' presupone que se disfrutó; si no hubo gusto, conviene dejar salida explícita.
+    fix → frase: «Tratarte bien no necesita motivo.»
+          prompt: «Regálate un gusto sencillo que solo dependa de ti y vívelo sin prisa. Al terminar, escribe en tu diario qué notaste al concedértelo, o qué se te hizo difícil.»
+
+  vinc-con-03 → requiere_revision
+    [R7.1] Usa la muletilla ya cargada en el mazo 'qué despertó en ti', señalada explícitamente en R7.1 como estructura saturada.
+    fix → frase: «Lo que une no se ve, pero se siente.»
+          prompt: «Trae a tu mente a las personas que te hacen bien y quédate un momento con esa imagen. Al cerrar el día, escribe en tu diario qué sensación dejó pensar en ellas, o qué echaste de menos.»

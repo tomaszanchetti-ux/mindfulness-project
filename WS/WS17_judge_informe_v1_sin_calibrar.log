@@ -1,0 +1,445 @@
+— capa judge (claude-opus-4-8) sobre 69 carta(s) —
+  🟡 grat-esc-01: requiere_revision — 3 hallazgo(s)
+  🟡 grat-esc-02: requiere_revision — 3 hallazgo(s)
+  🟡 grat-esc-03: requiere_revision — 4 hallazgo(s)
+  🟡 grat-con-01: requiere_revision — 3 hallazgo(s)
+  🟡 grat-con-02: requiere_revision — 5 hallazgo(s)
+  ✅ grat-con-03: aprueba — 1 hallazgo(s)
+  ✅ grat-cam-01: aprueba
+  🟡 grat-cam-02: requiere_revision — 4 hallazgo(s)
+  ✅ grat-cam-03: aprueba
+  ✅ grat-hac-01: aprueba
+  🟡 grat-hac-02: requiere_revision — 4 hallazgo(s)
+  🟡 grat-hac-03: requiere_revision — 2 hallazgo(s)
+  🟡 calm-esc-01: requiere_revision — 3 hallazgo(s)
+  ✅ calm-esc-02: aprueba
+  ✅ calm-esc-03: aprueba — 1 hallazgo(s)
+  🟡 calm-con-01: requiere_revision — 4 hallazgo(s)
+  🟡 calm-con-02: requiere_revision — 4 hallazgo(s)
+  ✅ calm-con-03: aprueba — 1 hallazgo(s)
+  🟡 calm-rep-01: requiere_revision — 3 hallazgo(s)
+  ✅ calm-rep-02: aprueba — 1 hallazgo(s)
+  🟡 calm-rep-03: requiere_revision — 3 hallazgo(s)
+  ✅ calm-cam-01: aprueba — 1 hallazgo(s)
+  ✅ calm-cam-02: aprueba
+  🟡 calm-cam-03: requiere_revision — 3 hallazgo(s)
+  ✅ pers-esc-01: aprueba — 1 hallazgo(s)
+  🟡 pers-esc-02: requiere_revision — 3 hallazgo(s)
+  🟡 pers-esc-03: requiere_revision — 3 hallazgo(s)
+  🟡 pers-con-01: requiere_revision — 4 hallazgo(s)
+  🟡 pers-con-02: requiere_revision — 3 hallazgo(s)
+  ✅ pers-con-03: aprueba — 1 hallazgo(s)
+  🟡 pers-rep-01: requiere_revision — 4 hallazgo(s)
+  ✅ pers-rep-02: aprueba
+  ✅ pers-rep-03: aprueba — 1 hallazgo(s)
+  🟡 pers-cam-01: requiere_revision — 3 hallazgo(s)
+  🟡 pers-cam-02: requiere_revision — 4 hallazgo(s)
+  ✅ pers-cam-03: aprueba — 1 hallazgo(s)
+  🟡 resi-esc-01: requiere_revision — 4 hallazgo(s)
+  🟡 resi-esc-02: requiere_revision — 3 hallazgo(s)
+  🟡 resi-esc-03: requiere_revision — 4 hallazgo(s)
+  🟡 resi-rep-01: requiere_revision — 3 hallazgo(s)
+  🟡 resi-rep-02: requiere_revision — 3 hallazgo(s)
+  🟡 resi-rep-03: requiere_revision — 4 hallazgo(s)
+  ✅ resi-cam-01: aprueba — 1 hallazgo(s)
+  🟡 resi-cam-02: requiere_revision — 3 hallazgo(s)
+  ✅ resi-cam-03: aprueba — 1 hallazgo(s)
+  🟡 resi-hac-01: requiere_revision — 4 hallazgo(s)
+  🟡 resi-hac-02: requiere_revision — 4 hallazgo(s)
+  🟡 resi-hac-03: requiere_revision — 5 hallazgo(s)
+  ✅ amor-esc-01: aprueba — 1 hallazgo(s)
+  🟡 amor-esc-02: requiere_revision — 3 hallazgo(s)
+  🟡 amor-esc-03: requiere_revision — 1 hallazgo(s)
+  🟡 amor-con-01: requiere_revision — 3 hallazgo(s)
+  🟡 amor-con-02: requiere_revision — 3 hallazgo(s)
+  🟡 amor-con-03: requiere_revision — 6 hallazgo(s)
+  🟡 amor-rep-01: requiere_revision — 3 hallazgo(s)
+  🟡 amor-rep-02: requiere_revision — 4 hallazgo(s)
+  ✅ amor-rep-03: aprueba — 1 hallazgo(s)
+  🟡 amor-hac-01: requiere_revision — 5 hallazgo(s)
+  🟡 amor-hac-02: requiere_revision — 4 hallazgo(s)
+  🟡 amor-hac-03: requiere_revision — 3 hallazgo(s)
+  🟡 vinc-esc-01: requiere_revision — 4 hallazgo(s)
+  🟡 vinc-esc-02: requiere_revision — 3 hallazgo(s)
+  ✅ vinc-esc-03: aprueba — 1 hallazgo(s)
+  🟡 vinc-con-01: requiere_revision — 2 hallazgo(s)
+  ✅ vinc-con-02: aprueba — 1 hallazgo(s)
+  🟡 vinc-con-03: requiere_revision — 5 hallazgo(s)
+  🟡 vinc-hac-01: requiere_revision — 4 hallazgo(s)
+  🟡 vinc-hac-02: requiere_revision — 3 hallazgo(s)
+  🟡 vinc-hac-03: requiere_revision — 3 hallazgo(s)
+
+=== VALIDADOR DE CARTAS · 69 carta(s) ===
+
+ERRORES (gate): 0
+
+AVISOS (revisar): 0
+
+OBSERVACIONES: 5
+  · muletilla «también» ×2 en calma: calm-con-01, calm-cam-01
+  · muletilla «también» ×2 en gratitud: grat-esc-01, grat-hac-02
+  · muletilla «también» ×2 en resiliencia: resi-esc-01, resi-hac-03
+  · conectores al diario: Después escribe… 27 · (acción escribir — integrado) 18 · Luego escribe… 18 · tejido/otro 6
+  · conceptos compartidos (variantes deliberadas): 9 → atender-lo-pendiente, balance-del-dia, dificultad-superada, distancia-temporal, expresar-aprecio-a-alguien, gratitud-por-lo-invisible, registrar-sin-juzgar, soltar-al-exhalar, tratarse-bien-en-acto
+
+JUDGE: 21 aprueban · 48 con reparos
+
+  grat-esc-01 → requiere_revision
+    [R7.1] Usa 'también' (muletilla cargada en el mazo) y 'por pequeñas que parezcan', variante de la estructura prohibida 'por pequeño que sea'.
+    [R3.2] La consigna es algo genérica ('cosas que salieron bien'); la pregunta de diario podría ser más concreta y respondible aunque el día haya sido plano.
+    [R2.1] El prompt es funcional pero plano: una sola idea correcta, sin gesto físico que distinga el guion (ver R5.2 frente a grat-esc-02).
+    fix → frase: «En lo pequeño también amanece.»
+          prompt: «Recorre el día de atrás hacia delante y detente en tres momentos que merecen quedarse. En el diario, escribe qué tenía cada uno para no perderse en el olvido.»
+
+  grat-esc-02 → requiere_revision
+    [R2.1 · mayor] El prompt es demasiado escueto y abstracto: 'qué te llevas del día' no aterriza en un gesto concreto y hacible, queda como pregunta de diario sin experiencia previa que la dispare.
+    [R5.2 · mayor] Comparte concepto y acción con grat-esc-01 (balance-del-dia, escribir); el guion físico debe variar el cómo, no solo la pregunta. Tal como está, el cuerpo del ejercicio (repasar el día y anotar lo recibido) es prácticamente idéntico al balance del día existente.
+    [R3.2] 'aunque sea una sola cosa' funciona como salida, pero la pregunta 'qué te llevas' roza la confirmación del efecto; conviene asegurar que haya qué escribir incluso en un día gris.
+    fix → frase: «Ningún día se marcha con las manos vacías.»
+          prompt: «Recorre las horas de hoy como quien vacía los bolsillos al final del día: un encuentro, un sabor, un alivio. Anota en tu diario los tres hallazgos más pequeños, o lo único que encuentres si el día vino escaso.»
+
+  grat-esc-03 → requiere_revision
+    [R2.1 · mayor] El prompt es abstracto y poco aterrizado: 'aquello que tienes' no da un ancla concreta y hacible en ~10 minutos; falta un gesto físico u observable que guíe la pausa.
+    [R3.1 · mayor] La vuelta al diario es genérica ('Escribe en tu diario sobre…'), una coletilla casi idéntica pegada al inicio, sin redacción única tejida al contenido de la carta.
+    [R3.3 · mayor] Pide directamente 'lo que agradeces', lo que roza la confirmación del efecto y no ofrece salida si nada surge; conviene pedir contenido observable (qué cosas pasaste por alto) más que el agradecimiento ya formulado.
+    [R7.2] El conector al diario es el arranque plano 'Escribe en tu diario sobre…'; el canon pide alternar con tejidos ('Al cerrar el día…', 'cierra anotando…').
+    fix → frase: «Lo esencial casi siempre vive en voz baja.»
+          prompt: «Recorre tu casa sin prisa y fíjate en tres cosas que usas a diario sin reparar en ellas. Al cerrar el día, anota en tu diario cuáles eran y qué hacen por ti que sueles pasar por alto.»
+
+  grat-con-01 → requiere_revision
+    [R3.2] La pregunta '¿qué descubriste?' presupone que el ejercicio funcionó; si nada llamó la atención, no queda claro qué escribir. Conviene dar salida explícita.
+    [R7.2] El conector 'Después escribe en tu diario' es la forma más previsible; conviene alternar con un tejido más conectado al contenido (R3.1 pide redacción única, no coletilla).
+    [R3.1] El cierre al diario es genérico y poco conectado al contenido específico de la carta; roza la coletilla pegada.
+    fix → frase: «Lo que nos sostiene rara vez se deja ver.»
+          prompt: «Observa tu entorno y detente en eso que sostiene tu día sin pedir atención: un objeto, una rutina, una presencia. Al cerrar el día, anota qué se te había vuelto invisible de tanto verlo, o qué sigue costándote notar.»
+
+  grat-con-02 → requiere_revision
+    [R3.2] «qué despertó en ti» presupone que el momento provocó algo; si no despertó nada, el diario se queda sin respuesta.
+    [R3.3] Pide confirmación del efecto sin salida explícita («…o qué se resistió a aparecer»).
+    [R7.1] Acumula dos muletillas ya cargadas en el mazo: «Detente a…» y «qué despertó en ti», ambas penalizadas.
+    [R7.2] El conector al diario es el genérico «Luego escribe…», sin tejido variado.
+    [R2.1 · mayor] El prompt es algo escueto y el cierre flojo, pero la idea es única y hacible; el verdadero problema es la consigna de diario, no la acción en sí.
+    fix → frase: «La luz llega sin que la pidamos.»
+          prompt: «Quédate un momento observando cómo cae la luz en el lugar donde estás: dónde se posa, qué tonos toma, qué deja en sombra. Al cerrar el día, anota en tu diario qué notaste de esa luz, o qué te costó mirar con calma.»
+
+  grat-cam-02 → requiere_revision
+    [R3.2] El cierre 'lo que apareció' es algo vago y presupone que algo apareció; conviene una pregunta más concreta con salida si no surgió nada.
+    [R7.1] 'prisa' es muletilla cargada en el mazo (calm-esc-03, grat-cam-02); además aquí aparece dos veces (frase y prompt) reforzando la repetición.
+    [R7.2] El conector 'Después escribe…' es la forma más genérica; conviene alternar con un tejido al diario más específico.
+    [R2.1 · mayor] 'repasando todo aquello que hoy agradeces' es amplio y poco hacible/concreto en 10 min; conviene acotar el foco del repaso (p. ej. lo que el caminar te va devolviendo).
+    fix → frase: «Al paso lento, vuelve lo que el correr deja atrás.»
+          prompt: «Camina sin acelerar y fíjate en una sola cosa de hoy que merezca un gracias: un encuentro, un sabor, un descanso. Al volver, anota en tu diario qué fue y por qué se te quedó, o qué buscaste sin encontrar.»
+
+  grat-hac-02 → requiere_revision
+    [R3.2] La pregunta '¿por qué?' es respondible, pero el prompt corre el riesgo de presuponer mejora ('déjalo mejor de como estaba') sin salida si no se logra; revisar R2.3.
+    [R2.3 · mayor] 'déjalo mejor de como estaba' introduce una exigencia de resultado, no una invitación pura; el cuidado se vuelve tarea con meta verificable.
+    [R7.1] 'también' está marcado como muletilla de mazo; además la frase es idéntica a la registrada en grat-hac-02 (concepto preexistente).
+    [R7.2] El conector 'Luego escribe…' es justamente la forma que R7.2 pide alternar; conviene tejer la vuelta al diario.
+    fix → frase: «Hay cariño que solo cabe en un gesto.»
+          prompt: «Dedica unos minutos a cuidar con las manos algo que te importe: una planta, un objeto, un rincón. Al cerrar el día, anota en tu diario qué elegiste cuidar y qué sentiste al hacerlo.»
+
+  grat-hac-03 → requiere_revision
+    [R3.3] «qué sentiste al reencontrarlo» pide confirmación del efecto y presupone que reencontrarlo despertó algo; si no sintió nada, no hay salida explícita.
+    [R7.2] El conector «Después escribe» es la forma más plana; conviene alternar con un tejido al diario.
+    fix → frase: «Hay regalos que ya estaban en casa.»
+          prompt: «Recupera hoy algo que disfrutabas y habías dejado de lado —una música, una receta, un rincón— y dale un rato. Al cerrar el día, anota en tu diario qué encontraste al volver a ello, o qué notaste que ya no era igual.»
+
+  calm-esc-01 → requiere_revision
+    [R2.1 · mayor] El prompt es genérico y abstracto, no propone un gesto concreto y hacible en ~10 minutos; 'escribir sobre aquello que te transmite calma' carece de guion físico definido.
+    [R3.2 · mayor] La pregunta es difusa: 'aquello que te transmite calma' no acota qué escribir; falta concreción que la haga respondible incluso si hoy nada calma.
+    [R7.2] El conector al diario usa la fórmula plana 'Escribe en tu diario sobre…' sin variar ni tejer el cierre; conviene alternar con tejidos.
+    fix → frase: «Hay aguas a las que siempre se puede volver.»
+          prompt: «Recuerda un lugar, real o imaginado, donde el cuerpo se afloja: la luz, los sonidos, qué hay alrededor. Anótalo en tu diario con detalle, como un mapa para volver cuando lo necesites.»
+
+  calm-con-01 → requiere_revision
+    [R3.2] "qué te dijo esa quietud" presupone que la quietud comunicó algo; si no pasó nada, falta salida explícita para escribir.
+    [R7.1] Usa "también" (en la frase) y "Detente a…", dos muletillas ya cargadas en el mazo según R7.1.
+    [R7.2] El conector al diario es "Después escribe…", la forma más previsible; conviene tejer la vuelta al diario.
+    [R4.1 · mayor] La frase apunta a que la quietud "tiene voz" (escuchar), pero el prompt pide observar algo inmóvil (mirar): el disparo poético y la consigna concreta no coinciden del todo.
+    fix → frase: «La quietud también tiene voz.»
+          prompt: «Posa la mirada en algo que no se mueva y sostenla un rato, sin buscar nada. Al cerrar el día, anota en tu diario qué notaste mientras mirabas, o qué se resistió a aquietarse.»
+
+  calm-con-02 → requiere_revision
+    [R3.2] La pregunta presupone que mirar el cielo cambió algo (antes/después); si no hubo cambio, el contraste binario deja poco que escribir.
+    [R3.3] Pide confirmación del efecto ('cómo está ahora') sin salida explícita por si nada se movió.
+    [R7.2] Conector al diario usa la forma genérica 'Después escribe…'; conviene tejer la vuelta al diario.
+    [R3.1 · mayor] La vuelta al diario es una coletilla de molde ('Después escribe en tu diario…') poco conectada al contenido específico de la carta.
+    fix → frase: «El cielo es el descanso más antiguo.»
+          prompt: «Mira el cielo unos minutos, siguiendo las nubes o la luz, sin buscar nada. Al cerrar el día, anota en tu diario qué encontraste ahí arriba, o qué seguía dando vueltas sin querer soltarse.»
+
+  calm-rep-01 → requiere_revision
+    [R3.2] «Qué se aquietó en ti» presupone que el ejercicio funcionó (que algo se aquietó); si no pasó nada, no hay qué responder.
+    [R3.3] Pide confirmación del efecto en lugar de contenido, sin salida explícita para cuando no se aquietó nada.
+    [R7.2] Conector al diario usa la forma más común «Después escribe…»; conviene alternar con tejidos.
+    fix → frase: «Respirar es volver a estar aquí.»
+          prompt: «Haz diez respiraciones lentas, sintiendo cómo el aire entra y sale. Al terminar, anota en tu diario qué notas en el cuerpo ahora, o qué seguía dando vueltas.»
+
+  calm-rep-03 → requiere_revision
+    [R2.4 · mayor] "si te distraes, vuelve a empezar" introduce una mecánica de penalización que puede frustrar; convierte la invitación en un examen de logro en lugar de un cuidado amable.
+    [R3.2 · mayor] "qué encontraste en esa pausa" presupone que el ejercicio funcionó (que hay algo encontrado); si no pasó nada, falta salida explícita para seguir teniendo qué escribir.
+    [R7.2] El conector "Después escribe…" es la forma más manida del mazo; conviene alternar con un tejido ("Al abrir los ojos…", "cierra anotando…").
+    fix → frase: «Entre una respiración y otra cabe la calma.»
+          prompt: «Cierra los ojos y cuenta diez respiraciones, sin exigirte llegar al final. Al abrir los ojos, anota en tu diario cómo fue contar, o qué se cruzó por medio si la cuenta se perdió.»
+
+  calm-cam-03 → requiere_revision
+    [R6.2] 'Fuera' estático en la frase roza el uso americano de 'afuera/fuera' estático; aceptable como guiño espacial pero conviene vigilar.
+    [R3.2] 'Qué se quedó por el camino' presupone que algo se descargó; si la persona no soltó nada, la pregunta queda sin salida clara.
+    [R4.1 · mayor] La frase apunta a que el ruido interior 'pierde fuerza' al salir, pero el prompt pide soltar pensamientos y observar qué se quedó atrás: la idea emocional de aquietamiento/descarga no queda bien disparada; el prompt deriva hacia 'soltar' sin tocar el aflojarse del ruido.
+    fix → frase: «Fuera, el ruido de dentro pierde fuerza.»
+          prompt: «Sal a caminar prestando atención a cómo el ruido de tu cabeza baja de volumen al avanzar. Al volver, anota en tu diario qué pensamiento sonaba más fuerte y cómo lo notas ahora, o qué sigue insistiendo.»
+
+  pers-esc-02 → requiere_revision
+    [R3.2] La consigna queda algo abierta; falta una pregunta concreta que cierre y garantice qué escribir si el cambio de mirada no aporta nada.
+    [R2.4] Riesgo menor: 'una situación reciente' podría llevar a un conflicto; conviene encuadrar hacia la comprensión, no la herida.
+    [R3.3 · mayor] El prompt pide reconstruir la versión del otro pero no asegura contenido si no surge nada nuevo; conviene dejar salida explícita para lo que se resista a verse desde fuera.
+    fix → frase: «Toda historia cambia según quién la cuente.»
+          prompt: «Piensa en algo que viviste estos días y reescríbelo en tu diario como lo contaría otra de las personas presentes: qué vería, qué sentiría. Anota qué aparece distinto al cambiar de voz, o qué sigues viendo igual.»
+
+  pers-esc-03 → requiere_revision
+    [R3.2 · mayor] La consigna presupone una posición ('como si ya lo hubieras dejado atrás') que puede no encajar si lo que cuesta sigue muy presente; conviene dejar salida para cuando aún no se ve el paisaje.
+    [R5.2 · mayor] El guion físico es casi idéntico al de pers-esc-01 (distancia-temporal: mirar algo presente desde la distancia del tiempo); no varía el cómo, solo el matiz.
+    [R7.2] El conector al diario es el clásico 'Escribe en tu diario sobre…'; conviene alternar con un tejido distinto.
+    fix → frase: «Lo que hoy es muro, mañana es paisaje.»
+          prompt: «Piensa en algo que ahora te cuesta y escribe una carta breve desde el tú de dentro de un año: qué le contarías de cómo lo ves hoy, esté ya lejos o todavía cerca. Recoge esa carta en tu diario.»
+
+  pers-con-01 → requiere_revision
+    [R3.2] «qué se abrió al mirar lejos» presupone que el ejercicio funcionó; si nada se abrió, no hay salida para escribir.
+    [R3.3] Pide confirmación del efecto («qué se abrió») sin salida explícita tipo «…o qué seguía cerrado».
+    [R2.1 · mayor] Coherente y hacible en 10 min, pero la consigna física es mínima («mira lejos y quédate»); roza lo escueto, aunque la idea es única. Marcado por refuerzo del cierre poco respondible.
+    [R7.2] Conector al diario con «Después escribe…», la forma más usada; conviene alternar con un tejido.
+    fix → frase: «El horizonte recuerda que hay más mundo.»
+          prompt: «Mira lo más lejos que puedas desde donde estás y quédate ahí un momento. Al volver, anota en tu diario qué viste en la distancia y qué pensamiento te acompañó mientras mirabas.»
+
+  pers-con-02 → requiere_revision
+    [R3.2] «qué se hizo más pequeño» pide cuantificar/confirmar la metáfora; si nada se encogió, no queda contenido respondible.
+    [R3.3] La pregunta busca confirmación del efecto (que algo se empequeñeció) en lugar de contenido, sin salida explícita.
+    [R4.1 · mayor] La frase dispara la idea de que lo urgente se relativiza ante lo vasto; el prompt cierra pidiendo verificar ese efecto, desalineando lo poético (resonancia) con lo concreto (medir el resultado).
+    fix → frase: «Frente a lo vasto, lo urgente se encoge.»
+          prompt: «Observa algo más grande que tú —el cielo, un árbol, un edificio— y deja que ocupe tu atención unos minutos. Al cerrar el día, anota en tu diario qué preocupación rondaba tu cabeza y cómo la ves después de haber mirado algo tan amplio.»
+
+  pers-rep-01 → requiere_revision
+    [R3.2 · mayor] La pregunta presupone que el ejercicio funcionó: 'qué ha cambiado en cómo lo ves' no deja salida si nada cambió.
+    [R3.3 · mayor] Pide confirmación del efecto (qué cambió) sin salida explícita para el caso de que la mirada siga igual.
+    [R7.1] Usa 'también', muletilla ya cargada en el mazo (aparece en frase y es estructura recurrente).
+    [R7.2] El conector al diario es 'Luego escribe…', forma básica; conviene alternar con tejidos.
+    fix → frase: «El aire entra y el asunto se aleja un paso.»
+          prompt: «Haz diez respiraciones profundas y vuelve a mirar algo que te ronde la cabeza. Al terminar, anota en tu diario cómo lo ves ahora, aunque siga ocupando el mismo sitio.»
+
+  pers-cam-01 → requiere_revision
+    [R1.2 · mayor] La frase enuncia casi literalmente lo que el prompt pide (ordenar ideas al andar): es consigna disfrazada, no imagen poética que resuene.
+    [R3.3 · mayor] La pregunta '¿qué se aclaró?' presupone que el ejercicio funcionó; si no se aclaró nada, no hay salida ni qué escribir (también roza R3.2).
+    [R7.2] El conector al diario usa 'Después escribe…', forma ya habitual en el mazo; conviene tejer la vuelta al diario de otra manera.
+    fix → frase: «Hay nudos que se aflojan con el solo movimiento.»
+          prompt: «Camina un rato dejando un asunto rondando sin forzarlo, sin buscar solución. Al volver, anota en tu diario cómo lo ves ahora: más claro, igual de enredado o quizá distinto a como salió.»
+
+  pers-cam-02 → requiere_revision
+    [R2.1 · mayor] El prompt mezcla dos ideas: 'observa tu día desde fuera' (reflexión mental sobre la jornada) y 'como si fueras un visitante' (mirar el entorno con ojos nuevos), sin un guion físico concreto para caminar.
+    [R2.3 · mayor] La modalidad caminar no se mantiene pura ni concreta: el cuerpo del ejercicio es difuso ('observa tu día desde fuera') y no ancla la acción en algo hacible al andar.
+    [R3.2 · mayor] 'Qué viste con esa mirada nueva' presupone que el ejercicio funcionó; si no surge ninguna mirada nueva, no queda qué escribir.
+    [R7.2] El conector 'Luego escribe en tu diario' es la fórmula más previsible; conviene tejer la vuelta al diario de forma más conectada al contenido.
+    fix → frase: «Cambiar de lugar cambia la mirada.»
+          prompt: «Sal a caminar por tu barrio como si lo pisaras por primera vez: fíjate en una fachada, un árbol o un rincón que nunca te detuviste a mirar. Al volver, anota en tu diario qué detalle te sorprendió, o por qué te costó verlo distinto.»
+
+  resi-esc-01 → requiere_revision
+    [R7.1] Usa "también" en la frase, muletilla ya muy cargada en el mazo (grat-esc-01, grat-hac-02, calm-con-01...). Máximo un uso por categoría, idealmente ninguno nuevo.
+    [R2.1 · mayor] El prompt mete dos ideas: relatar la dificultad superada y extraer el aprendizaje; conviene una sola idea concreta.
+    [R3.1 · mayor] El cierre al diario es genérico ("Escribe en tu diario sobre…"), coletilla casi idéntica sin tejido único conectado al contenido de la carta.
+    [R3.3 · mayor] "qué aprendiste de ella" pide confirmación del efecto/lección sin salida explícita: si no hubo aprendizaje claro, no queda qué escribir.
+    fix → frase: «Eres también cada vez que volviste a ponerte en pie.»
+          prompt: «Trae a la memoria una dificultad que ya quedó atrás y describe cómo era pasarla por dentro. Al cerrar el día, anota en tu diario un gesto o decisión tuya de aquel momento que hoy todavía reconoces, o lo que aún te cuesta mirar de entonces.»
+
+  resi-esc-02 → requiere_revision
+    [R2.4 · mayor] El prompt remite directamente a 'un momento difícil', acercándose a la herida en lugar de invitar a mirar la fortaleza ya consolidada; conviene poner el foco en la cualidad presente, no en el episodio doloroso.
+    [R3.2 · mayor] La consigna presupone que la fortaleza efectivamente 'nació en un momento difícil'; si la persona no identifica ese origen, no le queda qué escribir. Falta una salida concreta.
+    [R3.3 · mayor] Pide vincular fortaleza a su origen difícil sin ofrecer salida explícita para quien no encuentra esa conexión; roza la confirmación de un efecto/relato.
+    fix → frase: «Toda raíz creció primero a oscuras.»
+          prompt: «Piensa en una fortaleza tuya de hoy y escribe en tu diario de dónde crees que viene: qué la fue formando, aunque no sepas señalar un momento exacto.»
+
+  resi-esc-03 → requiere_revision
+    [R3.2] La pregunta '¿qué dice eso de ti?' es algo abierta pero respondible; no es el problema principal. El riesgo mayor está en R2.4/R3.3.
+    [R2.1 · mayor] El prompt es vago: 'algo que has mantenido en pie' no concreta un gesto hacible en ~10 minutos; es una consigna de introspección difusa sin acción observable que ancle el ejercicio.
+    [R3.3 · mayor] 'qué dice eso de ti' pide una conclusión/confirmación sobre uno mismo, no contenido concreto; no ofrece salida si la persona no encuentra nada que decir.
+    [R7.2] El conector al diario es directo 'Escribe en tu diario sobre…', conviene alternar con tejidos para no repetir la forma más cargada del mazo.
+    fix → frase: «Lo que no se rompió, se volvió más firme.»
+          prompt: «Piensa en algo de tu vida que sigue en pie pese al tiempo: un vínculo, una rutina, una promesa. En tu diario, describe cómo lo has sostenido y qué pequeño gesto lo cuida hoy, o qué cuesta mantener.»
+
+  resi-rep-01 → requiere_revision
+    [R2.1 · mayor] La consigna oscila entre dos ideas: respirar notando el cuerpo y luego una pregunta de diario sobre 'qué te sostuvo hoy', que abre un tema distinto al cuerpo respirado.
+    [R3.2 · mayor] 'Qué te sostuvo hoy' presupone que algo te sostuvo y depende del día; si no hubo nada destacable, queda poco que responder.
+    [R7.2] El conector al diario usa la forma más común 'Después escribe…'; conviene alternar con tejidos ('Al cerrar el día…', 'cierra anotando…').
+    fix → frase: «Hasta en lo difícil, el aire sigue llegando.»
+          prompt: «Respira despacio unos minutos y siente cómo el cuerpo trabaja por ti sin que se lo pidas: el pecho que sube, el aire que entra. Al terminar, anota en tu diario cómo notaste ese sostén que el cuerpo te da, o qué te costó percibir.»
+
+  resi-rep-02 → requiere_revision
+    [R3.3] La pregunta 'qué soltaste para poder volver a empezar' presupone que el ejercicio funcionó (que algo se soltó); falta salida explícita si nada se aflojó.
+    [R5.2 · mayor] El guion físico (respiraciones lentas soltando tensión al exhalar) replica el cuerpo del ejercicio canónico de calm-rep-02 'soltar-al-exhalar' sin variar el cómo dentro de la modalidad.
+    [R7.2] El conector al diario usa 'Luego escribe…', forma ya frecuente en el mazo; conviene tejer una variante.
+    fix → frase: «Cada respiración es volver a empezar.»
+          prompt: «Respira contando hasta empezar de nuevo en cada inhalación, como si reiniciaras. Al cerrar el día, anota en tu diario qué intentaste dejar atrás al exhalar, o qué se resistió a marcharse.»
+
+  resi-rep-03 → requiere_revision
+    [R2.4 · mayor] "decide cómo afrontar algo que te cuesta" invita a poner el foco en la dificultad/herida en lugar de mirar la fortaleza; conviene reorientar hacia la calma como base de decisión sin abrir el problema.
+    [R3.3 · mayor] La pregunta pide confirmar el efecto (qué decidiste tras respirar) y presupone que la respiración produjo una decisión; si no surgió ninguna, no hay salida para escribir.
+    [R2.3] "decide después" roza la obligación; la modalidad respirar pierde pureza al encadenarse a un mandato de resolver.
+    [R7.2] El conector "Luego escribe" es la forma más previsible; conviene tejer la vuelta al diario.
+    fix → frase: «No toda fuerza hace ruido.»
+          prompt: «Haz diez respiraciones lentas, dejando que el cuerpo se asiente. Al cerrar el día, anota en tu diario qué notas distinto cuando piensas desde la calma, o qué se mantiene igual.»
+
+  resi-cam-02 → requiere_revision
+    [R2.3 · mayor] "cuando te apetezca parar, sigue un poco más" empuja a forzar el cuerpo y rompe la pureza del caminar como invitación; convierte la caminata en prueba de resistencia.
+    [R1.2] La frase "prueba que puedes seguir" roza la consigna del prompt (seguir un poco más), acercándose a instruir en vez de resonar.
+    [R3.3] "qué te hace sentir capaz hoy" presupone que la persona se siente capaz; conviene dejar salida si hoy no se siente así.
+    fix → frase: «Andar es ya una forma de seguir.»
+          prompt: «Camina a tu ritmo prestando atención a cómo el cuerpo sostiene cada paso, sin forzar. Al volver, anota en tu diario qué notaste capaz de hacer hoy, o qué te costó más.»
+
+  resi-hac-01 → requiere_revision
+    [R1.2 · mayor] La frase 'Reponerse empieza por un gesto pequeño' explica/instruye la acción en vez de resonar poéticamente; es casi una consigna directa del prompt.
+    [R3.3] 'qué sientes al haberla hecho' presupone que el ejercicio produjo un efecto y pide confirmación, sin salida explícita si no pasó nada.
+    [R7.1] 'por pequeña que sea' es muletilla de mazo cargada ('por pequeño que sea').
+    [R7.2] Conector 'Después escribe…' es la forma básica; conviene alternar con tejidos al diario.
+    fix → frase: «Lo que se atiende deja de pesar en la espalda.»
+          prompt: «Elige una sola cosa que llevabas tiempo aplazando, aunque sea mínima, y hazla hoy. Al cerrar el día, anota en tu diario cómo fue ocuparte de ella o qué se interpuso en el camino.»
+
+  resi-hac-02 → requiere_revision
+    [R5.2 · mayor] El guion físico (ordenar o reparar algo pendiente) es prácticamente idéntico al de resi-hac-01 ('atender-lo-pendiente'); comparten concepto pero el cuerpo del ejercicio no varía dentro de la modalidad hacer.
+    [R1.3 · mayor] 'Quien cuida lo suyo, resiste' tiene estructura y cadencia de refrán/sentencia popular, roza el cliché sentencioso.
+    [R7.1] 'también' está muy cargado en el mazo; aquí reaparece ('qué se asentó también en ti') sumando otro uso.
+    [R3.2] 'qué se asentó también en ti' presupone un efecto interior; conviene dejar salida por si no se asentó nada.
+    fix → frase: «Lo que sostienes a diario también te sostiene.»
+          prompt: «Elige un objeto que usas a menudo y dale el cuidado que llevas posponiendo: limpiarlo, afinarlo, dejarlo a punto. Al cerrar el día, anota en tu diario cómo fue volver a hacerlo tuyo, o qué se resistió.»
+
+  resi-hac-03 → requiere_revision
+    [R3.2] La pregunta presupone que se cumplió ('al haber cumplido contigo'); si no se logra, no queda qué escribir.
+    [R3.3] Pide confirmación del efecto ('qué notas al haber cumplido') más que contenido, sin salida explícita para el caso en que cueste o no salga.
+    [R7.1] Usa 'también', muletilla ya cargada en el mazo; idealmente evitarla en frase nueva.
+    [R7.2] Conector al diario es el genérico 'Después escribe…'; conviene alternar con un tejido.
+    [R4.1 · mayor] La frase apunta a entrenar la fuerza en lo pequeño, pero el prompt deriva a 'cumplir contigo': el eje emocional se desplaza de la fortaleza minúscula al deber/compromiso.
+    fix → frase: «La fuerza se ensaya en gestos diminutos.»
+          prompt: «Elige un hábito que te haga bien y dale hoy su versión más pequeña: un minuto, un paso, una página. Al cerrar el día, anota en tu diario cómo se sintió hacerlo a escala mínima, o qué te frenó si no llegó a darse.»
+
+  amor-esc-02 → requiere_revision
+    [R2.1 · mayor] El prompt ofrece dos vías ('hacer o sentir') y carece de un gesto concreto y hacible en 10 minutos; queda como reflexión genérica sin acción definida.
+    [R3.2 · mayor] La pregunta es demasiado abierta y abstracta; no concreta qué escribir si nada surge, y el diario funciona aquí como mero soporte sin consigna conectada al contenido de la carta.
+    [R2.2] Riesgo leve: 'darse permiso para hacer' puede presuponer estado de ánimo o deseo activo; conviene anclar en algo siempre disponible.
+    fix → frase: «Nadie florece a empujones.»
+          prompt: «Piensa en un pequeño permiso que rara vez te concedes: una pausa, un no, un descanso. Escribe en tu diario cuál sería y qué te frena a dártelo, aunque hoy no llegues a una respuesta clara.»
+
+  amor-esc-03 → requiere_revision
+    [R7.1] Usa 'como a alguien que quieres', estructura ya cargada como muletilla de mazo; debe evitarse o reformularse.
+    fix → frase: «Te debes la ternura que repartes.»
+          prompt: «Escribe en tu diario una nota amable dirigida a ti: lo que necesitarías oír hoy, dicho con la voz suave que sueles guardar para los demás.»
+
+  amor-con-01 → requiere_revision
+    [R7.1] Usa 'por pequeño que sea', muletilla ya cargada en el mazo (lista explícita de R7.1).
+    [R2.4 · mayor] 'sin restarle valor' presupone una actitud autodepreciativa y empuja a corregirla; conviene invitar a mirar la fortaleza sin instalar la herida del autorreproche.
+    [R3.3 · mayor] 'qué dice de ti' roza la confirmación de un mérito; mejor pedir contenido o dejar salida explícita por si no surge nada que reconocer.
+    fix → frase: «Reconocerse es una forma de cariño.»
+          prompt: «Trae a la memoria algo reciente que sacaste adelante, sin importar su tamaño, y déjalo estar un momento como un logro tuyo. Al cerrar el día, anota en tu diario qué fue y qué te gustaría recordar de ese momento.»
+
+  amor-con-02 → requiere_revision
+    [R3.2 · mayor] "qué te enseña su calma" presupone que la planta te enseñó algo y que percibiste calma; si no surgió nada, no queda qué escribir.
+    [R3.3 · mayor] Pide confirmar el efecto (la enseñanza) en vez de contenido observado; falta salida explícita para cuando no aparece lección.
+    [R7.2] El conector "Después escribe…" es la forma más cargada del mazo; conviene tejer la vuelta al diario de otra manera.
+    fix → frase: «Lo que florece no tiene prisa.»
+          prompt: «Observa una flor o una planta y fíjate, sin prisa, en cómo crece a su ritmo. Al cerrar el día, anota en tu diario qué detalle te llamó la atención, o qué notaste al mirarla con calma.»
+
+  amor-con-03 → requiere_revision
+    [R5.1 · mayor] El concepto 'registrar-sin-juzgar' ya existe en calm-esc-02 como experiencia de calma; aquí se replica sin aportar una experiencia distinta de amor-propio, duplicando concepto entre categorías.
+    [R2.1 · mayor] El prompt es vago: 'notar cómo te sientes sin cambiar nada' carece de un gesto contemplativo concreto y hacible propio de la acción 'contemplar'.
+    [R7.1] Usa 'Detente a…', muletilla ya cargada en el mazo, que debe evitarse.
+    [R7.2] Conector al diario 'Luego escríbelo', forma genérica que conviene alternar con tejidos.
+    [R3.2] 'tal cual es' roza la confirmación del estado sin pedir contenido concreto observable.
+    [R4.1] La frase apunta a 'merecer atención/ternura propia' y el prompt a 'registrar el estado sin juzgar': el puente emocional es débil.
+    fix → frase: «Mereces la atención que regalas.»
+          prompt: «Siéntate unos minutos y observa una parte de tu día de hoy que sueles dar por hecha y nadie te agradece. Al cerrar, anota en tu diario qué viste al mirarte con ese cuidado.»
+
+  amor-rep-01 → requiere_revision
+    [R3.3] La pregunta '¿qué sientes al regalarte ese momento?' presupone que el momento se sintió como regalo; pide confirmación del efecto sin salida si no pasó nada.
+    [R3.2] Pregunta cercana a binaria/presuntiva sobre el efecto; conviene abrirla a contenido aunque no surja una sensación agradable.
+    [R7.2] Conector 'Después escribe' es la forma más cargada del mazo; conviene alternar con un tejido más conectado al contenido.
+    fix → frase: «Respirar es regalarte un instante.»
+          prompt: «Haz unas respiraciones lentas dedicadas solo a ti, sin nada más que atender. Al terminar, anota en tu diario qué notaste al darte ese espacio, o qué te costó dejar fuera.»
+
+  amor-rep-02 → requiere_revision
+    [R2.1 · mayor] El prompt es vago: 'permítete una pausa' no concreta un ejercicio respiratorio hacible; falta el cómo físico del descanso.
+    [R3.2 · mayor] 'qué descansó en ti' presupone que el ejercicio funcionó y roza cuantificar la metáfora; si no descansó nada, no hay qué escribir.
+    [R7.1] Usa 'también', muletilla ya cargada en el mazo (amor-rep-02 frase, grat-esc-01, grat-hac-02); además la frase es idéntica a la registrada para este id.
+    [R7.2] Conector 'Luego escribe' es la forma más manida; conviene tejer la vuelta al diario.
+    fix → frase: «El descanso no se gana, se permite.»
+          prompt: «Siéntate y haz diez respiraciones lentas, soltando los hombros al exhalar, sin pedirte nada a cambio. Al cerrar el día, anota en tu diario qué notaste al darte ese permiso, o qué te costó soltar.»
+
+  amor-hac-01 → requiere_revision
+    [R2.1 · mayor] "Algo amable contigo" es vago: no concreta una sola acción hacible en ~10 minutos; el prompt no define qué hacer.
+    [R3.2 · mayor] "Cómo te sentiste al cuidarte" presupone que el gesto funcionó y produjo un sentir; si no pasó nada, no queda qué escribir, y roza confirmación del efecto (R3.3).
+    [R3.3 · mayor] Pide confirmación del efecto (cómo te sentiste) en vez de contenido, sin salida explícita.
+    [R7.1] "como a alguien que quieres" está marcado como muletilla de mazo; usar variante reduce frescura.
+    [R7.2] Conector "Luego escribe…" es la forma más genérica; conviene tejer la vuelta al diario.
+    fix → frase: «Cuidarse no es un lujo, es una raíz.»
+          prompt: «Elige un gesto concreto de cuidado —prepararte algo rico, una ducha sin prisa, ordenar un rincón tuyo— y dedícale diez minutos enteros. Al cerrar el día, anota en tu diario qué gesto elegiste y qué notaste al dártelo, o qué se interpuso.»
+
+  amor-hac-02 → requiere_revision
+    [R6.2] 'Date un capricho' roza el localismo americano vetado ('darse un gusto'); preferible 'regálate' o 'permítete algo agradable'.
+    [R7.1] 'prisa' es muletilla cargada del mazo; 'sin prisa' suma otro uso evitable.
+    [R3.2] 'cómo lo viviste' es algo vago y roza pedir confirmación del efecto; conviene una pregunta más concreta con salida si no pasó nada.
+    [R5.2 · mayor] El guion físico es casi idéntico a amor-hac-01 (mismo concepto 'tratarse-bien-en-acto', misma modalidad 'hacer'): ambos se reducen a 'hazte algo agradable'. Falta variar el cómo concreto del ejercicio dentro de la modalidad.
+    fix → frase: «Tratarte bien no necesita motivo.»
+          prompt: «Prepárate algo rico de comer o beber solo para ti, poniendo atención en cada paso del gesto. Al terminar, anota en tu diario qué notaste al dedicarte ese cuidado, o qué te costó permitírtelo.»
+
+  amor-hac-03 → requiere_revision
+    [R2.2 · mayor] El núcleo del ejercicio depende de que 'hoy surja la ocasión' de decir que no; si no surge, la acción concreta no se realiza y solo queda pensar, debilitando el prompt.
+    [R2.4] 'qué te lo pone difícil' roza abrir la herida más que mirar la fortaleza, aunque es leve.
+    [R7.2] Conector 'Luego escribe…' es de las formas más cargadas; conviene tejer la vuelta al diario de otra manera.
+    fix → frase: «No todo lo que te piden te corresponde.»
+          prompt: «Elige una petición o costumbre a la que te gustaría poder decir que no. Ensaya en voz baja una forma breve de negarte, sin justificarte de más. Al cerrar el día, anota en tu diario ese límite y qué lo haría más fácil de sostener.»
+
+  vinc-esc-01 → requiere_revision
+    [R1.3] La frase es un refrán/cliché casi literal ('las penas compartidas pesan menos'); calco del acervo popular, no resuena como imagen propia.
+    [R3.2] El cierre es la propia consigna entera, pero no hay pregunta concreta y respondible que dé salida si no hay nada que destape; queda difuso.
+    [R2.4 · mayor] 'Algo que llevas dentro y te aliviaría compartir' empuja a abrir la herida más que a mirar la fortaleza del vínculo; conviene reencuadrar hacia el lazo que sostiene.
+    [R3.3] No deja salida explícita si no surge nada que compartir; conviene un '…o qué te frena a decirlo'.
+    fix → frase: «Hay pesos que cambian al ponerles palabras.»
+          prompt: «Escribe en tu diario sobre algo que vienes guardando: a quién te imaginas contándoselo, qué dirías con tus palabras, o qué te frena a decirlo todavía.»
+
+  vinc-esc-02 → requiere_revision
+    [R2.1 · mayor] El prompt ofrece dos ideas con un 'o' (dar las gracias / decir algo pendiente), diluyendo la consigna en lugar de una sola acción concreta.
+    [R3.1] El cierre del diario es genérico: 'escribe en tu diario sobre alguien…' funciona como coletilla estándar y no teje una redacción única conectada a la imagen de los lazos no nombrados.
+    [R3.2] La pregunta es vaga: 'algo pendiente' no concreta qué escribir; conviene una entrada más respondible aunque no haya nada pendiente claro.
+    fix → frase: «Nos sostienen lazos que no siempre nombramos.»
+          prompt: «Piensa en una persona cuyo apoyo das por hecho y que casi nunca le agradeces. En el diario, escríbele las palabras que no le has dicho: qué hace por ti y por qué te importa.»
+
+  vinc-con-01 → requiere_revision
+    [R2.2 · mayor] El prompt presupone que hoy surja una conversación con otra persona; si la persona está sola o no se cruza con nadie, el ejercicio no es realizable y el diario se queda sin contenido.
+    [R7.2] El conector al diario usa la forma simple 'Después escribe', la estructura más cargada del mazo; conviene tejer la vuelta al diario de forma menos pegada.
+    fix → frase: «Escuchar de verdad ya es estar cerca.»
+          prompt: «Durante un rato de hoy, propón escuchar a quien tengas cerca —o recordar una voz que te acompaña— sin ir preparando tu respuesta, dejando que sus palabras ocupen todo el espacio. Al cerrar el día, anota en tu diario qué oíste cuando dejaste de pensar en contestar.»
+
+  vinc-con-03 → requiere_revision
+    [R3.2] La pregunta 'qué despertó en ti' presupone que el ejercicio funcionó y produjo algo; si no despierta nada, no hay salida para escribir.
+    [R3.3] Pide confirmación del efecto ('qué despertó en ti') en lugar de contenido concreto, sin salida explícita.
+    [R7.1] 'qué despertó en ti' es muletilla de mazo explícitamente listada; evitar nuevos usos.
+    [R3.1] El cierre al diario es genérico ('escribe en tu diario qué despertó en ti'), no una redacción única conectada al contenido específico de la carta.
+    [R4.1 · mayor] La frase apunta a lo invisible del lazo ('lo que une no se ve'), pero el prompt se queda en evocar personas que hacen bien sin tocar esa idea de vínculo intangible; coherencia floja.
+    fix → frase: «Lo que une no se ve, pero se siente.»
+          prompt: «Trae a la mente a las personas cuya presencia sostiene tu día sin que lo notes. Quédate un momento con una de ellas. Al cerrar el día, anota en tu diario qué hilo invisible te une a esa persona, o qué te cuesta poner en palabras de ese vínculo.»
+
+  vinc-hac-01 → requiere_revision
+    [R3.3] "cómo te quedaste al enviarlo" pide confirmación del efecto sin salida explícita; si no sintió nada queda sin material que escribir.
+    [R3.2] La pregunta roza lo evaluativo del propio estado; conviene anclarla a contenido concreto (a quién, qué dudaste) y no solo a la reacción.
+    [R7.2] Conector al diario con "Después escribe…", la forma más repetida; conviene alternar con un tejido ("Al cerrar el día…", "cierra anotando…").
+    [R4.1 · mayor] La frase apunta a que un gesto a tiempo "acorta distancias" (efecto en el vínculo/cercanía), pero el prompt deriva la atención hacia cómo te quedaste tú al enviarlo, no hacia la distancia que se acorta. El disparo poético y la consigna no coinciden plenamente.
+    fix → frase: «Un gesto a tiempo acorta distancias.»
+          prompt: «Escribe un mensaje breve a alguien con quien hace tiempo que no hablas, sin esperar respuesta concreta. Al cerrar el día, anota en tu diario a quién elegiste y qué distancia sentiste que ese gesto intentaba acortar.»
+
+  vinc-hac-02 → requiere_revision
+    [R2.2 · mayor] El prompt presupone disponer de alguien a quien expresar aprecio hoy y obtener respuesta; si la persona vive aislada o no puede contactar a nadie, el ejercicio no se sostiene.
+    [R3.3 · mayor] «qué sentiste al decirlo» presupone que el acto ocurrió y pide confirmación del efecto, sin salida si no se llegó a decir.
+    [R7.2] El conector «Luego escribe…» es la forma más cargada del mazo; conviene alternar con un tejido al diario.
+    fix → frase: «El cariño crece cuando se dice.»
+          prompt: «Piensa en alguien a quien aprecias y en algo bueno que sientes y no sueles decirle. Si te apetece, díselo hoy en persona o por mensaje. Al cerrar el día, anota en tu diario qué quisiste expresar y qué te frenó o te animó a hacerlo.»
+
+  vinc-hac-03 → requiere_revision
+    [R2.2 · mayor] El prompt presupone disponibilidad de otra persona hoy; si nadie está disponible para un rato o llamada, el ejercicio no se puede realizar ni el diario queda con material.
+    [R3.2] 'Qué te llevas de ese rato' presupone que el encuentro ocurrió y dejó algo; sin salida si no se concretó.
+    [R7.2] El conector al diario usa 'Después escribe…', la forma más cargada del mazo; conviene tejer la vuelta de otra manera.
+    fix → frase: «Estar cerca es el regalo más simple.»
+          prompt: «Piensa en alguien a quien te gustaría dar presencia plena y, si hoy es posible, comparte un rato sin pantallas; si no, imagina cómo sería. Al cerrar el día, anota en tu diario qué te gustaría ofrecerle de tu atención.»

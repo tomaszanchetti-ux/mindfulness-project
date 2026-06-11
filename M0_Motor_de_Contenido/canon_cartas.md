@@ -36,7 +36,7 @@ vigente (para similitud y conceptos existentes).
 | id | Criterio |
 |----|----------|
 | R2.1 | **Una sola idea.** Concreto, hacible en ~10 minutos. |
-| R2.2 | Realizable **cualquier día por cualquier persona**: sin supuestos de pareja, dinero, clima, movilidad, estado de ánimo, evento puntual de hoy ni cruzarse con alguien. Condicionales tipo "si surge la ocasión" solo si el diario sigue funcionando cuando no surge. |
+| R2.2 | Realizable **cualquier día por cualquier persona**: sin supuestos de pareja, dinero, clima, movilidad, estado de ánimo, evento puntual de hoy ni cruzarse con alguien. Condicionales tipo "si surge la ocasión" solo si el diario sigue funcionando cuando no surge. **Matiz Vínculos:** contactar a alguien (en persona o a distancia) es el territorio de la categoría y no cuenta como supuesto prohibido, siempre que el prompt ofrezca la vía a distancia. |
 | R2.3 | Invitación, nunca obligación. La actividad se mantiene **pura** según su modalidad (caminar es caminar). |
 | R2.4 | Cuidado emocional: invita a mirar la fortaleza, no a abrir la herida. |
 
@@ -59,7 +59,7 @@ vigente (para similitud y conceptos existentes).
 | id | Criterio |
 |----|----------|
 | R5.1 | **Un concepto = una experiencia.** La carta lleva etiqueta `concepto`; si su experiencia ya existe en el mazo con otra etiqueta, o duplica un concepto sin aportar nada distinto, no entra. Variantes deliberadas comparten etiqueta. |
-| R5.2 | El **guion físico varía dentro de la modalidad**: el cuerpo del ejercicio no puede ser idéntico al de otra carta de la misma acción (cambiar el *cómo*, no solo la pregunta de diario). |
+| R5.2 | El **guion físico varía dentro de la modalidad**: el cuerpo del ejercicio no puede ser idéntico al de otra carta de la misma acción (cambiar el *cómo*, no solo la pregunta de diario). **Excepción:** no aplica entre cartas que comparten `concepto` — son gemelas declaradas (alternativas que el motor jamás sirve en la misma semana), no compañeras de mazo. |
 
 ## R6 — Tono e idioma (menor)
 
