@@ -64,6 +64,25 @@ Toda carta se mide contra esto. Si no las cumple, no entra.
 - **El prompt integra el diario (WS14, deroga la regla WS10 de "cierre fuera de los prompts"):** todo prompt termina (o teje) la vuelta al **diario físico** con redacción ÚNICA por carta, conectada a su contenido — nunca una coletilla idéntica pegada. En las cartas de acción "escribir", el diario va dentro de la consigna ("Escribe en tu diario sobre…"). La pregunta de diario debe ser respondible y concreta (no binaria, no cuantificar metáforas).
 - **Tono:** español de España, neutro (tú: "escribe", "te gustaría"). Sin localismos americanos (apurarse, acomodarse, postergar, "afuera" estático, "a ningún lado") ni calcos del inglés ("cómo se siente + infinitivo").
 
+**Reglas de variedad (WS17 — salen de la revisión punta a punta de las 69):**
+- **Un concepto = una experiencia.** Cada carta lleva un `concepto` (campo en la DB). Dos
+  cartas con la misma experiencia emocional —aunque cambien categoría o palabras— comparten
+  etiqueta, y el motor de entrega (M2) no repite concepto dentro de la ventana semanal. Una
+  carta nueva que duplica un concepto existente sin aportar nada distinto, no entra.
+- **El guion físico varía dentro de cada modalidad.** "Haz diez respiraciones lentas" no puede
+  ser el cuerpo de media modalidad: cambiar el *cómo* (alargar la exhalación, una mano en el
+  pecho, acompasar el paso…), no solo la pregunta de diario.
+- **La pregunta de diario pide contenido, no confirma el efecto.** Nada de "escribe qué se
+  aquietó en ti" a secas: si el ejercicio no le hizo nada al usuario, la pregunta tiene que
+  seguir siendo respondible ("…o qué se resiste a salir", "cómo estaba antes y cómo está ahora").
+- **Sin muletillas de mazo:** una palabra o estructura que se repite entre frases ("también",
+  "prisa", "Detente a…", "qué despertó en ti") delata la fórmula en días consecutivos. Máximo
+  un uso por categoría; en lo posible, ninguno nuevo.
+
+> **Versión ejecutable:** estas reglas + las de arriba están bajadas a rubric formal en
+> [`canon_cartas.md`](canon_cartas.md) — es la rule base que usa el validador
+> (`scripts/validar_cartas.py`, capa LLM-judge) para aprobar/observar/rechazar cartas.
+
 ---
 
 ## 3. Estética de la carta
