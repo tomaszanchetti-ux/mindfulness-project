@@ -41,7 +41,6 @@ export function Profile() {
 
   if (!perfil) return <div className="center-note">…</div>;
 
-  const misCategorias = categorias.filter((c) => perfil.categorias.includes(c.slug));
   // WS10: actividades elegidas. Si no eligió ninguna todavía, valen todas.
   const misAcciones =
     perfil.acciones.length > 0
@@ -144,15 +143,19 @@ export function Profile() {
       </div>
 
       <div className="profile-section">
-        <h3>Lo que cultivas</h3>
+        <h3>Los campos que recorres</h3>
         <div className="cat-pills">
-          {misCategorias.map((c) => (
+          {categorias.map((c) => (
             <span key={c.slug} className="cat-pill">
               <span className="swatch" style={{ background: c.color_accent }} />
               {c.nombre}
             </span>
           ))}
         </div>
+        <p className="meta" style={{ marginTop: 8 }}>
+          Cada semana, Dwellia te lleva por los seis campos del crecimiento — uno
+          distinto cada día, más un día sorpresa.
+        </p>
       </div>
 
       <div className="profile-section">

@@ -45,7 +45,7 @@ def seed() -> dict[str, int]:
         for k in cartas:
             s.merge(Carta(
                 id=k["id"], categoria_slug=k["categoria"], accion_slug=k["accion"],
-                frase=k["frase"], prompt=k["prompt"],
+                concepto=k["concepto"], frase=k["frase"], prompt=k["prompt"],
             ))
 
         s.commit()

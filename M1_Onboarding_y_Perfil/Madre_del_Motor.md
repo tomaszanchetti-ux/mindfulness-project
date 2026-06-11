@@ -5,6 +5,16 @@
 > Toma de M0 las categorías; entrega a M2 (entrega) y M3 (ritual) un usuario
 > configurado. Se rige por el [`Documento Madre`](../00_Documento_Madre.md).
 
+> ## ⚠️ DEROGACIÓN WS17 (11/06/2026) — las categorías ya no se eligen
+>
+> Donde este documento diga "elegir 2-6 categorías": **derogado**. Desde WS17,
+> M2 rota los 6 campos completos cada semana (ver Madre de M2). En el onboarding,
+> el paso de categorías es una **pantalla de promesa** ("Los seis campos que
+> vamos a recorrer") — se presentan, no se eligen. El usuario solo elige la
+> **forma** de la pausa (actividades, WS10) + horario + aviso + términos.
+> `onboarding_completo` = términos aceptados (ya no exige categorías). El
+> endpoint `PUT /api/perfil/categorias` queda deprecado por compatibilidad.
+
 ---
 
 ## 1. Qué hace M1 (y qué no)

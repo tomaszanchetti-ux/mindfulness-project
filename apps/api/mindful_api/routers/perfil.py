@@ -1,7 +1,8 @@
 """M1 · Perfil y onboarding. Todo opera sobre el usuario logueado (auto-aislado).
 
-Onboarding (wizard M1): elegir 2-6 categorías · horario+TZ · aviso (1 toggle) ·
-aceptar términos al cerrar. Todo editable después desde el mismo perfil.
+Onboarding (wizard M1, WS17): actividades (forma de la pausa) · horario+TZ ·
+aviso (1 toggle) · aceptar términos al cerrar. Todo editable después desde el
+mismo perfil. Las categorías ya NO se eligen: M2 rota los 6 campos cada semana.
 """
 
 from __future__ import annotations
@@ -54,8 +55,9 @@ def _a_salida(s: Session, usuario: Usuario) -> PerfilOut:
         terminos_aceptados=terminos,
         categorias=cats,
         acciones=accs,
-        # Onboarding completo = términos aceptados + al menos 2 categorías (regla M1).
-        onboarding_completo=terminos and len(cats) >= 2,
+        # WS17: las categorías ya no se eligen (rotación completa de los 6 campos).
+        # Onboarding completo = términos aceptados.
+        onboarding_completo=terminos,
     )
 
 
@@ -100,6 +102,11 @@ def fijar_categorias(
     s: Session = Depends(get_session),
     usuario: Usuario = Depends(get_current_user),
 ) -> PerfilOut:
+    """DEPRECATED (WS17): M2 rota las 6 categorías y ya no filtra por elección.
+
+    El endpoint queda por compatibilidad (clientes viejos cacheados); lo que
+    guarde no afecta la entrega. Se elimina en una limpieza futura.
+    """
     # Validar que cada slug exista en el contenido global (Mundo 1).
     validas = set(s.scalars(select(Categoria.slug)).all())
     invalidas = [c for c in body.categorias if c not in validas]

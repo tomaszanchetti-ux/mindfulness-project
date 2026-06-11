@@ -9,9 +9,12 @@ from mindful_api.main import app
 client = TestClient(app)
 
 
-def _onboard(sub: str, cats: list[str]) -> dict:
+TODAS = {"gratitud", "calma", "perspectiva", "resiliencia", "amor-propio", "vinculos"}
+
+
+def _onboard(sub: str) -> dict:
+    """WS17: el onboarding ya no elige categorías — solo acepta términos."""
     h = {"X-Debug-Sub": sub, "X-Debug-Email": f"{sub}@mindful.local"}
-    client.put("/api/perfil/categorias", headers=h, json={"categorias": cats})
     client.put("/api/perfil", headers=h, json={"aceptar_terminos": True})
     return h
 
@@ -19,17 +22,17 @@ def _onboard(sub: str, cats: list[str]) -> dict:
 def test_carta_del_dia_requiere_onboarding():
     h = {"X-Debug-Sub": "ent|sin-onboarding"}
     r = client.get("/api/carta-del-dia", headers=h)
-    assert r.status_code == 409  # faltan categorías
+    assert r.status_code == 409  # faltan los términos
 
 
 def test_carta_del_dia_y_una_por_dia():
-    h = _onboard("ent|diaria", ["gratitud", "calma", "vinculos"])
+    h = _onboard("ent|diaria")
 
     r = client.get("/api/carta-del-dia", headers=h)
     assert r.status_code == 200
     data = r.json()
     # La carta viene enriquecida con lo visual (categoría + acción).
-    assert data["carta"]["categoria"]["slug"] in {"gratitud", "calma", "vinculos"}
+    assert data["carta"]["categoria"]["slug"] in TODAS
     assert "frase" in data["carta"] and "prompt" in data["carta"]
     assert data["entrega"]["ya_existia"] is False
     carta_id = data["carta"]["id"]
@@ -43,7 +46,7 @@ def test_carta_del_dia_y_una_por_dia():
 
 
 def test_cierre_ritual():
-    h = _onboard("ent|cierre", ["gratitud", "resiliencia"])
+    h = _onboard("ent|cierre")
     entrega_id = client.get("/api/carta-del-dia", headers=h).json()["entrega"]["id"]
 
     r = client.put(
@@ -59,8 +62,8 @@ def test_cierre_ritual():
 
 
 def test_cierre_valida_aislamiento():
-    ha = _onboard("ent|dueno", ["calma", "gratitud"])
-    hb = _onboard("ent|intruso", ["calma", "gratitud"])
+    ha = _onboard("ent|dueno")
+    hb = _onboard("ent|intruso")
     entrega_a = client.get("/api/carta-del-dia", headers=ha).json()["entrega"]["id"]
 
     # El intruso no puede cerrar la entrega ajena → 404 (no filtra existencia).
@@ -69,7 +72,7 @@ def test_cierre_valida_aislamiento():
 
 
 def test_reflexion_max_250():
-    h = _onboard("ent|larga", ["calma", "gratitud"])
+    h = _onboard("ent|larga")
     entrega_id = client.get("/api/carta-del-dia", headers=h).json()["entrega"]["id"]
     r = client.put(
         f"/api/entregas/{entrega_id}/cierre", headers=h, json={"reflexion": "x" * 251}

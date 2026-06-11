@@ -16,24 +16,19 @@ def _headers(sub: str, email: str = "t@mindful.local") -> dict:
 def test_onboarding_completo_flujo():
     h = _headers("test|perfil")
 
-    # Usuario fresco: sin categorías, onboarding incompleto.
+    # Usuario fresco: sin términos aceptados, onboarding incompleto.
     r = client.get("/api/perfil", headers=h)
     assert r.status_code == 200
     p = r.json()
     assert p["onboarding_completo"] is False
 
-    # Elegir 3 categorías válidas.
-    r = client.put(
-        "/api/perfil/categorias",
-        headers=h,
-        json={"categorias": ["gratitud", "calma", "vinculos"]},
-    )
+    # WS17: elegir actividades es opcional y las categorías ya no se eligen.
+    r = client.put("/api/perfil/acciones", headers=h, json={"acciones": ["caminar"]})
     assert r.status_code == 200
-    assert set(r.json()["categorias"]) == {"gratitud", "calma", "vinculos"}
     # Falta aceptar términos → todavía incompleto.
     assert r.json()["onboarding_completo"] is False
 
-    # Horario + aviso + aceptar términos.
+    # Horario + aviso + aceptar términos → completo (único requisito: términos).
     r = client.put(
         "/api/perfil",
         headers=h,

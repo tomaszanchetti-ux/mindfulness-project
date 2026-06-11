@@ -8,6 +8,28 @@
 > La **lógica** vive acá. El **script** que la ejecuta vive aparte en
 > [`entrega.py`](entrega.py) (hoy corre contra los JSON de M0; al construir se enchufa a Postgres).
 
+> ## ⚠️ DEROGACIÓN WS17 (11/06/2026) — ROTACIÓN COMPLETA 6+1
+>
+> Lo de abajo describe la lógica v1 (WS04/WS10: categorías elegidas como filtro
+> duro). **Desde WS17 las categorías YA NO se eligen ni filtran**: son la tesis de
+> Dwellia (los 6 campos del crecimiento) y van **todas, todas las semanas**.
+>
+> - **Rotación 6+1:** cada día se sirve una categoría que no apareció en los
+>   últimos 6 días (orden al azar → la semana sorprende); si las 6 ya pasaron,
+>   día **comodín** (cualquiera salvo la de ayer; v2: ponderado por ⭐). La
+>   rotación se auto-corrige sola tras el comodín.
+> - **Doble ventana de no-repetición (7 días): por carta Y por `concepto`** —
+>   campo nuevo en `cartas` (huella de dedup, [`canon_cartas.md`](../M0_Motor_de_Contenido/canon_cartas.md)
+>   R5); las cartas "gemelas" comparten etiqueta y jamás caen en la misma semana.
+> - El usuario elige solo la **forma** (modalidades, piso "escribir" — WS10 sigue
+>   vigente). La capa blanda de ⭐ por acción sigue intacta; el castigo por
+>   categoría de ayer desaparece (la rotación lo garantiza mejor).
+> - Pool mínimo garantizado: 18 cartas (6 campos × 3 de "escribir") ≥ 7 días ✅.
+>
+> **Implementación canónica:** `apps/api/mindful_api/services/seleccion.py`
+> (tests en `apps/api/tests/test_seleccion.py`). El `entrega.py` de esta carpeta
+> queda como sandbox histórico de la v1.
+
 ---
 
 ## 1. Qué hace M2 (y qué no)

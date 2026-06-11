@@ -24,7 +24,6 @@ from ..db.models import (
     Entrega,
     Usuario,
     UsuarioAccion,
-    UsuarioCategoria,
 )
 from .seleccion import Entrega as EntregaMotor
 from .seleccion import Perfil, elegir_carta
@@ -79,15 +78,12 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
     tz = _tz(usuario)
     hoy = datetime.now(tz).date()
 
-    categorias = list(s.scalars(
-        select(UsuarioCategoria.categoria_slug).where(
-            UsuarioCategoria.usuario_id == usuario.id
-        )
-    ).all())
-    if len(categorias) < 2:
+    # WS17: las categorías ya no se eligen (rotación completa de los 6 campos).
+    # El único requisito de onboarding es haber aceptado los términos.
+    if usuario.terminos_aceptados_at is None:
         raise HTTPException(
             status.HTTP_409_CONFLICT,
-            "Onboarding incompleto: elegí al menos 2 categorías antes de recibir cartas.",
+            "Onboarding incompleto: acepta los términos antes de recibir cartas.",
         )
 
     # WS10: actividades elegidas (filtro duro). Sin filas = sin filtro = todas.
@@ -97,9 +93,9 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
         )
     ).all())
 
-    # Historial del usuario (con la categoría/acción de cada carta), ordenado por fecha.
+    # Historial del usuario (con categoría/acción/concepto de cada carta), por fecha.
     rows = s.execute(
-        select(Entrega, Carta.categoria_slug, Carta.accion_slug)
+        select(Entrega, Carta.categoria_slug, Carta.accion_slug, Carta.concepto)
         .join(Carta, Carta.id == Entrega.carta_id)
         .where(Entrega.usuario_id == usuario.id)
         .order_by(Entrega.fecha)
@@ -115,16 +111,17 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
     historial = [
         EntregaMotor(
             carta_id=e.carta_id, categoria=cat, accion=acc,
-            dia=_fecha_local(e.fecha, tz).toordinal(),
+            dia=_fecha_local(e.fecha, tz).toordinal(), concepto=conc,
             estrellas=e.estrellas, completada=e.completada,
         )
-        for (e, cat, acc) in rows
+        for (e, cat, acc, conc) in rows
     ]
-    perfil = Perfil(categorias=categorias, acciones=acciones, historial=historial)
+    perfil = Perfil(acciones=acciones, historial=historial)
 
     # Pool global como dicts con las keys que el motor espera.
     pool = [
-        {"id": c.id, "categoria": c.categoria_slug, "accion": c.accion_slug}
+        {"id": c.id, "categoria": c.categoria_slug, "accion": c.accion_slug,
+         "concepto": c.concepto}
         for c in s.scalars(select(Carta)).all()
     ]
 

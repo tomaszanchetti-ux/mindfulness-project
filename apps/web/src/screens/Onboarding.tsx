@@ -1,9 +1,10 @@
 // Onboarding (M1). "Preparar un ritual", no configurar una app.
 // Flujo canónico: Login → SLIDESHOW (qué es + compromiso) → CONFIGURACIÓN.
 //   Intro (sin progreso):  0 Bienvenida (marca + slogan) · 1 Slideshow del ritual
-//   Config (5 pasos):      2 Datos · 3 Categorías · 4 Actividades · 5 Momento · 6 Aviso + términos
-// (El "Tono" del doc UX fue eliminado del onboarding por canon M1.)
+//   Config (5 pasos):      2 Datos · 3 Los 6 campos (promesa) · 4 Actividades · 5 Momento · 6 Aviso + términos
 // WS10: el fin es escribir en tu diario; las actividades se ELIGEN ("escribir" siempre).
+// WS17: las categorías YA NO se eligen — son la tesis de Dwellia (los 6 campos del
+// crecimiento) y el motor las rota todas, cada semana. El paso 3 las PRESENTA.
 
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -93,7 +94,6 @@ export function Onboarding() {
   const [apellido, setApellido] = useState("");
   const [apodo, setApodo] = useState("");
   const [apodoEdited, setApodoEdited] = useState(false);
-  const [sel, setSel] = useState<string[]>([]);
   const [selAct, setSelAct] = useState<string[]>([]);
   const [actInit, setActInit] = useState(false);
   const [momento, setMomento] = useState<string>("manana");
@@ -110,14 +110,6 @@ export function Onboarding() {
     }
   }, [acciones, actInit]);
 
-  const toggleCat = (slug: string) => {
-    setSel((cur) => {
-      if (cur.includes(slug)) return cur.filter((c) => c !== slug);
-      if (cur.length >= 6) return cur;
-      return [...cur, slug];
-    });
-  };
-
   const toggleAct = (slug: string) => {
     if (slug === ACCION_PISO) return; // "escribir" no se puede sacar
     setSelAct((cur) =>
@@ -133,7 +125,6 @@ export function Onboarding() {
   const finalizar = async () => {
     setGuardando(true);
     try {
-      await api.setCategorias(sel);
       // "escribir" siempre entra (el backend la fuerza igual); mando lo elegido.
       await api.setAcciones(
         selAct.includes(ACCION_PISO) ? selAct : [...selAct, ACCION_PISO],
@@ -290,28 +281,28 @@ export function Onboarding() {
         </>
       )}
 
-      {/* —— 3 · Categorías —— */}
+      {/* —— 3 · Los 6 campos (promesa, WS17: se presentan, no se eligen) —— */}
       {step === 3 && (
         <>
           <div className="ob-body">
-            <h2 className="ob-q">¿Qué quieres cultivar estos días?</h2>
-            <p className="ob-hint">Elige entre 2 y 6. Puedes cambiarlo cuando quieras.</p>
+            <h2 className="ob-q">Los seis campos que vamos a recorrer</h2>
+            <p className="ob-hint">
+              Cada semana, Dwellia te lleva por los seis campos del crecimiento
+              personal — uno distinto cada día, más un día sorpresa. Tú no tienes
+              que elegir: la variedad es parte del ritual.
+            </p>
             <div className="cat-grid">
               {categorias.map((c) => (
-                <button
-                  key={c.slug}
-                  className={`cat-opt ${sel.includes(c.slug) ? "on" : ""}`}
-                  onClick={() => toggleCat(c.slug)}
-                >
+                <span key={c.slug} className="cat-opt on" style={{ cursor: "default" }}>
                   <span className="swatch" style={{ background: c.color_accent }} />
                   {c.nombre}
-                </button>
+                </span>
               ))}
             </div>
           </div>
           <div className="ob-foot">
-            <Button variant="primary" full disabled={sel.length < 2} onClick={() => setStep(4)}>
-              {sel.length < 2 ? "Elige al menos 2" : "Continuar"}
+            <Button variant="primary" full onClick={() => setStep(4)}>
+              Continuar
             </Button>
           </div>
         </>

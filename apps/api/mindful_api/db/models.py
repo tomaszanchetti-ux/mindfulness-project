@@ -59,6 +59,9 @@ class Carta(Base):
     accion_slug: Mapped[str] = mapped_column(
         ForeignKey("acciones.slug"), nullable=False, index=True
     )
+    # WS17: huella de deduplicación — dos cartas que "se sienten igual" comparten
+    # concepto y M2 no repite concepto dentro de la ventana semanal.
+    concepto: Mapped[Optional[str]] = mapped_column(String(80), index=True)
     frase: Mapped[str] = mapped_column(Text, nullable=False)
     prompt: Mapped[str] = mapped_column(Text, nullable=False)
 
