@@ -1,4 +1,4 @@
-"""Aviso diario por email (WS20): "tu carta de hoy te espera".
+"""Aviso diario (WS20/WS21): "tu carta de hoy te espera", por PUSH WEB.
 
 Cloud Scheduler golpea el endpoint interno cada 15 minutos; este barrido decide
 a quién le toca. Regla por usuario (todo en SU hora local, zoneinfo):
@@ -8,10 +8,16 @@ a quién le toca. Regla por usuario (todo en SU hora local, zoneinfo):
         y   su hora local ya pasó la hora elegida (hora_aviso)
         y   hoy todavía no se le mandó (ultimo_aviso_fecha != fecha local)
         y   hoy todavía no guardó su pausa (si ya la vivió, no hay nada que avisar)
+        y   tiene al menos un dispositivo suscripto (push: hay que instalar+aceptar)
 
 Comparar ">= hora_aviso" (y no una ventana exacta de 15') hace el barrido
-auto-reparable: si una corrida se pierde, la siguiente del día lo cubre.
-El email NO crea la entrega (canon WS15: la carta se revela al abrir la app).
+auto-reparable: si una corrida se pierde, la siguiente del día lo cubre. Sin
+dispositivos suscriptos NO se estampa la fecha: si la persona activa las
+notificaciones más tarde ese mismo día, el aviso del día le llega igual.
+El push NO crea la entrega (canon WS15: la carta se revela al abrir la app).
+
+Canal (decisión Tomás WS21): SOLO push. El email (services/email.py) queda
+escrito pero dormido por si algún día vuelve como respaldo.
 """
 
 from __future__ import annotations
@@ -22,11 +28,14 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ..config import settings
-from ..db.models import Entrega, Usuario
-from .email import enviar_email
+from ..db.models import Entrega, PushSuscripcion, Usuario
+from .push import enviar_push
 
 _TZ_FALLBACK = ZoneInfo("Europe/Madrid")
+
+TITULO = "Tu carta de hoy te espera"
+CUERPO = "Ábrela, vive tu pausa lejos del teléfono y escribe lo que sentiste."
+URL = "/hoy"
 
 
 def _minutos(hhmm: str) -> int:
@@ -39,41 +48,6 @@ def _pausa_guardada_hoy(s: Session, usuario: Usuario, tz: ZoneInfo, hoy_local) -
         select(Entrega).where(Entrega.usuario_id == usuario.id, Entrega.completada.is_(True))
     ).all()
     return any(e.fecha.astimezone(tz).date() == hoy_local for e in entregas)
-
-
-def _contenido(apodo: str | None) -> tuple[str, str, str]:
-    """(asunto, texto plano, html). Simple y cálido; el CTA lleva a la app."""
-    nombre = apodo or ""
-    saludo = f"Hola, {nombre}." if nombre else "Hola."
-    asunto = "Tu carta de hoy te espera"
-    url = settings.app_url + "/hoy"
-    texto = (
-        f"{saludo}\n\n"
-        "Tu carta de hoy ya está lista. Ábrela, vive tu pausa lejos del teléfono "
-        "y escribe en tu diario lo que sentiste.\n\n"
-        f"Abrir mi carta: {url}\n\n"
-        "— Dwellia · One quiet pause a day\n"
-        "Recibes este aviso porque lo activaste. Puedes apagarlo en tu Perfil."
-    )
-    html = f"""\
-<div style="background:#f7f1e7;padding:32px 16px;font-family:Georgia,'Times New Roman',serif;color:#2f2923">
-  <div style="max-width:440px;margin:0 auto;background:#fff8ea;border-radius:24px;padding:32px 28px;text-align:center">
-    <p style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#756b5e;margin:0 0 18px">Dwellia</p>
-    <h1 style="font-size:24px;font-weight:500;font-style:italic;margin:0 0 12px">Tu carta de hoy te espera</h1>
-    <p style="font-size:15px;line-height:1.6;color:#756b5e;margin:0 0 24px">
-      {saludo} Ábrela, vive tu pausa lejos del teléfono y escribe en tu diario lo que sentiste.
-    </p>
-    <a href="{url}"
-       style="display:inline-block;background:#8fa58a;color:#fff8ea;text-decoration:none;border-radius:999px;padding:14px 30px;font-family:Inter,-apple-system,sans-serif;font-size:15px">
-      Abrir mi carta
-    </a>
-    <p style="font-size:12px;color:#9a8f80;margin:26px 0 0">One quiet pause a day</p>
-  </div>
-  <p style="max-width:440px;margin:14px auto 0;font-size:11px;color:#9a8f80;text-align:center;font-family:Inter,-apple-system,sans-serif">
-    Recibes este aviso porque lo activaste. Puedes apagarlo en tu Perfil.
-  </p>
-</div>"""
-    return asunto, texto, html
 
 
 def enviar_avisos(s: Session, ahora_utc: datetime | None = None) -> dict:
@@ -109,11 +83,22 @@ def enviar_avisos(s: Session, ahora_utc: datetime | None = None) -> dict:
             saltados += 1
             continue
 
-        asunto, texto, html = _contenido(u.apodo)
-        if enviar_email(u.email, asunto, texto, html):
+        subs = s.scalars(
+            select(PushSuscripcion).where(PushSuscripcion.usuario_id == u.id)
+        ).all()
+        ok = False
+        for sub in subs:
+            resultado = enviar_push(sub, TITULO, CUERPO, URL)
+            if resultado == "ok":
+                ok = True
+            elif resultado == "gone":
+                s.delete(sub)
+        if ok:
             u.ultimo_aviso_fecha = hoy_local
             enviados += 1
         else:
+            # Sin dispositivos (o todos fallaron): sin estampa → se reintenta
+            # en el próximo tick; si se suscribe hoy más tarde, le llega hoy.
             saltados += 1
 
     s.commit()

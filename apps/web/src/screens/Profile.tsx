@@ -9,6 +9,7 @@ import { api, reiniciarDemo } from "../lib/api";
 import { cerrarSesion } from "../lib/firebase";
 import { useStore } from "../store";
 import { canInstall, isIOS, isStandalone, promptInstall } from "../pwa";
+import { activarPush, permisoPush, soportaPush, suscripcionActual } from "../lib/push";
 
 export function Profile() {
   const navigate = useNavigate();
@@ -20,6 +21,35 @@ export function Profile() {
   const [apodo, setApodo] = useState("");
   const [installable, setInstallable] = useState(canInstall());
   const [verComoInstalar, setVerComoInstalar] = useState(false);
+  // Estado del push EN ESTE dispositivo (WS21): el aviso diario llega por acá.
+  const [push, setPush] = useState<"cargando" | "activas" | "pedir" | "bloqueadas" | "instalar" | "nosoporta">("cargando");
+  const [activando, setActivando] = useState(false);
+
+  useEffect(() => {
+    if (!soportaPush()) {
+      setPush(isIOS() && !isStandalone() ? "instalar" : "nosoporta");
+      return;
+    }
+    if (permisoPush() === "denied") {
+      setPush("bloqueadas");
+      return;
+    }
+    suscripcionActual().then((sub) =>
+      setPush(sub && permisoPush() === "granted" ? "activas" : "pedir"),
+    );
+  }, []);
+
+  const activarNotificaciones = async () => {
+    setActivando(true);
+    try {
+      const ok = await activarPush();
+      setPush(ok ? "activas" : permisoPush() === "denied" ? "bloqueadas" : "pedir");
+    } catch {
+      setPush("pedir");
+    } finally {
+      setActivando(false);
+    }
+  };
 
   useEffect(() => {
     const sync = () => setInstallable(canInstall());
@@ -204,6 +234,42 @@ export function Profile() {
             onChange={(e) => guardarHora(e.target.value)}
           />
         </div>
+
+        {aviso && push === "activas" && (
+          <p className="meta" style={{ marginTop: 10 }}>
+            ✓ Notificaciones activas en este dispositivo.
+          </p>
+        )}
+        {aviso && push === "pedir" && (
+          <>
+            <p className="meta" style={{ marginTop: 10 }}>
+              Para que el aviso llegue a este dispositivo, activa las notificaciones.
+            </p>
+            <div className="actions-stack" style={{ marginTop: 10 }}>
+              <Button variant="secondary" full disabled={activando} onClick={activarNotificaciones}>
+                {activando ? "Activando…" : "Activar notificaciones"}
+              </Button>
+            </div>
+          </>
+        )}
+        {aviso && push === "instalar" && (
+          <p className="meta" style={{ marginTop: 10 }}>
+            En iPhone, el aviso llega solo con Dwellia instalada: instálala (más abajo
+            te mostramos cómo), ábrela desde tu pantalla de inicio y vuelve aquí.
+          </p>
+        )}
+        {aviso && push === "bloqueadas" && (
+          <p className="meta" style={{ marginTop: 10 }}>
+            Las notificaciones están bloqueadas para Dwellia en este dispositivo.
+            Actívalas en los ajustes del navegador o del sistema.
+          </p>
+        )}
+        {aviso && push === "nosoporta" && (
+          <p className="meta" style={{ marginTop: 10 }}>
+            Este navegador no admite notificaciones; abre Dwellia en tu teléfono para
+            recibir el aviso.
+          </p>
+        )}
       </div>
 
       <div className="profile-section">

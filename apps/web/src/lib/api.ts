@@ -179,6 +179,18 @@ export const api = {
       body: JSON.stringify({ entrega_id: entregaId, modo, nota: nota || null }),
     }),
 
+  // —— Push del aviso diario (WS21) ——
+  pushSuscribir: (body: { endpoint: string; p256dh: string; auth: string }) =>
+    req<{ ok: boolean }>("/api/push/suscripcion", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  pushBaja: (endpoint: string) =>
+    req<{ ok: boolean }>("/api/push/baja", {
+      method: "POST",
+      body: JSON.stringify({ endpoint }),
+    }),
+
   // —— Regalo público (sin login) ——
   regalo: (token: string) => req<Regalo>(`/api/c/${token}`),
 };

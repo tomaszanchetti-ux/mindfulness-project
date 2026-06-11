@@ -98,8 +98,12 @@ class Usuario(Base):
 
     terminos_aceptados_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
-    # WS20 · aviso diario: fecha LOCAL del último email enviado (1 por día, máximo).
+    # WS20 · aviso diario: fecha LOCAL del último aviso enviado (1 por día, máximo).
     ultimo_aviso_fecha: Mapped[Optional[date]] = mapped_column(Date)
+
+    push_suscripciones: Mapped[list["PushSuscripcion"]] = relationship(
+        back_populates="usuario", cascade="all, delete-orphan"
+    )
 
     categorias: Mapped[list["UsuarioCategoria"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
@@ -199,3 +203,25 @@ class Compartido(Base):
     nota: Mapped[Optional[str]] = mapped_column(Text)
     activo: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class PushSuscripcion(Base):
+    """WS21 · suscripción Web Push de UN dispositivo/navegador del usuario.
+
+    El navegador entrega un endpoint único + llaves de cifrado al suscribirse;
+    el barrido del aviso diario empuja a TODAS las suscripciones del usuario.
+    Si el push service responde 404/410 (dispositivo dado de baja), se borra la fila.
+    """
+
+    __tablename__ = "push_suscripciones"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    usuario_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    endpoint: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    p256dh: Mapped[str] = mapped_column(String(255), nullable=False)
+    auth: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+    usuario: Mapped["Usuario"] = relationship(back_populates="push_suscripciones")

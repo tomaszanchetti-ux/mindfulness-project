@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from .config import settings
 from .db.base import get_session
 from .db.models import Accion, Carta, Categoria
-from .routers import baul, compartir, entregas, fotos, interno, perfil
+from .routers import baul, compartir, entregas, fotos, interno, perfil, push
 
 app = FastAPI(title="Mindful API", version="0.0.1")
 
@@ -33,6 +33,7 @@ app.include_router(baul.router)
 app.include_router(compartir.router)
 app.include_router(compartir.public_router)
 app.include_router(interno.router)
+app.include_router(push.router)
 
 
 @app.get("/health")

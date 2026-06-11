@@ -26,17 +26,21 @@ class Settings(BaseSettings):
     storage_dir: str = "var/fotos"  # raíz del modo local (relativa a apps/api)
     fotos_bucket: str = ""  # nombre del bucket en modo gcs
 
-    # Aviso diario por email (WS20). off = no manda (dev/tests) | log = imprime
-    # a stdout (debug) | smtp = envío real (SendGrid u otro relay SMTP).
+    # Aviso diario (WS20/WS21). El canal es PUSH WEB (decisión Tomás WS21);
+    # el email queda escrito pero dormido (email_mode=off) por si vuelve como respaldo.
     email_mode: str = "off"
     smtp_host: str = "smtp.sendgrid.net"
     smtp_port: int = 587
     smtp_user: str = "apikey"  # literal "apikey" en SendGrid; la key va en smtp_pass
     smtp_pass: str = ""
     email_from: str = ""  # remitente verificado, ej. "Dwellia <correo@dominio>"
-    app_url: str = "https://dwellia-app.web.app"  # destino del CTA del email
+    app_url: str = "https://dwellia-app.web.app"  # destino al tocar la notificación
     # Secreto compartido con Cloud Scheduler (header X-Aviso-Secret). Vacío = endpoint apagado.
     aviso_secret: str = ""
+    # Push web (WS21): llave VAPID privada (base64url, EC P-256). Vacía = push apagado.
+    # La pública (derivada de esta) vive en el front (lib/push.ts) — es pública por diseño.
+    vapid_private_key: str = ""
+    vapid_sub: str = "mailto:tomaszanchetti@gmail.com"  # contacto VAPID requerido por el estándar
 
     # CORS para la PWA / app (Expo dev server).
     cors_origins: str = "http://localhost:8081,http://localhost:19006,http://127.0.0.1:8081"

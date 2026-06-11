@@ -10,6 +10,7 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { EscrituraCirculo, PilaresCirculo } from "../components/CirculosStory";
+import { activarPush, soportaPush } from "../lib/push";
 import { StoryArt } from "../components/StoryArt";
 import type { Escena } from "../components/StoryArt";
 import { api } from "../lib/api";
@@ -143,6 +144,12 @@ export function Onboarding() {
 
   const finalizar = async () => {
     setGuardando(true);
+    // El aviso llega por notificación (WS21): pedimos el permiso DENTRO del mismo
+    // toque (los navegadores lo exigen). Si no se puede acá (ej. iPhone sin
+    // instalar), el Perfil ofrece activarlo después — no bloquea el onboarding.
+    if (aviso && soportaPush()) {
+      activarPush().catch(() => {});
+    }
     try {
       // Mando solo los complementos elegidos; el backend agrega "escribir" siempre.
       await api.setAcciones(selAct);
@@ -406,6 +413,13 @@ export function Onboarding() {
                 <span className="slider" />
               </span>
             </label>
+            {aviso && (
+              <p className="ob-hint" style={{ marginTop: 8 }}>
+                {soportaPush()
+                  ? "Te pediremos permiso para enviarte la notificación."
+                  : "En iPhone, el aviso llega con Dwellia instalada en tu pantalla de inicio — en tu Perfil te mostramos cómo."}
+              </p>
+            )}
 
             <label className="terms-row">
               <input
