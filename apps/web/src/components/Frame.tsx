@@ -21,6 +21,7 @@ const SIN_TABS = [
   "/cierre",
   "/compartir",
   "/baul/",
+  "/terminos",
 ];
 
 export function Frame({ children }: { children: ReactNode }) {

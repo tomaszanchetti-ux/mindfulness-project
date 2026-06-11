@@ -209,6 +209,9 @@ export function Profile() {
       <div className="profile-section">
         <h3>Privacidad</h3>
         <p className="meta">Lo que escribes y tus fotos quedan solo para ti.</p>
+        <button className="link" style={{ marginTop: 8 }} onClick={() => navigate("/terminos")}>
+          Términos y política de privacidad
+        </button>
       </div>
 
       {!isStandalone() && (

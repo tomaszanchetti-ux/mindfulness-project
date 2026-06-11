@@ -1511,6 +1511,37 @@
   text-align: left;
 }
 
+/* Términos y privacidad (WS20) */
+.terms-doc {
+  padding-bottom: 32px;
+}
+.terms-doc h2 {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 500;
+  margin: 4px 0 4px;
+}
+.terms-doc section {
+  margin-top: 22px;
+}
+.terms-doc h3 {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 500;
+  margin: 0 0 6px;
+}
+.terms-doc section p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--warm-taupe);
+  margin: 0;
+}
+.terms-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* Texto escrito por el usuario (nota de compartir, reflexión): una "palabra" más
    larga que la pantalla debe quebrar, no desbordar (WS19). */
 .share-nota,

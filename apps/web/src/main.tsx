@@ -27,6 +27,7 @@ import { EntryDetail } from "./screens/EntryDetail";
 import { Share } from "./screens/Share";
 import { PublicShare } from "./screens/PublicShare";
 import { Profile } from "./screens/Profile";
+import { Terms } from "./screens/Terms";
 
 // Guarda de sesión: sin usuario logueado, todo lo privado vuelve al login.
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -86,6 +87,8 @@ function App() {
 
             {/* Público: el receptor del regalo, sin login. */}
             <Route path="/c/:token" element={<PublicShare />} />
+            {/* Público: términos y privacidad (onboarding + Perfil enlazan acá). */}
+            <Route path="/terminos" element={<Terms />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

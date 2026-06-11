@@ -26,6 +26,18 @@ class Settings(BaseSettings):
     storage_dir: str = "var/fotos"  # raíz del modo local (relativa a apps/api)
     fotos_bucket: str = ""  # nombre del bucket en modo gcs
 
+    # Aviso diario por email (WS20). off = no manda (dev/tests) | log = imprime
+    # a stdout (debug) | smtp = envío real (SendGrid u otro relay SMTP).
+    email_mode: str = "off"
+    smtp_host: str = "smtp.sendgrid.net"
+    smtp_port: int = 587
+    smtp_user: str = "apikey"  # literal "apikey" en SendGrid; la key va en smtp_pass
+    smtp_pass: str = ""
+    email_from: str = ""  # remitente verificado, ej. "Dwellia <correo@dominio>"
+    app_url: str = "https://dwellia-app.web.app"  # destino del CTA del email
+    # Secreto compartido con Cloud Scheduler (header X-Aviso-Secret). Vacío = endpoint apagado.
+    aviso_secret: str = ""
+
     # CORS para la PWA / app (Expo dev server).
     cors_origins: str = "http://localhost:8081,http://localhost:19006,http://127.0.0.1:8081"
 

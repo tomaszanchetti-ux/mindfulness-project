@@ -414,8 +414,11 @@ export function Onboarding() {
                 onChange={(e) => setTerminos(e.target.checked)}
               />
               <span>
-                Acepto los términos y entiendo que lo que escribo es privado salvo que
-                elija compartirlo.
+                Acepto los{" "}
+                <a href="/terminos" target="_blank" rel="noreferrer" className="terms-link">
+                  términos y la política de privacidad
+                </a>
+                , y entiendo que lo que escribo es privado salvo que elija compartirlo.
               </span>
             </label>
           </div>

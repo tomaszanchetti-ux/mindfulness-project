@@ -10,10 +10,19 @@ por usuario": es una sola base, filtrada server-side. Escala a +100k.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -89,6 +98,8 @@ class Usuario(Base):
 
     terminos_aceptados_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    # WS20 · aviso diario: fecha LOCAL del último email enviado (1 por día, máximo).
+    ultimo_aviso_fecha: Mapped[Optional[date]] = mapped_column(Date)
 
     categorias: Mapped[list["UsuarioCategoria"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
