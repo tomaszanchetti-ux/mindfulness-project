@@ -105,7 +105,7 @@ Idéntico a como Arc One aísla workspaces, pero a escala de usuario individual:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  MUNDO 1 · CONTENIDO (global, compartido por todos)          │
-│  categorias (6) · acciones (5) · cartas (69)                 │
+│  categorias (6) · acciones (4) · cartas (77)   ← WS22        │
 │  → seed maestro = los 3 JSON de M0_Motor_de_Contenido/data/  │
 │  → un script los carga una vez; re-seed si sumamos cartas    │
 ├─────────────────────────────────────────────────────────────┤
@@ -118,12 +118,12 @@ Idéntico a como Arc One aísla workspaces, pero a escala de usuario individual:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-> **⚠️ Transición WS22 (pendiente, paso 3):** el canon de contenido se refundó —
-> categoría `sentido` reemplaza a `calma`, `acciones` queda en 4 acciones iniciales
-> (escribir = cierre universal), display `caminar` → "pasear", y las tablas de
-> elección (`usuario_acciones`, `usuario_categorias`) se eliminan. Lo de arriba
-> describe la DB desplegada HOY; el destino está en
-> [`canon_cartas.md §Transición`](M0_Motor_de_Contenido/canon_cartas.md).
+> **Transición WS22 — paso 3 DESPLEGADO:** `sentido` reemplaza a `calma`,
+> `acciones` quedó en 4 (escribir = cierre universal, display `caminar`→"Pasear"),
+> mazo de 77 cartas (migración `g7b8c9d0e1f2` + seed sync, rev `dwellia-api-00012`).
+> Las tablas de elección (`usuario_acciones`, `usuario_categorias`) quedan vacías y
+> deprecadas; se **dropean en el paso 4** cuando el front deje de llamar sus
+> endpoints. Detalle: [`canon_cartas.md §Transición`](M0_Motor_de_Contenido/canon_cartas.md).
 
 **La regla que no se rompe nunca** (canon Arc One, macro de Mati): el filtro por
 `user_id` vive **en el backend (Cloud Run), JAMÁS en el cliente**. El Baúl de uno no

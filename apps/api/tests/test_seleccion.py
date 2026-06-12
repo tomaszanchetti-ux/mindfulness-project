@@ -1,7 +1,7 @@
-"""M2 · motor puro (WS17): rotación 6+1, dedup por carta Y concepto, piso escribir.
+"""M2 · motor puro (WS22): rotación 6+1, dedup por carta Y concepto, pool completo.
 
 Corre contra el cartas.json real (la fuente de verdad) — si el contenido rompe un
-invariante del motor (p.ej. una categoría sin cartas de "escribir"), acá explota.
+invariante del motor (p.ej. un pilar sin cartas en un lado del eje), acá explota.
 """
 
 from __future__ import annotations
@@ -11,7 +11,8 @@ import random
 from pathlib import Path
 
 from mindful_api.services.seleccion import (
-    ACCION_PISO,
+    EJE_MOVIMIENTO,
+    EJE_QUIETUD,
     VENTANA_NO_REPETIR,
     Entrega,
     Perfil,
@@ -23,12 +24,12 @@ CARTAS = json.loads((DATA / "cartas.json").read_text(encoding="utf-8"))
 CATEGORIAS = {c["categoria"] for c in CARTAS}
 
 
-def _simular(dias: int, acciones: list[str], seed: int) -> list[Entrega]:
+def _simular(dias: int, seed: int) -> list[Entrega]:
     """Simula `dias` entregas consecutivas y devuelve el historial."""
     rng = random.Random(seed)
     historial: list[Entrega] = []
     for i in range(dias):
-        perfil = Perfil(acciones=acciones, historial=historial)
+        perfil = Perfil(historial=historial)
         carta = elegir_carta(perfil, CARTAS, rng=rng)
         historial.append(Entrega(
             carta_id=carta["id"], categoria=carta["categoria"],
@@ -37,10 +38,17 @@ def _simular(dias: int, acciones: list[str], seed: int) -> list[Entrega]:
     return historial
 
 
-def test_contenido_cumple_invariante_del_piso():
-    # Toda categoría tiene cartas de "escribir": la rotación nunca queda vacía.
+def test_contenido_sin_escribir_como_accion():
+    # WS22: escribir es el cierre universal, no una acción inicial del enum.
+    assert all(c["accion"] != "escribir" for c in CARTAS)
+
+
+def test_contenido_cubre_ambos_lados_del_eje():
+    # Requisito del cambio de carta v2: cada pilar tiene quietud Y movimiento.
     for cat in CATEGORIAS:
-        assert any(c["categoria"] == cat and c["accion"] == ACCION_PISO for c in CARTAS)
+        acciones = {c["accion"] for c in CARTAS if c["categoria"] == cat}
+        assert acciones & EJE_QUIETUD, f"{cat}: sin cartas de quietud"
+        assert acciones & EJE_MOVIMIENTO, f"{cat}: sin cartas de movimiento"
 
 
 def test_primera_carta_sale_de_todo_el_mazo():
@@ -48,16 +56,16 @@ def test_primera_carta_sale_de_todo_el_mazo():
     assert carta in CARTAS
 
 
-def test_rotacion_primeros_6_dias_cubren_los_6_campos():
+def test_rotacion_primeros_6_dias_cubren_los_6_pilares():
     for seed in range(10):
-        historial = _simular(6, [], seed)
+        historial = _simular(6, seed)
         assert {e.categoria for e in historial} == CATEGORIAS
 
 
-def test_rotacion_toda_categoria_vuelve_en_9_dias_o_menos():
+def test_rotacion_todo_pilar_vuelve_en_9_dias_o_menos():
     # 6 días de rotación + comodín (+1 de auto-corrección) → gap máximo ~9.
     for seed in range(5):
-        historial = _simular(60, [], seed)
+        historial = _simular(60, seed)
         ultimo: dict[str, int] = {}
         for e in historial:
             if e.categoria in ultimo:
@@ -69,7 +77,7 @@ def test_rotacion_toda_categoria_vuelve_en_9_dias_o_menos():
 
 def test_ni_carta_ni_concepto_se_repiten_en_la_ventana():
     for seed in range(5):
-        historial = _simular(90, [], seed)
+        historial = _simular(90, seed)
         for i, e in enumerate(historial):
             ventana = [v for v in historial[:i]
                        if v.dia > e.dia - VENTANA_NO_REPETIR]
@@ -79,16 +87,8 @@ def test_ni_carta_ni_concepto_se_repiten_en_la_ventana():
             )
 
 
-def test_filtro_de_modalidades_respeta_piso_escribir():
-    historial = _simular(30, ["respirar"], 3)
-    assert all(e.accion in {"respirar", ACCION_PISO} for e in historial)
-    # La rotación sigue cubriendo los 6 campos (vía el piso "escribir").
-    assert {e.categoria for e in historial[:6]} == CATEGORIAS
-
-
-def test_pool_minimo_no_rompe_y_no_repite_la_de_ayer():
-    # Solo "escribir" (pool 18 cartas, 3 por categoría): el caso más chico posible.
-    historial = _simular(45, [ACCION_PISO], 11)
-    assert len(historial) == 45
+def test_largo_plazo_no_rompe_y_no_repite_la_de_ayer():
+    historial = _simular(120, 11)
+    assert len(historial) == 120
     for ayer, hoy in zip(historial, historial[1:]):
         assert hoy.carta_id != ayer.carta_id

@@ -129,10 +129,11 @@ class UsuarioCategoria(Base):
 
 
 class UsuarioAccion(Base):
-    """Las actividades elegidas en el onboarding (filtro duro de M2, WS10).
+    """OBSOLETA (WS22): las acciones ya no se eligen — nada lee esta tabla.
 
-    "escribir" siempre cuenta como piso garantizado del pool, esté o no en esta tabla.
-    Sin filas (usuario nuevo o nunca elegido) = sin filtro de actividad = todas.
+    Sobrevive solo porque el front pre-WS22 aún llama al endpoint deprecado
+    `PUT /api/perfil/acciones`. Se dropea en la limpieza del paso 4, junto con
+    `usuario_categorias` (obsoleta desde WS17).
     """
 
     __tablename__ = "usuario_acciones"

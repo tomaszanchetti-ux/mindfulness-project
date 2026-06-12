@@ -3,11 +3,10 @@
 FastAPI · SQLAlchemy 2 · Alembic · psycopg3 · Postgres 16. Espejo del backend de
 Arc One. Ver [`../../01_Stack_Arquitectura_Infraestructura.md`](../../01_Stack_Arquitectura_Infraestructura.md).
 
-> **⚠️ Transición WS22:** este README describe el código desplegado HOY. El canon
-> de contenido se refundó (Sentido por Calma · 4 acciones iniciales · sin elección
-> de acciones → `usuario_acciones` y sus endpoints quedan deprecados). La bajada a
-> código es el paso 3 del plan — destino en
-> [`canon_cartas.md §Transición`](../../M0_Motor_de_Contenido/canon_cartas.md).
+> **Canon WS22 bajado a código (paso 3 ✅):** Sentido por Calma · 4 acciones
+> iniciales (display "Pasear") · 77 cartas · el motor sirve el pilar completo
+> (nada se elige). `usuario_acciones`/`usuario_categorias` y sus endpoints quedan
+> **deprecados** (el front pre-WS22 aún los llama); se eliminan en el paso 4.
 
 ## Estructura
 
@@ -29,7 +28,7 @@ tests/             # smoke test
 make db-up        # Postgres en docker
 make api-setup    # venv + dependencias
 make api-migrate  # crea las tablas
-make api-seed     # carga 6 categorías · 5 acciones · 69 cartas (desde M0)
+make api-seed     # sincroniza 6 categorías · 4 acciones · 77 cartas (desde M0; borra lo retirado)
 make api-dev      # API en http://localhost:8000
 make api-test     # pytest
 ```

@@ -1,8 +1,9 @@
 """M1 · Perfil y onboarding. Todo opera sobre el usuario logueado (auto-aislado).
 
-Onboarding (wizard M1, WS17): actividades (forma de la pausa) · horario+TZ ·
-aviso (1 toggle) · aceptar términos al cerrar. Todo editable después desde el
-mismo perfil. Las categorías ya NO se eligen: M2 rota los 6 campos cada semana.
+Onboarding (wizard M1, WS22): nombre/apodo · horario+TZ · aviso (1 toggle) ·
+aceptar términos al cerrar. Todo editable después desde el mismo perfil.
+Ni los pilares (WS17) ni las acciones (WS22) se eligen: M2 rota los 6 pilares
+cada semana y sirve las 4 acciones iniciales.
 """
 
 from __future__ import annotations
@@ -17,7 +18,6 @@ from ..auth import get_current_user
 from ..db.base import get_session
 from ..db.models import Accion, Categoria, Usuario, UsuarioAccion, UsuarioCategoria
 from ..schemas import AccionesUpdate, CategoriasUpdate, PerfilOut, PerfilUpdate
-from ..services.seleccion import ACCION_PISO
 
 router = APIRouter(prefix="/api/perfil", tags=["perfil"])
 
@@ -131,22 +131,24 @@ def fijar_acciones(
     s: Session = Depends(get_session),
     usuario: Usuario = Depends(get_current_user),
 ) -> PerfilOut:
-    """WS10 · fija las actividades elegidas (filtro duro de M2). "escribir" siempre entra."""
+    """DEPRECATED (WS22): las acciones ya no se eligen — M2 sirve las 4.
+
+    El endpoint queda por compatibilidad (el front desplegado pre-WS22 todavía lo
+    llama desde el onboarding); lo que guarde no afecta la entrega (nada lee
+    `usuario_acciones`). Se elimina junto a la tabla en la limpieza del paso 4.
+    """
     # Validar que cada slug exista en el contenido global (Mundo 1).
     validas = set(s.scalars(select(Accion.slug)).all())
     invalidas = [a for a in body.acciones if a not in validas]
     if invalidas:
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            f"actividades inexistentes: {', '.join(invalidas)}",
+            f"acciones inexistentes: {', '.join(invalidas)}",
         )
 
-    # "escribir" es el piso garantizado: la agregamos siempre, venga o no.
-    slugs = list(dict.fromkeys([*body.acciones, ACCION_PISO]))
-
-    # Reemplazo total: borro las actuales y dejo exactamente las nuevas.
+    # Reemplazo total (sin piso "escribir": ya no es una acción del enum — WS22).
     s.query(UsuarioAccion).filter(UsuarioAccion.usuario_id == usuario.id).delete()
-    for slug in slugs:
+    for slug in dict.fromkeys(body.acciones):
         s.add(UsuarioAccion(usuario_id=usuario.id, accion_slug=slug))
     s.commit()
     s.refresh(usuario)

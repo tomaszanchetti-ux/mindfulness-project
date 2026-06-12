@@ -22,7 +22,7 @@ class PerfilOut(BaseModel):
     aviso_activo: bool
     terminos_aceptados: bool
     categorias: list[str]
-    acciones: list[str]  # WS10: actividades elegidas ("escribir" siempre incluida)
+    acciones: list[str]  # DEPRECATED (WS22): nada lo lee; queda por compatibilidad
     onboarding_completo: bool
 
 
@@ -59,11 +59,8 @@ class CategoriasUpdate(BaseModel):
 
 
 class AccionesUpdate(BaseModel):
-    """WS10 · las actividades elegidas (filtro duro de M2).
-
-    0 a 5 slugs. "escribir" es el piso garantizado: el backend la agrega siempre,
-    venga o no en la lista (en la UI se muestra incluida y bloqueada).
-    """
+    """DEPRECATED (WS22): las acciones ya no se eligen; el endpoint queda por
+    compatibilidad con el front pre-WS22 y nada lee lo que guarda."""
 
     acciones: list[str] = Field(max_length=5)
 

@@ -21,7 +21,7 @@ def _entrega_de_hoy(h: dict) -> str:
 
 
 def test_baul_lista_y_ordenes():
-    h = _onboard("baul|lectura", ["gratitud", "calma", "vinculos"])
+    h = _onboard("baul|lectura", ["gratitud", "sentido", "vinculos"])
     eid = _entrega_de_hoy(h)
     client.put(f"/api/entregas/{eid}/cierre", headers=h, json={"estrellas": 4})
 
@@ -41,13 +41,13 @@ def test_baul_lista_y_ordenes():
 
 def test_baul_no_lista_entrega_sin_vivir():
     # La carta del día entregada pero aún no completada NO aparece en el Baúl.
-    h = _onboard("baul|sinvivir", ["gratitud", "calma"])
+    h = _onboard("baul|sinvivir", ["gratitud", "sentido"])
     _entrega_de_hoy(h)
     assert client.get("/api/baul", headers=h).json() == []
 
 
 def test_borrado_real():
-    h = _onboard("baul|borrado", ["gratitud", "calma"])
+    h = _onboard("baul|borrado", ["gratitud", "sentido"])
     eid = _entrega_de_hoy(h)
     # El Baúl solo lista pausas vividas: hay que cerrar el ritual antes de verla.
     client.put(f"/api/entregas/{eid}/cierre", headers=h, json={"completada": True})
@@ -59,7 +59,7 @@ def test_borrado_real():
 
 
 def test_compartir_publico_sin_login():
-    h = _onboard("share|ok", ["gratitud", "calma"])
+    h = _onboard("share|ok", ["gratitud", "sentido"])
     eid = _entrega_de_hoy(h)
     client.put(f"/api/entregas/{eid}/cierre", headers=h, json={"reflexion": "Respiré hondo."})
 
@@ -80,7 +80,7 @@ def test_compartir_publico_sin_login():
 
 
 def test_link_ejercicio_muere_al_borrar_pero_carta_sola_sobrevive():
-    h = _onboard("share|muerte", ["gratitud", "calma"])
+    h = _onboard("share|muerte", ["gratitud", "sentido"])
     eid = _entrega_de_hoy(h)
 
     t_ej = client.post("/api/compartir", headers=h,
@@ -97,8 +97,8 @@ def test_link_ejercicio_muere_al_borrar_pero_carta_sola_sobrevive():
 
 
 def test_compartir_aislamiento():
-    ha = _onboard("share|dueno", ["gratitud", "calma"])
-    hb = _onboard("share|otro", ["gratitud", "calma"])
+    ha = _onboard("share|dueno", ["gratitud", "sentido"])
+    hb = _onboard("share|otro", ["gratitud", "sentido"])
     eid_a = _entrega_de_hoy(ha)
     # B no puede compartir una entrega de A.
     r = client.post("/api/compartir", headers=hb, json={"entrega_id": eid_a, "modo": "carta_sola"})

@@ -181,7 +181,7 @@
     "accion": "caminar",
     "concepto": "huella-en-otros",
     "frase": "Dejamos huella hasta cuando no miramos.",
-    "prompt": "Sal a dar un paseo pensando en alguien cuya vida es un poco mejor porque tú estás en ella. Al volver, escribe en tu diario qué huella tuya ves ahí — y qué sientes al verla."
+    "prompt": "Sal a dar un paseo pensando en alguien a quien algo tuyo —un gesto, una palabra, un rato compartido— le hizo bien. Al volver, escribe en tu diario qué huella ves ahí y qué sientes al verla."
   },
   {
     "id": "sent-hac-01",
@@ -227,14 +227,6 @@
     "id": "pers-con-04",
     "categoria": "perspectiva",
     "accion": "contemplar",
-    "concepto": "lo-vasto-encoge-lo-urgente",
-    "frase": "El cielo lleva siglos poniendo cada cosa en su sitio.",
-    "prompt": "Mira el cielo unos minutos, siguiendo las nubes o la luz, sin buscar nada. Después escribe en tu diario qué lugar ocupa, visto desde ahí, lo que hoy te preocupa."
-  },
-  {
-    "id": "pers-con-05",
-    "categoria": "perspectiva",
-    "accion": "contemplar",
     "concepto": "otro-punto-de-vista",
     "frase": "Toda historia cambia según quién la cuente.",
     "prompt": "Trae a tu mente una situación reciente y obsérvala un momento desde los ojos de la otra persona. Después escríbela en tu diario contada con su voz."
@@ -268,19 +260,11 @@
     "categoria": "perspectiva",
     "accion": "respirar",
     "concepto": "distancia-temporal",
-    "frase": "Visto de lejos, todo encuentra su medida.",
-    "prompt": "Haz unas respiraciones lentas, dejando que todo baje de revoluciones. Después escribe en tu diario sobre algo que hoy te preocupa y cómo crees que lo verás dentro de un año."
-  },
-  {
-    "id": "pers-rep-05",
-    "categoria": "perspectiva",
-    "accion": "respirar",
-    "concepto": "distancia-temporal",
     "frase": "Lo que hoy es muro, mañana es paisaje.",
     "prompt": "Respira hondo tres veces, soltando los hombros al exhalar. Luego escribe en tu diario sobre algo que hoy te cuesta, como si ya lo hubieras dejado atrás."
   },
   {
-    "id": "pers-rep-06",
+    "id": "pers-rep-05",
     "categoria": "perspectiva",
     "accion": "respirar",
     "concepto": "registrar-sin-juzgar",
@@ -288,7 +272,7 @@
     "prompt": "Haz unas respiraciones lentas y deja que aparezca lo que hoy ronda tu mente. Después escríbelo en tu diario, sin ordenarlo ni juzgarlo."
   },
   {
-    "id": "pers-rep-07",
+    "id": "pers-rep-06",
     "categoria": "perspectiva",
     "accion": "respirar",
     "concepto": "cuestionar-la-urgencia",

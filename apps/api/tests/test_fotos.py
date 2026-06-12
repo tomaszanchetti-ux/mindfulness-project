@@ -25,7 +25,7 @@ def _storage_temporal(tmp_path):
 
 def _onboard(sub: str) -> dict:
     h = {"X-Debug-Sub": sub, "X-Debug-Email": f"{sub}@mindful.local"}
-    client.put("/api/perfil/categorias", headers=h, json={"categorias": ["calma", "gratitud"]})
+    client.put("/api/perfil/categorias", headers=h, json={"categorias": ["sentido", "gratitud"]})
     client.put("/api/perfil", headers=h, json={"aceptar_terminos": True})
     return h
 

@@ -168,10 +168,15 @@ para dar profundidad al lado movimiento del pilar más flaco del mazo.
    inicial mínima explícita; `caminar`→"pasea/paseo" en todos los prompts (slug
    intacto); 12 de sentido nuevas + vínculos 9→12. Capa determinística: 0 errores ·
    0 avisos. ⏳ Pendiente: pasada del **LLM-judge** (necesita ANTHROPIC_API_KEY).
-2. ⏳ **DB + código (paso 3):** migración (alta `sentido`, baja `calma`,
-   `escribir` fuera del enum, nombre "Pasear") + re-seed con los JSON nuevos +
-   `seleccion.py` (muere el filtro por `usuario_acciones`; entra el eje
-   movimiento↔quietud para el cambio de carta v2; rotación 6+1 sin cambios) +
-   tests y READMEs de apps/ al día.
-3. ⏳ **UX (paso 4, con Tomás):** onboarding de anillos, teoría in-app, re-layout
-   de carta (frase → acción inicial → cierre con pluma).
+2. ✅ **DB + código (paso 3 — HECHO, WS22, EN PRODUCCIÓN):** migración
+   `g7b8c9d0e1f2` (vacía entregas/fotos/compartidos + tablas de elección;
+   conserva usuarios y push) + seed con **sync** (borra lo retirado) + motor sin
+   filtro de acciones (pool = pilar completo; constantes `EJE_QUIETUD`/
+   `EJE_MOVIMIENTO` listas para el swap v2; rotación 6+1 intacta) + endpoints
+   `PUT /api/perfil/acciones|categorias` deprecados-vivos (compat front
+   pre-WS22). 35 tests ✓ · prod rev `dwellia-api-00012`, resumen = 77 cartas.
+3. ⏳ **UX (paso 4, con Tomás):** onboarding de anillos (cae el paso de
+   actividades del front), teoría in-app, re-layout de carta (frase → acción
+   inicial → cierre con pluma). Al cerrar: **drop** de `usuario_acciones` y
+   `usuario_categorias` + retiro de sus endpoints. ⏳ También pendiente: pasada
+   del **LLM-judge** sobre las 77 (necesita ANTHROPIC_API_KEY).

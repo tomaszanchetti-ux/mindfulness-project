@@ -24,7 +24,12 @@ def _load(name: str) -> list[dict]:
 
 
 def seed() -> dict[str, int]:
-    """Carga categorías, acciones y cartas. Devuelve los conteos."""
+    """Sincroniza categorías, acciones y cartas con los JSON. Devuelve los conteos.
+
+    WS22: además del upsert, BORRA lo que ya no está en los JSON (cartas retiradas,
+    la categoría `calma`, la acción `escribir`). Si hay datos de usuario apuntando
+    a contenido retirado, la migración de limpieza (g7b8c9d0e1f2) corre antes.
+    """
     categorias = _load("categorias.json")
     acciones = _load("acciones.json")
     cartas = _load("cartas.json")
@@ -47,6 +52,22 @@ def seed() -> dict[str, int]:
                 id=k["id"], categoria_slug=k["categoria"], accion_slug=k["accion"],
                 concepto=k["concepto"], frase=k["frase"], prompt=k["prompt"],
             ))
+
+        # Sync: lo que no está en los JSON se va. Hijas primero (FK), con flush
+        # explícito entre pasos para fijar el orden de borrado.
+        ids_validos = {k["id"] for k in cartas}
+        for carta in s.query(Carta).all():
+            if carta.id not in ids_validos:
+                s.delete(carta)
+        s.flush()
+        slugs_acc = {a["slug"] for a in acciones}
+        for accion in s.query(Accion).all():
+            if accion.slug not in slugs_acc:
+                s.delete(accion)
+        slugs_cat = {c["slug"] for c in categorias}
+        for cat in s.query(Categoria).all():
+            if cat.slug not in slugs_cat:
+                s.delete(cat)
 
         s.commit()
 

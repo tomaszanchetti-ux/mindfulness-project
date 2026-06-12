@@ -9,7 +9,7 @@ from mindful_api.main import app
 client = TestClient(app)
 
 
-TODAS = {"gratitud", "calma", "perspectiva", "resiliencia", "amor-propio", "vinculos"}
+TODAS = {"gratitud", "sentido", "perspectiva", "resiliencia", "amor-propio", "vinculos"}
 
 
 def _onboard(sub: str) -> dict:

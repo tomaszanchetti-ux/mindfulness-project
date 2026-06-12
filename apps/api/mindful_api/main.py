@@ -59,9 +59,9 @@ def listar_categorias(s: Session = Depends(get_session)) -> list[dict]:
 
 @app.get("/api/contenido/acciones")
 def listar_acciones(s: Session = Depends(get_session)) -> list[dict]:
-    """Las 5 actividades globales (Mundo 1). "escribir" primero = el piso (WS10)."""
+    """Las 4 acciones iniciales globales (Mundo 1) — WS22: escribir es el cierre, no acción."""
     rows = s.scalars(select(Accion)).all()
-    orden = {"escribir": 0, "contemplar": 1, "respirar": 2, "caminar": 3, "hacer": 4}
+    orden = {"contemplar": 0, "respirar": 1, "caminar": 2, "hacer": 3}
     rows = sorted(rows, key=lambda a: orden.get(a.slug, 99))
     return [{"slug": a.slug, "nombre": a.nombre, "glifo": a.glifo} for a in rows]
 

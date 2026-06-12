@@ -1,8 +1,8 @@
 """M2/M3 · Servicio de entrega del día + cierre del ritual.
 
 Conecta el motor puro (`seleccion.elegir_carta`) con la DB:
-- pool   ← tabla global `cartas` (Mundo 1)
-- perfil ← `usuario_categorias` + `entregas` del usuario (Mundo 2, filtrado por id)
+- pool   ← tabla global `cartas` (Mundo 1, completo — WS22: nada se filtra)
+- perfil ← `entregas` del usuario (Mundo 2, filtrado por id)
 
 Regla M2: 1 carta por día (TZ del usuario). Si ya hay carta de hoy, se devuelve;
 si no, se sortea una nueva y se crea la fila `entregas` (vigencia 24h).
@@ -23,7 +23,6 @@ from ..db.models import (
     Categoria,
     Entrega,
     Usuario,
-    UsuarioAccion,
 )
 from .seleccion import Entrega as EntregaMotor
 from .seleccion import Perfil, elegir_carta
@@ -86,12 +85,8 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
             "Onboarding incompleto: acepta los términos antes de recibir cartas.",
         )
 
-    # WS10: actividades elegidas (filtro duro). Sin filas = sin filtro = todas.
-    acciones = list(s.scalars(
-        select(UsuarioAccion.accion_slug).where(
-            UsuarioAccion.usuario_id == usuario.id
-        )
-    ).all())
+    # WS22: las acciones ya no se eligen — el pool es el pilar completo.
+    # (`usuario_acciones` quedó obsoleta; nada la lee.)
 
     # Historial del usuario (con categoría/acción/concepto de cada carta), por fecha.
     rows = s.execute(
@@ -116,7 +111,7 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
         )
         for (e, cat, acc, conc) in rows
     ]
-    perfil = Perfil(acciones=acciones, historial=historial)
+    perfil = Perfil(historial=historial)
 
     # Pool global como dicts con las keys que el motor espera.
     pool = [

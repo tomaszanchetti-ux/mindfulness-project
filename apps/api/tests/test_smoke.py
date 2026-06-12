@@ -22,7 +22,7 @@ def test_seed_y_categorias():
     cats = r.json()
     assert len(cats) == 6
     slugs = {c["slug"] for c in cats}
-    assert {"gratitud", "calma", "vinculos"} <= slugs
+    assert {"gratitud", "sentido", "vinculos"} <= slugs
 
     r2 = client.get("/api/contenido/resumen")
-    assert r2.json()["cartas"] == 69
+    assert r2.json()["cartas"] == 77
