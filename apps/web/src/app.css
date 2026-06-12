@@ -224,10 +224,18 @@
   padding: 0 10cqw;
   margin-top: 14.7cqw;
 }
-.card-glyph {
+/* Los dos tiempos (canon WS22): la acción inicial, con su glifo y su nombre. */
+.card-accion-inicial {
   flex: 1;
-  width: 15.3cqw;
-  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.7cqw;
+}
+.card-glyph {
+  width: 13.3cqw;
+  height: 13.3cqw;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-position: center;
@@ -236,13 +244,34 @@
   mask-size: contain;
   opacity: 0.92;
 }
+.card-accion-nombre {
+  letter-spacing: 0.42em;
+  text-transform: lowercase;
+  color: var(--dust-taupe);
+  font-size: 3.7cqw;
+  padding-left: 0.42em;
+}
 .card-prompt {
   font-size: 4.67cqw;
   line-height: 1.55;
   color: var(--warm-taupe);
   text-align: center;
   padding: 0 9.3cqw;
-  margin-bottom: 11.3cqw;
+  margin-bottom: 6cqw;
+}
+/* El sello del cierre: la pluma — toda pausa termina escribiendo en el diario. */
+.card-sello {
+  width: 6.7cqw;
+  height: 6.7cqw;
+  flex-shrink: 0;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  opacity: 0.55;
+  margin-bottom: 7.3cqw;
 }
 
 .flip-hint {

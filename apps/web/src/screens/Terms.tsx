@@ -4,7 +4,7 @@
 
 import { useNavigate } from "react-router-dom";
 
-const ACTUALIZADO = "11 de junio de 2026";
+const ACTUALIZADO = "12 de junio de 2026";
 const CONTACTO = "tomaszanchetti@gmail.com";
 
 export function Terms() {
@@ -32,8 +32,8 @@ export function Terms() {
         <h3>Qué datos guardamos</h3>
         <p>
           <b>Tu cuenta:</b> el correo con el que inicias sesión, tu nombre y tu apodo.{" "}
-          <b>Tus preferencias:</b> actividades elegidas, horario y zona horaria, y si
-          quieres el aviso diario. <b>Tus pausas:</b> las reflexiones, valoraciones y
+          <b>Tus preferencias:</b> horario y zona horaria, y si quieres el aviso
+          diario. <b>Tus pausas:</b> las reflexiones, valoraciones y
           fotos que decidas guardar en tu Baúl. No pedimos ni guardamos nada más.
         </p>
       </section>
@@ -42,7 +42,8 @@ export function Terms() {
         <h3>Para qué los usamos</h3>
         <p>
           Solo para que la app funcione: elegir tu carta de cada día, guardar tu Baúl y
-          — si lo activaste — enviarte el aviso diario por correo. No vendemos ni
+          — si lo activaste — enviarte el aviso diario como notificación en tu
+          dispositivo. No vendemos ni
           compartimos tus datos con nadie, no hay publicidad y no usamos rastreadores
           de terceros. La base legal es tu consentimiento, que das al aceptar estos
           términos y puedes retirar cuando quieras.

@@ -158,7 +158,7 @@ export function Home() {
         <Spotlight
           targetSelector='[data-nudge="guardar"]'
           titulo="Vive tu pausa, lejos del teléfono"
-          cuerpo="La carta te propone una pausa sin el teléfono. Al volver, escribe en tu diario lo que sentiste y toca Guardar. Si quieres regalar la carta, toca Compartir."
+          cuerpo="Deja que la acción te lleve a la calma. Al volver, escribe en tu diario lo que sentiste y toca Guardar. Si quieres regalar la carta, toca Compartir."
           onDone={() => {
             marcarNudgeVisto(uid, "guardar");
             setNudgeGuardar(false);

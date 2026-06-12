@@ -1,5 +1,7 @@
 // La carta — el objeto central del sistema (doc §11).
-// Frente: categoría · dibujo · acción.  Dorso: frase · glifo · prompt.
+// Frente: pilar · dibujo · acción.  Dorso (canon WS22, los dos tiempos):
+// frase (la puerta) · acción inicial (glifo + nombre) · prompt · pluma (el
+// sello del cierre: toda pausa termina escribiendo en el diario).
 // El giro es la metáfora de "descubrir": lento, suave, sin rebote (§11.6).
 
 import { assetUrl } from "../lib/api";
@@ -42,20 +44,33 @@ export function Card({ carta, flipped, onFlip }: CardProps) {
           <div className="card-action">{carta.accion.nombre.toLowerCase()}</div>
         </div>
 
-        {/* —— Dorso —— */}
+        {/* —— Dorso (los dos tiempos de la pausa) —— */}
         <div className="card-face card-back">
           <div className="card-band" style={{ background: accent }} />
           <div className="frase card-frase">{carta.frase}</div>
+          <div className="card-accion-inicial" aria-hidden>
+            <div
+              className="card-glyph"
+              style={{
+                background: accent,
+                WebkitMaskImage: `url(${assetUrl(carta.accion.glifo)})`,
+                maskImage: `url(${assetUrl(carta.accion.glifo)})`,
+              }}
+            />
+            <span className="card-accion-nombre">
+              {carta.accion.nombre.toLowerCase()}
+            </span>
+          </div>
+          <div className="card-prompt">{carta.prompt}</div>
           <div
-            className="card-glyph"
+            className="card-sello"
             style={{
               background: accent,
-              WebkitMaskImage: `url(${assetUrl(carta.accion.glifo)})`,
-              maskImage: `url(${assetUrl(carta.accion.glifo)})`,
+              WebkitMaskImage: `url(${assetUrl("assets/acciones/act_escribir.svg")})`,
+              maskImage: `url(${assetUrl("assets/acciones/act_escribir.svg")})`,
             }}
             aria-hidden
           />
-          <div className="card-prompt">{carta.prompt}</div>
         </div>
       </div>
     </div>
