@@ -27,6 +27,7 @@ import { EntryDetail } from "./screens/EntryDetail";
 import { Share } from "./screens/Share";
 import { PublicShare } from "./screens/PublicShare";
 import { Profile } from "./screens/Profile";
+import { Metodo } from "./screens/Metodo";
 import { Terms } from "./screens/Terms";
 
 // Guarda de sesión: sin usuario logueado, todo lo privado vuelve al login.
@@ -84,6 +85,7 @@ function App() {
             <Route path="/baul/:id" element={<RequireAuth><RequireOnboarding><EntryDetail /></RequireOnboarding></RequireAuth>} />
             <Route path="/compartir/:id" element={<RequireAuth><RequireOnboarding><Share /></RequireOnboarding></RequireAuth>} />
             <Route path="/perfil" element={<RequireAuth><RequireOnboarding><Profile /></RequireOnboarding></RequireAuth>} />
+            <Route path="/metodo" element={<RequireAuth><RequireOnboarding><Metodo /></RequireOnboarding></RequireAuth>} />
 
             {/* Público: el receptor del regalo, sin login. */}
             <Route path="/c/:token" element={<PublicShare />} />

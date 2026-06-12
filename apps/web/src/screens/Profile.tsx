@@ -13,7 +13,7 @@ import { activarPush, permisoPush, soportaPush, suscripcionActual } from "../lib
 
 export function Profile() {
   const navigate = useNavigate();
-  const { perfil, categorias, acciones, refrescarPerfil } = useStore();
+  const { perfil, categorias, refrescarPerfil } = useStore();
   const [hora, setHora] = useState("");
   const [aviso, setAviso] = useState(true);
   const [nombre, setNombre] = useState("");
@@ -72,12 +72,6 @@ export function Profile() {
   }, [perfil]);
 
   if (!perfil) return <div className="center-note">…</div>;
-
-  // WS10: actividades elegidas. Si no eligió ninguna todavía, valen todas.
-  const misAcciones =
-    perfil.acciones.length > 0
-      ? acciones.filter((a) => perfil.acciones.includes(a.slug))
-      : acciones;
 
   const guardarAviso = async (v: boolean) => {
     setAviso(v);
@@ -185,30 +179,20 @@ export function Profile() {
           ))}
         </div>
         <p className="meta" style={{ marginTop: 8 }}>
-          Cada semana, Dwellia te lleva por los seis pilares del crecimiento — uno
-          distinto cada día, más un día sorpresa.
+          Seis pilares en tres círculos, contigo en el centro. Cada semana los
+          recorres todos — uno distinto cada día, más un día sorpresa.
         </p>
       </div>
 
       <div className="profile-section">
-        <h3>Cómo complementas tu pausa</h3>
-        <div className="cat-pills">
-          {misAcciones.filter((a) => a.slug !== "escribir").length === 0 ? (
-            <span className="cat-pill">Solo escritura, por ahora</span>
-          ) : (
-            misAcciones
-              .filter((a) => a.slug !== "escribir")
-              .map((a) => (
-                <span key={a.slug} className="cat-pill">
-                  {a.nombre}
-                </span>
-              ))
-          )}
-        </div>
-        <p className="meta" style={{ marginTop: 8 }}>
-          La escritura es la pausa misma: siempre presente. Estas actividades la
-          disparan.
+        <h3>El método Dwellia</h3>
+        <p className="meta">
+          La pausa de dos tiempos, la calma como camino y los seis pilares: el
+          porqué de cada carta.
         </p>
+        <button className="link" style={{ marginTop: 8 }} onClick={() => navigate("/metodo")}>
+          Leer el método
+        </button>
       </div>
 
       <div className="profile-section">

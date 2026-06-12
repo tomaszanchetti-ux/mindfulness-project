@@ -3,8 +3,9 @@
   "configurations": [
     {
       "name": "web",
+      "cwd": "apps/web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "apps/web"],
+      "runtimeArgs": ["run", "dev"],
       "port": 8081
     }
   ]

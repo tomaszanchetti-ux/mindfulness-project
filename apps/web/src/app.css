@@ -1744,3 +1744,61 @@
 .spot-actions {
   margin-top: 16px;
 }
+
+/* ——— El método Dwellia (WS22) ——— */
+.metodo {
+  padding: 18px var(--pad-x) 40px;
+}
+.metodo .screen-head {
+  margin-top: 8px;
+}
+.metodo-viz {
+  max-width: 340px;
+  margin: 4px auto 10px;
+}
+.metodo-viz svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.metodo-text {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--warm-taupe);
+  margin: 8px 0 0;
+}
+.metodo-anillo {
+  margin-top: 16px;
+}
+.metodo-anillo-titulo {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dust-taupe);
+  margin: 0 0 8px;
+}
+.metodo-pilar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 0;
+}
+.metodo-pilar-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex: none;
+}
+.metodo-pilar-nombre {
+  font-family: "Fraunces", serif;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+.metodo-pilar-texto {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 0;
+}
