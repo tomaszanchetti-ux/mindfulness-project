@@ -18,8 +18,8 @@ encima.
 - Teoría + canon: ✅ refundados WS22 (pausa de dos tiempos · Sentido por Calma ·
   nada se elige · "pasear").
 - Dibujos de pilar: ✅ los 6 (Sentido reutiliza `cat_calma.png`, resignificado).
-- Biblioteca de cartas: ✅ **triage WS22 hecho — 79 cartas** (gratitud 13 ·
-  sentido 12 · perspectiva 16 · resiliencia 12 · amor propio 14 · vínculos 12).
-  Gate determinístico 0 errores / 0 avisos · pasada del LLM-judge pendiente de key.
+- Biblioteca de cartas: ✅ **triage WS22 hecho — 77 cartas** (gratitud 13 ·
+  sentido 12 · perspectiva 14 · resiliencia 12 · amor propio 14 · vínculos 12).
+  Gate determinístico 0/0 · LLM-judge: 77 aprueban · 0 con reparos ✅.
 
 > Contexto general en [`../00_Documento_Madre.md`](../00_Documento_Madre.md).

@@ -66,7 +66,7 @@ Y la app **se apaga**.
 
 | Motor | Qué hace | Estado |
 |-------|----------|--------|
-| **M0 · Contenido** | La materia prima: los 6 pilares y las cartas (frase + micro-prompt + concepto + dibujo). Teoría en [`fundamentos_pilares.md`](M0_Motor_de_Contenido/fundamentos_pilares.md) · reglas en [`canon_cartas.md`](M0_Motor_de_Contenido/canon_cartas.md) (SoT del judge). | ✅ refundado WS22 — mazo de 79 cartas |
+| **M0 · Contenido** | La materia prima: los 6 pilares y las cartas (frase + micro-prompt + concepto + dibujo). Teoría en [`fundamentos_pilares.md`](M0_Motor_de_Contenido/fundamentos_pilares.md) · reglas en [`canon_cartas.md`](M0_Motor_de_Contenido/canon_cartas.md) (SoT del judge). | ✅ refundado WS22 — mazo de 77 cartas (judge 77/77) |
 | **M1 · Onboarding y Perfil** | La entrada: login sin contraseña; el slideshow storytelling (la pausa de dos tiempos + los pilares en anillos); configurar horario y aviso (**ni pilares ni acciones se eligen** — WS22); aceptar términos. Editable después. | ✅ lógica cerrada ([M1](M1_Onboarding_y_Perfil/Madre_del_Motor.md)) |
 | **M2 · Entrega del día** | Elige la carta del día: **rotación 6+1 de pilares** (los 6, cada semana, en orden mezclado + día comodín) sobre **todo el pool del pilar** (las 4 acciones iniciales; nada se elige — WS22) + preferencia blanda que aprende de tus ⭐; **sin repetir ni carta ni concepto en la semana**. Avisa (push opcional). Vigencia 24h. | ✅ lógica cerrada ([M2](M2_Entrega_del_Dia/Madre_del_Motor.md)) |
 | **M3 · Ritual** | El momento: recibís la carta, la girás, hacés la pausa afuera y volvés a cerrarla — **reflexión** ≤150 (protagonista, no bloquea Guardar), **1 foto** (free, WS16; el back soporta 3) y **estrellas** 1-5 (opcionales). Una sola superficie (scroll en el dorso). **Sin gate:** la próxima carta llega siempre; lo dejado a medias se autoguarda sin culpa. | ✅ lógica cerrada v1 ([M3](M3_Ritual/Madre_del_Motor.md)) |
@@ -129,7 +129,7 @@ con los datos de cada persona **aislados** (sobre todo el Baúl).
 ```
 categorias  (6)   ┐
 acciones    (4)   ├─ GLOBALES, compartidas  →  M0 vive acá
-cartas      (79)  ┘     (seed = los 3 JSON de M0_Motor_de_Contenido/data/, WS22)
+cartas      (77)  ┘     (seed = los 3 JSON de M0_Motor_de_Contenido/data/, WS22)
 ──────────────────────────────────────────────────────────
 usuarios               ┐
 entregas / Baúl        ├─ PRIVADAS, todo con user_id

@@ -161,7 +161,7 @@ para dar profundidad al lado movimiento del pilar más flaco del mazo.
 ## §Transición (WS22 → pasos 2-3 del plan; el canon manda, el código sigue)
 
 1. ✅ **Triage del mazo (paso 2 — HECHO, WS22):** el mazo canónico son **79
-   cartas** en los seeds JSON (gratitud 13 · sentido 12 · perspectiva 16 ·
+   cartas** en los seeds JSON (gratitud 13 · sentido 12 · perspectiva 14 ·
    resiliencia 12 · amor propio 14 · vínculos 12; ambos lados del eje en los 6).
    Las 12 de `calma`: 8 remapeadas por función (4→perspectiva · 2→amor propio ·
    1→gratitud · 1→sentido) y 4 retiradas; las 18 ex `escribir` recibieron acción

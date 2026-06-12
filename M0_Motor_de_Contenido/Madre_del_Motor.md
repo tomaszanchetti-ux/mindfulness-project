@@ -35,7 +35,7 @@ calma se escribe lo sentido; lo escrito trabaja el pilar del día.
 **La matriz de afinidad pilar × acción inicial vive en el canon (R8.1)** — una
 sola fuente, no se duplica acá. Cada pilar cubre ambos lados del eje.
 
-**Profundidad (mazo WS22): 79 cartas** — gratitud 13 · sentido 12 · perspectiva 16
+**Profundidad (mazo WS22): 77 cartas** — gratitud 13 · sentido 12 · perspectiva 14
 · resiliencia 12 · amor propio 14 · vínculos 12, todas con ambos lados del eje
 cubiertos. El motor del día (M2) no repite **ni carta ni concepto** en una ventana
 de 7 días y balancea la acción (que no caigan varios días seguidos de la misma).
@@ -177,5 +177,5 @@ La **franja** de cada carta usa el color de acento de su pilar.
 |------|-----|--------|
 | 1 | Estética y anatomía de la carta | ✅ (re-layout dos tiempos pendiente, paso UX WS22) |
 | 2 | Dibujos de pilar (6 PNG) + glifos de acción (SVG) | ✅ (Sentido hereda el de Calma) |
-| 3 | Biblioteca de cartas | ✅ triage WS22 hecho: **79 cartas** (gate determinístico 0/0 · judge LLM pendiente de key) |
+| 3 | Biblioteca de cartas | ✅ triage WS22 hecho: **77 cartas** (gate determinístico 0/0 · judge LLM 77/77 ✅) |
 | 4 | Seed para la DB + motor | ⏳ re-seed + migración + motor (paso 3, canon §Transición) |
