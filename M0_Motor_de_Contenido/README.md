@@ -7,14 +7,18 @@ encima.
 
 | | Qué es |
 |---|--------|
-| 🧠 [`Madre_del_Motor.md`](Madre_del_Motor.md) | La **lógica del motor**: modelo de contenido, reglas, estética de la carta y producción de los dibujos. |
-| 🎨 [`assets/categorias/`](assets/categorias/) | Dibujos de categoría (SVG). |
+| 📖 [`fundamentos_pilares.md`](fundamentos_pilares.md) | **La teoría (SoT, WS22):** la pausa de dos tiempos, calma como vehículo, los 6 pilares (función · anclaje · pregunta-norte), el triple gate. |
+| ⚖️ [`canon_cartas.md`](canon_cartas.md) | **Las reglas (SoT del judge):** rule base que consume `scripts/validar_cartas.py` — gates R1.5/R2.5/R4.2, matriz de afinidad, safety, §Transición. |
+| 🧠 [`Madre_del_Motor.md`](Madre_del_Motor.md) | La **lógica del motor**: modelo de contenido, estética de la carta y producción de los dibujos. |
+| 🎨 [`assets/categorias/`](assets/categorias/) | Dibujos de pilar (PNG acuarela). Sentido hereda el de Calma (WS22). |
 | ✏️ [`assets/acciones/`](assets/acciones/) | Glifos de acción (SVG). |
 
 ## Estado
 
-- Modelo de contenido, reglas y estética: ✅
-- Dibujos (Claude Design → SVG): ⏳ — empezando por **Gratitud**.
-- Biblioteca de cartas (3-5 por molde): ⏳
+- Teoría + canon: ✅ refundados WS22 (pausa de dos tiempos · Sentido por Calma ·
+  nada se elige · "pasear").
+- Dibujos de pilar: ✅ los 6 (Sentido reutiliza `cat_calma.png`, resignificado).
+- Biblioteca de cartas: 🟡 **triage WS22 pendiente** — remap de las 12 de calma ·
+  acción inicial para las ex "escribir" · ~12 de sentido · vínculos 9→12.
 
 > Contexto general en [`../00_Documento_Madre.md`](../00_Documento_Madre.md).

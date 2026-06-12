@@ -17,19 +17,20 @@ que persigues.
 | Reflexión y nota largas | Subir el límite free de 150 caracteres (reflexión y nota de compartir) a ~500 | nuevo (límite 150 desde WS19) |
 | Hasta 3-5 fotos por pausa | Free quedó en 1 (WS16); premium vuelve a 3 (canon M3) o sube a 5 | parcial (back ya soporta 3) |
 | Compartir el ejercicio completo | Modo `ejercicio` ya soportado en backend M5; free solo `carta_sola` | listo en back |
-| Cambiar la carta del día (1 vez/día) | Te llega, no te va hoy → la cambias UNA vez; el motor sirve otra (respetando rotación+concepto) | nuevo (WS17) |
-| Comodín aprendido | El día 7 deja de ser azar: pondera por las ⭐ del usuario (afinidad por pilar, espejo de la capa de actividades) | nuevo (WS17) |
+| Cambiar la carta del día (1 vez/día) | Te llega, no te va hoy → la cambias UNA vez; el motor sirve otra **cruzando el eje movimiento↔quietud** (WS22: si era de pasear/hacer sirve contemplar/respirar y viceversa), mismo pilar, respetando rotación+concepto | nuevo (WS17/WS22) |
+| Comodín aprendido | El día 7 deja de ser azar: pondera por las ⭐ del usuario (afinidad por pilar, espejo de la afinidad por acción inicial) | nuevo (WS17) |
 | Fotos en el regalo (M5) | Compartir con fotos | canon WS16 |
 
 ## Ola 2 — Creación de cartas por usuarios (UGC curado)
 
 La feature insignia del premium. El pipeline ya existe desde v1:
 
-1. **El usuario crea** frase + prompt (+ pilar y actividad) en la app.
+1. **El usuario crea** frase + prompt (+ pilar y acción inicial) en la app.
 2. **Capa 1 determinística** (`scripts/validar_cartas.py`): feedback inmediato
    (estructura, diario, localismos, similitud con el mazo).
 3. **Capa 2 LLM-judge** (mismo script, `--judge`): evalúa contra
-   [`canon_cartas.md`](M0_Motor_de_Contenido/canon_cartas.md) → `aprueba /
+   [`canon_cartas.md`](M0_Motor_de_Contenido/canon_cartas.md) (con los gates WS22:
+   R1.5 deseo · R2.5 calma · R4.2 función del pilar) → `aprueba /
    requiere_revision (con fix sugerido) / rechaza` + concepto sugerido + safety (S1-S3).
    El judge **sugiere cambios** para mantener la carta dentro del canon.
 4. **Capa 3 humana:** Dwellia decide. El script recomienda, la marca cura.
@@ -47,8 +48,9 @@ Diseño acordado (WS17):
 
 ## Ya en el canon para v2 (de sesiones previas)
 
-- Email branded con dominio propio (aviso diario) · WS09/WS13.
-- Aviso diario (worker + Scheduler + email) · pendiente de v1 también.
+- Email branded con dominio propio · WS09/WS13 — **acotado WS21:** el aviso diario
+  es SOLO push (email descartado); el branded queda solo para el magic link de login.
+- ~~Aviso diario~~ ✅ resuelto en v1 (WS20/WS21: Scheduler + barrido + push web).
 - OG dinámico por token compartido · WS09.
 - Baúl: orden compuesto y edición de entradas · canon M4.
 - Compresión de imágenes + limpieza de huérfanas · WS16.

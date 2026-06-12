@@ -34,10 +34,10 @@ rachas, ni contadores de vanidad, ni "te perdiste 3 días". Es tu cuaderno, no t
 │ ┌───────────────────┐ │  ───────►  │   frase + micro-prompt │
 │ │ 🎴 Gratitud  ⭐⭐⭐⭐│ │            │   ─────────────────    │
 │ │ "mirá el amanecer"│ │            │   tu reflexión         │
-│ │ hoy               │ │            │   📷 📷 (tus fotos)    │
+│ │ hoy               │ │            │   📷 (tu foto)         │
 │ ├───────────────────┤ │            │   ⭐⭐⭐⭐               │
-│ │ 🎴 Calma     ⭐⭐⭐  │ │            │                        │
-│ │ "respirá la luna" │ │            │   [ Compartir ]  (M5)  │
+│ │ 🎴 Sentido   ⭐⭐⭐  │ │            │                        │
+│ │ "la luna te guía" │ │            │   [ Compartir ]  (M5)  │
 │ │ ayer              │ │            │   [ 🗑 Borrar ]  (rojo)│
 │ └───────────────────┘ │            └───────────────────────┘
 └───────────────────────┘
@@ -131,7 +131,7 @@ M4 es casi **sólo lectura**. Su única escritura es el **borrado**.
 **Lee** (privado, todo con `user_id`):
 - `entregas` → todas las del usuario, ya cerradas (`completada=true`) o a medias
   (`completada=false`), con su `reflexion` y sus `estrellas`.
-- `fotos` → las 0-3 de cada entrega (sus URLs en Cloud Storage).
+- `fotos` → las de cada entrega (0-1 en free, WS16; sus URLs en Cloud Storage).
 - `cartas` (global, M0) → para renderizar cada entrada (color, dibujo, frase, prompt). La carta
   **no está copiada** en la entrega: se joinea al render, igual que en M3.
 

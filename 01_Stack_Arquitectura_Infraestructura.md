@@ -60,11 +60,12 @@ ritual). Por eso: **React Native + Expo**.
   como PWA instalable, servida por el **mismo Firebase Hosting** que Arc One.
   Después, el **mismo proyecto Expo** compila a las stores. El stack no cambia;
   cambia el orden de salida.
-- **Consecuencia ya canonizada:** en PWA el push de iPhone solo anda con la app
-  instalada → **el aviso principal es email** (de ahí la pieza nueva §2.2). El push
-  (FCM, familia Firebase) se enciende cuando el usuario "instala como App".
+- **Consecuencia (actualizada WS21):** el aviso diario es **SOLO push web**
+  (Web Push estándar + VAPID, sin FCM; email descartado por decisión de Tomás —
+  `services/email.py` quedó dormido). En iPhone el push solo anda con la PWA
+  instalada (iOS 16.4+) → el copy empuja a "instalar como App".
 
-### 2.2 🆕 El aviso diario (y por qué casi no es una pieza nueva)
+### 2.2 El aviso diario (histórico WS07 — el canal cambió a push en WS21)
 
 Lo que verificamos contra **prode** (09/06): prode **no usa ningún proveedor de email
 transaccional**. Resuelve todo con Firebase:
@@ -109,12 +110,20 @@ Idéntico a como Arc One aísla workspaces, pero a escala de usuario individual:
 │  → un script los carga una vez; re-seed si sumamos cartas    │
 ├─────────────────────────────────────────────────────────────┤
 │  MUNDO 2 · DATOS DEL USUARIO (privados, todo con user_id)    │
-│  usuarios · usuario_acciones · entregas (Baúl) · fotos ·     │
-│  compartidos · (usuario_categorias: legacy, sin uso)         │
+│  usuarios · entregas (Baúl) · fotos · compartidos ·          │
+│  push_suscripciones · (usuario_acciones + usuario_categorias:│
+│   OBSOLETAS — WS22/WS17, se eliminan en la limpieza)         │
 │  → CADA fila lleva user_id                                    │
 │  → TODA consulta filtra por el usuario logueado              │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+> **⚠️ Transición WS22 (pendiente, paso 3):** el canon de contenido se refundó —
+> categoría `sentido` reemplaza a `calma`, `acciones` queda en 4 acciones iniciales
+> (escribir = cierre universal), display `caminar` → "pasear", y las tablas de
+> elección (`usuario_acciones`, `usuario_categorias`) se eliminan. Lo de arriba
+> describe la DB desplegada HOY; el destino está en
+> [`canon_cartas.md §Transición`](M0_Motor_de_Contenido/canon_cartas.md).
 
 **La regla que no se rompe nunca** (canon Arc One, macro de Mati): el filtro por
 `user_id` vive **en el backend (Cloud Run), JAMÁS en el cliente**. El Baúl de uno no

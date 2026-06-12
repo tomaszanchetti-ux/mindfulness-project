@@ -69,7 +69,8 @@ queda protegido: *hacé afuera → volvé → cerrá.*
       • Reflexión   → recuadro ≤150 caracteres, una nota de AYUDA-MEMORIA del Baúl
                       ("lo que sentiste ya quedó en tu diario; acá una reflexión para
                       recordarlo"). NO bloquea Guardar (invitar, nunca exigir).
-      • Fotos       → hasta 3, opcional. Tomar o subir (de lo que escribiste o viviste).
+      • Foto        → 1 en free (WS16; el back soporta 3 — premium v2), opcional.
+                      Tomar o subir (de lo que escribiste o viviste).
       • Estrellas   → 1-5, opcional. "¿cuánto te llegó?" (alimenta M2).
 6. Guardar            → va al Baúl. (Al lado, discreto: Compartir → M5.)
 ```
@@ -112,7 +113,7 @@ pantalla NO repite "escribí en tu diario"; eso ya se dijo al salir.)*
   contraste con la reflexión larga del premium v2, ~500). Corto a propósito: una interacción *sutil*
   con la app, no un editor de texto (para eso está tu diario). No hay mínimo — una línea, una
   palabra, lo que salga. *"¿Qué te dejó?"*
-- **Puntuación 1-5 ⭐** ("¿cuánto te llegó?") y **hasta 3 fotos** ("conmemórala con una foto"),
+- **Puntuación 1-5 ⭐** ("¿cuánto te llegó?") y **1 foto** ("conmemórala con una foto"),
   ambas opcionales (detalle en §5 y §6).
 - **Guardar nunca se bloquea.** Podés guardar sin escribir/puntuar/fotografiar nada. Esa es la
   única opcionalidad canónica del Motor de Contenido ("guardar sin hacer nada"), y la
@@ -126,15 +127,16 @@ pantalla NO repite "escribí en tu diario"; eso ya se dijo al salir.)*
 
 ---
 
-## 5. Las fotos: hasta 3, opcional
+## 5. La foto: 1 en free (WS16), opcional
 
-- **Hasta 3 fotos**, tomar en el momento o subir de la galería. Opcional.
-- Por qué 3 y no 1: una caminata o un "hacer" puede dejar 2-3 rastros, y el
-  almacenamiento cuesta centavos. **No cobramos por cantidad de fotos** — sería mezquino y
-  va contra *intimidad como producto*. Las palancas premium son otras (2×/día, Baúl más
-  rico). El límite puede subir en premium, no es el muro.
-- Van a **Cloud Storage**, en carpeta por usuario (aislamiento de datos, §7 del Documento
-  Madre). En el Baúl se ven junto a la carta y la reflexión.
+- **1 foto en free** (decisión WS16, post-demo), tomar en el momento o subir de la
+  galería. Opcional. **El back soporta 3** (endpoints y esquema): premium v2 vuelve
+  a 3 o sube a 5 (`ROADMAP_v2_PREMIUM.md`).
+- Van a **Cloud Storage**, en carpeta por usuario (aislamiento de datos, §5 del
+  Documento Madre), bucket privado — jamás públicas salvo compartir explícito (M5).
+  En el Baúl se ven junto a la carta y la reflexión (con lightbox).
+- *(Historial: el canon original WS05 era "hasta 3 sin cobrar por cantidad"; WS16 lo
+  recortó a 1 en free para dar contraste premium.)*
 
 ---
 
@@ -143,7 +145,7 @@ pantalla NO repite "escribí en tu diario"; eso ya se dijo al salir.)*
 - Al cerrar aparece **"¿cuánto te llegó?" de 1 a 5 ⭐**. Opcional y salteable — la app nunca
   insiste.
 - Le contamos al usuario para qué sirve: *"puntuá si querés; con eso la app va aprendiendo
-  qué te llega más"*. Ya lo vio en el slideshow (M1) y lo practicó en la carta de prueba.
+  qué te llega más"*. Ya lo vio en el slideshow (M1).
 - M3 **escribe la estrella** sobre la entrega del día; **M2 la lee** para afinar la
   afinidad de acción. Es el mismo dato que M2 ya está esperando. (Lógica completa en
   [M2 §5](../M2_Entrega_del_Dia/Madre_del_Motor.md).)
@@ -193,7 +195,7 @@ pantalla NO repite "escribí en tu diario"; eso ya se dijo al salir.)*
 - `estrellas` (1-5, NULL si no puntuó) ◄ lo espera M2
 - `completada` (bool) ◄ lo espera M2
 - `reflexion` (texto ≤150, NULL si no escribió) ◄ **columna nueva, la agrega M3**
-- una o varias filas en `fotos` (0-3) ◄ **tabla nueva, la agrega M3**
+- filas en `fotos` (0-1 en free; el esquema soporta 3) ◄ **tabla nueva, la agrega M3**
 
 ```
 entregas  (privada · M2 la crea · M3 le escribe el cierre)
@@ -204,7 +206,7 @@ entregas  (privada · M2 la crea · M3 le escribe el cierre)
   completada (bool)            ◄ M3   (true = guardó · false = autoguardado a medias)
   reflexion (texto ≤150, NULL) ◄ M3  ← columna NUEVA respecto de M2
 
-fotos     (privada · 0-3 por entrega · la agrega M3)
+fotos     (privada · 0-1 free, esquema soporta 3 · la agrega M3)
   id · user_id
   entrega_id      → FK a entregas
   url             → ruta en Cloud Storage (carpeta por usuario)
@@ -224,8 +226,9 @@ fotos     (privada · 0-3 por entrega · la agrega M3)
 - **→ M4 (Baúl):** reflexión + fotos + estrella + carta = el rastro que el Baúl muestra y
   ordena (por fecha o por estrella).
 - **→ M5 (Compartir):** M3 expone el botón "Compartir"; la generación del link es de M5.
-- **↔ M1:** la mecánica del ritual (girar, reflexión, foto, guardar) es lo que enseña la
-  **carta de prueba** del onboarding. La carta de prueba **no guarda** en el Baúl.
+- **↔ M1:** la mecánica del ritual (girar, reflexión, foto, guardar) se enseña con los
+  **2 nudges de primera vez sobre la carta real** (WS14; la carta de prueba/tutorial
+  quedó derogada).
 
 ---
 
@@ -243,7 +246,7 @@ fotos     (privada · 0-3 por entrega · la agrega M3)
   dejó?"*).
 - **Reflexión soft:** **no bloquea Guardar** y no tiene mínimo. Es opcional en la app, no
   reemplaza al diario físico.
-- **Hasta 3 fotos**, opcional, sin cobrar por cantidad en v1.
+- **1 foto en free (WS16)**, opcional; el back soporta 3 (premium v2 vuelve a 3-5).
 - **Estrellas 1-5 opcional**, transparente; M3 las escribe, M2 las usa (mismo dato ya
   esperado).
 - **Una sola superficie:** el cierre aparece scrolleando en el dorso, no en ventana nueva.

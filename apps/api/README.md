@@ -3,6 +3,12 @@
 FastAPI · SQLAlchemy 2 · Alembic · psycopg3 · Postgres 16. Espejo del backend de
 Arc One. Ver [`../../01_Stack_Arquitectura_Infraestructura.md`](../../01_Stack_Arquitectura_Infraestructura.md).
 
+> **⚠️ Transición WS22:** este README describe el código desplegado HOY. El canon
+> de contenido se refundó (Sentido por Calma · 4 acciones iniciales · sin elección
+> de acciones → `usuario_acciones` y sus endpoints quedan deprecados). La bajada a
+> código es el paso 3 del plan — destino en
+> [`canon_cartas.md §Transición`](../../M0_Motor_de_Contenido/canon_cartas.md).
+
 ## Estructura
 
 ```

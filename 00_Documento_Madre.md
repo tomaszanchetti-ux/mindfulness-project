@@ -12,14 +12,17 @@ diaria** que conecta a la persona **consigo misma, con su alrededor y con la
 naturaleza**, y la invita a **reconocer las emociones y sentimientos** que esa
 conexión genera.
 
-**La pausa = actividad de desconexión + escribir lo sentido.** Escribir en el
-**diario físico, fuera del teléfono, ES la pausa** — el motor del crecimiento. Las
-**actividades de desconexión** (contemplar, respirar, caminar, hacer) son
-disparadores que la preparan; la escritura pura es la pausa mínima del día sin
-tiempo. El crecimiento se recorre por **6 pilares interconectados** (gratitud,
-calma, perspectiva, resiliencia, amor propio, vínculos), con la persona en el
-centro: **cada semana se recorren todos** (rotación 6+1 de M2). El teléfono es
-**guía** (trae la carta) y **baúl** (guarda el rastro), nunca el destino.
+**La pausa tiene dos tiempos y una bisagra (WS22):** `acción inicial (contemplar ·
+respirar · pasear · hacer) → calma → escribir`. La **acción inicial** rota y existe
+para **conducir a la calma** — el estado-vehículo de todo el método, nunca un tema
+más. En calma, la persona **escribe lo sentido en su diario físico, fuera del
+teléfono** — la acción final constante y el motor del crecimiento. El crecimiento
+se recorre por **6 pilares interconectados** (amor propio, sentido, gratitud,
+perspectiva, resiliencia, vínculos) en **tres anillos** con la persona en el
+centro: **cada semana se recorren todos** (rotación 6+1 de M2); **el usuario no
+elige ni pilar ni acción**. El teléfono es **guía** (trae la carta) y **baúl**
+(guarda el rastro), nunca el destino. (Teoría completa:
+[`fundamentos_pilares.md`](M0_Motor_de_Contenido/fundamentos_pilares.md).)
 
 La unidad de contenido es la **carta del día**: una **frase** breve que invita a
 frenar + un **micro-prompt** que dispara la pausa y vuelve al diario. Frase +
@@ -63,10 +66,10 @@ Y la app **se apaga**.
 
 | Motor | Qué hace | Estado |
 |-------|----------|--------|
-| **M0 · Contenido** | La materia prima: los 6 pilares y las cartas (frase + micro-prompt + concepto + dibujo). Reglas en [`canon_cartas.md`](M0_Motor_de_Contenido/canon_cartas.md) (SoT del judge). | ✅ cerrado v1 (69 cartas) |
-| **M1 · Onboarding y Perfil** | La entrada: login sin contraseña; el slideshow storytelling (pilares + escribir como pausa); elegir **actividades de desconexión** (complementos — escribir no es opción, es el núcleo) y horario; activar (o no) el aviso; aceptar términos. Editable después. | ✅ lógica cerrada ([M1](M1_Onboarding_y_Perfil/Madre_del_Motor.md)) |
-| **M2 · Entrega del día** | Elige la carta del día: **rotación 6+1 de pilares** (los 6, cada semana, en orden mezclado + día comodín) × tus actividades elegidas (escritura pura siempre) + preferencia blanda que aprende de tus ⭐; **sin repetir ni carta ni concepto en la semana**. Avisa (push/email opcional). Vigencia 24h. | ✅ lógica cerrada ([M2](M2_Entrega_del_Dia/Madre_del_Motor.md)) |
-| **M3 · Ritual** | El momento: recibís la carta, la girás, hacés el ejercicio afuera y volvés a cerrarlo — **reflexión** ≤150 (protagonista, no bloquea Guardar), **hasta 3 fotos** y **estrellas** 1-5 (opcionales). Una sola superficie (scroll en el dorso). **Sin gate:** la próxima carta llega siempre; lo dejado a medias se autoguarda sin culpa. | ✅ lógica cerrada v1 ([M3](M3_Ritual/Madre_del_Motor.md)) |
+| **M0 · Contenido** | La materia prima: los 6 pilares y las cartas (frase + micro-prompt + concepto + dibujo). Teoría en [`fundamentos_pilares.md`](M0_Motor_de_Contenido/fundamentos_pilares.md) · reglas en [`canon_cartas.md`](M0_Motor_de_Contenido/canon_cartas.md) (SoT del judge). | 🟡 canon refundado WS22 — triage del mazo pendiente |
+| **M1 · Onboarding y Perfil** | La entrada: login sin contraseña; el slideshow storytelling (la pausa de dos tiempos + los pilares en anillos); configurar horario y aviso (**ni pilares ni acciones se eligen** — WS22); aceptar términos. Editable después. | ✅ lógica cerrada ([M1](M1_Onboarding_y_Perfil/Madre_del_Motor.md)) |
+| **M2 · Entrega del día** | Elige la carta del día: **rotación 6+1 de pilares** (los 6, cada semana, en orden mezclado + día comodín) sobre **todo el pool del pilar** (las 4 acciones iniciales; nada se elige — WS22) + preferencia blanda que aprende de tus ⭐; **sin repetir ni carta ni concepto en la semana**. Avisa (push opcional). Vigencia 24h. | ✅ lógica cerrada ([M2](M2_Entrega_del_Dia/Madre_del_Motor.md)) |
+| **M3 · Ritual** | El momento: recibís la carta, la girás, hacés la pausa afuera y volvés a cerrarla — **reflexión** ≤150 (protagonista, no bloquea Guardar), **1 foto** (free, WS16; el back soporta 3) y **estrellas** 1-5 (opcionales). Una sola superficie (scroll en el dorso). **Sin gate:** la próxima carta llega siempre; lo dejado a medias se autoguarda sin culpa. | ✅ lógica cerrada v1 ([M3](M3_Ritual/Madre_del_Motor.md)) |
 | **M4 · Baúl de Crecimiento Personal** | El historial de todo lo vivido (carta + foto + reflexión). Dos modos de orden: **Reciente** (default) y **Más valoradas**. Se puede **borrar** una entrada para siempre (modal claro + botón rojo; limpia DB + fotos + link). Casi sólo lectura. | ✅ lógica cerrada v1 ([M4](M4_Baul/Madre_del_Motor.md)) |
 | **M5 · Compartir** | Link público con nota personal. **Carta sola** (sin datos tuyos) o **ejercicio completo** (con reflexión + fotos → aviso de privacidad). El que recibe lo abre **sin instalar ni loguear**; un CTA suave al final. El link **muere si borrás la entrada**. Secundario y latente: se ofrece, no se empuja. | ✅ lógica cerrada v1 ([M5](M5_Compartir/Madre_del_Motor.md)) |
 
@@ -82,7 +85,7 @@ Y la app **se apaga**.
 3. **Integralidad** — la app es **un todo interconectado**: cada motor toma cosas del anterior y resuelve cosas para el o los siguientes. Cada visión y definición se hace **completa e integral**, nunca aislada (como trabajamos Arc One).
 
 ### 📿 Cómo se comporta la app
-1. **El ritual vive fuera de la pantalla** — el teléfono manda a hacer algo afuera, **invita a escribirlo en tu diario** (el fin) y guarda el rastro. La actividad es el medio: que escribas es el objetivo.
+1. **El ritual vive fuera de la pantalla** — el teléfono invita a una acción afuera que **conduce a la calma**, desde la cual **escribes en tu diario** (el fin), y guarda el rastro. La acción es el vehículo: que escribas es el objetivo.
 2. **Simpleza con apagado** — interacción mínima; la mejor sesión es la que termina y te devuelve a tu vida.
 3. **Intimidad como producto** — 100% tuyo, privado por defecto; no estás obligado a cargar nada; compartir es decisión explícita.
 4. **Invitar, nunca exigir** — sin push de nada salvo el aviso (opcional) de la carta del día. Sin rachas ni métricas de vanidad.
@@ -119,7 +122,7 @@ con los datos de cada persona **aislados** (sobre todo el Baúl).
 
 **Dos mundos de datos** (la regla de oro del aislamiento):
 - **Contenido (compartido):** las cartas son iguales para todos. Tablas **globales**. Acá vive **M0**.
-- **Datos del usuario (privados):** perfil, actividades elegidas y Baúl son tuyos. Cada fila lleva su `user_id` y **toda consulta filtra por el usuario logueado**, así el Baúl de uno jamás toca el de otro. *(No es "una base por usuario" — eso no escala.)*
+- **Datos del usuario (privados):** perfil y Baúl son tuyos. Cada fila lleva su `user_id` y **toda consulta filtra por el usuario logueado**, así el Baúl de uno jamás toca el de otro. *(No es "una base por usuario" — eso no escala.)*
 
 **Las tablas:**
 
@@ -129,12 +132,16 @@ acciones    (5)   ├─ GLOBALES, compartidas  →  M0 vive acá
 cartas      (69)  ┘     (seed = los 3 JSON de M0_Motor_de_Contenido/data/)
 ──────────────────────────────────────────────────────────
 usuarios               ┐
-usuario_acciones       │   ← actividades elegidas (M1; "escribir" siempre cuenta)
 entregas / Baúl        ├─ PRIVADAS, todo con user_id
 fotos                  │     (entregas+fotos: M2/M3 · compartidos: M5)
 compartidos            ┘
-(usuario_categorias: tabla LEGACY pre-WS17, nada la lee; se elimina en una limpieza futura)
+(usuario_acciones y usuario_categorias: OBSOLETAS — WS22/WS17, las acciones y los
+pilares ya no se eligen; nada debe leerlas, se eliminan en el paso 3 de WS22)
 ```
+
+> **Transición WS22 (datos globales, pendiente paso 3):** categoría `sentido`
+> reemplaza a `calma`; `acciones` queda en 4 acciones iniciales (escribir pasa a
+> cierre universal); display `caminar` → "pasear". Detalle: canon §Transición.
 
 Los **JSON del repo son el seed maestro**: un script los carga una vez a las 3 tablas
 globales (y re-seedea si sumamos cartas). Las fotos del Baúl van a Cloud Storage; la
@@ -144,5 +151,6 @@ DB guarda solo la ruta.
 
 > **Pivot de secuencia (WS03):** salimos **primero como PWA instalable** (Expo for Web)
 > y después el **nativo a las stores**, desde el **mismo proyecto Expo**. El stack no
-> cambia; cambia el orden de salida. Consecuencia: el **aviso principal es email**
-> (el push web en iPhone sólo anda con la app instalada al inicio). Detalle en M1 §7.
+> cambia; cambia el orden de salida. **Aviso diario = SOLO push web (WS21; email
+> descartado por decisión de Tomás).** En iPhone el push solo anda con la PWA
+> instalada (iOS 16.4+) → el copy empuja a instalar. Detalle en M1 §5.

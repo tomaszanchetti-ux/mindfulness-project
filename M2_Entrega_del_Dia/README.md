@@ -11,9 +11,9 @@ El motor que cada día elige **una** carta y te la entrega.
 eliminó en WS18; está en el historial de git.)*
 
 **En una línea:** la **rotación 6+1** recorre los 6 pilares cada semana (en orden
-mezclado + día comodín); dentro del pilar del día entran tus **actividades de
-desconexión** elegidas (la escritura pura siempre); no se repite **ni carta ni
-concepto** en 7 días; tus ⭐ inclinan la balanza y el azar decide.
+mezclado + día comodín); dentro del pilar del día entra **todo su pool** (las 4
+acciones iniciales — nada se elige, WS22); no se repite **ni carta ni concepto** en
+7 días; tus ⭐ inclinan la balanza y el azar decide.
 
 Se rige por el [`Documento Madre`](../00_Documento_Madre.md) y el
 [`canon de cartas`](../M0_Motor_de_Contenido/canon_cartas.md). Toma de

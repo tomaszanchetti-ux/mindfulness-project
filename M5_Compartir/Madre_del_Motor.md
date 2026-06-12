@@ -62,7 +62,7 @@ cerrar la pestaña. **No se lo empuja al onboarding.**
 abre el link → ve el regalo COMPLETO (carta o ejercicio + nota) · puede girar y leer · SIN login
             → ...y al final, abajo: CTA suave "configurá tu cuenta…" (opcional)
             → SÓLO si toca el CTA ↓
-            → recién acá arranca el onboarding (M1: login passwordless → slideshow → config → carta de prueba)
+            → recién acá arranca el onboarding (M1: login passwordless → slideshow → config → carta real del día)
 ```
 
 - **Sin nada (ni siquiera login):** ver la carta/ejercicio, **girar la carta** y leer frase +
@@ -75,9 +75,9 @@ abre el link → ve el regalo COMPLETO (carta o ejercicio + nota) · puede girar
 
 > **CTA honesto (v1):** *"Configurá tu cuenta para tener tus propias cartas"* → onboarding normal;
 > su primera carta la elige M2 como a cualquiera. **No** prometemos "completá *esta* carta": la
-> carta recibida es la entrega de otra persona y rompería su rotación de pilares (M2). *(Idea v2: que
-> la carta recibida sea su carta de prueba del onboarding — continuidad sin ensuciar M2/Baúl,
-> porque el tutorial no guarda.)*
+> carta recibida es la entrega de otra persona y rompería su rotación de pilares (M2). *(Idea v2:
+> mostrarle la carta recibida como bienvenida dentro del onboarding — continuidad sin ensuciar
+> M2/Baúl. Nota: la "carta de prueba" original quedó derogada en WS14.)*
 
 ---
 
@@ -205,8 +205,8 @@ sus joins permiten, y un CTA a M1.
   *ver*). Completar una carta o tener las propias = **pide cuenta** (datos en un baúl con
   `user_id`). El login aparece sólo al tocar el CTA, nunca como peaje para ver.
 - **CTA honesto:** *"Configurá tu cuenta para tener tus propias cartas"* → onboarding normal. No
-  "completá esta carta" (la recibida rompería su rotación de pilares). v2: que la recibida sea su
-  carta de prueba.
+  "completá esta carta" (la recibida rompería su rotación de pilares). v2: la recibida como
+  bienvenida del onboarding.
 - **Dos modos:** **carta sola** (sin datos tuyos, invitación) y **ejercicio completo** (con
   reflexión + fotos, íntimo).
 - **Aviso de privacidad explícito** antes de compartir el ejercicio completo (lo íntimo se
