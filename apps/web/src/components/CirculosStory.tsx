@@ -62,7 +62,7 @@ export function AnillosCirculo({ pilares }: { pilares: CategoriaContenido[] }) {
 
   return (
     <svg viewBox="0 0 300 256" fill="none" aria-hidden>
-      {/* los tres anillos del recorrido */}
+      {/* los tres anillos del recorrido — apenas insinuados, que no compitan */}
       {RADIOS.map((r, i) => (
         <circle
           key={r}
@@ -70,25 +70,21 @@ export function AnillosCirculo({ pilares }: { pilares: CategoriaContenido[] }) {
           cy={CY}
           r={r}
           stroke={ACENTO_PROFUNDO}
-          strokeWidth="1.5"
-          strokeDasharray="3 7"
-          opacity={0.46 - i * 0.1}
+          strokeWidth="1.2"
+          strokeDasharray="2 8"
+          opacity={0.24 - i * 0.05}
         />
       ))}
-      {/* la calma: el agua que rodea a la persona (el vehículo de todo) */}
-      <circle cx={CX} cy={CY} r="25" stroke={ACENTO} strokeWidth="1.6" opacity="0.55" strokeDasharray="1 0" />
-      <circle cx={CX} cy={CY} r="32" stroke={ACENTO} strokeWidth="1.3" opacity="0.3" />
+      {/* la calma: un aura serena alrededor de la persona (sin palabras) */}
+      <defs>
+        <radialGradient id="aura-calma" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="var(--sage)" stopOpacity="0.35" />
+          <stop offset="60%" stopColor="var(--sage)" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="var(--sage)" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <circle cx={CX} cy={CY} r="42" fill="url(#aura-calma)" />
       <Persona cx={CX} cy={CY} />
-      <text
-        x={CX}
-        y={CY + 44}
-        textAnchor="middle"
-        fontSize="10.5"
-        fontStyle="italic"
-        fill={ACENTO_PROFUNDO}
-      >
-        calma
-      </text>
 
       {nodos.map((n) => {
         const arriba = n.y < CY;
@@ -115,6 +111,7 @@ export function AnillosCirculo({ pilares }: { pilares: CategoriaContenido[] }) {
 // La pausa de dos tiempos: una acción → la calma (el agua se aquieta) → escribir.
 export function PausaDosTiempos() {
   const Y = 86;
+  const LABEL_Y = Y + 44; // las tres palabras, en la misma línea de base
 
   return (
     <svg viewBox="0 0 300 168" fill="none" aria-hidden>
@@ -125,8 +122,8 @@ export function PausaDosTiempos() {
           <path d={`M44 ${Y - 9}l9 9-9 9`} />
           <path d={`M54 ${Y - 9}l9 9-9 9`} opacity="0.45" />
         </g>
-        <text x="52" y={Y + 44} textAnchor="middle" fontSize="12.5" fontWeight="600" fill={LINEA}>
-          una acción
+        <text x="52" y={LABEL_Y} textAnchor="middle" fontSize="12.5" fontWeight="600" fill={LINEA}>
+          acción
         </text>
       </g>
 
@@ -137,30 +134,33 @@ export function PausaDosTiempos() {
         <circle cx="150" cy={Y} r="29" stroke={ACENTO} strokeWidth="1.5" opacity="0.32" />
         <text
           x="150"
-          y={Y + 50}
+          y={LABEL_Y}
           textAnchor="middle"
           fontSize="12.5"
           fontWeight="700"
           fill={ACENTO_PROFUNDO}
         >
-          la calma
+          calma
         </text>
       </g>
 
-      {/* 3 · escribir (la pluma sobre el diario: el cierre de toda pausa) */}
+      {/* 3 · escribir (la pluma: el cierre de toda pausa) */}
       <g>
         <circle cx="248" cy={Y} r="24" stroke={LINEA} strokeWidth="2.2" fill="var(--soft-ivory)" />
-        <g stroke={LINEA} strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-          <path d={`M240 ${Y + 10}l15-19`} strokeWidth="2.4" />
-          <path d={`M240 ${Y + 10}l-3.2 4.6 5-1.6z`} fill={ACENTO} stroke="none" />
-          <path d={`M249 ${Y - 4}l6 4M246 ${Y}l6 4`} strokeWidth="1.5" opacity="0.6" />
+        <g stroke={LINEA} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          {/* la hoja de la pluma */}
+          <path d={`M239 ${Y + 11} C241 ${Y + 2} 246 ${Y - 6} 257 ${Y - 11} C254 ${Y - 2} 248 ${Y + 6} 239 ${Y + 11} Z`} />
+          {/* la vena central */}
+          <path d={`M239 ${Y + 11} C243 ${Y + 4} 249 ${Y - 3} 257 ${Y - 11}`} strokeWidth="1.3" opacity="0.55" />
+          {/* la punta que escribe */}
+          <path d={`M239 ${Y + 11}l-4 4`} strokeWidth="2.2" />
         </g>
-        <text x="248" y={Y + 44} textAnchor="middle" fontSize="12.5" fontWeight="600" fill={LINEA}>
+        <text x="248" y={LABEL_Y} textAnchor="middle" fontSize="12.5" fontWeight="600" fill={LINEA}>
           escribir
         </text>
       </g>
 
-      {/* el viaje: dos arcos suaves con flecha */}
+      {/* el viaje: rectas punteadas con el triángulo alineado a la línea */}
       <g
         stroke={ACENTO_PROFUNDO}
         strokeWidth="1.8"
@@ -168,8 +168,8 @@ export function PausaDosTiempos() {
         opacity="0.65"
         fill="none"
       >
-        <path d={`M82 ${Y - 14}q34 -26 44 -8`} markerEnd="url(#flecha-pausa)" />
-        <path d={`M184 ${Y - 20}q26 -16 38 0`} markerEnd="url(#flecha-pausa)" />
+        <line x1="82" y1={Y} x2="112" y2={Y} markerEnd="url(#flecha-pausa)" />
+        <line x1="187" y1={Y} x2="217" y2={Y} markerEnd="url(#flecha-pausa)" />
       </g>
       <defs>
         <marker id="flecha-pausa" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">

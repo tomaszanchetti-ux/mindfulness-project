@@ -35,22 +35,21 @@ const SLIDES: {
   },
   {
     viz: "anillos",
-    titulo: "Seis pilares, tres círculos",
+    titulo: "Seis pilares de crecimiento personal",
     cuerpo:
-      "El crecimiento se cultiva en seis pilares que te rodean en tres círculos: hacia adentro, hacia tu experiencia y hacia los demás. Cada semana los recorres todos — uno por día, más un día sorpresa.",
+      "Hacia adentro, lo que vives y los que te rodean. Cada semana los trabajas todos, para un enfoque integral.",
   },
   {
     viz: "pausa",
-    titulo: "La pausa de dos tiempos",
+    titulo: "La pausa de dos tiempos y un estado",
     cuerpo:
-      "Cada carta te propone una acción sencilla —contemplar, respirar, pasear, hacer— que te lleva a la calma. Y desde la calma, escribes en tu diario lo que sentiste.",
-    tip: "Como el agua: cuando se aquieta, se ve el fondo.",
+      "Cada carta te propone una acción sencilla, que te lleva a un estado de calma. Y, desde la calma, escribes en tu diario lo que sentiste.",
   },
   {
-    // Divisoria (QA Tomás WS18): cierra el "qué es" y abre el "cómo funciona".
-    escena: "amanecer",
-    titulo: "¿Cómo funciona?",
-    cuerpo: "Así es Dwellia en tu día a día — cinco pasos, una pausa.",
+    // Divisoria (QA Tomás WS23): la puerta del método, con su propia imagen.
+    escena: "luna",
+    titulo: "El método Dwellia",
+    cuerpo: "¿Cómo funciona?",
   },
   {
     escena: "recibe",
@@ -61,7 +60,7 @@ const SLIDES: {
   {
     escena: "pausa",
     kicker: "Paso 2",
-    titulo: "Vive tu pausa",
+    titulo: "Date un respiro",
     cuerpo: "Lejos del móvil y a tu manera. Deja que la acción te lleve a la calma.",
   },
   {
@@ -85,10 +84,9 @@ const SLIDES: {
     cuerpo: "Regala tu experiencia a tus seres queridos.",
   },
   {
-    escena: "amanecer",
+    escena: "brote",
     titulo: "¿Comenzamos?",
     cuerpo: "Sin feed ni likes. Solo una pausa al día.",
-    tip: "El porqué de todo esto vive en El método Dwellia, dentro de tu Perfil. Léelo cuando quieras.",
   },
 ];
 
@@ -247,7 +245,7 @@ export function Onboarding() {
           </div>
           <div className="ob-foot">
             <Button variant="primary" full onClick={avanzarSlide}>
-              {slide >= SLIDES.length - 1 ? "Sí, comencemos" : "Siguiente"}
+              {slide >= SLIDES.length - 1 ? "Comencemos" : "Siguiente"}
             </Button>
           </div>
         </>

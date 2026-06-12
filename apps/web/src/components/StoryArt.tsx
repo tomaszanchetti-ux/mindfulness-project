@@ -6,6 +6,8 @@
 
 export type Escena =
   | "amanecer"
+  | "luna"
+  | "brote"
   | "recibe"
   | "pausa"
   | "diario"
@@ -57,6 +59,54 @@ function Amanecer() {
       <path d="M124 32c7-4 15-4 22 0" opacity="0.45" />
       <path d="M28 112c16-7 34-7 50 0" opacity="0.35" />
       <path d="M102 112c16-7 34-7 50 0" opacity="0.35" />
+    </Lienzo>
+  );
+}
+
+// — El brote: el comienzo de algo hermoso. Cierra el slideshow (algo pequeño
+//   que acaba de empezar a crecer — exactamente lo que el usuario está por hacer).
+function Brote() {
+  return (
+    <Lienzo>
+      {/* la tierra */}
+      <path d="M40 100h100" />
+      <path d="M52 108c7-3 14-3 21 0" opacity="0.35" />
+      <path d="M108 108c7-3 14-3 21 0" opacity="0.35" />
+      {/* el tallo, recién asomando */}
+      <path d="M90 100V72" stroke={ACENTO_PROFUNDO} strokeWidth="2.6" />
+      {/* las dos primeras hojas */}
+      <path d="M90 78C82 76 75 70 73 60c10 1 16 7 17 18z" stroke={ACENTO} strokeWidth="2.2" />
+      <path d="M90 70c8-2 15-8 17-18-10 1-16 7-17 18z" stroke={ACENTO} strokeWidth="2.2" />
+      {/* el sol que lo acompaña, chiquito */}
+      <path d="M132 38c4-5 11-5 15 0" stroke={ACENTO} strokeWidth="2" />
+      {/* la promesa */}
+      <Destello x={56} y={48} s={0.8} />
+      <Destello x={118} y={60} s={0.6} />
+    </Lienzo>
+  );
+}
+
+// — La luna sobre el agua quieta: la imagen del método (solo el agua serena
+//   refleja la luna). Abre la sección "El método Dwellia" del slideshow.
+function Luna() {
+  return (
+    <Lienzo>
+      {/* la línea del agua */}
+      <path d="M24 92h132" />
+      {/* la luna */}
+      <circle cx="90" cy="52" r="17" stroke={ACENTO} strokeWidth="2.6" />
+      <circle cx="84" cy="47" r="2.4" stroke={ACENTO_PROFUNDO} strokeWidth="1.6" opacity="0.5" />
+      <circle cx="95" cy="57" r="1.7" stroke={ACENTO_PROFUNDO} strokeWidth="1.6" opacity="0.4" />
+      {/* su reflejo en el agua quieta */}
+      <path d="M78 102h24" stroke={ACENTO} strokeWidth="2.2" opacity="0.5" />
+      <path d="M82 110h16" stroke={ACENTO} strokeWidth="2.2" opacity="0.34" />
+      <path d="M86 118h8" stroke={ACENTO} strokeWidth="2.2" opacity="0.22" />
+      {/* olas suaves a los lados */}
+      <path d="M30 102c8-3.5 16-3.5 24 0" opacity="0.35" />
+      <path d="M126 102c8-3.5 16-3.5 24 0" opacity="0.35" />
+      {/* la noche, apenas */}
+      <Destello x={42} y={34} s={0.75} />
+      <Destello x={138} y={44} s={0.6} />
     </Lienzo>
   );
 }
@@ -182,6 +232,10 @@ export function StoryArt({ escena }: { escena: Escena }) {
   switch (escena) {
     case "amanecer":
       return <Amanecer />;
+    case "luna":
+      return <Luna />;
+    case "brote":
+      return <Brote />;
     case "recibe":
       return <Recibe />;
     case "pausa":
