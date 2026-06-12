@@ -160,22 +160,18 @@ para dar profundidad al lado movimiento del pilar más flaco del mazo.
 
 ## §Transición (WS22 → pasos 2-3 del plan; el canon manda, el código sigue)
 
-El mazo vigente (69) y los seeds/DB son **anteriores** a esta versión del canon.
-Pendiente, en orden:
-
-1. **Triage del mazo (paso 2):** (a) las 12 cartas de `calma` se remapean por
-   `concepto` al pilar cuya función realmente servían (varias eran perspectiva o
-   amor propio "disfrazadas") o se retiran; (b) las ex cartas de acción `escribir`
-   reciben su **acción inicial mínima explícita** (casi todas traían un
-   "detente/mira/respira" implícito — se hace explícito, generalmente respirar o
-   contemplar breve); (c) se crean las cartas de `sentido` (~12, ambos lados del
-   eje, arte heredado luna-sobre-agua) y se refuerza `vinculos` (9 → 12).
-   Todo pasa por el judge con esta rule base.
-2. **Seeds + DB (paso 3):** alta de categoría `sentido`, baja de `calma` como
-   categoría, `escribir` fuera del enum de acción inicial, display
-   `caminar` → "pasear" (slug intacto). Migración correspondiente.
-3. **Motor (paso 3):** `seleccion.py` — muere el filtro por `usuario_acciones`
-   (tabla obsoleta: ya no hay elección de acciones ni toggle); entra el eje
-   movimiento↔quietud para el cambio de carta v2. Rotación 6+1 sin cambios.
-4. **Barrido "un solo idioma"** por las Madres (M0–M5, Documento Madre, onboarding)
-   con la terminología nueva, como en WS18.
+1. ✅ **Triage del mazo (paso 2 — HECHO, WS22):** el mazo canónico son **79
+   cartas** en los seeds JSON (gratitud 13 · sentido 12 · perspectiva 16 ·
+   resiliencia 12 · amor propio 14 · vínculos 12; ambos lados del eje en los 6).
+   Las 12 de `calma`: 8 remapeadas por función (4→perspectiva · 2→amor propio ·
+   1→gratitud · 1→sentido) y 4 retiradas; las 18 ex `escribir` recibieron acción
+   inicial mínima explícita; `caminar`→"pasea/paseo" en todos los prompts (slug
+   intacto); 12 de sentido nuevas + vínculos 9→12. Capa determinística: 0 errores ·
+   0 avisos. ⏳ Pendiente: pasada del **LLM-judge** (necesita ANTHROPIC_API_KEY).
+2. ⏳ **DB + código (paso 3):** migración (alta `sentido`, baja `calma`,
+   `escribir` fuera del enum, nombre "Pasear") + re-seed con los JSON nuevos +
+   `seleccion.py` (muere el filtro por `usuario_acciones`; entra el eje
+   movimiento↔quietud para el cambio de carta v2; rotación 6+1 sin cambios) +
+   tests y READMEs de apps/ al día.
+3. ⏳ **UX (paso 4, con Tomás):** onboarding de anillos, teoría in-app, re-layout
+   de carta (frase → acción inicial → cierre con pluma).

@@ -43,14 +43,15 @@ CANON = RAIZ / "M0_Motor_de_Contenido" / "canon_cartas.md"
 MAX_FRASE = 75
 MAX_PROMPT = 300
 
-# Matriz de afinidad (Madre §1): pares categoría×acción viables (✅ y ○).
+# Matriz de afinidad (canon R8.1, WS22): pares pilar×acción inicial viables.
+# "escribir" ya no es acción inicial (cierre universal); slug `caminar` se muestra "pasear".
 MATRIZ_VIABLE = {
-    "gratitud": {"escribir", "contemplar", "caminar", "hacer"},
-    "calma": {"escribir", "contemplar", "respirar", "caminar"},
-    "perspectiva": {"escribir", "contemplar", "respirar", "caminar"},
-    "resiliencia": {"escribir", "respirar", "caminar", "hacer"},
-    "amor-propio": {"escribir", "contemplar", "respirar", "hacer"},
-    "vinculos": {"escribir", "contemplar", "hacer"},
+    "gratitud": {"contemplar", "caminar", "hacer"},
+    "sentido": {"contemplar", "respirar", "caminar", "hacer"},
+    "perspectiva": {"contemplar", "respirar", "caminar"},
+    "resiliencia": {"respirar", "caminar", "hacer"},
+    "amor-propio": {"contemplar", "respirar", "hacer"},
+    "vinculos": {"contemplar", "caminar", "hacer"},
 }
 
 # R6 · localismos / voseo / calcos (regex, case-insensitive).
@@ -169,7 +170,7 @@ def validar_deterministica(cartas: list[dict], categorias: set[str],
     for c in cartas:
         p = c.get("prompt", "")
         if re.match(r"escribe en tu diario", p, re.IGNORECASE):
-            conectores["(acción escribir — integrado)"] += 1
+            conectores["(arranca en el diario — revisar: falta acción inicial)"] += 1
         elif re.search(r"Despu[eé]s escribe", p):
             conectores["Después escribe…"] += 1
         elif re.search(r"Luego escr[ií]be", p):
