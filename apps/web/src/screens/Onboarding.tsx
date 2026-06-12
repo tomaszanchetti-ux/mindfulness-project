@@ -28,20 +28,20 @@ const SLIDES: {
 }[] = [
   {
     escena: "amanecer",
-    titulo: "Una pausa al día.",
+    titulo: "Una Pausa al día.",
     cuerpo:
-      "Dwellia es un espacio de crecimiento personal: una pausa diaria para conectar contigo, con tu alrededor y con la naturaleza — lejos de las distracciones.",
-    tip: "Para aprovecharla al máximo: ten un diario personal físico y reserva entre 15 y 30 minutos cada día.",
+      "Dwellia es un espacio de crecimiento personal, que se desarrolla a partir de una Pausa diaria para conectar contigo, tu alrededor y la naturaleza.",
+    tip: "Sugerimos contar con un diario personal físico y al menos 15/30 minutos de disponibilidad diaria.",
   },
   {
     viz: "anillos",
     titulo: "Seis pilares de crecimiento personal",
     cuerpo:
-      "Hacia adentro, lo que vives y los que te rodean. Cada semana los trabajas todos, para un enfoque integral.",
+      "Desde tu ser interior (amor propio y sentido), pasando por la manera en que vives tus experiencias (perspectiva y gratitud) y llegando hasta tu relación con quienes te rodean (vínculos y resiliencia), cada semana trabajas todos, para un enfoque integral.",
   },
   {
     viz: "pausa",
-    titulo: "La pausa de dos tiempos y un estado",
+    titulo: "La Pausa de dos tiempos y un estado",
     cuerpo:
       "Cada carta te propone una acción sencilla, que te lleva a un estado de calma. Y, desde la calma, escribes en tu diario lo que sentiste.",
   },
@@ -55,7 +55,7 @@ const SLIDES: {
     escena: "recibe",
     kicker: "Paso 1",
     titulo: "Recibe tu carta",
-    cuerpo: "Cada día, Dwellia te envía una carta con una pausa para realizar.",
+    cuerpo: "Cada día, Dwellia te envía una carta con una Pausa para realizar.",
   },
   {
     escena: "pausa",
@@ -68,7 +68,7 @@ const SLIDES: {
     kicker: "Paso 3",
     titulo: "Escribe lo que sentiste",
     cuerpo:
-      "Al terminar, escribe en tu diario personal lo que la pausa despertó en ti.",
+      "Al terminar, escribe en tu diario personal lo que la Pausa despertó en ti.",
   },
   {
     escena: "guarda",
@@ -86,7 +86,7 @@ const SLIDES: {
   {
     escena: "brote",
     titulo: "¿Comenzamos?",
-    cuerpo: "Sin feed ni likes. Solo una pausa al día.",
+    cuerpo: "Sin feed ni likes. Solo una Pausa al día.",
   },
 ];
 

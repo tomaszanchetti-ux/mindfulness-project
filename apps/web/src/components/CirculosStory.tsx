@@ -168,11 +168,13 @@ export function PausaDosTiempos() {
         opacity="0.65"
         fill="none"
       >
-        <line x1="82" y1={Y} x2="112" y2={Y} markerEnd="url(#flecha-pausa)" />
-        <line x1="187" y1={Y} x2="217" y2={Y} markerEnd="url(#flecha-pausa)" />
+        {/* las líneas terminan en un hueco del punteado; el triángulo va después,
+            sin pisar ningún punto (QA Tomás) */}
+        <line x1="82" y1={Y} x2="104" y2={Y} markerEnd="url(#flecha-pausa)" />
+        <line x1="187" y1={Y} x2="209" y2={Y} markerEnd="url(#flecha-pausa)" />
       </g>
       <defs>
-        <marker id="flecha-pausa" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+        <marker id="flecha-pausa" markerWidth="8" markerHeight="8" refX="1" refY="3.5" orient="auto">
           <path d="M0 0L7 3.5L0 7z" fill={ACENTO_PROFUNDO} opacity="0.65" />
         </marker>
       </defs>
