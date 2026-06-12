@@ -21,8 +21,7 @@ class PerfilOut(BaseModel):
     hora_aviso: str
     aviso_activo: bool
     terminos_aceptados: bool
-    categorias: list[str]
-    acciones: list[str]  # DEPRECATED (WS22): nada lo lee; queda por compatibilidad
+    # WS17/WS22: ni pilares ni acciones se eligen — el perfil ya no lleva elecciones.
     onboarding_completo: bool
 
 
@@ -42,33 +41,6 @@ class PerfilUpdate(BaseModel):
     def _valida_hora(cls, v: Optional[str]) -> Optional[str]:
         if v is not None and not _HORA.match(v):
             raise ValueError("hora_aviso debe ser HH:MM (24h), ej. 08:00")
-        return v
-
-
-class CategoriasUpdate(BaseModel):
-    """Las 2-6 categorías elegidas (filtro duro de M2)."""
-
-    categorias: list[str] = Field(min_length=2, max_length=6)
-
-    @field_validator("categorias")
-    @classmethod
-    def _sin_duplicados(cls, v: list[str]) -> list[str]:
-        if len(set(v)) != len(v):
-            raise ValueError("hay categorías repetidas")
-        return v
-
-
-class AccionesUpdate(BaseModel):
-    """DEPRECATED (WS22): las acciones ya no se eligen; el endpoint queda por
-    compatibilidad con el front pre-WS22 y nada lee lo que guarda."""
-
-    acciones: list[str] = Field(max_length=5)
-
-    @field_validator("acciones")
-    @classmethod
-    def _sin_duplicados(cls, v: list[str]) -> list[str]:
-        if len(set(v)) != len(v):
-            raise ValueError("hay actividades repetidas")
         return v
 
 

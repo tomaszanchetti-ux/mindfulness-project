@@ -137,11 +137,10 @@ usuarios
   creado_en
 ```
 
-> **Tablas obsoletas:** `usuario_acciones` (las acciones ya no se eligen — WS22) y
-> `usuario_categorias` (los pilares no se eligen — WS17) existen en la DB pero
-> **nada debe leerlas**. Los endpoints `PUT /api/perfil/acciones` y
-> `PUT /api/perfil/categorias` quedan deprecados. Todo se elimina en la bajada a
-> código del paso 3 (canon §Transición).
+> **Limpieza WS23 (hecha):** `usuario_acciones` y `usuario_categorias` fueron
+> **dropeadas** (migración `h8c9d0e1f2a3`) y sus endpoints
+> (`PUT /api/perfil/acciones|categorias`) **retirados** — el perfil ya no lleva
+> elecciones de ningún tipo.
 
 ---
 

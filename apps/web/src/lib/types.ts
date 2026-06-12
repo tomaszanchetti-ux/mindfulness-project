@@ -76,8 +76,6 @@ export interface Perfil {
   hora_aviso: string;
   aviso_activo: boolean;
   terminos_aceptados: boolean;
-  categorias: string[];
-  acciones: string[]; // WS10: actividades elegidas ("escribir" siempre incluida)
   onboarding_completo: boolean;
 }
 

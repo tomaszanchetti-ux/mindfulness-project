@@ -21,7 +21,6 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
-    UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -105,47 +104,6 @@ class Usuario(Base):
         back_populates="usuario", cascade="all, delete-orphan"
     )
 
-    categorias: Mapped[list["UsuarioCategoria"]] = relationship(
-        back_populates="usuario", cascade="all, delete-orphan"
-    )
-    acciones: Mapped[list["UsuarioAccion"]] = relationship(
-        back_populates="usuario", cascade="all, delete-orphan"
-    )
-
-
-class UsuarioCategoria(Base):
-    """Las 2-6 categorías elegidas en el onboarding (filtro duro de M2)."""
-
-    __tablename__ = "usuario_categorias"
-    __table_args__ = (UniqueConstraint("usuario_id", "categoria_slug"),)
-
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
-    usuario_id: Mapped[str] = mapped_column(
-        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
-    )
-    categoria_slug: Mapped[str] = mapped_column(ForeignKey("categorias.slug"), nullable=False)
-
-    usuario: Mapped["Usuario"] = relationship(back_populates="categorias")
-
-
-class UsuarioAccion(Base):
-    """OBSOLETA (WS22): las acciones ya no se eligen — nada lee esta tabla.
-
-    Sobrevive solo porque el front pre-WS22 aún llama al endpoint deprecado
-    `PUT /api/perfil/acciones`. Se dropea en la limpieza del paso 4, junto con
-    `usuario_categorias` (obsoleta desde WS17).
-    """
-
-    __tablename__ = "usuario_acciones"
-    __table_args__ = (UniqueConstraint("usuario_id", "accion_slug"),)
-
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
-    usuario_id: Mapped[str] = mapped_column(
-        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
-    )
-    accion_slug: Mapped[str] = mapped_column(ForeignKey("acciones.slug"), nullable=False)
-
-    usuario: Mapped["Usuario"] = relationship(back_populates="acciones")
 
 
 class Entrega(Base):

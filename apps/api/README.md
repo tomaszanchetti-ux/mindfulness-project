@@ -3,10 +3,10 @@
 FastAPI · SQLAlchemy 2 · Alembic · psycopg3 · Postgres 16. Espejo del backend de
 Arc One. Ver [`../../01_Stack_Arquitectura_Infraestructura.md`](../../01_Stack_Arquitectura_Infraestructura.md).
 
-> **Canon WS22 bajado a código (paso 3 ✅):** Sentido por Calma · 4 acciones
+> **Canon WS22 completo (WS22+WS23 ✅):** Sentido por Calma · 4 acciones
 > iniciales (display "Pasear") · 77 cartas · el motor sirve el pilar completo
-> (nada se elige). `usuario_acciones`/`usuario_categorias` y sus endpoints quedan
-> **deprecados** (el front pre-WS22 aún los llama); se eliminan en el paso 4.
+> (nada se elige). Las tablas y endpoints de elección fueron **eliminados**
+> (migración `h8c9d0e1f2a3`): el perfil es solo cuenta + horario + aviso + términos.
 
 ## Estructura
 

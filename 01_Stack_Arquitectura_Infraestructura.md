@@ -111,19 +111,17 @@ Idéntico a como Arc One aísla workspaces, pero a escala de usuario individual:
 ├─────────────────────────────────────────────────────────────┤
 │  MUNDO 2 · DATOS DEL USUARIO (privados, todo con user_id)    │
 │  usuarios · entregas (Baúl) · fotos · compartidos ·          │
-│  push_suscripciones · (usuario_acciones + usuario_categorias:│
-│   OBSOLETAS — WS22/WS17, se eliminan en la limpieza)         │
+│  push_suscripciones                                          │
 │  → CADA fila lleva user_id                                    │
 │  → TODA consulta filtra por el usuario logueado              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-> **Transición WS22 — paso 3 DESPLEGADO:** `sentido` reemplaza a `calma`,
-> `acciones` quedó en 4 (escribir = cierre universal, display `caminar`→"Pasear"),
-> mazo de 77 cartas (migración `g7b8c9d0e1f2` + seed sync, rev `dwellia-api-00012`).
-> Las tablas de elección (`usuario_acciones`, `usuario_categorias`) quedan vacías y
-> deprecadas; se **dropean en el paso 4** cuando el front deje de llamar sus
-> endpoints. Detalle: [`canon_cartas.md §Transición`](M0_Motor_de_Contenido/canon_cartas.md).
+> **Canon WS22 completo en producción (WS22+WS23):** `sentido` por `calma`, 4
+> acciones iniciales (display "Pasear"), mazo de 77 cartas, motor sin filtros, y
+> las tablas/endpoints de elección **eliminados** (migraciones `g7b8c9d0e1f2` +
+> `h8c9d0e1f2a3`, rev `dwellia-api-00013`). Registro:
+> [`canon_cartas.md §Transición`](M0_Motor_de_Contenido/canon_cartas.md).
 
 **La regla que no se rompe nunca** (canon Arc One, macro de Mati): el filtro por
 `user_id` vive **en el backend (Cloud Run), JAMÁS en el cliente**. El Baúl de uno no

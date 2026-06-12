@@ -32,8 +32,8 @@ del teléfono**; el teléfono es guía + baúl.
   (que asciende a vehículo del método) · ni pilares ni acciones se eligen ·
   "pasear". SoT: [`fundamentos_pilares.md`](M0_Motor_de_Contenido/fundamentos_pilares.md)
   + [`canon_cartas.md`](M0_Motor_de_Contenido/canon_cartas.md).
-- **Plan WS22:** ~~paso 2 = triage del mazo~~ ✅ (77 cartas · gate determinístico
-  0/0 · **LLM-judge 77/77 aprueban**) · ~~paso 3 = bajada a código~~ ✅ (migración
-  `g7b8c9d0e1f2` + seed sync + motor, rev `dwellia-api-00012` — canon §Transición)
-  · **pendiente: paso 4 = UX** (onboarding anillos, teoría in-app, re-layout
-  carta, drop de tablas/endpoints obsoletos).
+- **Plan WS22: COMPLETO ✅ (WS22+WS23).** Paso 2 = triage (77 cartas · gate 0/0 ·
+  judge 77/77) · paso 3 = código/DB (rev `00012`) · paso 4 = **UX en producción
+  (WS23)**: onboarding nuevo (anillos + pausa de dos tiempos + método + brote),
+  pantalla `/metodo`, carta con los dos tiempos y pluma-sello, TyC v2, y drop
+  final de tablas/endpoints de elección (rev `dwellia-api-00013`).

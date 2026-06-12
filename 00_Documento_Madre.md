@@ -134,14 +134,10 @@ cartas      (77)  ┘     (seed = los 3 JSON de M0_Motor_de_Contenido/data/, WS2
 usuarios               ┐
 entregas / Baúl        ├─ PRIVADAS, todo con user_id
 fotos                  │     (entregas+fotos: M2/M3 · compartidos: M5)
-compartidos            ┘
-(usuario_acciones y usuario_categorias: OBSOLETAS — WS22/WS17, las acciones y los
-pilares ya no se eligen; nada debe leerlas, se eliminan en el paso 3 de WS22)
+compartidos            ┘  + push_suscripciones (aviso diario, WS21)
+(las tablas de elección usuario_acciones/usuario_categorias fueron DROPEADAS
+en WS23: ni pilares ni acciones se eligen — canon WS22)
 ```
-
-> **Transición WS22 (datos globales, pendiente paso 3):** categoría `sentido`
-> reemplaza a `calma`; `acciones` queda en 4 acciones iniciales (escribir pasa a
-> cierre universal); display `caminar` → "pasear". Detalle: canon §Transición.
 
 Los **JSON del repo son el seed maestro**: un script los carga una vez a las 3 tablas
 globales (y re-seedea si sumamos cartas). Las fotos del Baúl van a Cloud Storage; la

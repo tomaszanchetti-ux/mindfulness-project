@@ -175,8 +175,11 @@ para dar profundidad al lado movimiento del pilar más flaco del mazo.
    `EJE_MOVIMIENTO` listas para el swap v2; rotación 6+1 intacta) + endpoints
    `PUT /api/perfil/acciones|categorias` deprecados-vivos (compat front
    pre-WS22). 35 tests ✓ · prod rev `dwellia-api-00012`, resumen = 77 cartas.
-3. ⏳ **UX (paso 4, con Tomás):** onboarding de anillos (cae el paso de
-   actividades del front), teoría in-app, re-layout de carta (frase → acción
-   inicial → cierre con pluma). Al cerrar: **drop** de `usuario_acciones` y
-   `usuario_categorias` + retiro de sus endpoints. ⏳ También pendiente: pasada
-   del **LLM-judge** sobre las 77 (necesita ANTHROPIC_API_KEY).
+3. ✅ **UX (paso 4 — HECHO, WS23, EN PRODUCCIÓN):** onboarding nuevo (anillos
+   con aura de calma · pausa de dos tiempos · divisoria "El método Dwellia" con
+   luna · cierre con brote · wizard de 3 pasos sin actividades) · pantalla
+   `/metodo` (teoría in-app) · carta con los dos tiempos (acción inicial visible
+   + pluma-sello) · TyC v2 · **drop** de `usuario_acciones`/`usuario_categorias`
+   y retiro de sus endpoints (migración `h8c9d0e1f2a3`, rev `dwellia-api-00013`).
+   El **LLM-judge** ya corrió: 77/77 aprueban. **La transición WS22 está
+   COMPLETA** — este §Transición queda como registro histórico.
