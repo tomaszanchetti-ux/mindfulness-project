@@ -44,6 +44,7 @@ export interface Entrega {
   completada: boolean;
   reflexion: string | null;
   comentario_carta?: string | null; // WS24: feedback privado de la carta (nunca se publica)
+  cambios?: number; // WS24: veces que cambió la carta hoy (restantes = limites.cambios_carta - cambios)
   ya_existia?: boolean;
 }
 

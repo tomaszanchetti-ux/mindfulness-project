@@ -69,6 +69,9 @@ def _salida(s: Session, entrega: Entrega, ya_existia: bool) -> dict:
             "completada": entrega.completada,
             "reflexion": entrega.reflexion,
             "comentario_carta": entrega.comentario_carta,
+            # WS24 · A1.3: cuántas veces cambió la carta hoy (el front calcula los restantes
+            # con `limites.cambios_carta`, así lo sabe también al recargar).
+            "cambios": entrega.cambios or 0,
             "ya_existia": ya_existia,
         },
         "carta": _carta_enriquecida(s, carta),
