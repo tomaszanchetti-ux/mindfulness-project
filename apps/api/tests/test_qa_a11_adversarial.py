@@ -60,8 +60,12 @@ def _subir(h: dict, eid: str, contenido: bytes = b"png-fake", mime: str = "image
     )
 
 
-def _compartir(h: dict, eid: str, modo: str, nota=None):
-    body = {"entrega_id": eid, "modo": modo}
+def _compartir(h: dict, eid: str, modo=None, nota=None):
+    """WS25 · `modo` se sigue mandando en algunos casos a propósito: el servicio lo
+    IGNORA y deriva el modo de la Pausa. Los tests afirman lo derivado."""
+    body = {"entrega_id": eid}
+    if modo is not None:
+        body["modo"] = modo
     if nota is not None:
         body["nota"] = nota
     return client.post("/api/compartir", headers=h, json=body)
@@ -117,15 +121,15 @@ def test_borde_emoji_ZWJ_una_familia_cuenta_como_5_caracteres():
 def test_borde_nota_de_compartir_mismo_criterio_de_caracteres():
     h = _onboard("qa|borde-nota")
     eid = _entrega_de_hoy(h)
-    assert _compartir(h, eid, "carta_sola", nota="🌿" * 150).status_code == 201
-    r = _compartir(h, eid, "carta_sola", nota="🌿" * 151)
+    assert _compartir(h, eid, nota="🌿" * 150).status_code == 201
+    r = _compartir(h, eid, nota="🌿" * 151)
     assert r.status_code == 422 and "150" in _detalle(r)
 
 
 # ═══ 2 · PREMIUM VENCIDO: ¿se comporta como free en TODO? ════════════════════
 
 
-def test_premium_vencido_es_free_en_reflexion_fotos_nota_y_ejercicio():
+def test_premium_vencido_es_free_en_reflexion_fotos_y_nota_pero_comparte_igual():
     h = _onboard_premium("qa|vencido", dias=-1)   # venció ayer
     eid = _entrega_de_hoy(h)
 
@@ -144,11 +148,12 @@ def test_premium_vencido_es_free_en_reflexion_fotos_nota_y_ejercicio():
     assert _subir(h, eid).status_code == 409
 
     # nota: 150
-    assert _compartir(h, eid, "carta_sola", nota="n" * 151).status_code == 422
+    assert _compartir(h, eid, nota="n" * 151).status_code == 422
 
-    # ejercicio: prohibido
-    r = _compartir(h, eid, "ejercicio")
-    assert r.status_code == 403
+    # WS25 · compartir la ficha entera NO es compuerta: el vencido manda su Pausa
+    # (que ya tiene reflexión y foto) igual que un premium.
+    r = _compartir(h, eid)
+    assert r.status_code == 201 and r.json()["modo"] == "ejercicio"
 
 
 def test_plan_premium_con_plan_hasta_NULL_falla_cerrado():
@@ -177,7 +182,7 @@ def test_degradacion_conserva_sus_3_fotos_y_su_link_ejercicio():
     eid = _entrega_de_hoy(h)
     urls = [_subir(h, eid).json()["url"] for _ in range(3)]
     _cerrar(h, eid, reflexion="r" * 400, completada=True)
-    tok = _compartir(h, eid, "ejercicio", nota="n" * 400).json()["token"]
+    tok = _compartir(h, eid, nota="n" * 400).json()["token"]
 
     hacer_premium("qa|degrada", dias=-1)  # se le vence
 
@@ -218,7 +223,7 @@ def test_comentario_carta_no_se_filtra_al_publico_ni_al_baul():
     eid = _entrega_de_hoy(h)
     _cerrar(h, eid, reflexion="mi reflexion", comentario_carta="ESTO-ES-PRIVADO",
             completada=True)
-    tok = _compartir(h, eid, "ejercicio").json()["token"]
+    tok = _compartir(h, eid).json()["token"]
 
     # dueño: sí lo ve (cierre y carta del día)
     assert client.get("/api/carta-del-dia", headers=h).json()["entrega"]["comentario_carta"] \
@@ -242,8 +247,8 @@ def test_el_regalo_publico_sirve_las_fotos_por_el_token_y_no_filtra_rutas():
     remitente y NO era renderizable (las fotos sólo se servían con login), así que
     el "ejercicio" (LA función premium de A1.1) llegaba sin fotos.
 
-    Ahora cada foto sale como `/api/c/{token}/fotos/{foto_id}`: se sirve sin login,
-    pero SÓLO por el token, y sólo mientras el regalo esté vivo.
+    Ahora cada foto sale como `/api/c/{token}/fotos/{foto_id}`: SÓLO por el token, y
+    sólo mientras el regalo esté vivo (WS25 · además con sesión, ver el router).
     """
     from sqlalchemy import select
 
@@ -254,7 +259,7 @@ def test_el_regalo_publico_sirve_las_fotos_por_el_token_y_no_filtra_rutas():
     eid = _entrega_de_hoy(h)
     _subir(h, eid, contenido=b"png-uno")
     _subir(h, eid, contenido=b"png-dos")
-    tok = _compartir(h, eid, "ejercicio").json()["token"]
+    tok = _compartir(h, eid).json()["token"]
 
     with SessionLocal() as s:
         uid = s.scalar(select(Usuario.id).where(Usuario.firebase_uid == "qa|fuga-fotos"))
@@ -267,8 +272,8 @@ def test_el_regalo_publico_sirve_las_fotos_por_el_token_y_no_filtra_rutas():
     assert "storage_path" not in pub.text
     assert uid not in pub.text and eid not in pub.text
 
-    # (a) el receptor las ve SIN login, con content-type de imagen
-    anon = TestClient(app)
+    # (a) el receptor las ve con SU sesión (el permiso es el token, no ser el dueño)
+    anon = TestClient(app)      # modo dev: resuelve al usuario por defecto
     for u in fotos:
         r = anon.get(u)
         assert r.status_code == 200
@@ -286,8 +291,12 @@ def test_el_regalo_publico_sirve_las_fotos_por_el_token_y_no_filtra_rutas():
     foto_ajena = _subir(hb, _entrega_de_hoy(hb)).json()["id"]
     assert client.get(f"/api/c/{tok}/fotos/{foto_ajena}").status_code == 404
 
-    # (d) un token de `carta_sola` no abre ninguna foto (ni las suyas)
-    tok_sola = _compartir(h, eid, "carta_sola").json()["token"]
+    # (d) un token de `carta_sola` no abre ninguna foto (WS25: el modo lo deriva la
+    # Pausa, así que la carta sola sale de una Pausa en blanco — la de `hb` ya tiene
+    # foto, uso una tercera cuenta sin nada escrito)
+    hsola = _onboard("qa|fuga-fotos-sola")
+    tok_sola = _compartir(hsola, _entrega_de_hoy(hsola)).json()["token"]
+    assert tok_sola != tok
     assert client.get(f"/api/c/{tok_sola}/fotos/{foto_id}").status_code == 404
 
     # (e) al revocar el link, las fotos se apagan con él
@@ -305,7 +314,7 @@ def test_borrar_la_entrada_apaga_las_fotos_del_regalo():
     eid = _entrega_de_hoy(h)
     _subir(h, eid)
     _cerrar(h, eid, completada=True)
-    tok = _compartir(h, eid, "ejercicio").json()["token"]
+    tok = _compartir(h, eid).json()["token"]
     foto_url = client.get(f"/api/c/{tok}").json()["fotos"][0]
     assert client.get(foto_url).status_code == 200
 
@@ -327,14 +336,14 @@ def test_aislamiento_free_y_vencido_sobre_entrega_ajena_siempre_404():
     for h in (hfree, hvenc, hprem):
         assert _cerrar(h, eid, reflexion="x").status_code == 404
         assert _subir(h, eid).status_code == 404
-        assert _compartir(h, eid, "carta_sola").status_code == 404
-        # el free pide `ejercicio` (que no puede) sobre una entrega ajena:
-        # 404 y NUNCA 403 — el 403 delataría que la entrega existe.
-        assert _compartir(h, eid, "ejercicio").status_code == 404
+        assert _compartir(h, eid).status_code == 404
+        # y también el PUT de visibilidad de la card A3: una Pausa ajena no existe.
+        assert client.put(f"/api/baul/{eid}/visibilidad", headers=h,
+                          json={"visibilidad": "compartida"}).status_code == 404
 
     # y el 404 gana también contra una compuerta que dispararía 422
     assert _cerrar(hfree, eid, reflexion="x" * 400).status_code == 404
-    assert _compartir(hfree, eid, "carta_sola", nota="n" * 400).status_code == 404
+    assert _compartir(hfree, eid, nota="n" * 400).status_code == 404
 
 
 def test_aislamiento_de_fotos_ajenas_404():
@@ -374,9 +383,9 @@ def test_free_501_recibe_el_mensaje_de_SU_plan_no_el_del_otro():
     assert "reflexion" in str(r.json()["detail"])
 
     # Mismo criterio en la nota de compartir.
-    r = _compartir(h, eid, "carta_sola", nota="n" * 501)
+    r = _compartir(h, eid, nota="n" * 501)
     assert r.status_code == 422 and "150" in _detalle(r) and "free" in _detalle(r)
-    assert _compartir(h, eid, "carta_sola", nota="n" * 5001).status_code == 422
+    assert _compartir(h, eid, nota="n" * 5001).status_code == 422
 
 
 def test_un_422_de_compuerta_no_deja_escritura_parcial():
@@ -447,15 +456,15 @@ def test_la_nota_de_compartir_strippea_igual_que_la_reflexion():
     h = _onboard("qa|blanks-nota")
     eid = _entrega_de_hoy(h)
 
-    r = _compartir(h, eid, "carta_sola", nota=" " * 10 + "n" * 145)
+    r = _compartir(h, eid, nota=" " * 10 + "n" * 145)
     assert r.status_code == 201
     assert client.get(f"/api/c/{r.json()['token']}").json()["nota"] == "n" * 145
 
-    tok = _compartir(h, eid, "carta_sola", nota="   ").json()["token"]
+    tok = _compartir(h, eid, nota="   ").json()["token"]
     assert client.get(f"/api/c/{tok}").json()["nota"] is None
 
     # y 151 útiles siguen rebotando contra el plan
-    r = _compartir(h, eid, "carta_sola", nota="  " + "n" * 151 + "  ")
+    r = _compartir(h, eid, nota="  " + "n" * 151 + "  ")
     assert r.status_code == 422 and "mandaste 151" in _detalle(r)
 
 

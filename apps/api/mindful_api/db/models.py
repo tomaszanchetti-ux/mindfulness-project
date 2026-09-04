@@ -135,6 +135,10 @@ class Entrega(Base):
     # WS24 · cambiar la carta (premium): cuántas veces hoy (máx. 3) y cuáles descartó.
     cambios: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     descartadas: Mapped[Optional[list]] = mapped_column(JSON)
+    # WS25 · quién ve la ficha de esta Pausa: `privada` (solo el dueño) o
+    # `compartida` (su comunidad). Default privada: nadie publica sin pedirlo.
+    # Es independiente del link de M5, que es un regalo puntual a una persona.
+    visibilidad: Mapped[str] = mapped_column(String(12), nullable=False, default="privada")
 
     fotos: Mapped[list["Foto"]] = relationship(
         back_populates="entrega", cascade="all, delete-orphan"

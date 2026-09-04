@@ -22,7 +22,6 @@ class LimitesOut(BaseModel):
     plan: str
     reflexion_max: int
     fotos_max: int
-    compartir_ejercicio: bool
     cambios_carta: int
     propone_cartas: bool
     recomendaciones: bool
@@ -103,19 +102,33 @@ class CierreRitual(BaseModel):
 
 
 class CompartirCreate(BaseModel):
-    """M5 · crear un link. carta_sola (sin datos tuyos) o ejercicio (reflexión + fotos).
+    """M5 · crear un link. Viaja la ficha ENTERA tal como está al momento de enviar.
 
-    `ejercicio` es premium (lo aplica el servicio, no el front). La nota personal va
-    junto a la carta; el tope real por plan sale de `limites(usuario).reflexion_max`
-    y lo aplica el servicio (mensaje que nombra el plan). Acá, sólo el tope duro
-    anti-abuso (5000).
+    WS25 · el usuario ya NO elige qué parte viaja: `modo` se sigue aceptando (los
+    clientes viejos lo mandan) pero se IGNORA — el servicio lo deriva de la Pausa
+    (`ejercicio` si tiene reflexión o fotos, `carta_sola` si no). Tampoco depende
+    del plan: free y premium comparten igual.
+
+    La nota personal va junto a la carta; el tope real por plan sale de
+    `limites(usuario).reflexion_max` y lo aplica el servicio (mensaje que nombra el
+    plan). Acá, sólo el tope duro anti-abuso (5000).
     """
 
     entrega_id: str
-    modo: str = Field(pattern="^(carta_sola|ejercicio)$")
+    modo: Optional[str] = Field(default=None, pattern="^(carta_sola|ejercicio)$")
     nota: Optional[str] = Field(default=None, max_length=5000)
 
     @field_validator("nota", mode="before")
     @classmethod
     def _limpia(cls, v):
         return _texto_limpio(v)
+
+
+class VisibilidadUpdate(BaseModel):
+    """WS25 · M4 · quién ve la ficha de una Pausa guardada.
+
+    `privada` (solo el dueño) o `compartida` (su comunidad). Las estrellas nunca
+    viajan: son del dueño diga lo que diga la visibilidad.
+    """
+
+    visibilidad: str = Field(pattern="^(privada|compartida)$")

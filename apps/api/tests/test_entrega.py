@@ -78,3 +78,37 @@ def test_reflexion_max_150():
         f"/api/entregas/{entrega_id}/cierre", headers=h, json={"reflexion": "x" * 151}
     )
     assert r.status_code == 422
+
+
+def test_enviar_sin_guardar_persiste_la_reflexion_y_no_llega_al_baul():
+    """WS25 §1.2 · los dos caminos del cierre, en el orden real de Tomás.
+
+    "Enviar" cierra con `completada:false`: lo escrito se GUARDA (para que viaje en
+    el link) pero la Pausa no entra al Baúl. Después, "¿Quieres guardar la Pausa?"
+    cierra otra vez con `completada:true` y SIN reflexión — y esa segunda llamada
+    no puede pisar lo escrito: reflexión ausente (None) significa "no toques este
+    campo", no "bórralo".
+    """
+    h = _onboard("ent|enviar-sin-guardar")
+    eid = client.get("/api/carta-del-dia", headers=h).json()["entrega"]["id"]
+
+    # (1) Enviar: persiste la reflexión, pero la Pausa NO está en el Baúl.
+    r = client.put(f"/api/entregas/{eid}/cierre", headers=h,
+                   json={"reflexion": "La escribí antes de enviarla.", "estrellas": 4,
+                         "completada": False})
+    assert r.status_code == 200
+    assert r.json()["entrega"]["reflexion"] == "La escribí antes de enviarla."
+    assert r.json()["entrega"]["completada"] is False
+    assert client.get("/api/baul", headers=h).json() == []
+
+    # (2) Guardar después, sin mandar reflexión: entra al Baúl con su texto intacto.
+    r = client.put(f"/api/entregas/{eid}/cierre", headers=h, json={"completada": True})
+    assert r.status_code == 200
+    assert r.json()["entrega"]["reflexion"] == "La escribí antes de enviarla."
+
+    items = client.get("/api/baul", headers=h).json()
+    assert len(items) == 1
+    assert items[0]["id"] == eid
+    assert items[0]["reflexion"] == "La escribí antes de enviarla."
+    assert items[0]["estrellas"] == 4
+    assert items[0]["visibilidad"] == "privada"

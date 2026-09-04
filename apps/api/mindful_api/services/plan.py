@@ -26,10 +26,13 @@ COMENTARIO_CARTA_MAX = 150
 
 @dataclass(frozen=True)
 class Limites:
+    """WS25 · ya no existe `compartir_ejercicio`: enviar una Pausa a alguien es de
+    todos, free y premium por igual. Lo que viaja no lo elige el plan (ni el
+    usuario): viaja la ficha ENTERA tal como está al momento de enviarla."""
+
     plan: str
     reflexion_max: int          # caracteres de la reflexión (y de la nota de compartir)
     fotos_max: int              # fotos por Pausa
-    compartir_ejercicio: bool   # modo `ejercicio` en M5 (carta + reflexión + fotos)
     cambios_carta: int          # veces por día que puede cambiar la carta (0 = no puede)
     propone_cartas: bool        # puede escribir cartas para la comunidad (Bloque B)
     recomendaciones: bool       # puede subir recomendaciones al perfil (Bloque C)
@@ -39,11 +42,11 @@ class Limites:
 
 
 LIMITES_FREE = Limites(
-    plan=PLAN_FREE, reflexion_max=150, fotos_max=1, compartir_ejercicio=False,
+    plan=PLAN_FREE, reflexion_max=150, fotos_max=1,
     cambios_carta=0, propone_cartas=False, recomendaciones=False,
 )
 LIMITES_PREMIUM = Limites(
-    plan=PLAN_PREMIUM, reflexion_max=500, fotos_max=3, compartir_ejercicio=True,
+    plan=PLAN_PREMIUM, reflexion_max=500, fotos_max=3,
     cambios_carta=3, propone_cartas=True, recomendaciones=True,
 )
 

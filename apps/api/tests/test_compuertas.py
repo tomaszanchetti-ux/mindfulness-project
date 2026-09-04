@@ -115,28 +115,28 @@ def test_los_textos_se_miden_strippeados_y_el_blanco_se_guarda_como_None():
 
     # La nota de compartir, igual: strippeada para medir y para publicar.
     ok = client.post("/api/compartir", headers=h,
-                     json={"entrega_id": eid, "modo": "carta_sola",
-                           "nota": " " * 10 + "n" * 150})
+                     json={"entrega_id": eid, "nota": " " * 10 + "n" * 150})
     assert ok.status_code == 201
     assert client.get(f"/api/c/{ok.json()['token']}").json()["nota"] == "n" * 150
 
 
-def test_el_regalo_ejercicio_sirve_sus_fotos_por_el_token_sin_login():
-    """A1.1 · la función premium completa: el receptor VE las fotos (URLs públicas
-    atadas al token), y nunca un `storage_path` con el id interno del remitente."""
+def test_el_regalo_ejercicio_sirve_sus_fotos_por_el_token():
+    """El receptor VE las fotos (URLs atadas al token, servidas con su sesión), y
+    nunca un `storage_path` con el id interno del remitente."""
     h = _onboard_premium("gate|regalo-fotos")
     eid = _entrega_de_hoy(h)
     _subir(h, eid)
     tok = client.post("/api/compartir", headers=h,
-                      json={"entrega_id": eid, "modo": "ejercicio"}).json()["token"]
+                      json={"entrega_id": eid}).json()["token"]
 
     pub = client.get(f"/api/c/{tok}")
     assert "storage_path" not in pub.text
     fotos = pub.json()["fotos"]
     assert len(fotos) == 1 and fotos[0].startswith(f"/api/c/{tok}/fotos/")
 
-    sin_login = TestClient(app)
-    r = sin_login.get(fotos[0])
+    # Otra persona logueada, con el link en la mano: el permiso es el token.
+    otro = _onboard("gate|regalo-receptor")
+    r = client.get(fotos[0], headers=otro)
     assert r.status_code == 200 and r.headers["content-type"].startswith("image/")
 
 
@@ -192,30 +192,39 @@ def test_fotos_premium_tres_y_la_cuarta_no():
     assert "3 fotos" in _detalle(r)
 
 
-# ── Compartir: modo `ejercicio` es premium; la nota mide como la reflexión ───
+# ── Compartir ya NO es compuerta (WS25); la nota sí mide como la reflexión ───
 
 
-def test_compartir_ejercicio_es_premium():
+def test_compartir_la_ficha_entera_ya_no_es_premium():
+    """WS25 · murió `compartir_ejercicio`: un free que escribió su reflexión manda
+    la ficha ENTERA, igual que un premium. Ya no existe el 403 por plan."""
     h = _onboard("gate|share-free")
     eid = _entrega_de_hoy(h)
+    _cerrar(h, eid, reflexion="Hoy respiré antes de contestar.")
 
-    r = client.post("/api/compartir", headers=h, json={"entrega_id": eid, "modo": "ejercicio"})
-    assert r.status_code == 403
-    assert _detalle(r) == "Compartir el ejercicio completo es parte de Dwellia premium"
-
-    # La carta sola sí es de todos.
-    ok = client.post("/api/compartir", headers=h, json={"entrega_id": eid, "modo": "carta_sola"})
-    assert ok.status_code == 201
-    assert ok.json()["modo"] == "carta_sola"
+    r = client.post("/api/compartir", headers=h, json={"entrega_id": eid})
+    assert r.status_code == 201
+    assert r.json()["modo"] == "ejercicio"   # lo derivó la Pausa, no el plan
 
 
-def test_compartir_ejercicio_premium_pasa():
+def test_el_modo_lo_derive_la_pausa_y_el_del_cliente_se_ignora():
+    """WS25 · el usuario no elige qué parte viaja: viaja la ficha tal como está.
+
+    Mandar `modo` (clientes viejos) no cambia nada: una Pausa en blanco viaja como
+    carta sola aunque el cliente pida `ejercicio`, y una Pausa escrita viaja entera
+    aunque el cliente pida `carta_sola`.
+    """
     h = _onboard_premium("gate|share-premium")
     eid = _entrega_de_hoy(h)
 
+    # En blanco: pide ejercicio, recibe carta_sola.
     r = client.post("/api/compartir", headers=h, json={"entrega_id": eid, "modo": "ejercicio"})
-    assert r.status_code == 201
-    assert r.json()["modo"] == "ejercicio"
+    assert r.status_code == 201 and r.json()["modo"] == "carta_sola"
+
+    # Con una foto (sin reflexión) ya hay algo del usuario que viaja.
+    _subir(h, eid)
+    r = client.post("/api/compartir", headers=h, json={"entrega_id": eid, "modo": "carta_sola"})
+    assert r.status_code == 201 and r.json()["modo"] == "ejercicio"
 
 
 def test_nota_de_compartir_mide_contra_el_plan():
@@ -223,11 +232,11 @@ def test_nota_de_compartir_mide_contra_el_plan():
     eid = _entrega_de_hoy(h)
 
     ok = client.post("/api/compartir", headers=h,
-                     json={"entrega_id": eid, "modo": "carta_sola", "nota": "n" * 150})
+                     json={"entrega_id": eid, "nota": "n" * 150})
     assert ok.status_code == 201
 
     r = client.post("/api/compartir", headers=h,
-                    json={"entrega_id": eid, "modo": "carta_sola", "nota": "n" * 151})
+                    json={"entrega_id": eid, "nota": "n" * 151})
     assert r.status_code == 422
     assert "150" in _detalle(r)
 
@@ -235,8 +244,7 @@ def test_nota_de_compartir_mide_contra_el_plan():
     hp = _onboard_premium("gate|share-nota-premium")
     eidp = _entrega_de_hoy(hp)
     assert client.post("/api/compartir", headers=hp,
-                       json={"entrega_id": eidp, "modo": "carta_sola",
-                             "nota": "n" * 151}).status_code == 201
+                       json={"entrega_id": eidp, "nota": "n" * 151}).status_code == 201
 
 
 # ── El aislamiento manda: 404 antes que cualquier compuerta de plan ──────────
@@ -248,11 +256,13 @@ def test_aislamiento_intacto_con_las_compuertas():
     hp = _onboard_premium("gate|intruso-premium")
     eid = _entrega_de_hoy(ha)
 
-    # Cierre, foto y compartir sobre una entrega ajena: 404, nunca 403 ni 422.
+    # Cierre, foto, compartir y visibilidad sobre una entrega ajena: 404, nunca 422.
     assert _cerrar(hb, eid, reflexion="hola").status_code == 404
     assert _subir(hb, eid).status_code == 404
     assert client.post("/api/compartir", headers=hb,
-                       json={"entrega_id": eid, "modo": "carta_sola"}).status_code == 404
-    # Ni siquiera un premium (que sí puede el modo ejercicio) se entera de que existe.
+                       json={"entrega_id": eid}).status_code == 404
+    assert client.put(f"/api/baul/{eid}/visibilidad", headers=hb,
+                      json={"visibilidad": "compartida"}).status_code == 404
+    # Ni siquiera un premium se entera de que existe.
     assert client.post("/api/compartir", headers=hp,
-                       json={"entrega_id": eid, "modo": "ejercicio"}).status_code == 404
+                       json={"entrega_id": eid}).status_code == 404
