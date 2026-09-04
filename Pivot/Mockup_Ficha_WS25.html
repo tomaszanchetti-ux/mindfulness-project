@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mockup · Ficha del Baúl en una pantalla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --warm-cream: #f7f1e7; --sand: #ded3be; --soft-ivory: #fff8ea; --oat-milk: #efe3d0;
+    --card-body: #efe6d3; --deep-umber: #2f2923; --warm-taupe: #756b5e; --dust-taupe: #9a8f80;
+    --sand-line: #d8cbb8; --warm-shadow: rgba(70,55,35,.1); --warm-shadow-soft: rgba(70,55,35,.06);
+    --sage: #8fa58a; --sage-deep: #6f8a69;
+    --font-serif: "Fraunces", Georgia, serif; --font-ui: "Inter", -apple-system, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #2a2622; font-family: var(--font-ui); color: var(--deep-umber); padding: 28px 20px 40px; }
+  h1 { color: #f1e9db; font: 500 22px/1.2 var(--font-serif); margin: 0 0 6px; }
+  .intro { color: #b8ad9d; font-size: 13px; line-height: 1.55; max-width: 900px; margin: 0 0 22px; }
+  .intro b { color: #e8dfcf; font-weight: 600; }
+  .row { display: flex; gap: 26px; flex-wrap: wrap; align-items: flex-start; }
+  .case { display: flex; flex-direction: column; gap: 10px; }
+  .case-title { color: #e8dfcf; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
+  .case-sub { color: #9a8f80; font-size: 12px; margin-top: -6px; }
+
+  /* —— el teléfono —— */
+  .phone { width: 375px; height: 812px; background: var(--warm-cream); border-radius: 44px; border: 8px solid #141210; box-shadow: 0 20px 50px rgba(0,0,0,.45); overflow: hidden; position: relative; }
+  .notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 118px; height: 30px; background: #141210; border-radius: 20px; }
+  .screen { position: absolute; inset: 0; padding: 54px 20px 22px; display: flex; flex-direction: column; }
+  .home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 120px; height: 5px; border-radius: 3px; background: rgba(47,41,35,.35); }
+
+  /* —— cabecera —— */
+  .top { display: flex; align-items: center; justify-content: space-between; height: 30px; }
+  .back { font-size: 15px; color: var(--warm-taupe); }
+  .meta { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--warm-taupe); }
+  .stars { color: var(--sage); font-size: 13px; letter-spacing: 1px; }
+  .stars .off { color: var(--sand-line); }
+
+  /* —— héroe: carta mini + fotos —— */
+  .hero { display: grid; grid-template-columns: 118px 1fr; gap: 12px; height: 168px; margin-top: 12px; }
+  .mini { background: var(--card-body); border-radius: 18px; box-shadow: 0 8px 18px var(--warm-shadow-soft); overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 10px 10px; position: relative; }
+  .mini .band { width: 100%; height: 10px; border-radius: 18px 18px 0 0; margin-bottom: 14px; }
+  .mini .frase { font: italic 500 12.5px/1.3 var(--font-serif); color: var(--deep-umber); }
+  .mini .glyph { margin-top: auto; font-size: 16px; color: var(--warm-taupe); opacity: .8; }
+  .mini .accion { font-size: 9px; letter-spacing: .2em; color: var(--dust-taupe); margin-top: 2px; }
+  .mini .ver { position: absolute; bottom: 6px; right: 8px; font-size: 9.5px; color: var(--dust-taupe); }
+  .fotos { display: grid; gap: 8px; height: 100%; }
+  .fotos.n1 { grid-template-columns: 1fr; }
+  .fotos.n2 { grid-template-rows: 1fr 1fr; }
+  .fotos.n3 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .fotos.n3 .f:first-child { grid-row: 1 / span 2; }
+  .f { border-radius: 16px; overflow: hidden; box-shadow: 0 6px 14px var(--warm-shadow-soft); background-size: cover; background-position: center; }
+  .f1 { background-image: linear-gradient(160deg, #c9a27a, #8d6f4e 60%, #5a4a3a); }
+  .f2 { background-image: linear-gradient(200deg, #b9c7a8, #7f9877 55%, #4e6650); }
+  .f3 { background-image: linear-gradient(140deg, #e7cfa4, #c9a86f 50%, #9c7c4c); }
+  .f4 { background-image: linear-gradient(170deg, #d9c9b4, #a9927a 55%, #6b5a4a); }
+  .f.sky { background-image: linear-gradient(180deg, #d8d2c3 0%, #b9b3a4 45%, #7d8f7a 46%, #4f6650 100%); }
+  /* sin fotos: la Pausa (prompt) al lado de la carta */
+  .pausa { background: var(--soft-ivory); border: 1px solid var(--sand-line); border-radius: 18px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .pausa .lbl { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--dust-taupe); font-weight: 600; }
+  .pausa p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--warm-taupe); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; }
+
+  /* —— reflexión: caja fija y deslizable —— */
+  .refl { margin-top: 14px; height: 196px; background: var(--oat-milk); border-radius: 20px; padding: 14px 16px 0; position: relative; overflow: hidden; }
+  .refl .lbl { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--warm-taupe); font-weight: 600; margin-bottom: 8px; }
+  .refl .txt { font: 400 15px/1.5 var(--font-serif); color: var(--deep-umber); height: calc(100% - 26px); overflow-y: auto; padding-bottom: 20px; }
+  .refl .txt::-webkit-scrollbar { width: 0; }
+  .refl .fade { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; background: linear-gradient(180deg, rgba(239,227,208,0), var(--oat-milk) 75%); pointer-events: none; }
+  .refl .more { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 11px; color: var(--dust-taupe); }
+  .refl.empty .txt { color: var(--dust-taupe); font-style: italic; font-size: 14px; }
+
+  /* —— visibilidad —— */
+  .vis { margin-top: 14px; background: var(--soft-ivory); border: 1px solid var(--sand-line); border-radius: 16px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .vis .l { font-size: 13.5px; }
+  .vis .n { font-size: 11px; color: var(--dust-taupe); margin-top: 2px; }
+  .sw { width: 44px; height: 26px; border-radius: 13px; background: var(--sand-line); position: relative; flex-shrink: 0; }
+  .sw.on { background: var(--sage); }
+  .sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+  .sw.on::after { left: 21px; }
+
+  /* —— acciones —— */
+  .actions { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .btn { width: 100%; height: 46px; border-radius: 999px; background: var(--sage); color: #fff; font-weight: 600; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+  .del { font-size: 12.5px; color: var(--warm-taupe); text-decoration: underline; text-underline-offset: 3px; }
+  .chev { font-size: 14px; color: var(--dust-taupe); line-height: 1; }
+
+  .note { color: #b8ad9d; font-size: 12.5px; line-height: 1.55; max-width: 900px; margin: 26px 0 0; }
+  .note b { color: #e8dfcf; }
+</style>
+</head>
+<body>
+  <h1>La ficha del Baúl, entera en una pantalla</h1>
+  <p class="intro">Propuesta: <b>la carta se achica a una miniatura</b> (tocarla la abre en grande, como hoy), <b>las fotos suben al héroe</b> junto a la carta, <b>la reflexión va en una caja fija y estándar</b> que se desliza por dentro, y visibilidad + Enviar + Eliminar quedan siempre a la vista. Tres casos reales, en un iPhone de 375 × 812.</p>
+
+  <div class="row">
+    <!-- CASO 1: reflexión larga + 3 fotos -->
+    <div class="case">
+      <div class="case-title">1 · Premium: 500 caracteres y 3 fotos</div>
+      <div class="case-sub">El caso más cargado. Todo entra, la reflexión se desliza.</div>
+      <div class="phone"><div class="notch"></div>
+        <div class="screen">
+          <div class="top"><span class="back">← Baúl</span><span class="meta">Vie 4 sep <span class="stars">★★★★★</span></span></div>
+          <div class="hero">
+            <div class="mini"><div class="band" style="background:#c8564b"></div><div class="frase">El cariño crece cuando se dice.</div><div class="glyph">✧</div><div class="accion">HACER</div><div class="ver">ver carta ↗</div></div>
+            <div class="fotos n3"><div class="f f1"></div><div class="f f2"></div><div class="f f3"></div></div>
+          </div>
+          <div class="refl">
+            <div class="lbl">Tu reflexión</div>
+            <div class="txt">Salí a caminar sin rumbo y volví con la cabeza en calma. Al principio me incomodó el silencio, pero a las tres cuadras dejé de buscar algo que hacer con las manos. Le escribí a mi hermana lo que nunca le digo: que la admiro. Me contestó con un audio de dos minutos que guardé. Hoy entendí que el cariño no se supone, se dice. Y que decirlo me cuesta menos de lo que creía, sobre todo cuando lo hago antes de pensarlo demasiado.</div>
+            <div class="fade"></div><div class="more">⌄</div>
+          </div>
+          <div class="vis"><div><div class="l">Compartida con tu comunidad</div><div class="n">Solo tu comunidad la ve. Las estrellas siempre son tuyas.</div></div><div class="sw on"></div></div>
+          <div class="actions"><div class="btn">Enviar</div><div class="del">Eliminar esta Pausa</div><div class="chev">⌄</div></div>
+        </div>
+        <div class="home-bar"></div>
+      </div>
+    </div>
+
+    <!-- CASO 2: reflexión corta + 1 foto -->
+    <div class="case">
+      <div class="case-title">2 · Free: reflexión corta y 1 foto</div>
+      <div class="case-sub">La foto ocupa todo el héroe. La caja de reflexión mantiene su altura.</div>
+      <div class="phone"><div class="notch"></div>
+        <div class="screen">
+          <div class="top"><span class="back">← Baúl</span><span class="meta">Mié 2 sep <span class="stars">★★★★<span class="off">★</span></span></span></div>
+          <div class="hero">
+            <div class="mini"><div class="band" style="background:#d98a8a"></div><div class="frase">Reconocerse es una forma de cariño.</div><div class="glyph">❍</div><div class="accion">CONTEMPLAR</div><div class="ver">ver carta ↗</div></div>
+            <div class="fotos n1"><div class="f sky"></div></div>
+          </div>
+          <div class="refl">
+            <div class="lbl">Tu reflexión</div>
+            <div class="txt">Frené dos minutos antes de contestar el mensaje. Contesté mejor.</div>
+          </div>
+          <div class="vis"><div><div class="l">Compartida con tu comunidad</div><div class="n">Solo tu comunidad la ve. Las estrellas siempre son tuyas.</div></div><div class="sw"></div></div>
+          <div class="actions"><div class="btn">Enviar</div><div class="del">Eliminar esta Pausa</div><div class="chev">⌄</div></div>
+        </div>
+        <div class="home-bar"></div>
+      </div>
+    </div>
+
+    <!-- CASO 3: sin reflexión ni foto -->
+    <div class="case">
+      <div class="case-title">3 · Guardada sin reflexión ni foto</div>
+      <div class="case-sub">Sin fotos, la Pausa (el texto de la carta) ocupa el lugar del héroe.</div>
+      <div class="phone"><div class="notch"></div>
+        <div class="screen">
+          <div class="top"><span class="back">← Baúl</span><span class="meta">Lun 31 ago</span></div>
+          <div class="hero">
+            <div class="mini"><div class="band" style="background:#d9a94a"></div><div class="frase">El cuerpo anda sin esperar las gracias.</div><div class="glyph">⌇</div><div class="accion">CAMINAR</div><div class="ver">ver carta ↗</div></div>
+            <div class="pausa"><div class="lbl">La Pausa</div><p>Sal a caminar quince minutos sin auriculares y presta atención a cómo te sostienen las piernas, sin que se lo pidas. Luego escribe en tu diario qué le agradecerías a tu cuerpo hoy.</p></div>
+          </div>
+          <div class="refl empty">
+            <div class="lbl">Tu reflexión</div>
+            <div class="txt">Esta Pausa la guardaste sin reflexión.</div>
+          </div>
+          <div class="vis"><div><div class="l">Compartida con tu comunidad</div><div class="n">Solo tu comunidad la ve. Las estrellas siempre son tuyas.</div></div><div class="sw"></div></div>
+          <div class="actions"><div class="btn">Enviar</div><div class="del">Eliminar esta Pausa</div><div class="chev">⌄</div></div>
+        </div>
+        <div class="home-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><b>Cómo funciona.</b> Un toque en la carta miniatura la abre en grande (frente y dorso, como hoy) sobre la ficha; un toque en una foto la abre en grande. La caja de reflexión mide siempre lo mismo: si el texto es corto queda aire, si es largo se desliza con un degradado que avisa que hay más. La misma ficha, tal cual, es la que ve tu comunidad (sin las estrellas, sin Eliminar, y con "Reenviar" en lugar de "Enviar").</p>
+</body>
+</html>
