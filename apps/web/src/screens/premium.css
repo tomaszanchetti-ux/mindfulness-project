@@ -54,7 +54,8 @@
   margin-top: 10px;
 }
 
-/* Lo que incluye: una lista tranquila, sin ✓ verdes gritando. */
+/* Lo que incluye: una lista tranquila, sin ✓ verdes gritando.
+   WS25 · R4: se fue el estado "pronto"; todo lo que está en la lista ya es tuyo. */
 .premium-lista {
   list-style: none;
   margin: 6px 0 0;
@@ -77,10 +78,6 @@
   border-radius: 50%;
   background: var(--sage);
 }
-.premium-item.es-pronto .premium-item-glifo {
-  background: transparent;
-  border: 1px solid var(--dust-taupe);
-}
 .premium-item-nombre {
   font-size: 15px;
   color: var(--deep-umber);
@@ -91,17 +88,6 @@
   line-height: 1.5;
   color: var(--warm-taupe);
   margin: 3px 0 0;
-}
-.premium-pronto {
-  display: inline-block;
-  margin-left: 8px;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  background: var(--oat-milk);
-  color: var(--warm-taupe);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  vertical-align: 1px;
 }
 
 /* Zona del botón. */

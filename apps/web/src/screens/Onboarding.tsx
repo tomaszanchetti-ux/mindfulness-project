@@ -84,9 +84,10 @@ const SLIDES: {
     cuerpo: "Regala tu experiencia a tus seres queridos.",
   },
   {
+    // WS25 · R2: el último paso queda solo con la pregunta y su ilustración.
     escena: "brote",
     titulo: "¿Comenzamos?",
-    cuerpo: "Sin feed ni likes. Solo una Pausa al día.",
+    cuerpo: "",
   },
 ];
 
@@ -223,7 +224,7 @@ export function Onboarding() {
                 )}
                 {s.kicker && <p className="ob-slide-kicker">{s.kicker}</p>}
                 <h2 className="ob-slide-title">{s.titulo}</h2>
-                <p className="ob-slide-body">{s.cuerpo}</p>
+                {s.cuerpo && <p className="ob-slide-body">{s.cuerpo}</p>}
                 {s.tip && <p className="ob-slide-tip">{s.tip}</p>}
               </section>
             ))}
@@ -309,7 +310,7 @@ export function Onboarding() {
       {step === 3 && (
         <>
           <div className="ob-body">
-            <h2 className="ob-q">¿Cuándo quieres recibir tu pausa?</h2>
+            <h2 className="ob-q">¿Cuándo quieres recibir tu Pausa?</h2>
             <p className="ob-hint">Es el horario en que te llegará la carta del día.</p>
             <div className="opt-list">
               {MOMENTOS.map((m) => (

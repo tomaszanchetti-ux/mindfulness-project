@@ -5,11 +5,12 @@
 // de funciones — cuenta que el aporte sostiene un lugar sin anuncios ni feed, y de
 // paso enumera lo que se abre. Cero urgencia, cero contadores, cero "¡mejora ya!".
 //
-// Tres estados, uno solo visible a la vez:
-//   premium            → gracias + "Gestionar suscripción" (portal de Stripe)
-//   free, configurado  → "Apoyar Dwellia · 8,99 €/año" (abre el Checkout)
-//   free, sin Stripe   → botón apagado + "muy pronto" (así es local y cualquier
-//                        entorno sin MINDFUL_STRIPE_SECRET_KEY: la pantalla se ve entera)
+// Tres estados, uno solo visible a la vez (WS25 · R5):
+//   premium            → gracias + "Quiero dejar la comunidad" (portal de Stripe)
+//   free, configurado  → "Quiero ser parte" (abre el Checkout) + la nota de renovación
+//   free, sin Stripe   → el mismo botón, apagado y SIN texto debajo (así es local y
+//                        cualquier entorno sin MINDFUL_STRIPE_SECRET_KEY: la pantalla
+//                        se ve entera, sin prometer nada)
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,35 +19,31 @@ import { api } from "../lib/api";
 import { useStore } from "../store";
 import "./premium.css";
 
-// Lo que abre el aporte. `pronto` = ya está decidido y llega en los próximos
-// bloques (cartas de la comunidad = Bloque B; recomendaciones = Bloque C).
-const INCLUYE: { nombre: string; texto: string; pronto?: boolean }[] = [
+// WS25 · R4 · lo que abre el aporte. Cinco cosas, sin píldoras de "pronto":
+// lo que está en esta lista es lo que se recibe al ser parte.
+const INCLUYE: { nombre: string; texto: string }[] = [
   {
     nombre: "Cambiar la carta del día",
     texto:
-      "Hasta tres veces. Si la de hoy no es la tuya, pides otra y sigues con tu pausa.",
+      "Hasta tres veces. Si la de hoy no es la tuya, pides otra y sigues con tu Pausa.",
   },
   {
     nombre: "Reflexiones más largas",
-    texto: "Hasta 500 caracteres, cuando lo que sentiste no entra en dos líneas.",
+    texto:
+      "Hasta 500 caracteres, para esos momentos donde sientes que quieres compartir más.",
   },
   {
     nombre: "Tres fotos por Pausa",
     texto: "El lugar, la luz, lo que estaba pasando: hasta tres imágenes tuyas.",
   },
   {
-    nombre: "Compartir el ejercicio completo",
-    texto: "No solo la carta: también lo que escribiste y tus fotos, con quien elijas.",
+    nombre: "Compartir más contenido",
+    texto:
+      "Recomendaciones en tu perfil de libros, videos y podcasts que te hicieron bien, para aportar a la comunidad.",
   },
   {
     nombre: "Escribir cartas para la comunidad",
-    texto: "Tus palabras pueden ser la pausa de alguien más, con tu apodo o en anónimo.",
-    pronto: true,
-  },
-  {
-    nombre: "Recomendaciones en tu perfil",
-    texto: "Los libros, videos y podcasts que a ti te hicieron bien.",
-    pronto: true,
+    texto: "Tus palabras pueden ser la Pausa de alguien más, con tu apodo o en anónimo.",
   },
 ];
 
@@ -119,13 +116,13 @@ export function Premium() {
 
       <div className="premium-porque">
         <p>
-          Dwellia no tiene anuncios, ni feed, ni likes, ni nada que hacer con tus
-          datos. Una carta al día y el silencio alrededor: eso es todo, y es a
-          propósito.
+          Dwellia no tiene anuncios y no hace uso económico de tus datos. Aquí se
+          busca crear una comunidad de personas que aprecian el verdadero valor de
+          una Pausa diaria.
         </p>
         <p>
-          Ese silencio lo sostienen las personas que aportan. Si quieres ser una de
-          ellas, esto es lo que se abre para ti.
+          Esta comunidad la sostienen personas como tú, que quieren lograr una mayor
+          conexión consigo mismas. Gracias.
         </p>
       </div>
 
@@ -133,13 +130,10 @@ export function Premium() {
         <h3>Lo que incluye</h3>
         <ul className="premium-lista">
           {INCLUYE.map((f) => (
-            <li key={f.nombre} className={`premium-item ${f.pronto ? "es-pronto" : ""}`}>
+            <li key={f.nombre} className="premium-item">
               <span className="premium-item-glifo" aria-hidden="true" />
               <div>
-                <p className="premium-item-nombre">
-                  {f.nombre}
-                  {f.pronto && <span className="premium-pronto">pronto</span>}
-                </p>
+                <p className="premium-item-nombre">{f.nombre}</p>
                 <p className="premium-item-texto">{f.texto}</p>
               </div>
             </li>
@@ -172,7 +166,7 @@ export function Premium() {
                   )
                 }
               >
-                {abriendo ? "Abriendo…" : "Gestionar suscripción"}
+                {abriendo ? "Abriendo…" : "Quiero dejar la comunidad"}
               </Button>
             </div>
           </div>
@@ -188,14 +182,13 @@ export function Premium() {
                 irA(api.pagosCheckout, "No pudimos abrir el pago. Inténtalo en un rato.")
               }
             >
-              {abriendo ? "Abriendo…" : "Apoyar Dwellia · 8,99 €/año"}
+              {/* el precio ya se lee arriba: el botón solo invita */}
+              {abriendo ? "Abriendo…" : "Quiero ser parte"}
             </Button>
           </div>
-          {configurado === false ? (
-            <p className="premium-cta-nota">
-              Muy pronto podrás apoyar Dwellia desde aquí.
-            </p>
-          ) : (
+          {/* Sin Stripe (o mientras se pregunta) el botón queda apagado y no se
+              promete nada debajo: nada de "muy pronto". */}
+          {configurado === true && (
             <p className="premium-cta-nota">
               Se renueva una vez al año y puedes cancelarlo cuando quieras, sin dar
               explicaciones. Mientras tanto, el método Dwellia sigue completo y

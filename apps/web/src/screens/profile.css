@@ -1,0 +1,94 @@
+/* WS25 · R6 · la cabecera del Perfil (apodo + "Editar") y el panel donde se
+   edita la identidad. Vive aparte de app.css a propósito (territorio de la
+   card). Solo tokens de theme.css: papel, sage y taupe. */
+
+/* ——————————————————————————————— Cabecera: quién eres aquí */
+.perfil-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 2px 0 20px;
+}
+.perfil-identidad {
+  min-width: 0; /* que el apodo largo corte, no que empuje al botón */
+}
+.perfil-apodo {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--deep-umber);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.perfil-email {
+  font-size: 13px;
+  color: var(--dust-taupe);
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* "Editar": una píldora discreta, del mismo papel que las cards. */
+.perfil-editar {
+  flex: none;
+  margin-top: 5px;
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-pill);
+  background: var(--soft-ivory);
+  color: var(--warm-taupe);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  padding: 7px 16px;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.perfil-editar:hover {
+  color: var(--deep-umber);
+  border-color: var(--dust-taupe);
+}
+
+/* ——————————————————————————————— Panel de edición (inline, no modal) */
+.perfil-editor {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 18px 18px 20px;
+  margin: 0 0 22px;
+}
+.perfil-campo + .perfil-campo {
+  margin-top: 14px;
+}
+.perfil-campo-label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--warm-taupe);
+  margin: 0 0 6px;
+}
+/* El campo que no se edita (email): se lee como dato, no como input apagado. */
+.perfil-campo-fijo {
+  font-size: 15px;
+  color: var(--warm-taupe);
+  margin: 0;
+  padding: 4px 0 2px;
+  overflow-wrap: anywhere;
+}
+.perfil-editor-nota {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--dust-taupe);
+  margin: 14px 0 0;
+}
+.perfil-editor-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* Dentro del panel, los inputs respiran un poco más que en una fila del perfil. */
+.perfil-editor .time-input {
+  background: #fff;
+}
