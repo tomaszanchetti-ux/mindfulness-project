@@ -53,9 +53,11 @@ paralelo; cada ola arranca cuando la anterior está commiteada.
 - Bitácora por sesión en `WS/`. Este roadmap se actualiza al cierre de cada bloque.
 - Antes de desplegar: `gcloud auth login` (la sesión está vencida desde junio).
 
-## 3. Bloque A — Base freemium (≈2 sesiones)
+## 3. Bloque A — Base freemium (≈2 sesiones) · 🟢 CONSTRUIDO WS24 (branch, sin deploy)
 
 Objetivo: cobrar y aplicar las compuertas. Al cerrar A, Dwellia ya se puede vender.
+**Estado (WS24):** A0-A2 construidas y con Q/A adversarial del backend (209 tests ✓).
+Falta: Q/A visual de Tomás · cuenta Stripe + 3 env · deploy (ver `WS/WS24_04-09-2026.md` §4).
 
 ### Ola A0 (orquestador, sin agente) — el contrato
 - Migración única con TODAS las columnas del bloque: `usuarios.plan` (`free|premium`,
