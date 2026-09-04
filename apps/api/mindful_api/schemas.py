@@ -9,6 +9,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, field_validator
 
+from .services.plan import COMENTARIO_CARTA_MAX
+
 _HORA = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")  # HH:MM 24h
 
 
@@ -64,29 +66,56 @@ class PerfilUpdate(BaseModel):
         return v
 
 
+def _texto_limpio(v):
+    """strip() y blanco puro → None. Se usa en validadores `mode="before"`, o sea
+    ANTES de medir el largo.
+
+    Así el borde y el servicio miden lo MISMO (los caracteres útiles): 145 letras
+    con 10 espacios delante entran, y "   " se guarda como None, no como texto.
+    """
+    if isinstance(v, str):
+        v = v.strip()
+        return v or None
+    return v
+
+
 class CierreRitual(BaseModel):
     """M3 · cierre del ritual. Todo opcional (no bloquea Guardar).
 
-    WS24 · el `max_length` de la reflexión es el TOPE DURO del borde (500 = premium);
-    el tope real por plan lo aplica el servicio con `limites(usuario).reflexion_max`.
+    WS24 · el tope real de la reflexión lo aplica el servicio por plan
+    (`limites(usuario).reflexion_max`, con un mensaje que nombra el plan). Acá sólo
+    queda un tope duro anti-abuso (5000) para no leer megabytes de JSON: si el borde
+    cortara en 500, un free vería un 422 hablando del número de OTRO plan.
     """
 
     estrellas: Optional[int] = Field(default=None, ge=1, le=5)
-    reflexion: Optional[str] = Field(default=None, max_length=500)
+    reflexion: Optional[str] = Field(default=None, max_length=5000)
     # Feedback privado que va debajo de las estrellas ("¿qué te hubiese gustado
-    # recibir?"). Nunca se publica ni viaja en un link compartido.
-    comentario_carta: Optional[str] = Field(default=None, max_length=150)
+    # recibir?"). Nunca se publica ni viaja en un link compartido. 150 para todos
+    # los planes → sí se aplica en el borde (después del strip, por `mode="before"`).
+    comentario_carta: Optional[str] = Field(default=None, max_length=COMENTARIO_CARTA_MAX)
     completada: bool = True
+
+    @field_validator("reflexion", "comentario_carta", mode="before")
+    @classmethod
+    def _limpia(cls, v):
+        return _texto_limpio(v)
 
 
 class CompartirCreate(BaseModel):
     """M5 · crear un link. carta_sola (sin datos tuyos) o ejercicio (reflexión + fotos).
 
     `ejercicio` es premium (lo aplica el servicio, no el front). La nota personal va
-    junto a la carta; su `max_length` acá es el tope duro del borde (500 = premium) y
-    el tope real por plan sale de `limites(usuario).reflexion_max`.
+    junto a la carta; el tope real por plan sale de `limites(usuario).reflexion_max`
+    y lo aplica el servicio (mensaje que nombra el plan). Acá, sólo el tope duro
+    anti-abuso (5000).
     """
 
     entrega_id: str
     modo: str = Field(pattern="^(carta_sola|ejercicio)$")
-    nota: Optional[str] = Field(default=None, max_length=500)
+    nota: Optional[str] = Field(default=None, max_length=5000)
+
+    @field_validator("nota", mode="before")
+    @classmethod
+    def _limpia(cls, v):
+        return _texto_limpio(v)

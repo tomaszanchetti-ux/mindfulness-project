@@ -24,7 +24,7 @@ from ..db.models import (
     Entrega,
     Usuario,
 )
-from .plan import limites
+from .plan import COMENTARIO_CARTA_MAX, limites
 from .seleccion import Entrega as EntregaMotor
 from .seleccion import Perfil, elegir_carta
 
@@ -134,9 +134,6 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
     return _salida(s, nueva, ya_existia=False)
 
 
-MAX_COMENTARIO_CARTA = 150  # feedback privado: igual para free y premium
-
-
 def cerrar_ritual(
     s: Session, usuario: Usuario, entrega_id: str,
     estrellas=None, reflexion=None, completada=True, comentario_carta=None,
@@ -156,20 +153,24 @@ def cerrar_ritual(
     if estrellas is not None:
         entrega.estrellas = estrellas
     if reflexion is not None:
+        # El schema ya la entrega strippeada (y el blanco puro llega como None):
+        # medimos los caracteres ÚTILES, nunca el padding.
+        reflexion = reflexion.strip()
         if len(reflexion) > lim.reflexion_max:
             raise HTTPException(
                 status.HTTP_422_UNPROCESSABLE_ENTITY,
                 f"Tu reflexión puede tener hasta {lim.reflexion_max} caracteres "
                 f"en el plan {lim.plan} (mandaste {len(reflexion)})",
             )
-        entrega.reflexion = reflexion
+        # Vacío → None: una reflexión en blanco no es una pausa "escrita".
+        entrega.reflexion = reflexion or None
     if comentario_carta is not None:
         comentario = comentario_carta.strip()
-        if len(comentario) > MAX_COMENTARIO_CARTA:
+        if len(comentario) > COMENTARIO_CARTA_MAX:
             raise HTTPException(
                 status.HTTP_422_UNPROCESSABLE_ENTITY,
                 f"El comentario sobre la carta puede tener hasta "
-                f"{MAX_COMENTARIO_CARTA} caracteres",
+                f"{COMENTARIO_CARTA_MAX} caracteres",
             )
         # Vacío → None: no guardamos cadenas en blanco.
         entrega.comentario_carta = comentario or None

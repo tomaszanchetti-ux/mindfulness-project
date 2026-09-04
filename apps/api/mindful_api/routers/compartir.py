@@ -9,7 +9,12 @@ from ..auth import get_current_user
 from ..db.base import get_session
 from ..db.models import Usuario
 from ..schemas import CompartirCreate
-from ..services.compartir import crear_compartido, leer_publico, revocar
+from ..services.compartir import (
+    crear_compartido,
+    leer_foto_publica,
+    leer_publico,
+    revocar,
+)
 
 # Con login: crear / revocar.
 router = APIRouter(prefix="/api/compartir", tags=["compartir"])
@@ -41,3 +46,22 @@ public_router = APIRouter(prefix="/api/c", tags=["compartir-publico"])
 @public_router.get("/{token}")
 def ver_regalo(token: str, s: Session = Depends(get_session)) -> dict:
     return leer_publico(s, token)
+
+
+@public_router.get("/{token}/fotos/{foto_id}")
+def ver_foto_del_regalo(
+    token: str, foto_id: str, s: Session = Depends(get_session)
+) -> Response:
+    """La imagen de un regalo `ejercicio`, SIN login: el permiso es el token.
+
+    El regalo se abre sin instalar ni loguearse, así que sus fotos también — pero
+    sólo por esta puerta: el token manda, y si se revoca o se borra la entrada,
+    la foto deja de servirse (404). Nunca sale un `storage_path`.
+    """
+    contenido, mime = leer_foto_publica(s, token, foto_id)
+    return Response(
+        content=contenido,
+        media_type=mime,
+        # Pública pero efímera en caché: si se revoca el link, que no quede pegada.
+        headers={"Cache-Control": "public, max-age=300"},
+    )

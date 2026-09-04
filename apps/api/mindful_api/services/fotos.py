@@ -2,7 +2,8 @@
 
 Reglas: el cupo por pausa sale del plan (`limites(usuario).fotos_max`: 1 free, 3
 premium) — acá no se hardcodea ningún número. Solo imágenes, ≤8 MB. Siempre del
-usuario logueado — las fotos jamás se sirven sin login.
+usuario logueado: acá las fotos jamás se sirven sin login (la única otra puerta
+es el regalo `ejercicio`, donde el permiso es el token — ver services/compartir).
 """
 
 from __future__ import annotations
@@ -69,6 +70,11 @@ def subir_foto(
         )
 
     max_fotos = limites(usuario).fotos_max
+    # TOCTOU: contar-y-después-insertar deja pasar dos subidas simultáneas (las dos
+    # cuentan 0 antes de que la otra commitee). Bloqueamos la fila de la entrega
+    # (SELECT ... FOR UPDATE) ANTES de contar: la segunda espera al commit de la
+    # primera, cuenta 1 y se lleva su 409. El lock se suelta al commit/close.
+    s.get(Entrega, entrega_id, with_for_update=True)
     cuantas = s.scalar(
         select(func.count()).select_from(Foto).where(Foto.entrega_id == entrega_id)
     )

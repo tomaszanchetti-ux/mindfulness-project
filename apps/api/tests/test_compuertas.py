@@ -85,8 +85,59 @@ def test_reflexion_premium_llega_a_500():
     assert r.json()["entrega"]["reflexion"] == "a" * 151
 
     assert _cerrar(h, eid, reflexion="a" * 500).status_code == 200
-    # 501 ya no entra ni siendo premium (tope duro del borde).
-    assert _cerrar(h, eid, reflexion="a" * 501).status_code == 422
+    # 501 ya no entra ni siendo premium: contesta la compuerta del plan (el borde
+    # sólo tiene el tope duro anti-abuso de 5000), y el mensaje nombra SU plan.
+    r = _cerrar(h, eid, reflexion="a" * 501)
+    assert r.status_code == 422
+    assert "500" in _detalle(r) and "premium" in _detalle(r)
+
+
+def test_los_textos_se_miden_strippeados_y_el_blanco_se_guarda_como_None():
+    """El tope por plan cuenta caracteres ÚTILES: el padding no gasta cupo, y una
+    reflexión/nota/comentario en blanco se guarda como None (no como texto)."""
+    h = _onboard("gate|strip")
+    eid = _entrega_de_hoy(h)
+
+    # Blanco puro → None: no queda guardado como si fuese una pausa escrita.
+    r = _cerrar(h, eid, reflexion="   ", comentario_carta="  ")
+    assert r.status_code == 200
+    assert r.json()["entrega"]["reflexion"] is None
+    assert r.json()["entrega"]["comentario_carta"] is None
+
+    # 145 útiles + 10 espacios entran en free (antes rebotaban con 422).
+    r = _cerrar(h, eid, reflexion=" " * 10 + "a" * 145)
+    assert r.status_code == 200
+    assert r.json()["entrega"]["reflexion"] == "a" * 145
+
+    # Y el blanco no PISA lo ya escrito (blanco ⇒ None ⇒ "no toques este campo",
+    # el mismo contrato que usa el front al omitir un comentario vacío).
+    assert _cerrar(h, eid, reflexion="   ").json()["entrega"]["reflexion"] == "a" * 145
+
+    # La nota de compartir, igual: strippeada para medir y para publicar.
+    ok = client.post("/api/compartir", headers=h,
+                     json={"entrega_id": eid, "modo": "carta_sola",
+                           "nota": " " * 10 + "n" * 150})
+    assert ok.status_code == 201
+    assert client.get(f"/api/c/{ok.json()['token']}").json()["nota"] == "n" * 150
+
+
+def test_el_regalo_ejercicio_sirve_sus_fotos_por_el_token_sin_login():
+    """A1.1 · la función premium completa: el receptor VE las fotos (URLs públicas
+    atadas al token), y nunca un `storage_path` con el id interno del remitente."""
+    h = _onboard_premium("gate|regalo-fotos")
+    eid = _entrega_de_hoy(h)
+    _subir(h, eid)
+    tok = client.post("/api/compartir", headers=h,
+                      json={"entrega_id": eid, "modo": "ejercicio"}).json()["token"]
+
+    pub = client.get(f"/api/c/{tok}")
+    assert "storage_path" not in pub.text
+    fotos = pub.json()["fotos"]
+    assert len(fotos) == 1 and fotos[0].startswith(f"/api/c/{tok}/fotos/")
+
+    sin_login = TestClient(app)
+    r = sin_login.get(fotos[0])
+    assert r.status_code == 200 and r.headers["content-type"].startswith("image/")
 
 
 # ── Comentario sobre la carta (feedback privado, ≤150 para todos) ─────────────
@@ -104,8 +155,14 @@ def test_comentario_carta_se_guarda_y_vuelve_en_la_salida():
     hoy = client.get("/api/carta-del-dia", headers=h).json()
     assert hoy["entrega"]["comentario_carta"] == "Me hubiese gustado algo más corto."
 
-    # Vacío / espacios → None (no guardamos cadenas en blanco).
-    assert _cerrar(h, eid, comentario_carta="   ").json()["entrega"]["comentario_carta"] is None
+    # Vacío / espacios → None en el borde, y None significa "no toques este campo":
+    # un comentario en blanco NO pisa el anterior (mismo contrato que el front, que
+    # ni lo manda). Sobre una entrega sin comentario, queda en None.
+    assert _cerrar(h, eid, comentario_carta="   ").json()["entrega"]["comentario_carta"] \
+        == "Me hubiese gustado algo más corto."
+    h2 = _onboard("gate|comentario-blanco")
+    eid2 = _entrega_de_hoy(h2)
+    assert _cerrar(h2, eid2, comentario_carta="   ").json()["entrega"]["comentario_carta"] is None
 
     assert _cerrar(h, eid, comentario_carta="c" * 150).status_code == 200
     assert _cerrar(h, eid, comentario_carta="c" * 151).status_code == 422

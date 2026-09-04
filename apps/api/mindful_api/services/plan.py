@@ -19,6 +19,10 @@ PLAN_FREE = "free"
 PLAN_PREMIUM = "premium"
 PRECIO_PREMIUM_EUR_ANUAL = 8.99
 
+# Feedback privado sobre la carta: igual para free y premium, por eso no vive en
+# `Limites` — pero sí acá, con el resto de los límites (un solo lugar).
+COMENTARIO_CARTA_MAX = 150
+
 
 @dataclass(frozen=True)
 class Limites:

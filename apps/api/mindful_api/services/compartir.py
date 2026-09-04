@@ -16,6 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db.models import Carta, Compartido, Entrega, Foto, Usuario
+from . import storage
 from .entrega import _carta_enriquecida
 from .plan import limites
 
@@ -82,10 +83,46 @@ def leer_publico(s: Session, token: str) -> dict:
         entrega = s.get(Entrega, comp.entrega_id)
         if entrega is not None:
             regalo["reflexion"] = entrega.reflexion
-            regalo["fotos"] = list(s.scalars(
-                select(Foto.storage_path).where(Foto.entrega_id == entrega.id)
-            ).all())
+            # NUNCA el `storage_path` (lleva el usuario_id adentro y no se puede
+            # renderizar): URLs públicas atadas a ESTE token, que mueren con él.
+            ids = s.scalars(
+                select(Foto.id)
+                .where(Foto.entrega_id == entrega.id)
+                .order_by(Foto.created_at)
+            ).all()
+            regalo["fotos"] = [url_foto_publica(comp.token, fid) for fid in ids]
     return regalo
+
+
+def url_foto_publica(token: str, foto_id: str) -> str:
+    """La foto del regalo, servida por el token (jamás por el id del usuario)."""
+    return f"/api/c/{token}/fotos/{foto_id}"
+
+
+def leer_foto_publica(s: Session, token: str, foto_id: str) -> tuple:
+    """Sin login: la imagen de un regalo `ejercicio` vivo. Cualquier otro caso, 404.
+
+    Las condiciones son todas: el compartido existe, está activo, es modo
+    `ejercicio`, todavía apunta a una entrega (al borrarla el FK va a NULL) y la
+    foto pertenece a ESA entrega. Revocar el link o borrar la entrada apaga las
+    fotos en el acto.
+    """
+    no_esta = HTTPException(status.HTTP_404_NOT_FOUND, "Este regalo ya no está disponible")
+
+    comp = s.scalar(select(Compartido).where(Compartido.token == token))
+    if comp is None or not comp.activo:
+        raise no_esta
+    if comp.modo != "ejercicio" or not comp.entrega_id:
+        raise no_esta
+
+    foto = s.get(Foto, foto_id)
+    if foto is None or foto.entrega_id != comp.entrega_id:
+        raise no_esta
+
+    contenido = storage.leer(foto.storage_path)
+    if contenido is None:
+        raise no_esta
+    return contenido, storage.mime_de(foto.storage_path)
 
 
 def revocar(s: Session, usuario_id: str, compartido_id: str) -> None:
