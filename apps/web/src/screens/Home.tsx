@@ -8,6 +8,11 @@
 //
 // Primer uso (WS14): dos nudges contextuales sobre la carta REAL — señalan la carta
 // y el botón Guardar. Se ven una sola vez por usuario/dispositivo (lib/nudges).
+//
+// WS24 · A2.2: "Otra carta" — cambiar la carta del día. Cuántas veces se puede lo
+// dice el backend (`perfil.limites.cambios_carta`, 0 en free ⇒ el botón no existe)
+// y cuántas van, la entrega (`entrega.cambios`). Sigue llegando UNA carta por día:
+// el cambio reemplaza la de hoy, y la nueva vuelve al frente para descubrirla.
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +37,8 @@ export function Home() {
   const [ahora, setAhora] = useState(() => new Date());
   const [nudgeCarta, setNudgeCarta] = useState(() => !nudgeVisto(uid, "carta"));
   const [nudgeGuardar, setNudgeGuardar] = useState(() => !nudgeVisto(uid, "guardar"));
+  const [cambiando, setCambiando] = useState(false);
+  const [avisoCambio, setAvisoCambio] = useState<string | null>(null);
 
   useEffect(() => {
     api
@@ -55,6 +62,32 @@ export function Home() {
 
   const { carta, entrega } = data;
   const hecha = entrega.completada;
+
+  // —— Cambiar la carta del día (WS24 · A2.2) ——
+  // La Pausa "cerrada" es la misma que mira el backend: guardada, puntuada o con
+  // reflexión. Una vez vivida, la carta de hoy ya no se toca.
+  const cerrada = hecha || entrega.estrellas != null || !!entrega.reflexion;
+  const cambiosMax = perfil?.limites.cambios_carta ?? 0;
+  const cambiosRestantes = cambiosMax - (entrega.cambios ?? 0);
+  const puedeCambiar = cambiosMax > 0 && !cerrada;
+
+  const otraCarta = async () => {
+    if (cambiando) return;
+    setCambiando(true);
+    setAvisoCambio(null);
+    try {
+      const nueva = await api.cambiarCarta(entrega.id);
+      // La carta vuelve al frente y recién ahí entra la nueva: el relevo se ve
+      // como un descubrir, no como un parpadeo.
+      setFlipped(false);
+      await new Promise((r) => setTimeout(r, 220));
+      setData(nueva);
+    } catch (e) {
+      setAvisoCambio((e as Error).message);
+    } finally {
+      setCambiando(false);
+    }
+  };
 
   // ¿El horario elegido aún no llegó hoy? → la carta todavía "no llegó".
   const horaCarta = horaAvisoDeHoy(perfil?.hora_aviso);
@@ -93,8 +126,14 @@ export function Home() {
         <p className="home-date">{fechaLarga(entrega.fecha)}</p>
       </div>
 
-      <div className="home-card-wrap" data-nudge="home-card">
-        <Card carta={carta} flipped={flipped} onFlip={() => setFlipped((f) => !f)} />
+      <div
+        className={`home-card-wrap ${cambiando ? "is-cambiando" : ""}`}
+        data-nudge="home-card"
+      >
+        {/* key por carta: al cambiarla, la nueva entra con su propia transición. */}
+        <div key={carta.id} className="home-card-relevo">
+          <Card carta={carta} flipped={flipped} onFlip={() => setFlipped((f) => !f)} />
+        </div>
       </div>
 
       {hecha ? (
@@ -139,6 +178,30 @@ export function Home() {
           >
             Compartir
           </Button>
+        </div>
+      )}
+
+      {/* —— Otra carta (premium): discreto, debajo de las acciones de la carta —— */}
+      {puedeCambiar && (
+        <div className="home-otra-carta">
+          {cambiosRestantes > 0 ? (
+            <Button
+              variant="tertiary"
+              disabled={cambiando}
+              onClick={otraCarta}
+            >
+              {cambiando
+                ? "Buscando otra carta…"
+                : `Otra carta · ${
+                    cambiosRestantes === 1 ? "queda 1" : `quedan ${cambiosRestantes}`
+                  }`}
+            </Button>
+          ) : (
+            <p className="home-otra-carta-fin">
+              Hoy ya cambiaste tu carta {cambiosMax} veces. Mañana llega una nueva.
+            </p>
+          )}
+          {avisoCambio && <p className="home-otra-carta-aviso">{avisoCambio}</p>}
         </div>
       )}
 

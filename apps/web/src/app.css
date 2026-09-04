@@ -1831,3 +1831,162 @@
   color: var(--warm-taupe);
   margin: 0;
 }
+
+/* ─────────────────────────────────────────────────────── WS24 · A2.2 ── */
+/* Límites vivos (los dice el backend) + cambiar la carta del día. */
+
+/* —— Comentario de la carta (debajo de las estrellas, en Reflexionar) —— */
+.comentario-carta {
+  margin: 0 0 18px;
+  animation: comentario-aparece 0.28s ease both;
+}
+@keyframes comentario-aparece {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.comentario-pregunta {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: var(--deep-umber);
+  margin: 0 0 8px;
+}
+.comentario-opcional {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--dust-taupe);
+}
+/* Un campo chico: se pide una línea, no una redacción. */
+.textarea-mini {
+  min-height: 78px;
+  font-size: 15.5px;
+  padding: 14px 18px;
+  border-radius: 18px;
+}
+.comentario-privado {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--dust-taupe);
+  margin: 6px 2px 0;
+}
+
+/* —— Otra carta (premium): discreto, nunca compite con el primario —— */
+.home-otra-carta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 12px 0 0;
+}
+.home-otra-carta .btn-tertiary {
+  font-size: 14px;
+}
+.home-otra-carta-fin {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dust-taupe);
+  text-align: center;
+  margin: 4px 8px 0;
+}
+.home-otra-carta-aviso {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  background: var(--oat-milk);
+  border-radius: var(--radius-soft);
+  padding: 10px 14px;
+  text-align: center;
+  margin: 10px 8px 0;
+}
+/* El relevo de la carta: la que se va se apaga, la nueva entra desde abajo. */
+.home-card-wrap.is-cambiando {
+  opacity: 0.35;
+  pointer-events: none;
+}
+.home-card-wrap {
+  transition: opacity 0.22s ease;
+}
+.home-card-relevo {
+  animation: carta-entra 0.42s ease both;
+}
+@keyframes carta-entra {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .comentario-carta,
+  .home-card-relevo {
+    animation: none;
+  }
+}
+
+/* —— Compartir: qué viaja en el enlace —— */
+.share-modos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+.share-modo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  width: 100%;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  font: inherit;
+  color: var(--deep-umber);
+}
+.share-modo:hover {
+  border-color: var(--sage);
+}
+.share-modo.is-on {
+  border-color: var(--sage);
+  background: var(--oat-milk);
+}
+.share-modo-titulo {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.share-modo-detalle {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--warm-taupe);
+}
+.share-modo-preview {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--dust-taupe);
+  text-align: center;
+  margin: 0 4px 10px;
+}
+/* La invitación al premium: una línea, sin insistir. */
+.share-premium-nota {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  text-align: center;
+  margin: 0 8px 10px;
+}
+.share-premium-nota a {
+  color: var(--sage-deep);
+  text-decoration: none;
+  border-bottom: 1px solid var(--sand-line);
+}

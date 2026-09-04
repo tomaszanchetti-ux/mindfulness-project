@@ -1,24 +1,28 @@
 // Compartir (§12.5). El gesto íntimo: "Vi esto y pensé en ti."
-// v1 free: se envía SÓLO la carta + una nota personal (≤150). El modo "ejercicio"
-// (sumar reflexión/fotos) queda para premium — el backend lo sigue soportando.
+// Free: se envía SÓLO la carta + una nota personal. Premium puede elegir el modo
+// "ejercicio" (la carta con su reflexión y sus fotos).
+//
+// WS24 · A2.2: el largo de la nota y si el modo "ejercicio" está disponible los
+// dice el backend en `perfil.limites` — acá no se hardcodea ningún límite.
 //
 // Loop WS14: se puede compartir ANTES de guardar (camino B). En ese caso, tras
 // generar el enlace el CTA principal invita a guardar la pausa.
 
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Card } from "../components/Card";
 import { Button } from "../components/Button";
 import { api } from "../lib/api";
+import { useStore } from "../store";
 import type { Compartido, ItemBaul } from "../lib/types";
-
-const LIMITE = 150; // free (WS19); premium subirá a ~500
 
 export function Share() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const { perfil } = useStore();
   const [item, setItem] = useState<ItemBaul | null | undefined>(undefined);
   const [nota, setNota] = useState("");
+  const [modo, setModo] = useState<"carta_sola" | "ejercicio">("carta_sola");
   const [link, setLink] = useState<Compartido | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [generando, setGenerando] = useState(false);
@@ -54,6 +58,7 @@ export function Share() {
         const c = JSON.parse(saved) as Compartido & { nota?: string };
         setLink(c);
         if (c.nota) setNota(c.nota);
+        if (c.modo) setModo(c.modo);
       } catch {
         /* ignorar */
       }
@@ -63,9 +68,10 @@ export function Share() {
   const generar = async () => {
     setGenerando(true);
     try {
-      // v1 free: siempre "carta sola" (la carta + tu nota, sin tus datos).
+      // Free: siempre "carta sola" (la carta + tu nota, sin tus datos).
+      // Premium: puede elegir "ejercicio" (además, su reflexión y sus fotos).
       const notaLimpia = nota.trim();
-      const c = await api.compartir(id, "carta_sola", notaLimpia || undefined);
+      const c = await api.compartir(id, modo, notaLimpia || undefined);
       setLink(c);
       sessionStorage.setItem(
         `share:${id}`,
@@ -98,9 +104,14 @@ export function Share() {
     }
   };
 
-  const near = nota.length > LIMITE - 30;
+  const limites = perfil?.limites ?? null;
+  const notaMax = limites?.reflexion_max ?? 0;
+  const near = notaMax > 0 && nota.length > notaMax - 30;
   // Loop WS14: si la pausa de hoy aún no se guardó, el siguiente paso es guardarla.
   const pendienteGuardar = item ? !item.completada : false;
+
+  // Sin perfil todavía no sabemos los límites del plan: esperamos.
+  if (!limites) return <div className="center-note">Preparando…</div>;
 
   return (
     <div>
@@ -118,16 +129,55 @@ export function Share() {
 
       {!link ? (
         <>
+          {/* WS24 · A2.2 · Qué viaja en el enlace. Free: solo la carta. */}
+          {limites.compartir_ejercicio ? (
+            <div className="share-modos" role="radiogroup" aria-label="Qué compartes">
+              <button
+                type="button"
+                role="radio"
+                aria-checked={modo === "carta_sola"}
+                className={`share-modo ${modo === "carta_sola" ? "is-on" : ""}`}
+                onClick={() => setModo("carta_sola")}
+              >
+                <span className="share-modo-titulo">Solo la carta</span>
+                <span className="share-modo-detalle">La carta y tu nota.</span>
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={modo === "ejercicio"}
+                className={`share-modo ${modo === "ejercicio" ? "is-on" : ""}`}
+                onClick={() => setModo("ejercicio")}
+              >
+                <span className="share-modo-titulo">La carta con mi reflexión y mis fotos</span>
+                <span className="share-modo-detalle">Tu Pausa completa, tal como la viviste.</span>
+              </button>
+            </div>
+          ) : (
+            <p className="share-premium-nota">
+              Compartir la Pausa completa es parte de{" "}
+              <Link to="/premium">Dwellia premium</Link>.
+            </p>
+          )}
+
+          <p className="share-modo-preview">
+            {modo === "ejercicio"
+              ? pendienteGuardar
+                ? "Quien lo reciba verá esta carta con tu reflexión y tus fotos, en cuanto guardes tu Pausa."
+                : "Quien lo reciba verá esta carta con tu reflexión y tus fotos."
+              : "Quien lo reciba verá solo esta carta, con tu nota."}
+          </p>
+
           <textarea
             className="textarea"
             placeholder="Agrega una nota personal (opcional)…"
-            maxLength={LIMITE}
+            maxLength={notaMax}
             value={nota}
             onChange={(e) => setNota(e.target.value)}
             style={{ minHeight: 92 }}
           />
           <div className={`counter ${near ? "near" : ""}`}>
-            {nota.length} / {LIMITE}
+            {nota.length} / {notaMax}
           </div>
 
           <div className="actions-stack" style={{ marginTop: 10 }}>

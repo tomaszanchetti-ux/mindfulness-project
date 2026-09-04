@@ -7,6 +7,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 8081
+    },
+    {
+      "name": "api",
+      "runtimeExecutable": "make",
+      "runtimeArgs": ["api-dev"],
+      "port": 8000
     }
   ]
 }
