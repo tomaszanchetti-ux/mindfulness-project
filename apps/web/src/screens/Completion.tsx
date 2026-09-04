@@ -1,7 +1,10 @@
 // Cierre del ritual (§12.3). Materializa "la mejor sesión termina".
 // Marca la entrega como completada (idempotente; no pisa la reflexión ya escrita).
-// Acción primaria = Cerrar. Compartir queda bien visible (loop WS14: quien guarda
-// es invitado a compartir).
+// Acción primaria = Cerrar.
+//
+// WS25 · el loop del envío vive acá: quien acaba de guardar es invitado —sin
+// presión— a enviarle la Pausa a alguien. Se puede volver a enviar las veces
+// que quiera desde el Baúl.
 
 import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -25,10 +28,12 @@ export function Completion() {
       <div className="completion-mark">✓</div>
       <h2 className="completion-title">Listo por hoy.</h2>
       <p className="completion-body">
-        Guardamos esta pausa en tu Baúl.
+        Guardamos esta Pausa en tu Baúl.
         <br />
         Puedes volver cuando quieras.
       </p>
+
+      <p className="completion-invite">¿Quieres enviar a alguien la Pausa?</p>
 
       <div className="actions-stack" style={{ width: "100%" }}>
         <Button variant="primary" full onClick={() => navigate("/hoy", { replace: true })}>
@@ -39,7 +44,7 @@ export function Completion() {
           full
           onClick={() => navigate(`/compartir/${id}`)}
         >
-          Compartir
+          Enviar
         </Button>
       </div>
     </div>

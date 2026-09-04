@@ -15,6 +15,7 @@ import type {
   ItemBaul,
   Perfil,
   Regalo,
+  Visibilidad,
 } from "./types";
 
 // —— Identidad efímera por sesión (SOLO dev) ——
@@ -175,12 +176,20 @@ export const api = {
     req<ItemBaul[]>(`/api/baul?orden=${orden}`),
   borrarEntrada: (entregaId: string) =>
     req<void>(`/api/baul/${entregaId}`, { method: "DELETE" }),
+  // WS25 · abrir/cerrar la ficha a la comunidad. Devuelve el ítem ya actualizado.
+  setVisibilidad: (entregaId: string, visibilidad: Visibilidad) =>
+    req<ItemBaul>(`/api/baul/${entregaId}/visibilidad`, {
+      method: "PUT",
+      body: JSON.stringify({ visibilidad }),
+    }),
 
   // —— Compartir (M5) ——
-  compartir: (entregaId: string, modo: "carta_sola" | "ejercicio", nota?: string) =>
+  // WS25 · viaja la ficha entera tal como está: el backend deriva el modo
+  // (`ejercicio` si hay reflexión o fotos, `carta_sola` si no) y ya no mira el plan.
+  compartir: (entregaId: string, nota?: string) =>
     req<Compartido>("/api/compartir", {
       method: "POST",
-      body: JSON.stringify({ entrega_id: entregaId, modo, nota: nota || null }),
+      body: JSON.stringify({ entrega_id: entregaId, nota: nota || null }),
     }),
 
   // —— Push del aviso diario (WS21) ——
@@ -195,7 +204,7 @@ export const api = {
       body: JSON.stringify({ endpoint }),
     }),
 
-  // —— Regalo público (sin login) ——
+  // —— Regalo por enlace (WS25: también exige login) ——
   regalo: (token: string) => req<Regalo>(`/api/c/${token}`),
 };
 

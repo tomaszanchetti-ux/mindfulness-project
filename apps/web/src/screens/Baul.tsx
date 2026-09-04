@@ -1,6 +1,10 @@
 // Baúl (§20). Memoria emocional, no dashboard. Lectura del historial vivido.
-// Orden: Reciente (default) / Más valoradas (toggle real, va a la API).
-// Filtros de contenido (Con reflexión / Con foto) se aplican en cliente.
+// Orden: Reciente (default) / Mejor valoradas — lo resuelve la API.
+// Filtros de contenido y de visibilidad se aplican en cliente.
+//
+// WS25 · la ficha del Baúl es la MISMA que verá la comunidad: por eso lleva la
+// píldora "Pausa" en el verde Dwellia y, cuando corresponde, una marca discreta
+// de que está compartida. Sin likes ni contadores: acá no hay métricas.
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +15,14 @@ import { fechaCorta } from "../lib/format";
 import type { ItemBaul } from "../lib/types";
 
 type Orden = "reciente" | "valoradas";
-type Filtro = "todo" | "reflexion" | "foto";
+type Filtro = "todo" | "reflexion" | "compartidas" | "privadas";
+
+const FILTROS: { id: Filtro; label: string }[] = [
+  { id: "todo", label: "Todas" },
+  { id: "reflexion", label: "Con reflexión" },
+  { id: "compartidas", label: "Compartidas" },
+  { id: "privadas", label: "Privadas" },
+];
 
 export function Baul() {
   const navigate = useNavigate();
@@ -26,18 +37,21 @@ export function Baul() {
 
   const visibles = (items || []).filter((it) => {
     if (filtro === "reflexion") return !!it.reflexion;
-    if (filtro === "foto") return it.fotos.length > 0;
+    if (filtro === "compartidas") return it.visibilidad === "compartida";
+    if (filtro === "privadas") return it.visibilidad !== "compartida";
     return true;
   });
+
+  const vacioPorFiltro = items !== null && items.length > 0 && visibles.length === 0;
 
   return (
     <div>
       <div className="screen-head">
         <h1 className="screen-title">Baúl</h1>
-        <p className="screen-sub">Tus pausas guardadas</p>
+        <p className="screen-sub">Tus Pausas guardadas</p>
       </div>
 
-      {/* Orden */}
+      {/* Orden (lo ordena la API) */}
       <div className="baul-filters">
         <button
           className={`chip ${orden === "reciente" ? "chip-active" : ""}`}
@@ -49,33 +63,40 @@ export function Baul() {
           className={`chip ${orden === "valoradas" ? "chip-active" : ""}`}
           onClick={() => setOrden("valoradas")}
         >
-          Más valoradas
+          Mejor valoradas
         </button>
       </div>
 
-      {/* Filtros de contenido */}
-      <div className="baul-filters">
-        {(["todo", "reflexion", "foto"] as Filtro[]).map((f) => (
+      {/* Filtros (en cliente) */}
+      <div className="baul-filters baul-filters-wrap">
+        {FILTROS.map((f) => (
           <button
-            key={f}
-            className={`chip ${filtro === f ? "chip-active" : ""}`}
-            onClick={() => setFiltro(f)}
+            key={f.id}
+            className={`chip ${filtro === f.id ? "chip-active" : ""}`}
+            onClick={() => setFiltro(f.id)}
           >
-            {f === "todo" ? "Todo" : f === "reflexion" ? "Con reflexión" : "Con foto"}
+            {f.label}
           </button>
         ))}
       </div>
 
       {items === null && <div className="center-note">…</div>}
 
-      {items !== null && visibles.length === 0 && (
+      {vacioPorFiltro && (
         <div className="empty">
-          <p className="empty-title">Todavía no guardaste ninguna pausa.</p>
+          <p className="empty-title">Aquí no hay nada todavía.</p>
+          <p className="empty-body">Prueba con otro filtro: tus Pausas siguen ahí.</p>
+        </div>
+      )}
+
+      {items !== null && items.length === 0 && (
+        <div className="empty">
+          <p className="empty-title">Todavía no guardaste ninguna Pausa.</p>
           <p className="empty-body">
-            Cuando completes tu primera consigna, va a aparecer aquí.
+            Cuando cierres tu primera Pausa, va a aparecer aquí.
           </p>
           <Button variant="primary" onClick={() => navigate("/hoy")}>
-            Ir a mi pausa de hoy
+            Ir a mi Pausa de hoy
           </Button>
         </div>
       )}
@@ -85,10 +106,18 @@ export function Baul() {
           <span className="entry-spine" style={{ background: it.carta.categoria.color_accent }} />
           <div className="entry-body">
             <div className="entry-top">
-              <span className="entry-cat" style={{ color: it.carta.categoria.color_text }}>
-                {it.carta.categoria.nombre}
+              <span className="entry-top-left">
+                <span className="pill-pausa">Pausa</span>
+                <span className="entry-cat" style={{ color: it.carta.categoria.color_text }}>
+                  {it.carta.categoria.nombre}
+                </span>
               </span>
-              <span className="entry-date">{fechaCorta(it.fecha)}</span>
+              <span className="entry-top-right">
+                {it.visibilidad === "compartida" && (
+                  <span className="entry-compartida">compartida</span>
+                )}
+                <span className="entry-date">{fechaCorta(it.fecha)}</span>
+              </span>
             </div>
             <p className="entry-frase">{it.carta.frase}</p>
             {it.reflexion && <p className="entry-refl">{it.reflexion}</p>}

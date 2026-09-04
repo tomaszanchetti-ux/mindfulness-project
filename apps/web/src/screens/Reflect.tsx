@@ -1,8 +1,16 @@
-// Guardar la pausa (§12.2, reframe WS14). El usuario ya vivió la pausa y escribió
+// Cerrar la Pausa (§12.2, reframe WS14). El usuario ya vivió la Pausa y escribió
 // en su diario afuera; acá la guarda en el Baúl con extras OPCIONALES (nota,
-// estrellas, foto). Se puede guardar sin escribir ni una palabra (regla M3).
+// estrellas, foto). Se puede cerrar sin escribir ni una palabra (regla M3).
 //
-// WS24 · A2.2: los límites (caracteres de la nota, fotos por pausa) NO se
+// WS25 · una sola pantalla, dos salidas:
+//   · "Guardar en mi Baúl" → cerrar `completada:true` → /cierre/:id
+//   · "Enviar"             → cerrar `completada:false` (persiste lo escrito, la
+//                            Pausa NO entra al Baúl todavía) → /compartir/:id
+// Si no hay ni reflexión ni fotos, antes de ejecutar aparece una confirmación
+// INLINE (nunca `confirm()` del navegador): la app no interrumpe con diálogos
+// del sistema.
+//
+// WS24 · A2.2: los límites (caracteres de la nota, fotos por Pausa) NO se
 // hardcodean acá — salen de `perfil.limites`, que arma el backend según el plan.
 // Debajo de las estrellas se invita a un comentario sobre la carta: feedback
 // privado para Dwellia (nunca se publica), con la pregunta según la puntuación.
@@ -20,6 +28,9 @@ import type { CartaDelDia, FotoSubida } from "../lib/types";
 // para todos (schemas.py · CierreRitual.comentario_carta).
 const COMENTARIO_MAX = 150;
 
+// Las dos salidas de la pantalla (WS25).
+type Salida = "guardar" | "enviar";
+
 export function Reflect() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
@@ -33,6 +44,8 @@ export function Reflect() {
   const [fotos, setFotos] = useState<FotoSubida[]>([]);
   const [subiendo, setSubiendo] = useState(false);
   const [guardando, setGuardando] = useState(false);
+  // WS25 · qué salida está esperando confirmación inline (null = ninguna).
+  const [confirmando, setConfirmando] = useState<Salida | null>(null);
 
   useEffect(() => {
     api.cartaDelDia().then(setData).catch(() => setData(null));
@@ -61,7 +74,9 @@ export function Reflect() {
     api.borrarFoto(f.id).catch(() => {});
   };
 
-  const guardar = async () => {
+  // Las dos salidas comparten el mismo cierre; sólo cambia `completada` y a
+  // dónde se va. En ambos casos lo escrito queda persistido.
+  const cerrar = async (salida: Salida) => {
     setGuardando(true);
     try {
       const dicho = comentario.trim();
@@ -70,13 +85,29 @@ export function Reflect() {
         estrellas,
         // Vacío = no se manda: nunca pisa un comentario anterior con nada.
         ...(dicho ? { comentario_carta: dicho } : {}),
-        completada: true,
+        completada: salida === "guardar",
       });
-      navigate(`/cierre/${id}`, { replace: true });
+      if (salida === "guardar") {
+        navigate(`/cierre/${id}`, { replace: true });
+      } else {
+        // Compartir no tiene cómo listar las fotos de una Pausa que aún no está
+        // en el Baúl: se las pasamos por el estado de navegación para la vista
+        // previa (sin inventar un endpoint).
+        navigate(`/compartir/${id}`, {
+          state: { fotos: fotos.map((f) => f.url) },
+        });
+      }
     } catch (e) {
       setGuardando(false);
+      setConfirmando(null);
       alert((e as Error).message);
     }
+  };
+
+  // Sin reflexión ni foto pedimos una confirmación suave; con contenido, se va derecho.
+  const intentar = (salida: Salida) => {
+    if (!texto.trim() && fotos.length === 0) setConfirmando(salida);
+    else void cerrar(salida);
   };
 
   // Sin perfil todavía no sabemos los límites: esperamos antes de pedir nada.
@@ -98,7 +129,7 @@ export function Reflect() {
       </button>
 
       <div className="screen-head">
-        <h1 className="screen-title">Guarda tu pausa de hoy</h1>
+        <h1 className="screen-title">Tu Pausa de hoy</h1>
       </div>
 
       {data && (
@@ -108,7 +139,7 @@ export function Reflect() {
       )}
 
       <div className="pausa-block">
-        <p className="pausa-label">Tu pausa de hoy</p>
+        <p className="pausa-label">Tu Pausa</p>
         <p className="pausa-text">{data?.carta.prompt}</p>
       </div>
 
@@ -118,7 +149,7 @@ export function Reflect() {
       </p>
       <textarea
         className="textarea"
-        placeholder="¿Qué te dejó esta pausa? (opcional)…"
+        placeholder="¿Qué te dejó esta Pausa? (opcional)…"
         maxLength={limites.reflexion_max}
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
@@ -189,16 +220,64 @@ export function Reflect() {
         )}
       </div>
 
-      <div className="actions-stack">
-        <Button
-          variant="primary"
-          full
-          disabled={guardando}
-          onClick={guardar}
-        >
-          {guardando ? "Guardando…" : "Guardar en mi Baúl"}
-        </Button>
-      </div>
+      {/* WS25 · las dos salidas. La confirmación inline reemplaza a los botones:
+          una sola pregunta, en el mismo lugar, sin diálogo del navegador. */}
+      {confirmando ? (
+        <div className="confirm-inline" role="group" aria-live="polite">
+          <p className="confirm-inline-pregunta">
+            {confirmando === "guardar"
+              ? "¿Quieres guardar sin reflexión?"
+              : "¿Quieres enviar sin reflexión?"}
+          </p>
+          <p className="confirm-inline-nota">
+            {confirmando === "guardar"
+              ? "Tu Pausa queda en el Baúl con la carta de hoy."
+              : "Viaja solo la carta, con tu nota si quieres escribirla."}
+          </p>
+          <div className="actions-stack">
+            <Button
+              variant="primary"
+              full
+              disabled={guardando}
+              onClick={() => cerrar(confirmando)}
+            >
+              {guardando
+                ? confirmando === "guardar"
+                  ? "Guardando…"
+                  : "Preparando…"
+                : confirmando === "guardar"
+                  ? "Sí, guardar"
+                  : "Sí, enviar"}
+            </Button>
+            <Button
+              variant="tertiary"
+              disabled={guardando}
+              onClick={() => setConfirmando(null)}
+            >
+              Volver
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="actions-stack">
+          <Button
+            variant="primary"
+            full
+            disabled={guardando}
+            onClick={() => intentar("guardar")}
+          >
+            {guardando ? "Guardando…" : "Guardar en mi Baúl"}
+          </Button>
+          <Button
+            variant="secondary"
+            full
+            disabled={guardando}
+            onClick={() => intentar("enviar")}
+          >
+            Enviar
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

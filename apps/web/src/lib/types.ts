@@ -62,7 +62,6 @@ export interface Limites {
   plan: "free" | "premium";
   reflexion_max: number;
   fotos_max: number;
-  compartir_ejercicio: boolean;
   cambios_carta: number;
   propone_cartas: boolean;
   recomendaciones: boolean;
@@ -75,6 +74,10 @@ export interface EstadoPagos {
   configurado: boolean; // false = Stripe apagado en este entorno (sin botón de compra)
 }
 
+// WS25 · quién ve la ficha además de su dueño. "compartida" = visible para la
+// comunidad del usuario; "privada" = sólo él. Las estrellas nunca viajan.
+export type Visibilidad = "privada" | "compartida";
+
 export interface ItemBaul {
   id: string;
   fecha: string;
@@ -83,6 +86,7 @@ export interface ItemBaul {
   reflexion: string | null;
   fotos: string[]; // URLs de la API (/api/fotos/{id}) — privadas, se piden con auth
   carta: Carta;
+  visibilidad: Visibilidad; // WS25 · PUT /api/baul/{id}/visibilidad
 }
 
 // Respuesta al subir una foto de la pausa (hasta 3 por entrega).

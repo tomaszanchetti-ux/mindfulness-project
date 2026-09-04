@@ -1,7 +1,11 @@
 // Detalle del Baúl como PAGER a pantalla completa (§12.4 / §20).
 // Cada experiencia entra entera en una pantalla (carta + reflexión + CTAs, sin
-// scroll); el scroll-snap te lleva a la siguiente pausa guardada, como pasar cartas.
+// scroll); el scroll-snap te lleva a la siguiente Pausa guardada, como pasar cartas.
 // No hay endpoint de una sola entrada: leemos el Baúl y arrancamos en la elegida.
+//
+// WS25 · cada página lleva el switch "Compartida con tu comunidad"
+// (PUT /api/baul/{id}/visibilidad). Es la única puerta entre el Baúl privado y
+// la comunidad: las estrellas nunca salen de acá.
 
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -11,7 +15,7 @@ import { Stars } from "../components/Stars";
 import { api } from "../lib/api";
 import { FotoPrivada } from "../components/FotoPrivada";
 import { fechaLarga } from "../lib/format";
-import type { ItemBaul } from "../lib/types";
+import type { ItemBaul, Visibilidad } from "../lib/types";
 
 export function EntryDetail() {
   const { id = "" } = useParams();
@@ -34,6 +38,15 @@ export function EntryDetail() {
     }
   }, [items, id]);
 
+  // El switch se resuelve en el padre para que el cambio quede en la lista: si
+  // el usuario pasa a otra página y vuelve, sigue viendo el estado real.
+  const cambiarVisibilidad = async (item: ItemBaul, v: Visibilidad) => {
+    const actualizado = await api.setVisibilidad(item.id, v);
+    setItems((cur) =>
+      (cur || []).map((x) => (x.id === item.id ? { ...x, visibilidad: actualizado.visibilidad } : x)),
+    );
+  };
+
   const eliminar = async () => {
     if (!aBorrar) return;
     setBorrando(true);
@@ -55,7 +68,7 @@ export function EntryDetail() {
     return (
       <div>
         <button className="back-link" onClick={() => navigate("/baul")}>← Baúl</button>
-        <div className="center-note">No encontramos esta pausa.</div>
+        <div className="center-note">No encontramos esta Pausa.</div>
       </div>
     );
 
@@ -75,6 +88,7 @@ export function EntryDetail() {
               hayMas={i < items.length - 1}
               onShare={() => navigate(`/compartir/${it.id}`)}
               onDelete={() => setABorrar(it)}
+              onVisibilidad={(v) => cambiarVisibilidad(it, v)}
             />
           </div>
         ))}
@@ -83,7 +97,7 @@ export function EntryDetail() {
       {aBorrar && (
         <div className="modal-backdrop" onClick={() => setABorrar(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>¿Eliminar esta pausa?</h3>
+            <h3>¿Eliminar esta Pausa?</h3>
             <p>
               Se borra para siempre, junto con su reflexión y fotos. Esto no se puede
               deshacer.
@@ -109,14 +123,31 @@ function BaulPage({
   hayMas,
   onShare,
   onDelete,
+  onVisibilidad,
 }: {
   item: ItemBaul;
   hayMas: boolean;
   onShare: () => void;
   onDelete: () => void;
+  onVisibilidad: (v: Visibilidad) => Promise<void>;
 }) {
   const [flipped, setFlipped] = useState(true); // mostramos el dorso (la frase)
   const [zoom, setZoom] = useState<string | null>(null); // foto a pantalla completa
+  const [cambiando, setCambiando] = useState(false);
+
+  const compartida = item.visibilidad === "compartida";
+
+  const alternar = async (quiere: boolean) => {
+    if (cambiando) return;
+    setCambiando(true);
+    try {
+      await onVisibilidad(quiere ? "compartida" : "privada");
+    } catch (e) {
+      alert((e as Error).message);
+    } finally {
+      setCambiando(false);
+    }
+  };
 
   return (
     <div className="baul-page-inner">
@@ -160,12 +191,31 @@ function BaulPage({
         </div>
       )}
 
+      {/* La puerta a la comunidad. Se ve siempre, en el mismo lugar de cada página. */}
+      <div className="visibilidad-box">
+        <label className="toggle-row visibilidad-row">
+          <span className="visibilidad-label">Compartida con tu comunidad</span>
+          <span className="switch">
+            <input
+              type="checkbox"
+              checked={compartida}
+              disabled={cambiando}
+              onChange={(e) => alternar(e.target.checked)}
+            />
+            <span className="slider" />
+          </span>
+        </label>
+        <p className="visibilidad-nota">
+          Solo tu comunidad la ve. Las estrellas siempre son tuyas.
+        </p>
+      </div>
+
       <div className="baul-page-actions">
         <Button variant="secondary" full onClick={onShare}>
-          Enviar a alguien
+          Enviar
         </Button>
         <button className="link" onClick={onDelete}>
-          Eliminar esta pausa
+          Eliminar esta Pausa
         </button>
       </div>
 
