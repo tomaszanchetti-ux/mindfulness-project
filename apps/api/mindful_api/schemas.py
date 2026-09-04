@@ -5,9 +5,25 @@ from __future__ import annotations
 import re
 from typing import Optional
 
+from datetime import datetime
+
 from pydantic import BaseModel, Field, field_validator
 
 _HORA = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")  # HH:MM 24h
+
+
+class LimitesOut(BaseModel):
+    """WS24 · lo que el usuario puede hacer según su plan (espejo de services/plan.Limites).
+
+    El front lee de acá y NUNCA hardcodea límites; el backend los aplica igual."""
+
+    plan: str
+    reflexion_max: int
+    fotos_max: int
+    compartir_ejercicio: bool
+    cambios_carta: int
+    propone_cartas: bool
+    recomendaciones: bool
 
 
 class PerfilOut(BaseModel):
@@ -23,6 +39,10 @@ class PerfilOut(BaseModel):
     terminos_aceptados: bool
     # WS17/WS22: ni pilares ni acciones se eligen — el perfil ya no lleva elecciones.
     onboarding_completo: bool
+    # WS24 · plan y límites vigentes (premium vencido ⇒ free).
+    plan: str
+    plan_hasta: Optional[datetime] = None
+    limites: LimitesOut
 
 
 class PerfilUpdate(BaseModel):
