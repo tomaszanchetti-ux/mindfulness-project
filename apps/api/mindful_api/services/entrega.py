@@ -78,6 +78,33 @@ def _salida(s: Session, entrega: Entrega, ya_existia: bool) -> dict:
     }
 
 
+def historial_motor(s: Session, rows, tz: ZoneInfo) -> list:
+    """Las entregas del usuario como las ve el motor (una por carta VISTA).
+
+    WS24 · A1.3: las cartas que el usuario descartó al cambiar la de hoy también
+    las vio, así que entran a las ventanas de 7 días (carta y concepto) como
+    vistas ese mismo día. Van ANTES de la carta servida, para que `historial[-1]`
+    siga siendo la carta con la que se quedó (la regla "nunca la de ayer").
+    Sin estrellas (no puntuó nada de ellas): no inclinan la afinidad.
+    """
+    historial = []
+    for (e, cat, acc, conc) in rows:
+        dia = _fecha_local(e.fecha, tz).toordinal()
+        for carta_id in (e.descartadas or []):
+            c = s.get(Carta, carta_id)
+            if c is None:
+                continue
+            historial.append(EntregaMotor(
+                carta_id=c.id, categoria=c.categoria_slug, accion=c.accion_slug,
+                dia=dia, concepto=c.concepto,
+            ))
+        historial.append(EntregaMotor(
+            carta_id=e.carta_id, categoria=cat, accion=acc, dia=dia, concepto=conc,
+            estrellas=e.estrellas, completada=e.completada,
+        ))
+    return historial
+
+
 def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
     tz = _tz(usuario)
     hoy = datetime.now(tz).date()
@@ -108,15 +135,7 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
             return _salida(s, ultima_entrega, ya_existia=True)
 
     # Construir el perfil para el motor.
-    historial = [
-        EntregaMotor(
-            carta_id=e.carta_id, categoria=cat, accion=acc,
-            dia=_fecha_local(e.fecha, tz).toordinal(), concepto=conc,
-            estrellas=e.estrellas, completada=e.completada,
-        )
-        for (e, cat, acc, conc) in rows
-    ]
-    perfil = Perfil(historial=historial)
+    perfil = Perfil(historial=historial_motor(s, rows, tz))
 
     # Pool global como dicts con las keys que el motor espera.
     pool = [
