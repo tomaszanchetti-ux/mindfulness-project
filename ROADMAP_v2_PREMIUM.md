@@ -6,19 +6,24 @@
 > M0-M5 siguen siendo la fuente de la lógica que ya existe.
 > El plan anterior (WS17) queda al final como historial.
 
-## 0. Decisiones cerradas (Tomás · WS24)
+## 0. Decisiones cerradas (Tomás · WS24 + WS25)
 
 | Tema | Decisión |
 |---|---|
-| Free | **El método completo tal como está hoy**: 1 carta por día con acción inicial, rotación 6+1, diario fuera de la pantalla, reflexión ≤150 + 1 foto, Baúl, compartir la carta sola. Más el **comentario de la carta** (0.2). |
-| Premium | **8,99 € por año**, cobrado en la web con Stripe (sin tiendas: sin comisión del 15-30 % ni revisión). Incluye: escribir cartas para la comunidad · cambiar la carta del día hasta 3 veces · reflexión ≤500 y hasta 3 fotos · compartir el ejercicio completo · recomendaciones en el perfil. |
-| Lo que NO cambia | Sigue llegando **1 carta por día** a todos. El diario personal nunca entra a la app. Sin feed, sin seguidores, sin contadores públicos. |
-| Perfil | **Privado por defecto**; el usuario lo hace público a elección. Lo público es la carta recibida y la reflexión posterior (frase y/o foto). Si el perfil es público se ven todas las entradas, y el usuario puede ocultar entradas sueltas. |
+| Free | **El método completo tal como está hoy**: 1 carta por día con acción inicial, rotación 6+1, diario fuera de la pantalla, reflexión ≤150 + 1 foto, Baúl, **compartir la ficha entera**. Más el **comentario de la carta**. |
+| Premium | **8,99 € por año**, cobrado en la web con Stripe (sin tiendas). Incluye: escribir cartas para la comunidad · cambiar la carta del día hasta 3 veces · reflexión ≤500 y hasta 3 fotos · **compartir más contenido** (fichas de recomendación en el Baúl: libros, videos, podcasts, documentales). CTA siempre **"Quiero ser parte"**; premium: "Quiero dejar la comunidad". |
+| Lo que NO cambia | Sigue llegando **1 carta por día** a todos. El diario personal nunca entra a la app. Sin feed, sin seguidores, sin likes, sin comentarios, sin contadores públicos. |
+| Compartir (WS25) | **Todo o nada.** La ficha de una Pausa = carta + reflexión + fotos, y viaja entera tal como está al momento de enviar; nunca se elige qué parte. Desde el cierre hay dos CTAs, **Enviar** y **Guardar**: enviar sin reflexión (viaja la carta sola) · enviar con reflexión/foto sin guardar (viaja la ficha, no entra al Baúl) · guardar (ficha en el Baúl, reenviable las veces que se quiera). Cada uno pregunta por el otro después. Lo ya enviado no cambia. **Las estrellas nunca salen de tu cuenta.** Igual para free y premium. |
+| Fichas y visibilidad (WS25) | Cada Pausa del Baúl es **privada por defecto** o **compartida**. Lo compartido es lo que ve tu comunidad y lo que puede reenviar. El Baúl propio y el perfil visto por otros son **la misma vista** (menos lo privado). Píldora "Pausa" en verde Dwellia; las fichas premium de **Recomendación** conviven en el mismo Baúl. |
+| Perfil y comunidad (WS25) | **Perfil privado por defecto**, ajustable desde Perfil. Cualquiera te encuentra en Dwellia por email registrado, apodo, nombre o apellido. Privado = para ver tus fichas hay que mandarte una **solicitud** que aceptás (como Instagram). Público = cualquier usuario logueado ve tus fichas compartidas. |
+| Reenviar (WS25) | La única acción sobre una ficha ajena: reenviarla a alguien de tu comunidad (in-app) o por WhatsApp (link). Quien la recibe la abre, ve la ficha y de quién es, y puede **guardarla en su Baúl** (privada) o **hacer la Pausa** ahora o programada para un día y hora (esa carta pasa a ser la del día). |
+| Login (WS25) | **Siempre logueado**, también para abrir el link recibido por WhatsApp. Login simple: Google o enlace por email. |
 | Estrellas | **Se mantienen** (alimentan la afinidad del motor). Debajo se pide un comentario opcional; con 1-2 estrellas la pregunta es "¿qué te hubiese gustado recibir?". Ese texto es feedback para Dwellia, no se publica. |
-| Rotación de cartas | **Sin agente**. Es determinística (M2) y con 77 cartas un usuario tarda 11 semanas en repetir una. La API de Anthropic se usa fuera de línea para lotes nuevos y, en runtime, SOLO para juzgar cartas de usuarios. |
-| Cartas de usuarios | Wizard: pilar (uno de los 6) → acción inicial (una de las 4) → frase + prompt con la carta dibujándose en vivo → firma (anónima o apodo) + cesión → enviar. **Una carta en revisión a la vez** por usuario (sin tope mensual: la revisión ya regula el ritmo). Límites medidos sobre el mazo real: **frase ≤ 60 caracteres** (máx. actual 55) · **prompt 100-220** (máx. actual 207). |
-| Validación | Capa 1 determinística (gratis) → capa 2 juez LLM **Sonnet 5** con el canon cacheado (≈1 céntimo por carta) → **Tomás aprueba** desde una pantalla mínima de administración. El juez sugiere, nunca publica. |
+| Rotación de cartas | **Sin agente**. Determinística (M2). La API de Anthropic se usa fuera de línea para lotes nuevos y, en runtime, SOLO para juzgar cartas de usuarios. |
+| Cartas de usuarios | Pestaña **Crear** (premium; free ve un pop-up + "Quiero ser parte"). Wizard: pilar → acción inicial → frase + prompt con la carta dibujándose en vivo → firma (anónima o apodo) + cesión → enviar. **Una carta en revisión a la vez**. **Frase ≤ 60** · **prompt 100-220**. |
+| Validación | Capa 1 determinística → capa 2 juez LLM **Sonnet 5** con el canon cacheado (≈1 céntimo) → **Tomás aprueba** desde `/admin`. **Aprobar = cargado** (WS25): estados visibles "En proceso de evaluación" (gris) → "Cargado a la comunidad", más "Necesita un retoque" y "No aprobada". Cada cambio avisa al autor. |
 | Distribución | Las aprobadas entran al mazo como **cartas de la comunidad**; el receptor hace opt-in en su Perfil y las recibe el día 7 (comodín). Dorso: "de <apodo>" o "de alguien de la comunidad". Impacto = mensaje privado al autor. |
+| Q/A visual (WS25) | El Q/A del backend de cada bloque **siembra datos reales** (`make demo-seed`: Pausas, reflexiones, fotos, fichas, estados, solicitudes) para que Tomás vea la app completa. Solo local. |
 
 ## 1. Modelo freemium (vista rápida)
 
@@ -28,12 +33,12 @@
 | Cambiar la carta del día | — | hasta 3 veces (cruza el eje quietud↔movimiento) |
 | Reflexión | ≤150 | ≤500 |
 | Fotos por Pausa | 1 | 3 |
-| Compartir por link | carta sola | carta sola + ejercicio completo (con fotos) |
+| Compartir la ficha (carta + reflexión + fotos), por link o a la comunidad | ✅ | ✅ |
 | Estrellas + comentario de la carta | ✅ | ✅ |
 | Escribir cartas para la comunidad | — | ✅ (1 en revisión a la vez) |
 | Recibir cartas de la comunidad (opt-in) | ✅ | ✅ |
-| Perfil público (opt-in) con reflexiones | ✅ | ✅ |
-| Recomendaciones en el perfil (libros, videos, podcasts) | — | ✅ |
+| Perfil público (opt-in) · comunidad con solicitudes · reenviar · guardar Pausas de otros | ✅ | ✅ |
+| Fichas de recomendación en el Baúl (libros, videos, podcasts) | — | ✅ |
 
 Regla de ingeniería: **todos los límites viven en un solo lugar** (`services/plan.py`)
 y el backend los aplica; el front solo los muestra. Un usuario free que manda 500
@@ -57,7 +62,10 @@ paralelo; cada ola arranca cuando la anterior está commiteada.
 
 Objetivo: cobrar y aplicar las compuertas. Al cerrar A, Dwellia ya se puede vender.
 **Estado (WS24):** A0-A2 construidas y con Q/A adversarial del backend (209 tests ✓).
-Falta: Q/A visual de Tomás · cuenta Stripe + 3 env · deploy (ver `WS/WS24_04-09-2026.md` §4).
+**WS25:** el Q/A visual de Tomás (`Pivot/Lectura_QA_Visual_WS24.md`) cambió el modelo
+de compartir a **todo o nada** y sumó la **card A3** (contrato en `WS/WS25_04-09-2026.md` §2):
+visibilidad por Pausa, compartir sin modos ni plan, login para el link, retoques de
+onboarding/premium/perfil/Baúl y `make demo-seed`. Falta: Q/A visual de A3 · Stripe · deploy.
 
 ### Ola A0 (orquestador, sin agente) — el contrato
 - Migración única con TODAS las columnas del bloque: `usuarios.plan` (`free|premium`,
@@ -85,66 +93,90 @@ Deploy A: migración (job `dwellia-migrate`) → API → Hosting. Stripe en modo
 que Tomás active la cuenta real (lo único que hace él: crear cuenta Stripe + producto
 8,99 €/año + pegar 3 secretos en Cloud Run).
 
-## 4. Bloque B — Cartas de la comunidad (≈3 sesiones)
+## 4. Bloque B — Crear: cartas de la comunidad (≈3 sesiones)
 
-Objetivo: la feature insignia del premium, con el pipeline que ya existe.
+Objetivo: la feature insignia del premium, con la pestaña **Crear** y el pipeline
+juez + Tomás. Al cerrar B la barra tiene 4 pestañas (Hoy · Baúl · Crear · Perfil).
 
 ### Ola B0 (orquestador) — el contrato
 - Tabla `cartas_comunidad` (Mundo 2): `usuario_id`, `categoria_slug`, `accion_slug`,
   `frase` ≤60, `prompt` 100-220, `firma` (`anonima|apodo`), `estado`
   (`en_revision` juez corriendo → `revision_dwellia` | `a_revisar` (vuelve al autor con
-  sugerencia) | `rechazada` (safety) → Tomás: `aprobada` | `rechazada`; `retirada` por el
-  autor), `veredicto` (JSON del juez), `motivo`, `concepto`, `cesion_aceptada_at`,
-  `carta_id` (la carta publicada), fechas.
-- `cartas` (Mundo 1) suma `origen` (`dwellia|comunidad`, default dwellia), `autor_usuario_id`
-  (atribución, no aislamiento) y `firma_publica` (apodo o null). Así motor, Baúl y compartir
-  funcionan sin cambios.
+  sugerencia) | `rechazada` → Tomás: `aprobada` (= cargada al mazo) | `rechazada`;
+  `retirada` por el autor), `veredicto` (JSON del juez), `motivo`, `concepto`,
+  `cesion_aceptada_at`, `carta_id` (la carta publicada), fechas.
+- `cartas` (Mundo 1) suma `origen` (`dwellia|comunidad`), `autor_usuario_id` y `firma_publica`.
 - `usuarios.recibe_comunidad` (bool, default false).
+- Tabla `avisos` (Mundo 2): `usuario_id`, `tipo` (`carta_estado` hoy; `reenvio`,
+  `solicitud` en C), `referencia_id`, `texto`, `leido`, `created_at`. Se muestra en
+  la app y dispara el push web existente.
+- Rótulos visibles (front): `en_revision`/`revision_dwellia` → "En proceso de
+  evaluación" (gris) · `aprobada` → "Cargado a la comunidad" · `a_revisar` →
+  "Necesita un retoque" · `rechazada` → "No aprobada".
 
 ### Ola B1 (3 agentes en paralelo)
 | Card | Qué | Territorio | Acepta cuando |
 |---|---|---|---|
-| **B1.1 Propuestas (API)** | `POST /api/cartas-comunidad` (premium; 409 si ya hay una en revisión; valida límites y cesión) · `GET /api/cartas-comunidad/mias` · `PUT …/{id}` reenviar desde `a_revisar` · `DELETE …/{id}` retirar. Dispara el juez en `BackgroundTasks` (sin Redis). | `routers/cartas_comunidad.py`, `services/cartas_comunidad.py`, `schemas.py` (sección propia), tests | estados y transiciones probados; aislamiento; free → 403 |
-| **B1.2 Juez en runtime** | Portar `scripts/validar_cartas.py` a `services/canon.py` (capa 1 importable, mismo umbral 0,72) + `services/juez.py` (Anthropic SDK, Sonnet 5, canon con prompt caching, structured output → `aprueba / requiere_revision + fix / rechaza` + concepto + safety). Sin key → modo `off` que deja todo en `revision_dwellia`. El script CLI pasa a usar los mismos módulos. | `services/canon.py`, `services/juez.py`, `scripts/validar_cartas.py`, `config.py`, `requirements.txt`, tests con cliente simulado | carta trampa → rechaza; carta buena → revision_dwellia; el CLI sigue dando 77/77 |
-| **B1.3 Administración** | `GET /api/admin/cartas?estado=` · `POST /api/admin/cartas/{id}/aprobar` (publica en `cartas` con origen comunidad, sync de concepto) · `…/rechazar` (motivo) · `GET /api/admin/comentarios` (los comentarios de A1.3). Admin = uid en `MINDFUL_ADMIN_UIDS`. | `routers/admin.py`, `services/admin.py`, `auth.py` (`get_admin`), tests | no-admin → 403; aprobar crea la carta y la deja servible |
+| **B1.1 Propuestas (API)** | `POST /api/cartas-comunidad` (premium; 409 si ya hay una en revisión; valida límites y cesión) · `GET …/mias` · `PUT …/{id}` reenviar desde `a_revisar` · `DELETE …/{id}` retirar. Juez en `BackgroundTasks`. Crea `avisos` en cada cambio de estado. | `routers/cartas_comunidad.py`, `services/cartas_comunidad.py`, `services/avisos.py`, `schemas.py`, tests | estados y transiciones probados; aislamiento; free → 403 |
+| **B1.2 Juez en runtime** | `services/canon.py` (capa 1, umbral 0,72) + `services/juez.py` (Sonnet 5, canon cacheado, structured output → `aprueba / requiere_revision + fix / rechaza` + concepto + safety). Sin key → `off` (todo a `revision_dwellia`). | `services/canon.py`, `services/juez.py`, `scripts/validar_cartas.py`, `config.py`, `requirements.txt`, tests | carta trampa → rechaza; buena → revision_dwellia; el CLI sigue 77/77 |
+| **B1.3 Administración** | `GET /api/admin/cartas?estado=` · `POST …/aprobar` (publica en `cartas` con origen comunidad = cargada) · `…/rechazar` (motivo) · `…/a-revisar` (sugerencia) · `GET /api/admin/comentarios`. Admin = uid en `MINDFUL_ADMIN_UIDS`. | `routers/admin.py`, `services/admin.py`, `auth.py`, tests | no-admin → 403; aprobar crea la carta servible y avisa al autor |
 
 ### Ola B2 (2 agentes en paralelo)
 | Card | Qué | Territorio | Acepta cuando |
 |---|---|---|---|
-| **B2.1 Distribución + impacto** | Motor: el día comodín sirve una carta `comunidad` no vista si el usuario tiene opt-in y hay disponible; si no, comodín como hoy. Las de comunidad nunca desplazan la rotación de pilares. Dorso: firma. `GET /api/cartas-comunidad/mias` devuelve `personas_acompanadas` (conteo de entregas de esa carta). | `services/seleccion.py`, `services/entrega.py`, `services/cartas_comunidad.py` (impacto), `routers/perfil.py` (opt-in), tests | opt-in recibe el día 7; sin opt-in nunca; conteo correcto |
-| **B2.2 Front: wizard + Mis cartas + Admin** | `/cartas/nueva` wizard 4 pasos con preview en vivo (reusa `Card.tsx`) y contadores de caracteres · Perfil › "Tus cartas" (estados, sugerencia del juez, editar y reenviar, impacto privado) · Perfil › toggle "Recibir cartas de la comunidad" · `/admin` (solo admins): cola con veredicto, aprobar/rechazar, comentarios. | `screens/CartaNueva.tsx`, `screens/MisCartas.tsx`, `screens/Admin.tsx`, `screens/Profile.tsx`, `components/Card.tsx` (firma en dorso), `lib/api.ts`, `Frame.tsx` | e2e en preview: proponer → juez simulado → admin aprueba → llega el día 7 |
+| **B2.1 Distribución + impacto** | El día comodín sirve una carta `comunidad` no vista si hay opt-in y disponible. Dorso con firma. `GET …/mias` devuelve `personas_acompanadas`. `GET /api/avisos` + marcar leído. | `services/seleccion.py`, `services/entrega.py`, `routers/perfil.py` (opt-in), `routers/avisos.py`, tests | opt-in recibe el día 7; sin opt-in nunca; conteo correcto |
+| **B2.2 Front: pestaña Crear + Admin** | `Frame.tsx` con 4 pestañas · `/crear`: free → pop-up "Escribir cartas es parte de la comunidad" + "Quiero ser parte"; premium → CTA "Escribir una carta" + lista **"Tus cartas"** prolija (miniatura de la carta, frase, estado con rótulo y color, sugerencia del juez, editar y reenviar, impacto) · wizard `/crear/nueva` 4 pasos con preview en vivo · Perfil › toggle "Recibir cartas de la comunidad" · campana de avisos · `/admin`. | `screens/Crear.tsx`, `screens/CartaNueva.tsx`, `screens/Admin.tsx`, `components/Frame.tsx`, `components/Card.tsx`, `lib/api.ts`, `app.css` | e2e en preview: proponer → juez simulado → admin aprueba → "Cargado" + aviso → llega el día 7 |
 
-## 5. Bloque C — Perfil público y recomendaciones (≈2-3 sesiones)
+Seed B: `make demo-seed` suma 4 cartas del usuario demo, una por estado.
 
-Objetivo: el loop de descubrimiento (link al perfil) sin feed ni seguidores.
+## 5. Bloque C — Comunidad (≈3-4 sesiones)
+
+Objetivo: la pestaña **Comunidad** (5 pestañas: Hoy · Baúl · Comunidad · Crear ·
+Perfil), sin feed ni seguidores: personas, solicitudes, reenvíos y las fichas de
+recomendación.
 
 ### Ola C0 (orquestador) — el contrato
-- `usuarios.handle` (único, 3-24, minúsculas y guiones; sugerido desde el apodo),
-  `usuarios.perfil_publico` (default false), `usuarios.bio` ≤150.
-- `entregas.oculta_perfil` (default false).
-- Tabla `recomendaciones` (Mundo 2): `usuario_id`, `tipo` (`libro|video|podcast|otro`),
-  `titulo` ≤80, `url` (dominios permitidos: youtube, vimeo, spotify, goodreads, amazon,
-  casadellibro, apple podcasts; lista en `services/recomendaciones.py`), `nota` ≤150,
-  `orden`, máx. 20 por usuario. Premium.
+- `usuarios.perfil_publico` (bool, default false) · índices por `lower(email)`,
+  `lower(apodo)`, `lower(nombre)`, `lower(apellido)`.
+- Tabla `vinculos` (Mundo 2): `solicitante_id`, `destinatario_id`, `estado`
+  (`pendiente|aceptada`), fechas; único por par. "Mi comunidad" = vínculos aceptados
+  en cualquier dirección.
+- Tabla `reenvios`: `de_usuario_id`, `a_usuario_id`, `entrega_id`, `leido`, `created_at`.
+- Tabla `guardadas`: `usuario_id`, `entrega_id` (la ficha de otro), `created_at`;
+  único por par. En el Baúl aparece como "Pausa de <apodo>", privada, y desaparece
+  si el dueño la vuelve privada o la borra.
+- Tabla `pausas_programadas`: `usuario_id`, `carta_id`, `de_usuario_id`,
+  `programada_para` (fecha local), `servida`. El motor la sirve como carta de ese
+  día (una por día se mantiene); el aviso diario la recuerda.
+- Tabla `recomendaciones` (premium): `usuario_id`, `titulo` ≤80, `tipo`
+  (`libro|video|podcast|documental|otro`), `texto` ≤500, `url` opcional (cualquier
+  https), `visibilidad`, fechas. Máx. 30 por usuario. Es una ficha más del Baúl.
+- Regla de lectura de una ficha ajena: visible si (dueño público) o (vínculo
+  aceptado) y `visibilidad = compartida`; si no → 404. El link `/c/{token}` sigue
+  siendo la excepción (el token es el permiso, con login).
 
-### Ola C1 (2 agentes en paralelo)
+### Ola C1 (3 agentes en paralelo)
 | Card | Qué | Territorio | Acepta cuando |
 |---|---|---|---|
-| **C1.1 Perfil público (API)** | `GET /api/u/{handle}` SIN login (404 si privado): apodo, bio, pilares, cartas de comunidad aprobadas con firma apodo, entradas completadas no ocultas (carta + reflexión + fotos) y recomendaciones · `GET /api/u/{handle}/fotos/{id}` público solo si la entrada es visible · `PUT /api/perfil` acepta handle/perfil_publico/bio · `PUT /api/baul/{id}/visibilidad`. | `routers/publico.py`, `services/perfil_publico.py`, `routers/perfil.py`, `routers/baul.py`, `services/fotos.py` (lectura pública), tests | privado → 404; oculta no aparece; foto de entrada oculta → 404; borrar cuenta borra lo público |
-| **C1.2 Recomendaciones (API)** | CRUD `/api/recomendaciones` (premium; allowlist de dominios; 20 máx.; orden). | `routers/recomendaciones.py`, `services/recomendaciones.py`, `schemas.py` (sección propia), tests | dominio fuera de lista → 422; free → 403 |
+| **C1.1 Personas y solicitudes** | `GET /api/comunidad/buscar?q=` (email exacto, apodo, nombre, apellido; devuelve apodo, público sí/no, estado del vínculo; nunca el email ajeno) · `POST /api/comunidad/solicitudes/{usuario_id}` · aceptar / rechazar / cancelar · `GET /api/comunidad` (mi gente + pendientes) · `DELETE` quitar de mi comunidad · `PUT /api/perfil` acepta `perfil_publico`. Avisos de solicitud. | `routers/comunidad.py`, `services/comunidad.py`, `routers/perfil.py`, tests | privado sin vínculo → solo apodo; duplicados → 409; aislamiento |
+| **C1.2 Fichas ajenas, reenviar, guardar, hacer la Pausa** | `GET /api/comunidad/{usuario_id}/baul` (fichas compartidas según la regla) · `GET /api/comunidad/{usuario_id}/fotos/{id}` · `POST /api/reenvios` · `GET /api/reenvios/recibidos` · `POST /api/guardadas/{entrega_id}` · `POST /api/pausas/hacer` (`ahora` → entrega de hoy con esa carta · `programada_para`). Motor: la programada manda ese día. | `routers/reenvios.py`, `services/reenvios.py`, `services/guardadas.py`, `services/seleccion.py`, `services/baul.py` (guardadas en la lista), tests | ficha privada → 404 aunque haya vínculo; guardada desaparece si el dueño la vuelve privada; la programada llega ese día y solo ese día |
+| **C1.3 Recomendaciones (API)** | CRUD `/api/recomendaciones` (premium; 30 máx.; visibilidad) y su inclusión en el Baúl propio y ajeno como ficha `tipo: recomendacion`. | `routers/recomendaciones.py`, `services/recomendaciones.py`, `schemas.py`, tests | free → 403; ajeno → 404; aparece en el Baúl ajeno solo si compartida |
 
 ### Ola C2 (2 agentes en paralelo)
 | Card | Qué | Territorio | Acepta cuando |
 |---|---|---|---|
-| **C2.1 Front público** | `/u/:handle` con la estética del regalo (`PublicShare`): cabecera, pilares, cartas de la comunidad, entradas con foto y reflexión, recomendaciones · OG básico. | `screens/PerfilPublico.tsx`, `Frame.tsx`, `app.css` | perfil público navegable sin login en preview |
-| **C2.2 Front privado** | Perfil › "Tu perfil público" (toggle, handle, bio, copiar link) · Baúl detalle › "Ocultar del perfil" · Perfil › "Tus recomendaciones" editor (premium). | `screens/Profile.tsx`, `screens/EntryDetail.tsx`, `screens/Recomendaciones.tsx`, `lib/api.ts` | toggles verificados e2e en preview |
+| **C2.1 Pestaña Comunidad** | `Frame.tsx` con 5 pestañas · `/comunidad`: mi gente (buscador local), buscar en Dwellia, solicitudes pendientes (enviadas/recibidas), "Te enviaron" (reenvíos con la ficha y de quién) · perfil ajeno = **la misma vista del Baúl** (fichas Pausa y Recomendación) · ficha ajena: "Guardar en mi Baúl" y "Hacer la Pausa" (ahora / elegir día y hora). | `screens/Comunidad.tsx`, `screens/PerfilAjeno.tsx`, `screens/FichaAjena.tsx`, `components/Frame.tsx`, `lib/api.ts` | e2e en preview con dos usuarios demo: buscar → solicitud → aceptar → ver fichas → reenviar → guardar / programar |
+| **C2.2 Baúl y Perfil** | Baúl: fichas "Recomendación" con su píldora, CTA "Agregar recomendación" + wizard (premium; free → pop-up "Quiero ser parte"), "Pausa de <apodo>" para las guardadas · EntryDetail: "Reenviar a alguien de tu comunidad" (lista) + "Enviar por WhatsApp" (link) · Perfil: toggle "Perfil público" con explicación. | `screens/Baul.tsx`, `screens/EntryDetail.tsx`, `screens/Recomendacion.tsx`, `screens/Profile.tsx`, `app.css` | toggles y wizard verificados e2e |
 
 ### Ola C3 (1 agente) — legal y cierre
-- **TyC v3**: cesión de las cartas de la comunidad (licencia a Dwellia, atribución por apodo o
-  anónima, retiro a pedido), moderación, perfil público como decisión del usuario, borrar la
-  cuenta borra todo lo público, recomendaciones = opiniones de usuarios, +16.
-- Barrido "Pausa" con mayúscula pendiente de la WS23.
+- **TyC v3**: cesión de las cartas de la comunidad, moderación, perfil público y
+  fichas compartidas como decisión del usuario, borrar la cuenta borra todo lo
+  público, recomendaciones = opiniones de usuarios, +16.
 - Limpieza de fotos huérfanas de Storage (WS16).
+
+Seed C: `make demo-seed` crea un segundo y tercer usuario demo (uno público, uno
+privado) con fichas, un vínculo aceptado, una solicitud pendiente, un reenvío
+recibido y dos recomendaciones.
 
 ## 6. Costos del MVP (mensual, estimado)
 
