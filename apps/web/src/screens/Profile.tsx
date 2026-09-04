@@ -365,7 +365,7 @@ export function Profile() {
               Tienes el método Dwellia completo, sin anuncios.
             </p>
             <div className="actions-stack" style={{ marginTop: 12 }}>
-              <Button variant="secondary" full onClick={() => navigate("/premium")}>
+              <Button variant="primary" full onClick={() => navigate("/premium")}>
                 Quiero ser parte
               </Button>
             </div>

@@ -51,33 +51,50 @@ export function Baul() {
         <p className="screen-sub">Tus Pausas guardadas</p>
       </div>
 
-      {/* Orden (lo ordena la API) */}
-      <div className="baul-filters">
-        <button
-          className={`chip ${orden === "reciente" ? "chip-active" : ""}`}
-          onClick={() => setOrden("reciente")}
-        >
-          Reciente
-        </button>
-        <button
-          className={`chip ${orden === "valoradas" ? "chip-active" : ""}`}
-          onClick={() => setOrden("valoradas")}
-        >
-          Mejor valoradas
-        </button>
-      </div>
-
-      {/* Filtros (en cliente) */}
-      <div className="baul-filters baul-filters-wrap">
-        {FILTROS.map((f) => (
-          <button
-            key={f.id}
-            className={`chip ${filtro === f.id ? "chip-active" : ""}`}
-            onClick={() => setFiltro(f.id)}
-          >
-            {f.label}
-          </button>
-        ))}
+      {/* WS25 · Orden y filtros con rótulo, para que se lea qué es qué:
+          el orden es un control de dos posiciones; los filtros, chips chicos
+          en una sola fila (se desliza si no entran). */}
+      <div className="baul-toolbar">
+        <div className="baul-tool">
+          <span className="baul-tool-label">Orden</span>
+          <div className="segmented" role="radiogroup" aria-label="Orden">
+            <button
+              type="button"
+              role="radio"
+              aria-checked={orden === "reciente"}
+              className={orden === "reciente" ? "is-on" : ""}
+              onClick={() => setOrden("reciente")}
+            >
+              Recientes
+            </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={orden === "valoradas"}
+              className={orden === "valoradas" ? "is-on" : ""}
+              onClick={() => setOrden("valoradas")}
+            >
+              Mejor valoradas
+            </button>
+          </div>
+        </div>
+        <div className="baul-tool">
+          <span className="baul-tool-label">Mostrar</span>
+          <div className="chips-scroll" role="radiogroup" aria-label="Mostrar">
+            {FILTROS.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                role="radio"
+                aria-checked={filtro === f.id}
+                className={`chip chip-sm ${filtro === f.id ? "chip-active" : ""}`}
+                onClick={() => setFiltro(f.id)}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {items === null && <div className="center-note">…</div>}

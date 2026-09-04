@@ -716,17 +716,25 @@
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 0 var(--pad-x);
+  /* WS25: la ficha puede ser más alta que la pantalla (reflexión larga, fotos,
+     el bloque de visibilidad). Se centra cuando entra (márgenes auto del inner)
+     y se desliza dentro de la página cuando no, sin recortar arriba ni abajo. */
+  justify-content: flex-start;
+  padding: 10px var(--pad-x) 34px;
   box-sizing: border-box;
   position: relative;
-  /* Una experiencia por página: nada se filtra a la siguiente. */
-  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.baul-page::-webkit-scrollbar {
+  display: none;
 }
 .baul-page-inner {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  margin: auto 0;
+  flex-shrink: 0;
 }
 .baul-page-inner .card-scene {
   max-width: 184px;
@@ -747,10 +755,9 @@
 }
 /* El indicador de "hay más" va fijo abajo: no suma altura al contenido centrado. */
 .baul-more {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 6px;
+  /* WS25: al final del contenido (la página ahora se desliza), nunca encima de él. */
+  position: static;
+  margin-top: 10px;
   text-align: center;
   color: var(--dust-taupe);
   font-size: 20px;
@@ -2033,8 +2040,68 @@
 /* ——————————————————————————————————————————————— WS25 · Ficha del Baúl */
 /* La ficha es la misma que verá la comunidad: la píldora "Pausa" la nombra, y
    la marca de "compartida" se lee sin gritar. Sin likes ni contadores. */
-.baul-filters-wrap {
-  flex-wrap: wrap;
+.baul-toolbar {
+  margin: 0 0 18px;
+}
+.baul-tool {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.baul-tool + .baul-tool {
+  margin-top: 8px;
+}
+.baul-tool-label {
+  flex-shrink: 0;
+  width: 54px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dust-taupe);
+}
+.segmented {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--oat-milk);
+  border-radius: var(--radius-pill);
+}
+.segmented button {
+  border: 0;
+  background: transparent;
+  color: var(--warm-taupe);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  font-size: 12.5px;
+  line-height: 1.3;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.segmented button.is-on {
+  background: var(--soft-ivory);
+  color: var(--deep-umber);
+  box-shadow: 0 1px 2px rgba(60, 45, 30, 0.08);
+}
+.chips-scroll {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0;
+}
+.chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+.chip-sm {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  font-size: 12px;
+  white-space: nowrap;
 }
 .entry-top-left,
 .entry-top-right {
