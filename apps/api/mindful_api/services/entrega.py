@@ -24,6 +24,7 @@ from ..db.models import (
     Entrega,
     Usuario,
 )
+from .plan import limites
 from .seleccion import Entrega as EntregaMotor
 from .seleccion import Perfil, elegir_carta
 
@@ -67,6 +68,7 @@ def _salida(s: Session, entrega: Entrega, ya_existia: bool) -> dict:
             "estrellas": entrega.estrellas,
             "completada": entrega.completada,
             "reflexion": entrega.reflexion,
+            "comentario_carta": entrega.comentario_carta,
             "ya_existia": ya_existia,
         },
         "carta": _carta_enriquecida(s, carta),
@@ -129,20 +131,45 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
     return _salida(s, nueva, ya_existia=False)
 
 
+MAX_COMENTARIO_CARTA = 150  # feedback privado: igual para free y premium
+
+
 def cerrar_ritual(
     s: Session, usuario: Usuario, entrega_id: str,
-    estrellas=None, reflexion=None, completada=True,
+    estrellas=None, reflexion=None, completada=True, comentario_carta=None,
 ) -> dict:
-    """M3 · cierre: estrellas + reflexión + completada. Valida que la entrega sea del usuario."""
+    """M3 · cierre: estrellas + reflexión + comentario + completada (entrega del usuario).
+
+    WS24 · la reflexión se mide contra el plan (`limites`), no contra un número
+    hardcodeado: un free que manda 500 caracteres recibe 422 diga lo que diga el front.
+    """
     entrega = s.get(Entrega, entrega_id)
     # Aislamiento: 404 si no existe O es de otro usuario (no filtra existencia ajena).
     if entrega is None or entrega.usuario_id != usuario.id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Entrega no encontrada")
 
+    lim = limites(usuario)
+
     if estrellas is not None:
         entrega.estrellas = estrellas
     if reflexion is not None:
+        if len(reflexion) > lim.reflexion_max:
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                f"Tu reflexión puede tener hasta {lim.reflexion_max} caracteres "
+                f"en el plan {lim.plan} (mandaste {len(reflexion)})",
+            )
         entrega.reflexion = reflexion
+    if comentario_carta is not None:
+        comentario = comentario_carta.strip()
+        if len(comentario) > MAX_COMENTARIO_CARTA:
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                f"El comentario sobre la carta puede tener hasta "
+                f"{MAX_COMENTARIO_CARTA} caracteres",
+            )
+        # Vacío → None: no guardamos cadenas en blanco.
+        entrega.comentario_carta = comentario or None
     entrega.completada = completada
 
     s.add(entrega)

@@ -17,13 +17,32 @@ from sqlalchemy.orm import Session
 
 from ..db.models import Carta, Compartido, Entrega, Foto, Usuario
 from .entrega import _carta_enriquecida
+from .plan import limites
 
 
-def crear_compartido(s: Session, usuario_id: str, entrega_id: str, modo: str,
+def crear_compartido(s: Session, usuario: Usuario, entrega_id: str, modo: str,
                      nota=None) -> dict:
+    """WS24 · recibe el Usuario (no el id): el modo `ejercicio` y el largo de la nota
+    dependen del plan, y el backend es quien los aplica."""
+    usuario_id = usuario.id
     entrega = s.get(Entrega, entrega_id)
+    # Primero el aislamiento (404 antes que cualquier compuerta de plan): no delatamos
+    # la existencia de una entrega ajena ni siquiera con un 403.
     if entrega is None or entrega.usuario_id != usuario_id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Entrega no encontrada")
+
+    lim = limites(usuario)
+    if modo == "ejercicio" and not lim.compartir_ejercicio:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "Compartir el ejercicio completo es parte de Dwellia premium",
+        )
+    if nota is not None and len(nota) > lim.reflexion_max:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"Tu nota puede tener hasta {lim.reflexion_max} caracteres "
+            f"en el plan {lim.plan} (mandaste {len(nota)})",
+        )
 
     token = secrets.token_urlsafe(16)  # opaco, ~22 chars
     comp = Compartido(

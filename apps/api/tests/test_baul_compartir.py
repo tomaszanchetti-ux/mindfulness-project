@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi.testclient import TestClient
 
 from mindful_api.main import app
+from tests.test_plan import hacer_premium
 
 client = TestClient(app)
 
@@ -12,6 +13,13 @@ client = TestClient(app)
 def _onboard(sub: str) -> dict:
     h = {"X-Debug-Sub": sub, "X-Debug-Email": f"{sub}@mindful.local"}
     client.put("/api/perfil", headers=h, json={"aceptar_terminos": True})
+    return h
+
+
+def _onboard_premium(sub: str) -> dict:
+    """WS24 · el modo `ejercicio` es premium (A1.1): estos casos necesitan el plan."""
+    h = _onboard(sub)
+    hacer_premium(sub)
     return h
 
 
@@ -58,7 +66,7 @@ def test_borrado_real():
 
 
 def test_compartir_publico_sin_login():
-    h = _onboard("share|ok")
+    h = _onboard_premium("share|ok")
     eid = _entrega_de_hoy(h)
     client.put(f"/api/entregas/{eid}/cierre", headers=h, json={"reflexion": "Respiré hondo."})
 
@@ -79,7 +87,7 @@ def test_compartir_publico_sin_login():
 
 
 def test_link_ejercicio_muere_al_borrar_pero_carta_sola_sobrevive():
-    h = _onboard("share|muerte")
+    h = _onboard_premium("share|muerte")
     eid = _entrega_de_hoy(h)
 
     t_ej = client.post("/api/compartir", headers=h,

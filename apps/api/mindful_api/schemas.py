@@ -65,20 +65,28 @@ class PerfilUpdate(BaseModel):
 
 
 class CierreRitual(BaseModel):
-    """M3 · cierre del ritual. Todo opcional (no bloquea Guardar)."""
+    """M3 · cierre del ritual. Todo opcional (no bloquea Guardar).
+
+    WS24 · el `max_length` de la reflexión es el TOPE DURO del borde (500 = premium);
+    el tope real por plan lo aplica el servicio con `limites(usuario).reflexion_max`.
+    """
 
     estrellas: Optional[int] = Field(default=None, ge=1, le=5)
-    reflexion: Optional[str] = Field(default=None, max_length=150)
+    reflexion: Optional[str] = Field(default=None, max_length=500)
+    # Feedback privado que va debajo de las estrellas ("¿qué te hubiese gustado
+    # recibir?"). Nunca se publica ni viaja en un link compartido.
+    comentario_carta: Optional[str] = Field(default=None, max_length=150)
     completada: bool = True
 
 
 class CompartirCreate(BaseModel):
     """M5 · crear un link. carta_sola (sin datos tuyos) o ejercicio (reflexión + fotos).
 
-    En v1 free el front sólo ofrece `carta_sola`; `ejercicio` queda soportado en el
-    backend para reactivarlo en premium. La nota personal va junto a la carta (≤150).
+    `ejercicio` es premium (lo aplica el servicio, no el front). La nota personal va
+    junto a la carta; su `max_length` acá es el tope duro del borde (500 = premium) y
+    el tope real por plan sale de `limites(usuario).reflexion_max`.
     """
 
     entrega_id: str
     modo: str = Field(pattern="^(carta_sola|ejercicio)$")
-    nota: Optional[str] = Field(default=None, max_length=150)
+    nota: Optional[str] = Field(default=None, max_length=500)

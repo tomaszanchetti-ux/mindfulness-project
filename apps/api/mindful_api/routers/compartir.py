@@ -21,7 +21,7 @@ def crear(
     s: Session = Depends(get_session),
     usuario: Usuario = Depends(get_current_user),
 ) -> dict:
-    return crear_compartido(s, usuario.id, body.entrega_id, body.modo, nota=body.nota)
+    return crear_compartido(s, usuario, body.entrega_id, body.modo, nota=body.nota)
 
 
 @router.delete("/{compartido_id}", status_code=status.HTTP_204_NO_CONTENT)
