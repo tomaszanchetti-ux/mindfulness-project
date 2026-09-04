@@ -47,19 +47,20 @@ def _leer(usuario_id: str) -> Usuario:
 
 
 # ── Eventos de Stripe (la forma real, recortada a lo que miramos) ────────────
-def _evento_alta(usuario_id: str, customer: str, evento_id: str = "evt_alta") -> dict:
+def _evento_alta(usuario_id: str, customer, evento_id: str = "evt_alta", **extra) -> dict:
+    objeto = {
+        "id": "cs_test_1",
+        "client_reference_id": usuario_id,
+        "customer": customer,
+        "subscription": "sub_test_1",  # sin expandir: fuerza el respaldo +366 d
+        "created": AHORA,
+    }
+    objeto.update(extra)
     return {
         "id": evento_id,
         "type": "checkout.session.completed",
         "created": AHORA,
-        "data": {
-            "object": {
-                "id": "cs_test_1",
-                "client_reference_id": usuario_id,
-                "customer": customer,
-                "subscription": "sub_test_1",  # sin expandir: fuerza el respaldo +366 d
-            }
-        },
+        "data": {"object": objeto},
     }
 
 
@@ -209,6 +210,65 @@ def test_subscription_deleted_vuelve_a_free(enviar_webhook):
     assert u.plan == "free" and u.plan_hasta is None
     # El cliente de Stripe NO se borra: si vuelve, reusamos el mismo.
     assert u.stripe_customer_id == "cus_baja"
+
+
+# ── La plata: "completado" no es "cobrado" ──────────────────────────────────
+def test_checkout_completado_sin_cobrar_no_activa_premium(enviar_webhook):
+    """`checkout.session.completed` con `payment_status="unpaid"` es lo normal en
+    los métodos de pago diferidos (SEPA débito, boleto). Todavía no entró la plata:
+    se guarda el cliente para engancharlo después, pero premium NO se activa."""
+    sub = "test|pago-sin-cobrar"
+    uid = _usuario(sub)
+
+    r = enviar_webhook(_evento_alta(uid, "cus_sin_cobrar", payment_status="unpaid"))
+    assert r.json() == {"ok": True, "resultado": "pago-pendiente"}
+
+    u = _leer(uid)
+    assert u.plan == "free" and u.plan_hasta is None
+    assert u.stripe_customer_id == "cus_sin_cobrar"
+    assert client.get("/api/perfil", headers=_headers(sub)).json()["plan"] == "free"
+
+
+def test_async_payment_succeeded_activa_el_pago_diferido(enviar_webhook):
+    """El evento que SÍ activa a quien paga por SEPA. Sin suscribirlo en el
+    dashboard de Stripe, esa gente paga y nunca recibe su premium."""
+    sub = "test|pago-diferido"
+    uid = _usuario(sub)
+    enviar_webhook(_evento_alta(uid, "cus_diferido", payment_status="unpaid"))
+
+    evento = _evento_alta(uid, "cus_diferido", evento_id="evt_async", payment_status="unpaid")
+    evento["type"] = "checkout.session.async_payment_succeeded"
+    assert enviar_webhook(evento).json() == {"ok": True, "resultado": "premium-activado"}
+    assert client.get("/api/perfil", headers=_headers(sub)).json()["plan"] == "premium"
+
+
+def test_async_payment_failed_no_activa_nada(enviar_webhook):
+    sub = "test|pago-diferido-ko"
+    uid = _usuario(sub)
+    evento = _evento_alta(uid, "cus_diferido_ko", payment_status="unpaid")
+    evento["type"] = "checkout.session.async_payment_failed"
+    assert enviar_webhook(evento).json() == {"ok": True, "resultado": "ignorado"}
+    assert _leer(uid).plan == "free"
+
+
+def test_sin_customer_anclado_no_se_activa_premium(enviar_webhook):
+    """Sin `stripe_customer_id` guardado no hay renovación, ni baja, ni portal:
+    sería premium vitalicio e ingestionable. Preferimos no activar."""
+    sub = "test|pago-sin-customer"
+    uid = _usuario(sub)
+    r = enviar_webhook(_evento_alta(uid, None))
+    assert r.json() == {"ok": True, "resultado": "ignorado"}
+    u = _leer(uid)
+    assert u.plan == "free" and u.stripe_customer_id is None
+
+
+def test_customer_expandido_se_guarda_igual(enviar_webhook):
+    """Stripe puede mandar `customer` expandido como objeto en vez del id suelto."""
+    sub = "test|pago-cus-expandido"
+    uid = _usuario(sub)
+    evento = _evento_alta(uid, {"id": "cus_expandido", "object": "customer"})
+    assert enviar_webhook(evento).json()["resultado"] == "premium-activado"
+    assert _leer(uid).stripe_customer_id == "cus_expandido"
 
 
 def test_usuario_inexistente_se_ignora_sin_romper(enviar_webhook):

@@ -70,4 +70,20 @@ async def webhook(request: Request, s: Session = Depends(get_session)) -> dict:
     except (ValueError, stripe.SignatureVerificationError) as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Firma inválida") from exc
 
-    return {"ok": True, "resultado": pagos_stripe.procesar_evento(s, evento)}
+    # Red de última instancia: la firma ya está verificada, o sea que el evento es
+    # legítimo. Si igual algo revienta (una forma de payload que no previmos, la DB
+    # caída), un 5xx haría que Stripe lo reintente por días — y con el mismo bug,
+    # con el mismo resultado. Devolvemos 200 con `ok: False` para que deje de
+    # reintentar, y dejamos el error en el log: ESE log es la alarma, y el evento
+    # se puede reenviar a mano desde el dashboard de Stripe cuando esté arreglado.
+    try:
+        resultado = pagos_stripe.procesar_evento(s, evento)
+    except Exception as exc:  # noqa: BLE001 — a propósito: nada sale de acá como 5xx
+        s.rollback()
+        print(
+            f"[stripe:error-interno] {type(exc).__name__}: {exc}",
+            flush=True,
+        )
+        return {"ok": False, "resultado": "error-interno"}
+
+    return {"ok": True, "resultado": resultado}
