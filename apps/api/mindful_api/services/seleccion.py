@@ -153,3 +153,88 @@ def elegir_carta(perfil: Perfil, cartas: list[dict], modo: str = "v1",
 
     # 6. Sorteo ponderado: a más peso, más chance; el azar decide.
     return rng.choices(frescas, weights=pesos, k=1)[0]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WS24 · A1.3 · Cambiar la carta del día (premium, hasta 3 veces)
+#
+# La válvula del "hoy no quiero moverme": misma pausa, mismo pilar, OTRO eje.
+# Sigue llegando UNA carta por día; el cambio la reemplaza, no la duplica.
+# ─────────────────────────────────────────────────────────────────────────────
+class SinCandidatas(Exception):
+    """El pilar se quedó sin cartas para ofrecer (el servicio lo traduce a 409)."""
+
+
+def _eje_contrario(accion: str) -> set:
+    """Quietud ↔ movimiento. Acción fuera del eje → conjunto vacío (no fuerza nada)."""
+    if accion in EJE_QUIETUD:
+        return EJE_MOVIMIENTO
+    if accion in EJE_MOVIMIENTO:
+        return EJE_QUIETUD
+    return set()
+
+
+def _sortear_ponderado(candidatas: list[dict], historial: list[Entrega],
+                       rng: random.Random) -> dict:
+    """Mismo criterio blando que `elegir_carta`: las ⭐ inclinan, nunca deciden."""
+    afin = afinidad_por_accion(historial)
+    pesos = [
+        max(PISO_AFINIDAD * 0.5, _peso_accion(afin.get(c["accion"], ESTRELLA_NEUTRA), "v2"))
+        for c in candidatas
+    ]
+    return rng.choices(candidatas, weights=pesos, k=1)[0]
+
+
+def cambiar_carta(perfil: Perfil, pool: list[dict], actual: dict,
+                  descartadas: set, hoy: int,
+                  rng: Optional[random.Random] = None) -> dict:
+    """La carta de reemplazo de hoy. Determinística bajo `rng`, como `elegir_carta`.
+
+    `perfil.historial` NO incluye la entrega de hoy (si no, la carta que se está
+    cambiando se bloquearía a sí misma y ensuciaría la ventana de concepto).
+    `descartadas` son los ids ya rechazados hoy; `hoy` es el ordinal de la fecha.
+
+    Cascada de fallbacks (nunca rompe salvo que el pilar quede realmente vacío):
+      1. Cruza el eje, con las dos ventanas de 7 días (carta y concepto).
+      2. Mismo pilar sin cruzar el eje, con las dos ventanas.
+      3. Suelta la ventana de concepto (queda la de carta).
+      4. Cualquier carta del pilar que no esté descartada.
+    En los cuatro niveles: nunca la actual, nunca una descartada hoy, nunca la de
+    ayer. Sin candidatas → `SinCandidatas`.
+    """
+    rng = rng or random.Random()
+
+    # Lo que hoy ya no puede volver: la carta en pantalla + las que descartó.
+    fuera = set(descartadas) | {actual["id"]}
+    ayer_id = perfil.historial[-1].carta_id if perfil.historial else None
+
+    candidatas = [
+        c for c in pool
+        if c["categoria"] == actual["categoria"]
+        and c["id"] not in fuera
+        and c["id"] != ayer_id
+    ]
+
+    # Ventanas de no-repetición (idénticas a las de `elegir_carta`).
+    en_ventana = [e for e in perfil.historial if e.dia > hoy - 1 - VENTANA_NO_REPETIR]
+    vistas = {e.carta_id for e in en_ventana}
+    conceptos_vistos = {e.concepto for e in en_ventana if e.concepto}
+    # Una "gemela" de la carta que acaba de rechazar es la misma experiencia con
+    # otra etiqueta: los conceptos de hoy también cuentan (canon_cartas.md R5).
+    conceptos_vistos |= {c.get("concepto") for c in pool
+                         if c["id"] in fuera and c.get("concepto")}
+
+    sin_repetir = [c for c in candidatas if c["id"] not in vistas]
+    frescas = [c for c in sin_repetir if c.get("concepto") not in conceptos_vistos]
+    contrario = _eje_contrario(actual["accion"])
+
+    for nivel in (
+        [c for c in frescas if c["accion"] in contrario],   # 1. cruza el eje
+        frescas,                                            # 2. mismo pilar, mismo eje
+        sin_repetir,                                        # 3. suelto el concepto
+        candidatas,                                         # 4. lo que quede del pilar
+    ):
+        if nivel:
+            return _sortear_ponderado(nivel, perfil.historial, rng)
+
+    raise SinCandidatas("No quedan cartas para cambiar hoy")
