@@ -18,6 +18,8 @@ from mindful_api.db.models import Usuario
 @pytest.fixture(scope="session", autouse=True)
 def _limpiar_mundo_2():
     with SessionLocal() as s:
-        s.execute(delete(Usuario))
+        # WS24: los usuarios "demo|…" son los del navegador local (Q/A visual de
+        # Tomás): no se tocan, para que una corrida de tests no le borre la sesión.
+        s.execute(delete(Usuario).where(~Usuario.firebase_uid.like("demo|%")))
         s.commit()
     yield

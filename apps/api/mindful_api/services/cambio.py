@@ -17,18 +17,33 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db.models import Carta, Entrega, Usuario
-from .entrega import EntregaMotor, Perfil, _fecha_local, _salida, _tz
+from .entrega import Perfil, _fecha_local, _salida, _tz, historial_motor
 from .plan import limites
 from .seleccion import SinCandidatas, cambiar_carta
 
 
 def _esta_cerrada(entrega: Entrega) -> bool:
-    """La Pausa ya se vivió: hay cierre, estrellas o reflexión. No se toca la carta."""
-    return bool(entrega.completada or entrega.estrellas is not None or entrega.reflexion)
+    """La Pausa ya se vivió: hay cierre, estrellas, reflexión o comentario.
+
+    El `comentario_carta` cuenta: el front solo lo muestra DESPUÉS de elegir las
+    estrellas, así que si hay comentario la Pausa ya se vivió — y dejarlo cambiar
+    dejaría el comentario pegado a la entrega apuntando a OTRA carta.
+    """
+    return bool(
+        entrega.completada
+        or entrega.estrellas is not None
+        or entrega.reflexion
+        or entrega.comentario_carta
+    )
 
 
 def cambiar_carta_del_dia(s: Session, usuario: Usuario, entrega_id: str) -> dict:
-    entrega = s.get(Entrega, entrega_id)
+    # Cupo atómico: la fila de la entrega se lee CON BLOQUEO (SELECT ... FOR UPDATE).
+    # Sin el lock, dos POST simultáneos leen `cambios` antes de que el otro commitee
+    # y los dos pasan el tope (leer-y-después-escribir). Con el lock el segundo
+    # espera al commit del primero y ve el contador ya actualizado. Se suelta al
+    # commit / cierre de la sesión.
+    entrega = s.get(Entrega, entrega_id, with_for_update=True)
     # Aislamiento: 404 si no existe O es de otro usuario (no filtra existencia ajena).
     if entrega is None or entrega.usuario_id != usuario.id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Entrega no encontrada")
@@ -67,16 +82,12 @@ def cambiar_carta_del_dia(s: Session, usuario: Usuario, entrega_id: str) -> dict
         .where(Entrega.usuario_id == usuario.id)
         .order_by(Entrega.fecha)
     ).all()
-    historial = [
-        EntregaMotor(
-            carta_id=e.carta_id, categoria=cat, accion=acc,
-            dia=_fecha_local(e.fecha, tz).toordinal(), concepto=conc,
-            estrellas=e.estrellas, completada=e.completada,
-        )
-        for (e, cat, acc, conc) in rows
-        if e.id != entrega.id
-    ]
-    perfil = Perfil(historial=historial)
+    # Mismo constructor que la entrega diaria (incluye las descartadas de otros
+    # días como vistas); la entrega de HOY se excluye — sus descartadas de hoy
+    # viajan aparte en `descartadas` y la carta actual en `actual`.
+    perfil = Perfil(historial=historial_motor(
+        s, [r for r in rows if r[0].id != entrega.id], tz
+    ))
 
     pool = [
         {"id": c.id, "categoria": c.categoria_slug, "accion": c.accion_slug,

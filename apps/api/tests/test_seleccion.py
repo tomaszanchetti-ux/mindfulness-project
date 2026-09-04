@@ -190,6 +190,43 @@ def test_cambiar_ultimo_fallback_cualquiera_del_pilar():
     assert nueva["id"] == "m1"
 
 
+def test_cambiar_reintenta_el_cruce_del_eje_en_cada_nivel():
+    # B1: la ÚNICA carta que cruza el eje tiene concepto repetido → igual se sirve.
+    # `frescas` queda vacío (las dos candidatas repiten concepto), así que el nivel
+    # se abre a `sin_repetir` — y ahí se vuelve a intentar cruzar el eje antes de
+    # conformarse con el mismo eje. Sin eso, el azar podía servir la de movimiento.
+    actual = _c("a1", "p", "hacer", "c-a1")            # movimiento
+    cruza = _c("q1", "p", "contemplar", "c-rep")       # quietud, concepto repetido
+    mismo = _c("m1", "p", "caminar", "c-rep2")         # movimiento, concepto repetido
+    pool = [actual, cruza, mismo, _c("z1", "otro", "hacer", "c-z1")]
+    perfil = Perfil(historial=[
+        Entrega(carta_id="z8", categoria="otro", accion="respirar",
+                dia=HOY - 3, concepto="c-rep"),
+        Entrega(carta_id="z9", categoria="otro", accion="hacer",
+                dia=HOY - 1, concepto="c-rep2"),
+    ])
+    for seed in range(10):
+        nueva = cambiar_carta(perfil, pool, actual, set(), HOY, rng=random.Random(seed))
+        assert nueva["id"] == "q1", f"seed {seed} → {nueva['id']}"
+        assert _eje_de(nueva["accion"]) != _eje_de(actual["accion"])
+
+
+def test_cambiar_no_bloquea_una_carta_de_hace_treinta_dias():
+    # B2: "nunca la de ayer" vale solo si la última entrega fue AYER de verdad.
+    # El usuario volvió después de un mes: esa carta ya salió de las dos ventanas
+    # de 7 días y no puede seguir bloqueando el único cambio posible.
+    actual = _c("a1", "p", "hacer", "c-a1")
+    vieja = _c("b1", "p", "contemplar", "c-b1")
+    perfil = Perfil(historial=[
+        Entrega(carta_id="b1", categoria="p", accion="contemplar",
+                dia=HOY - 30, concepto="c-b1"),
+    ])
+    nueva = cambiar_carta(perfil, [actual, vieja], actual, set(), HOY,
+                          rng=random.Random(9))
+    assert nueva["id"] == "b1"
+    assert _eje_de(nueva["accion"]) != _eje_de(actual["accion"])
+
+
 def test_cambiar_nunca_devuelve_la_de_ayer():
     actual = _c("a1", "p", "contemplar", "c-a1")
     pool = [actual, _c("m1", "p", "caminar", "c-m1")]

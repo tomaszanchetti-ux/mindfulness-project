@@ -175,13 +175,26 @@ def _eje_contrario(accion: str) -> set:
 
 
 def _sortear_ponderado(candidatas: list[dict], historial: list[Entrega],
-                       rng: random.Random) -> dict:
-    """Mismo criterio blando que `elegir_carta`: las ⭐ inclinan, nunca deciden."""
+                       rng: random.Random,
+                       accion_actual: Optional[str] = None) -> dict:
+    """El MISMO dial que la entrega diaria, con el castigo mirando a la carta actual.
+
+    · Afinidad: `_peso_accion(..., "v1")` — el modo con el que `obtener_carta_del_dia`
+      llama a `elegir_carta`. Entre una acción de 5⭐ y una de 1⭐ el sesgo es 3:1,
+      no 6,6:1 (que es lo que daba el modo "v2"): las ⭐ inclinan, nunca deciden.
+    · Variedad: si la candidata repite la acción de la carta que el usuario está
+      RECHAZANDO (`accion_actual`), pesa `CASTIGO_MISMA_ACCION` — el equivalente al
+      castigo que `elegir_carta` aplica contra la acción de ayer. Muerde solo en los
+      pasos que no cruzan el eje (los que cruzan ya excluyen esa acción por diseño).
+    · Piso: ninguna candidata llega a 0 (`PISO_AFINIDAD * 0.5`).
+    """
     afin = afinidad_por_accion(historial)
-    pesos = [
-        max(PISO_AFINIDAD * 0.5, _peso_accion(afin.get(c["accion"], ESTRELLA_NEUTRA), "v2"))
-        for c in candidatas
-    ]
+    pesos = []
+    for c in candidatas:
+        peso = _peso_accion(afin.get(c["accion"], ESTRELLA_NEUTRA), "v1")
+        if accion_actual is not None and c["accion"] == accion_actual:
+            peso *= CASTIGO_MISMA_ACCION
+        pesos.append(max(PISO_AFINIDAD * 0.5, peso))
     return rng.choices(candidatas, weights=pesos, k=1)[0]
 
 
@@ -194,19 +207,26 @@ def cambiar_carta(perfil: Perfil, pool: list[dict], actual: dict,
     cambiando se bloquearía a sí misma y ensuciaría la ventana de concepto).
     `descartadas` son los ids ya rechazados hoy; `hoy` es el ordinal de la fecha.
 
-    Cascada de fallbacks (nunca rompe salvo que el pilar quede realmente vacío):
-      1. Cruza el eje, con las dos ventanas de 7 días (carta y concepto).
-      2. Mismo pilar sin cruzar el eje, con las dos ventanas.
-      3. Suelta la ventana de concepto (queda la de carta).
-      4. Cualquier carta del pilar que no esté descartada.
-    En los cuatro niveles: nunca la actual, nunca una descartada hoy, nunca la de
-    ayer. Sin candidatas → `SinCandidatas`.
+    Cascada de 6 pasos: el cruce del eje se REINTENTA en cada nivel de apertura,
+    porque cruzar el eje es la bandera de la card y no debe caerse por un candado
+    secundario. Para cada conjunto —`frescas` (las dos ventanas de 7 días),
+    `sin_repetir` (soltando el concepto) y `candidatas` (todo el pilar)— primero
+    las que cruzan el eje y recién después las del mismo eje:
+      1. frescas que cruzan el eje      2. frescas (mismo eje)
+      3. sin_repetir que cruzan el eje  4. sin_repetir (mismo eje)
+      5. candidatas que cruzan el eje   6. candidatas (mismo eje)
+    En los seis pasos: nunca la actual, nunca una descartada hoy, y nunca la de
+    ayer cuando ayer fue de verdad ayer (la última entrega es de `hoy - 1`); una
+    carta vista hace semanas no bloquea nada. Sin candidatas → `SinCandidatas`.
     """
     rng = rng or random.Random()
 
     # Lo que hoy ya no puede volver: la carta en pantalla + las que descartó.
     fuera = set(descartadas) | {actual["id"]}
-    ayer_id = perfil.historial[-1].carta_id if perfil.historial else None
+    # "Nunca la de ayer" solo si la última entrega fue AYER de verdad: si el usuario
+    # volvió después de 30 días, esa carta ya no bloquea (y ya salió de la ventana).
+    ultima = perfil.historial[-1] if perfil.historial else None
+    ayer_id = ultima.carta_id if ultima is not None and ultima.dia == hoy - 1 else None
 
     candidatas = [
         c for c in pool
@@ -228,13 +248,21 @@ def cambiar_carta(perfil: Perfil, pool: list[dict], actual: dict,
     frescas = [c for c in sin_repetir if c.get("concepto") not in conceptos_vistos]
     contrario = _eje_contrario(actual["accion"])
 
+    # 6 pasos (decisión WS24 tras el Q/A): el EJE es el motivo del cambio, así que
+    # le gana a la ventana de CONCEPTO; pero la ventana de CARTA le gana al eje
+    # (repetir una carta vista esta semana es peor que repetir el eje).
+    #   1. frescas × otro eje   2. sin_repetir × otro eje   3. frescas
+    #   4. sin_repetir          5. candidatas × otro eje    6. candidatas
+    def _cruzan(conjunto):
+        return [c for c in conjunto if c["accion"] in contrario]
+
     for nivel in (
-        [c for c in frescas if c["accion"] in contrario],   # 1. cruza el eje
-        frescas,                                            # 2. mismo pilar, mismo eje
-        sin_repetir,                                        # 3. suelto el concepto
-        candidatas,                                         # 4. lo que quede del pilar
+        _cruzan(frescas), _cruzan(sin_repetir),
+        frescas, sin_repetir,
+        _cruzan(candidatas), candidatas,
     ):
         if nivel:
-            return _sortear_ponderado(nivel, perfil.historial, rng)
+            return _sortear_ponderado(nivel, perfil.historial, rng,
+                                      accion_actual=actual["accion"])
 
     raise SinCandidatas("No quedan cartas para cambiar hoy")
