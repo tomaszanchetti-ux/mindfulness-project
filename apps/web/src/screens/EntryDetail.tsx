@@ -170,13 +170,13 @@ function BaulPage({
           <span className="ficha-titulo-punto" style={{ background: cat.color_accent }} />
           {cat.nombre}
         </h2>
-        <div className="ficha-meta">
-          <span>{fechaCorta(item.fecha)}</span>
-          {item.estrellas != null && (
-            <span className="stars-sm"><Stars value={item.estrellas} readOnly /></span>
-          )}
-        </div>
+        <span className="ficha-fecha">{fechaCorta(item.fecha)}</span>
       </div>
+      {/* La acción inicial, sutil, alineada con el título. */}
+      <p className="ficha-accion">
+        <img src={assetUrl(item.carta.accion.glifo)} alt="" />
+        <span>{item.carta.accion.nombre}</span>
+      </p>
 
       <div className="ficha-hero">
         <button
@@ -187,8 +187,8 @@ function BaulPage({
         >
           <span className="ficha-mini-band" style={{ background: cat.color_accent }} />
           <span className="ficha-mini-frase">{item.carta.frase}</span>
-          <img className="ficha-mini-glifo" src={assetUrl(item.carta.accion.glifo)} alt="" />
-          <span className="ficha-mini-accion">{item.carta.accion.nombre}</span>
+          {/* El dibujo del pilar: la identidad de la carta, a la vista. */}
+          <img className="ficha-mini-dibujo" src={assetUrl(cat.img)} alt="" />
           <span className="ficha-mini-ver">ver carta ↗</span>
         </button>
 
@@ -244,6 +244,10 @@ function BaulPage({
         <button className="link" onClick={onDelete}>
           Eliminar esta Pausa
         </button>
+        {/* Las estrellas: siempre tuyas, al pie y discretas. */}
+        {item.estrellas != null && (
+          <span className="ficha-estrellas stars-sm"><Stars value={item.estrellas} readOnly /></span>
+        )}
       </div>
 
       {hayMas && <div className="baul-more" aria-hidden>⌄</div>}
