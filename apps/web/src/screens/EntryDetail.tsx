@@ -7,14 +7,14 @@
 // (PUT /api/baul/{id}/visibilidad). Es la única puerta entre el Baúl privado y
 // la comunidad: las estrellas nunca salen de acá.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "../components/Card";
 import { Button } from "../components/Button";
 import { Stars } from "../components/Stars";
-import { api } from "../lib/api";
+import { api, assetUrl } from "../lib/api";
 import { FotoPrivada } from "../components/FotoPrivada";
-import { fechaLarga } from "../lib/format";
+import { fechaCorta } from "../lib/format";
 import type { ItemBaul, Visibilidad } from "../lib/types";
 
 export function EntryDetail() {
@@ -117,7 +117,11 @@ export function EntryDetail() {
   );
 }
 
-// —— Una página del pager: una experiencia completa, centrada. ——
+// —— Una página del pager: la FICHA de una Pausa, entera en una pantalla (WS25). ——
+// Título = el pilar. Héroe = la carta en miniatura (tocarla la abre en grande) +
+// las fotos (o el texto de la Pausa si no hay fotos). La reflexión va en una caja
+// de altura fija que se desliza por dentro. Visibilidad, Enviar y Eliminar quedan
+// siempre a la vista. Esta misma ficha es la que verá la comunidad.
 function BaulPage({
   item,
   hayMas,
@@ -131,11 +135,21 @@ function BaulPage({
   onDelete: () => void;
   onVisibilidad: (v: Visibilidad) => Promise<void>;
 }) {
-  const [flipped, setFlipped] = useState(true); // mostramos el dorso (la frase)
+  const [verCarta, setVerCarta] = useState(false); // la carta en grande
+  const [flipped, setFlipped] = useState(true); // en grande arranca por el dorso (la frase)
   const [zoom, setZoom] = useState<string | null>(null); // foto a pantalla completa
   const [cambiando, setCambiando] = useState(false);
+  const [desborda, setDesborda] = useState(false); // la reflexión no entra en la caja
+  const reflRef = useRef<HTMLDivElement>(null);
 
   const compartida = item.visibilidad === "compartida";
+  const cat = item.carta.categoria;
+  const fotos = item.fotos.slice(0, 3);
+
+  useLayoutEffect(() => {
+    const el = reflRef.current;
+    if (el) setDesborda(el.scrollHeight > el.clientHeight + 2);
+  }, [item.reflexion]);
 
   const alternar = async (quiere: boolean) => {
     if (cambiando) return;
@@ -150,65 +164,78 @@ function BaulPage({
   };
 
   return (
-    <div className="baul-page-inner">
-      <div className="detail-meta">
-        <span>{fechaLarga(item.fecha)}</span>
-        {item.estrellas != null && (
-          <span className="stars-sm"><Stars value={item.estrellas} readOnly /></span>
+    <div className="baul-page-inner ficha">
+      <div className="ficha-head">
+        <h2 className="ficha-titulo" style={{ color: cat.color_text }}>
+          <span className="ficha-titulo-punto" style={{ background: cat.color_accent }} />
+          {cat.nombre}
+        </h2>
+        <div className="ficha-meta">
+          <span>{fechaCorta(item.fecha)}</span>
+          {item.estrellas != null && (
+            <span className="stars-sm"><Stars value={item.estrellas} readOnly /></span>
+          )}
+        </div>
+      </div>
+
+      <div className="ficha-hero">
+        <button
+          type="button"
+          className="ficha-mini"
+          aria-label="Ver la carta en grande"
+          onClick={() => setVerCarta(true)}
+        >
+          <span className="ficha-mini-band" style={{ background: cat.color_accent }} />
+          <span className="ficha-mini-frase">{item.carta.frase}</span>
+          <img className="ficha-mini-glifo" src={assetUrl(item.carta.accion.glifo)} alt="" />
+          <span className="ficha-mini-accion">{item.carta.accion.nombre}</span>
+          <span className="ficha-mini-ver">ver carta ↗</span>
+        </button>
+
+        {fotos.length > 0 ? (
+          <div className={`ficha-fotos n${fotos.length}`}>
+            {fotos.map((src) => (
+              <button
+                key={src}
+                type="button"
+                className="ficha-foto"
+                aria-label="Ver la foto en grande"
+                onClick={() => setZoom(src)}
+              >
+                <FotoPrivada src={src} />
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="ficha-pausa">
+            <span className="ficha-lbl">La Pausa</span>
+            <p>{item.carta.prompt}</p>
+          </div>
         )}
       </div>
 
-      <Card carta={item.carta} flipped={flipped} onFlip={() => setFlipped((f) => !f)} />
-
-      {item.reflexion && (
-        <div className="detail-block">
-          <h4>Tu reflexión</h4>
-          <p>{item.reflexion}</p>
+      <div className={`ficha-refl ${item.reflexion ? "" : "is-empty"}`}>
+        <span className="ficha-lbl">Tu reflexión</span>
+        <div className="ficha-refl-txt" ref={reflRef}>
+          {item.reflexion || "Esta Pausa la guardaste sin reflexión."}
         </div>
-      )}
-
-      {item.fotos.length > 0 && (
-        <div className="detail-photos">
-          {item.fotos.map((src) => (
-            <button
-              key={src}
-              type="button"
-              className="detail-photo-btn"
-              aria-label="Ver la foto en grande"
-              onClick={() => setZoom(src)}
-            >
-              <FotoPrivada src={src} />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* La foto en grande: toca cualquier lado para volver. */}
-      {zoom && (
-        <div className="lightbox" onClick={() => setZoom(null)}>
-          <FotoPrivada className="lightbox-img" src={zoom} />
-          <button className="lightbox-close" aria-label="Cerrar">×</button>
-        </div>
-      )}
-
-      {/* La puerta a la comunidad. Se ve siempre, en el mismo lugar de cada página. */}
-      <div className="visibilidad-box">
-        <label className="toggle-row visibilidad-row">
-          <span className="visibilidad-label">Compartida con tu comunidad</span>
-          <span className="switch">
-            <input
-              type="checkbox"
-              checked={compartida}
-              disabled={cambiando}
-              onChange={(e) => alternar(e.target.checked)}
-            />
-            <span className="slider" />
-          </span>
-        </label>
-        <p className="visibilidad-nota">
-          Solo tu comunidad la ve. Las estrellas siempre son tuyas.
-        </p>
+        {desborda && <span className="ficha-refl-fade" aria-hidden />}
+        {desborda && <span className="ficha-refl-more" aria-hidden>⌄</span>}
       </div>
+
+      {/* La puerta a la comunidad. Sin subtexto: el rótulo alcanza. */}
+      <label className="toggle-row visibilidad-row">
+        <span className="visibilidad-label">Compartir con tu Comunidad</span>
+        <span className="switch">
+          <input
+            type="checkbox"
+            checked={compartida}
+            disabled={cambiando}
+            onChange={(e) => alternar(e.target.checked)}
+          />
+          <span className="slider" />
+        </span>
+      </label>
 
       <div className="baul-page-actions">
         <Button variant="secondary" full onClick={onShare}>
@@ -220,6 +247,24 @@ function BaulPage({
       </div>
 
       {hayMas && <div className="baul-more" aria-hidden>⌄</div>}
+
+      {/* La carta en grande: frente y dorso como siempre; toca afuera para volver. */}
+      {verCarta && (
+        <div className="lightbox" onClick={() => setVerCarta(false)}>
+          <div className="lightbox-carta" onClick={(e) => e.stopPropagation()}>
+            <Card carta={item.carta} flipped={flipped} onFlip={() => setFlipped((f) => !f)} />
+          </div>
+          <button className="lightbox-close" aria-label="Cerrar">×</button>
+        </div>
+      )}
+
+      {/* La foto en grande: toca cualquier lado para volver. */}
+      {zoom && (
+        <div className="lightbox" onClick={() => setZoom(null)}>
+          <FotoPrivada className="lightbox-img" src={zoom} />
+          <button className="lightbox-close" aria-label="Cerrar">×</button>
+        </div>
+      )}
     </div>
   );
 }
