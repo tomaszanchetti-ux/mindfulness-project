@@ -188,12 +188,14 @@ cartas, pero la tracción viene de videos cortos y reales.
 | Ola | Qué |
 |---|---|
 | **D0 · Bloque 0 + estrategia** | Medir la realidad: qué hacen apps parecidas en TikTok y qué les funciona. Tres ejes de contenido: la carta del día · la Pausa hecha en la vida real (Tomás o alguien de confianza, con el teléfono) · lo que la comunidad escribe. Tono, reglas, cadencia semanal, qué se mide. |
-| **D1 · Generador de piezas** | Posteos verticales (9:16) generados desde el catálogo real: dibujo del pilar + frase + "Dwellia" + link, con la estética de la app. Meses de contenido sin producir nada nuevo. |
-| **D2 · Guiones** | Treinta guiones de video de 15-30 s para grabar con el teléfono: gancho, tomas, texto en pantalla, descripción y hashtags. |
+| **D1a · Personajes + 3 sketches piloto** | Sketches animados de 15-30 s con personajes de caricatura sencillos y elegantes, en el estilo de la app (línea fina tierra, acentos salvia, fondo papel). Historias suaves de autosuperación: salir de la locura del día a día, conectar con uno mismo y con el entorno, pasear al perro, dejar el teléfono. Animación de recorte, limpia, sin sobrecargar: divertido pero sutil. Remate siempre igual: la carta del día de Dwellia + link. Sin voz (texto en pantalla + música libre elegida al subir). Se diseñan 2-3 personajes fijos con personalidad y 3 pilotos para decidir el tono. |
+| **D1b · La fábrica de sketches** | Cada sketch se escribe como un guion corto (escena, personaje, gesto, texto, remate) y un motor lo renderiza en vertical (Chrome cuadro a cuadro + ffmpeg, ya disponibles). Un sketch nuevo cuesta minutos: eso hace viable el ritmo diario. También saca los carruseles de cartas (dibujo + frase + link) desde el catálogo. |
+| **D2 · Guiones** | Banco de guiones para los sketches (gancho en el primer segundo, historia mínima, remate) + algunos videos reales con el teléfono como complemento. Descripciones y hashtags. |
 | **D3 · Puerta de entrada** | Landing para el link de la bio, links con seguimiento (UTM) y tablero mínimo de cuánta gente llega desde TikTok y cuánta completa el onboarding. |
 
 Límites: Claude no crea ni opera la cuenta ni publica; no se generan fotos
-realistas de personas. El link en la bio puede exigir cuenta de empresa o un
+realistas de personas; la música no se genera (se elige al subir); animación simple
+y cuidada, no cine. Se hace DESPUÉS de tener la app lista (B y C). El link en la bio puede exigir cuenta de empresa o un
 mínimo de seguidores: se ve al abrir la cuenta.
 
 ## 6. Costos del MVP (mensual, estimado)
