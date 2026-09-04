@@ -29,6 +29,8 @@ import { PublicShare } from "./screens/PublicShare";
 import { Profile } from "./screens/Profile";
 import { Metodo } from "./screens/Metodo";
 import { Terms } from "./screens/Terms";
+import { Premium } from "./screens/Premium";
+import { PremiumGracias } from "./screens/PremiumGracias";
 
 // Guarda de sesión: sin usuario logueado, todo lo privado vuelve al login.
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -86,6 +88,9 @@ function App() {
             <Route path="/compartir/:id" element={<RequireAuth><RequireOnboarding><Share /></RequireOnboarding></RequireAuth>} />
             <Route path="/perfil" element={<RequireAuth><RequireOnboarding><Profile /></RequireOnboarding></RequireAuth>} />
             <Route path="/metodo" element={<RequireAuth><RequireOnboarding><Metodo /></RequireOnboarding></RequireAuth>} />
+            {/* WS24 · premium (Stripe por web). /premium/gracias = vuelta del Checkout. */}
+            <Route path="/premium" element={<RequireAuth><RequireOnboarding><Premium /></RequireOnboarding></RequireAuth>} />
+            <Route path="/premium/gracias" element={<RequireAuth><RequireOnboarding><PremiumGracias /></RequireOnboarding></RequireAuth>} />
 
             {/* Público: el receptor del regalo, sin login. */}
             <Route path="/c/:token" element={<PublicShare />} />
