@@ -16,13 +16,15 @@ from sqlalchemy.orm import Session
 from ..auth import get_current_user
 from ..db.base import get_session
 from ..db.models import Usuario
-from ..schemas import PerfilOut, PerfilUpdate
+from ..schemas import LimitesOut, PerfilOut, PerfilUpdate
+from ..services.plan import limites
 
 router = APIRouter(prefix="/api/perfil", tags=["perfil"])
 
 
 def _a_salida(s: Session, usuario: Usuario) -> PerfilOut:
     terminos = usuario.terminos_aceptados_at is not None
+    lim = limites(usuario)
     return PerfilOut(
         email=usuario.email,
         nombre=usuario.nombre,
@@ -34,6 +36,10 @@ def _a_salida(s: Session, usuario: Usuario) -> PerfilOut:
         terminos_aceptados=terminos,
         # WS17/WS22: ni pilares ni acciones se eligen. Onboarding completo = términos.
         onboarding_completo=terminos,
+        # WS24: el plan y sus límites salen de un solo lugar (services/plan.py).
+        plan=lim.plan,
+        plan_hasta=usuario.plan_hasta if lim.plan == "premium" else None,
+        limites=LimitesOut(**lim.dict()),
     )
 
 

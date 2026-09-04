@@ -42,6 +42,13 @@ class Settings(BaseSettings):
     vapid_private_key: str = ""
     vapid_sub: str = "mailto:tomaszanchetti@gmail.com"  # contacto VAPID requerido por el estándar
 
+    # Pagos premium (WS24 · A1.2). Se cobra por web con Stripe Checkout, sin tiendas.
+    # Sin `stripe_secret_key` los pagos están APAGADOS (dev/tests): checkout y portal
+    # devuelven 503 y el front no muestra el botón (lo dice /api/pagos/estado).
+    stripe_secret_key: str = ""
+    stripe_webhook_secret: str = ""  # "whsec_…" — firma del webhook; vacío = webhook cerrado
+    stripe_price_id: str = ""  # Price de la suscripción ANUAL de 8,99 € ("Dwellia premium")
+
     # CORS para la PWA / app (Expo dev server).
     cors_origins: str = "http://localhost:8081,http://localhost:19006,http://127.0.0.1:8081"
 

@@ -13,6 +13,8 @@ const TABS = [
 
 // Rutas sin tab bar (experiencias de foco): ritual, compartir, onboarding, login,
 // público, y el detalle del Baúl (pager a pantalla completa · "/baul/" ≠ "/baul").
+// WS24: "/premium" SÍ lleva tabs (se lee y se vuelve, como el método); la vuelta
+// del Checkout "/premium/gracias" no, es un momento de cierre a pantalla limpia.
 const SIN_TABS = [
   "/onboarding",
   "/login",
@@ -22,6 +24,7 @@ const SIN_TABS = [
   "/compartir",
   "/baul/",
   "/terminos",
+  "/premium/gracias",
 ];
 
 export function Frame({ children }: { children: ReactNode }) {

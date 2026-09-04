@@ -1,9 +1,9 @@
 """M3 captura / M4 muestra · las fotos de una pausa.
 
-Reglas: en la versión free es **1 foto por pausa** (decisión Tomás WS16; subir a
-3 queda para premium — ajusta el "hasta 3" del canon M3). Solo imágenes, ≤8 MB.
-Siempre del usuario logueado — las fotos jamás se sirven sin login (el modo
-ejercicio público de M5 queda para v2/premium).
+Reglas: el cupo por pausa sale del plan (`limites(usuario).fotos_max`: 1 free, 3
+premium) — acá no se hardcodea ningún número. Solo imágenes, ≤8 MB. Siempre del
+usuario logueado: acá las fotos jamás se sirven sin login (la única otra puerta
+es el regalo `ejercicio`, donde el permiso es el token — ver services/compartir).
 """
 
 from __future__ import annotations
@@ -14,10 +14,10 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from ..db.models import Entrega, Foto
+from ..db.models import Entrega, Foto, Usuario
 from . import storage
+from .plan import limites
 
-MAX_FOTOS = 1  # free; premium (v2) sube a 3
 MAX_BYTES = 8 * 1024 * 1024  # 8 MB
 
 
@@ -49,9 +49,11 @@ def urls_de(s: Session, entrega_id: str) -> list[str]:
 
 
 def subir_foto(
-    s: Session, usuario_id: str, entrega_id: str,
+    s: Session, usuario: Usuario, entrega_id: str,
     contenido: bytes, content_type: str | None,
 ) -> dict:
+    """WS24 · recibe el Usuario (no el id) porque el cupo depende de su plan."""
+    usuario_id = usuario.id
     _entrega_propia(s, usuario_id, entrega_id)
 
     ext = storage.extension_para(content_type)
@@ -67,14 +69,20 @@ def subir_foto(
             status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, "La foto supera los 8 MB"
         )
 
+    max_fotos = limites(usuario).fotos_max
+    # TOCTOU: contar-y-después-insertar deja pasar dos subidas simultáneas (las dos
+    # cuentan 0 antes de que la otra commitee). Bloqueamos la fila de la entrega
+    # (SELECT ... FOR UPDATE) ANTES de contar: la segunda espera al commit de la
+    # primera, cuenta 1 y se lleva su 409. El lock se suelta al commit/close.
+    s.get(Entrega, entrega_id, with_for_update=True)
     cuantas = s.scalar(
         select(func.count()).select_from(Foto).where(Foto.entrega_id == entrega_id)
     )
-    if cuantas >= MAX_FOTOS:
+    if cuantas >= max_fotos:
         detalle = (
-            "Esta pausa ya tiene su foto"
-            if MAX_FOTOS == 1
-            else f"Esta pausa ya tiene {MAX_FOTOS} fotos"
+            "Esta pausa ya tiene su foto: tu plan permite 1 foto por pausa"
+            if max_fotos == 1
+            else f"Esta pausa ya tiene {max_fotos} fotos, el máximo de tu plan"
         )
         raise HTTPException(status.HTTP_409_CONFLICT, detalle)
 

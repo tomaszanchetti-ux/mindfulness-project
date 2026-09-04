@@ -1,4 +1,5 @@
-"""M4 · Baúl de Crecimiento Personal. Casi sólo lectura; su única escritura es el borrado.
+"""M4 · Baúl de Crecimiento Personal. Casi sólo lectura; escribe dos cosas: la
+visibilidad de una ficha y el borrado.
 
 Lee `entregas ⨝ cartas (global) ⨝ fotos`, filtrado por user_id. Dos modos de orden
 (toggle): Reciente (default) y Más valoradas. Borrado REAL (sin papelera): limpia la
@@ -25,6 +26,9 @@ def _item(s: Session, entrega: Entrega) -> dict:
         "estrellas": entrega.estrellas,
         "completada": entrega.completada,
         "reflexion": entrega.reflexion,
+        # WS25 · quién ve esta ficha: `privada` o `compartida` (con su comunidad).
+        # Las estrellas NO viajan nunca: son del dueño diga lo que diga esto.
+        "visibilidad": entrega.visibilidad,
         # URLs de la API (las imágenes son privadas; se sirven con login).
         "fotos": urls_de(s, entrega.id),
         "carta": _carta_enriquecida(s, carta),
@@ -45,6 +49,31 @@ def listar_baul(s: Session, usuario_id: str, orden: str = "reciente") -> list[di
     else:  # reciente (default)
         q = q.order_by(Entrega.fecha.desc())
     return [_item(s, e) for e in s.scalars(q).all()]
+
+
+def cambiar_visibilidad(
+    s: Session, usuario_id: str, entrega_id: str, visibilidad: str
+) -> dict:
+    """WS25 · publica o repliega la ficha de una Pausa guardada. Devuelve el ítem.
+
+    El orden importa: primero el aislamiento (una entrega ajena o inexistente es
+    404, jamás un 409 que delate que existe) y recién después la regla de negocio.
+    Solo se publica lo VIVIDO: una Pausa sin cerrar no tiene ficha que mostrar.
+    """
+    entrega = s.get(Entrega, entrega_id)
+    if entrega is None or entrega.usuario_id != usuario_id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Entrega no encontrada")
+    if not entrega.completada:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "Guarda la Pausa en tu Baúl antes de compartirla con tu comunidad",
+        )
+
+    entrega.visibilidad = visibilidad
+    s.add(entrega)
+    s.commit()
+    s.refresh(entrega)
+    return _item(s, entrega)
 
 
 def borrar_entrega(s: Session, usuario_id: str, entrega_id: str) -> None:

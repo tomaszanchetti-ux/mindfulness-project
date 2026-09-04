@@ -2,9 +2,11 @@
 // Mismo lenguaje que StoryArt: línea fina umber, acentos sage, sin rellenos pesados.
 //
 //  · AnillosCirculo — la persona en el centro, la calma como halo (el agua) y los
-//    6 pilares en TRES anillos de a dos: adentro (amor propio · sentido), la
-//    experiencia (gratitud · perspectiva), afuera y adelante (vínculos ·
-//    resiliencia). Usa colores y nombres REALES del contenido (store).
+//    6 pilares repartidos como las horas de un reloj, todos a la misma distancia
+//    (WS25 · R1). Los tres anillos punteados siguen de fondo, contando el
+//    recorrido: adentro (amor propio · sentido), la experiencia (gratitud ·
+//    perspectiva), afuera y adelante (vínculos · resiliencia). Usa colores y
+//    nombres REALES del contenido (store).
 //  · PausaDosTiempos — la anatomía de toda pausa: una acción → la calma (el agua
 //    que se aquieta) → escribir en el diario.
 
@@ -24,44 +26,43 @@ function Persona({ cx, cy }: { cx: number; cy: number }) {
   );
 }
 
-// Cada pilar vive en su anillo (canon WS22, fundamentos §4).
-const ANILLO_DE: Record<string, number> = {
-  "amor-propio": 0,
-  sentido: 0,
-  gratitud: 1,
-  perspectiva: 1,
-  vinculos: 2,
-  resiliencia: 2,
+// WS25 · R1 — los 6 pilares a UN MISMO radio, como las horas de un reloj:
+// 12 amor propio · 2 gratitud · 4 vínculos · 6 sentido · 8 perspectiva · 10 resiliencia.
+// El ángulo lo fija el slug (nunca el orden en que llega el catálogo), así el
+// dibujo sale siempre simétrico. Los tres anillos punteados quedan de fondo:
+// siguen contando el recorrido (adentro · la experiencia · afuera), pero ya no
+// mandan sobre la posición de los nodos.
+const ANGULO_DE: Record<string, number> = {
+  "amor-propio": -90,
+  gratitud: -30,
+  vinculos: 30,
+  sentido: 90,
+  perspectiva: 150,
+  resiliencia: -150,
 };
 
-// Posiciones: 2 nodos por anillo, diametralmente opuestos; cada anillo rotado
-// 60° respecto del anterior → los 6 quedan repartidos, con aire para los nombres.
-const RADIOS = [56, 82, 106];
-const ANGULOS: [number, number][] = [
-  [-90, 90],   // anillo interior: arriba / abajo
-  [-30, 150],  // medio: arriba-derecha / abajo-izquierda
-  [-150, 30],  // exterior: arriba-izquierda / abajo-derecha
-];
+const RADIOS = [56, 82, 106]; // los tres anillos del recorrido (solo fondo)
+const RADIO_PILAR = 86; // todos los pilares, a la misma distancia del centro
 
 export function AnillosCirculo({ pilares }: { pilares: CategoriaContenido[] }) {
-  const CX = 150;
-  const CY = 128;
+  const CX = 180;
+  const CY = 140;
 
-  const usados: Record<number, number> = { 0: 0, 1: 0, 2: 0 };
   const nodos = pilares
-    .filter((p) => ANILLO_DE[p.slug] !== undefined)
+    .filter((p) => ANGULO_DE[p.slug] !== undefined)
     .map((p) => {
-      const anillo = ANILLO_DE[p.slug];
-      const ang = ANGULOS[anillo][usados[anillo]++ % 2] * (Math.PI / 180);
+      const grados = ANGULO_DE[p.slug];
+      const ang = grados * (Math.PI / 180);
       return {
         ...p,
-        x: CX + RADIOS[anillo] * Math.cos(ang),
-        y: CY + RADIOS[anillo] * Math.sin(ang),
+        grados,
+        x: CX + RADIO_PILAR * Math.cos(ang),
+        y: CY + RADIO_PILAR * Math.sin(ang),
       };
     });
 
   return (
-    <svg viewBox="0 0 300 256" fill="none" aria-hidden>
+    <svg viewBox="0 0 360 276" fill="none" aria-hidden>
       {/* los tres anillos del recorrido — apenas insinuados, que no compitan */}
       {RADIOS.map((r, i) => (
         <circle
@@ -87,17 +88,26 @@ export function AnillosCirculo({ pilares }: { pilares: CategoriaContenido[] }) {
       <Persona cx={CX} cy={CY} />
 
       {nodos.map((n) => {
-        const arriba = n.y < CY;
+        // El nombre sale hacia afuera: arriba y abajo centrado, a los lados
+        // pegado al nodo y en horizontal. Así ninguno pisa a otro ni a la
+        // persona del centro, sin importar cuán largo sea.
+        const vertical = n.grados === -90 || n.grados === 90;
+        const derecha = n.grados === -30 || n.grados === 30;
         return (
           <g key={n.slug}>
             <circle cx={n.x} cy={n.y} r="9" fill={n.color_accent} stroke="var(--soft-ivory)" strokeWidth="2.5" />
             <text
-              x={n.x}
-              y={arriba ? n.y - 16 : n.y + 25}
-              textAnchor="middle"
+              x={vertical ? n.x : n.x + (derecha ? 15 : -15)}
+              y={vertical ? (n.grados === -90 ? n.y - 18 : n.y + 27) : n.y + 4.5}
+              textAnchor={vertical ? "middle" : derecha ? "start" : "end"}
               fontSize="12.5"
               fontWeight="600"
               fill={LINEA}
+              /* halo del color del papel: el punteado del anillo nunca toca las letras */
+              stroke="var(--warm-cream)"
+              strokeWidth="4"
+              strokeLinejoin="round"
+              paintOrder="stroke"
             >
               {n.nombre}
             </text>

@@ -43,13 +43,40 @@ export interface Entrega {
   estrellas: number | null;
   completada: boolean;
   reflexion: string | null;
+  comentario_carta?: string | null; // WS24: feedback privado de la carta (nunca se publica)
+  cambios?: number; // WS24: veces que cambió la carta hoy (restantes = limites.cambios_carta - cambios)
   ya_existia?: boolean;
 }
 
 export interface CartaDelDia {
   entrega: Entrega;
   carta: Carta;
+  // WS24 · A1.3: presentes en la respuesta de POST /api/entregas/{id}/cambiar
+  cambios?: number;
+  cambios_restantes?: number;
 }
+
+// WS24 · lo que el usuario puede hacer según su plan. El backend los aplica;
+// el front SOLO los muestra (nunca hardcodear 150 / 1 foto en pantalla).
+export interface Limites {
+  plan: "free" | "premium";
+  reflexion_max: number;
+  fotos_max: number;
+  cambios_carta: number;
+  propone_cartas: boolean;
+  recomendaciones: boolean;
+}
+
+// WS24 · A1.2 · GET /api/pagos/estado
+export interface EstadoPagos {
+  plan: "free" | "premium";
+  plan_hasta: string | null;
+  configurado: boolean; // false = Stripe apagado en este entorno (sin botón de compra)
+}
+
+// WS25 · quién ve la ficha además de su dueño. "compartida" = visible para la
+// comunidad del usuario; "privada" = sólo él. Las estrellas nunca viajan.
+export type Visibilidad = "privada" | "compartida";
 
 export interface ItemBaul {
   id: string;
@@ -59,6 +86,7 @@ export interface ItemBaul {
   reflexion: string | null;
   fotos: string[]; // URLs de la API (/api/fotos/{id}) — privadas, se piden con auth
   carta: Carta;
+  visibilidad: Visibilidad; // WS25 · PUT /api/baul/{id}/visibilidad
 }
 
 // Respuesta al subir una foto de la pausa (hasta 3 por entrega).
@@ -77,6 +105,10 @@ export interface Perfil {
   aviso_activo: boolean;
   terminos_aceptados: boolean;
   onboarding_completo: boolean;
+  // WS24 · plan vigente (premium vencido ⇒ "free") y sus límites.
+  plan: "free" | "premium";
+  plan_hasta: string | null;
+  limites: Limites;
 }
 
 export interface Compartido {

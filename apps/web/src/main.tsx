@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter,
@@ -6,6 +6,7 @@ import {
   Route,
   Routes,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 
 import "./theme.css";
@@ -29,6 +30,8 @@ import { PublicShare } from "./screens/PublicShare";
 import { Profile } from "./screens/Profile";
 import { Metodo } from "./screens/Metodo";
 import { Terms } from "./screens/Terms";
+import { Premium } from "./screens/Premium";
+import { PremiumGracias } from "./screens/PremiumGracias";
 
 // Guarda de sesión: sin usuario logueado, todo lo privado vuelve al login.
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -36,6 +39,47 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   if (cargandoAuth) return <div className="center-note">…</div>;
   if (!user) return <Navigate to="/login" replace />;
   return children;
+}
+
+// WS25 · el regalo (`/c/:token`) también exige login, pero NO onboarding: quien
+// recibe el enlace por WhatsApp puede abrirlo antes de configurar nada. Como el
+// login manda a /hoy o /onboarding, guardamos a dónde iba para volver después.
+const DESTINO_KEY = "dwellia-destino";
+
+function RequireAuthRegalo({ children }: { children: JSX.Element }) {
+  const { user, cargandoAuth } = useAuth();
+  const loc = useLocation();
+  if (cargandoAuth) return <div className="center-note">…</div>;
+  if (!user) {
+    try {
+      sessionStorage.setItem(DESTINO_KEY, loc.pathname + loc.search);
+    } catch {
+      /* sessionStorage no disponible: se pierde el destino, no la sesión */
+    }
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
+
+// Con sesión ya iniciada, retomar el destino guardado (el regalo) una sola vez.
+function VolverAlDestino() {
+  const { user } = useAuth();
+  const loc = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!user) return;
+    // Ya estamos en el regalo (o volviendo al login): nada que retomar.
+    if (loc.pathname.startsWith("/c/") || loc.pathname.startsWith("/login")) return;
+    let destino: string | null = null;
+    try {
+      destino = sessionStorage.getItem(DESTINO_KEY);
+      if (destino) sessionStorage.removeItem(DESTINO_KEY);
+    } catch {
+      /* ignorar */
+    }
+    if (destino) navigate(destino, { replace: true });
+  }, [user, loc.pathname, navigate]);
+  return null;
 }
 
 // El login con sesión activa no se muestra: cubre también el retorno del
@@ -72,6 +116,7 @@ function App() {
       <AuthProvider>
       <StoreProvider>
         <Frame>
+          <VolverAlDestino />
           <Routes>
             <Route path="/" element={<RequireAuth><Gate /></RequireAuth>} />
             <Route path="/login" element={<SoloAnonimo><Login /></SoloAnonimo>} />
@@ -86,9 +131,12 @@ function App() {
             <Route path="/compartir/:id" element={<RequireAuth><RequireOnboarding><Share /></RequireOnboarding></RequireAuth>} />
             <Route path="/perfil" element={<RequireAuth><RequireOnboarding><Profile /></RequireOnboarding></RequireAuth>} />
             <Route path="/metodo" element={<RequireAuth><RequireOnboarding><Metodo /></RequireOnboarding></RequireAuth>} />
+            {/* WS24 · premium (Stripe por web). /premium/gracias = vuelta del Checkout. */}
+            <Route path="/premium" element={<RequireAuth><RequireOnboarding><Premium /></RequireOnboarding></RequireAuth>} />
+            <Route path="/premium/gracias" element={<RequireAuth><RequireOnboarding><PremiumGracias /></RequireOnboarding></RequireAuth>} />
 
-            {/* Público: el receptor del regalo, sin login. */}
-            <Route path="/c/:token" element={<PublicShare />} />
+            {/* WS25 · el regalo exige login, pero no onboarding completo. */}
+            <Route path="/c/:token" element={<RequireAuthRegalo><PublicShare /></RequireAuthRegalo>} />
             {/* Público: términos y privacidad (onboarding + Perfil enlazan acá). */}
             <Route path="/terminos" element={<Terms />} />
 

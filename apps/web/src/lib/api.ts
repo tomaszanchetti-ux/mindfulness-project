@@ -10,10 +10,12 @@ import type {
   CartaDelDia,
   CategoriaContenido,
   Compartido,
+  EstadoPagos,
   FotoSubida,
   ItemBaul,
   Perfil,
   Regalo,
+  Visibilidad,
 } from "./types";
 
 // —— Identidad efímera por sesión (SOLO dev) ——
@@ -135,12 +137,27 @@ export const api = {
   cartaDelDia: () => req<CartaDelDia>("/api/carta-del-dia"),
   cerrarRitual: (
     entregaId: string,
-    body: { estrellas?: number | null; reflexion?: string | null; completada?: boolean },
+    body: {
+      estrellas?: number | null;
+      reflexion?: string | null;
+      comentario_carta?: string | null; // WS24: feedback privado debajo de las estrellas
+      completada?: boolean;
+    },
   ) =>
     req<CartaDelDia>(`/api/entregas/${entregaId}/cierre`, {
       method: "PUT",
       body: JSON.stringify(body),
     }),
+  // WS24 · A1.3 · cambiar la carta de hoy (premium, hasta `limites.cambios_carta` veces).
+  // Errores: 403 free · 409 ya cerrada / sin cambios restantes / no es la de hoy.
+  cambiarCarta: (entregaId: string) =>
+    req<CartaDelDia>(`/api/entregas/${entregaId}/cambiar`, { method: "POST" }),
+
+  // —— Pagos (WS24 · A1.2 · Stripe por web, sin tiendas) ——
+  pagosEstado: () => req<EstadoPagos>("/api/pagos/estado"),
+  // Devuelven la URL de Stripe a la que hay que redirigir (window.location.href).
+  pagosCheckout: () => req<{ url: string }>("/api/pagos/checkout", { method: "POST" }),
+  pagosPortal: () => req<{ url: string }>("/api/pagos/portal", { method: "POST" }),
 
   // —— Fotos de la pausa (M3 captura / M4 muestra) ——
   subirFoto: (entregaId: string, file: File) => {
@@ -159,12 +176,20 @@ export const api = {
     req<ItemBaul[]>(`/api/baul?orden=${orden}`),
   borrarEntrada: (entregaId: string) =>
     req<void>(`/api/baul/${entregaId}`, { method: "DELETE" }),
+  // WS25 · abrir/cerrar la ficha a la comunidad. Devuelve el ítem ya actualizado.
+  setVisibilidad: (entregaId: string, visibilidad: Visibilidad) =>
+    req<ItemBaul>(`/api/baul/${entregaId}/visibilidad`, {
+      method: "PUT",
+      body: JSON.stringify({ visibilidad }),
+    }),
 
   // —— Compartir (M5) ——
-  compartir: (entregaId: string, modo: "carta_sola" | "ejercicio", nota?: string) =>
+  // WS25 · viaja la ficha entera tal como está: el backend deriva el modo
+  // (`ejercicio` si hay reflexión o fotos, `carta_sola` si no) y ya no mira el plan.
+  compartir: (entregaId: string, nota?: string) =>
     req<Compartido>("/api/compartir", {
       method: "POST",
-      body: JSON.stringify({ entrega_id: entregaId, modo, nota: nota || null }),
+      body: JSON.stringify({ entrega_id: entregaId, nota: nota || null }),
     }),
 
   // —— Push del aviso diario (WS21) ——
@@ -179,7 +204,7 @@ export const api = {
       body: JSON.stringify({ endpoint }),
     }),
 
-  // —— Regalo público (sin login) ——
+  // —— Regalo por enlace (WS25: también exige login) ——
   regalo: (token: string) => req<Regalo>(`/api/c/${token}`),
 };
 

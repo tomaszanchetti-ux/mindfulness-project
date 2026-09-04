@@ -1,31 +1,45 @@
 // Compartir (§12.5). El gesto íntimo: "Vi esto y pensé en ti."
-// v1 free: se envía SÓLO la carta + una nota personal (≤150). El modo "ejercicio"
-// (sumar reflexión/fotos) queda para premium — el backend lo sigue soportando.
 //
-// Loop WS14: se puede compartir ANTES de guardar (camino B). En ese caso, tras
-// generar el enlace el CTA principal invita a guardar la pausa.
+// WS25 · se acabó el selector de modo: viaja la ficha ENTERA tal como está al
+// momento de enviar (la carta y, si existen, la reflexión y las fotos). El
+// backend deriva el modo y ya no mira el plan — free y premium envían igual.
+// Lo único que el remitente elige es la nota que acompaña al regalo.
+//
+// Por eso la pantalla muestra primero una vista previa de lo que viaja: nadie
+// envía a ciegas. Las estrellas NO viajan (decisión de Tomás, 04/09).
+//
+// Camino "Enviar" (sin guardar): la Pausa quedó cerrada con `completada:false`,
+// así que no está en el Baúl. Tras generar el enlace se invita a guardarla.
 
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Card } from "../components/Card";
 import { Button } from "../components/Button";
+import { FotoPrivada } from "../components/FotoPrivada";
 import { api } from "../lib/api";
+import { useStore } from "../store";
 import type { Compartido, ItemBaul } from "../lib/types";
-
-const LIMITE = 150; // free (WS19); premium subirá a ~500
 
 export function Share() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { perfil } = useStore();
   const [item, setItem] = useState<ItemBaul | null | undefined>(undefined);
   const [nota, setNota] = useState("");
   const [link, setLink] = useState<Compartido | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [generando, setGenerando] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+
+  // Fotos de una Pausa que todavía NO está en el Baúl: no hay endpoint que las
+  // liste, así que Reflect nos las pasa por el estado de navegación al enviar.
+  const fotosEnVuelo = (location.state as { fotos?: string[] } | null)?.fotos;
 
   useEffect(() => {
-    // El Baúl solo lista pausas guardadas; si venimos del camino B (compartir antes
-    // de guardar) la entrega de hoy no está ahí → fallback a la carta del día.
+    // El Baúl solo lista Pausas guardadas; si venimos del camino "Enviar" la
+    // entrega de hoy no está ahí → fallback a la carta del día (que ya trae la
+    // reflexión persistida por el cierre con `completada:false`).
     api
       .baul("reciente")
       .then(async (list) => {
@@ -36,7 +50,12 @@ export function Share() {
         }
         const d = await api.cartaDelDia();
         if (d.entrega.id === id) {
-          setItem({ ...d.entrega, fotos: [], carta: d.carta });
+          setItem({
+            ...d.entrega,
+            fotos: fotosEnVuelo ?? [],
+            carta: d.carta,
+            visibilidad: "privada",
+          });
         } else {
           setItem(null);
         }
@@ -63,9 +82,8 @@ export function Share() {
   const generar = async () => {
     setGenerando(true);
     try {
-      // v1 free: siempre "carta sola" (la carta + tu nota, sin tus datos).
       const notaLimpia = nota.trim();
-      const c = await api.compartir(id, "carta_sola", notaLimpia || undefined);
+      const c = await api.compartir(id, notaLimpia || undefined);
       setLink(c);
       sessionStorage.setItem(
         `share:${id}`,
@@ -86,6 +104,19 @@ export function Share() {
     setCopiado(false);
   };
 
+  // Guardar la Pausa después de haberla enviado (camino "Enviar"). Es el mismo
+  // cierre de siempre, con `completada:true`: no pisa nada de lo escrito.
+  const guardarPausa = async () => {
+    setGuardando(true);
+    try {
+      await api.cerrarRitual(id, { completada: true });
+      navigate(`/cierre/${id}`, { replace: true });
+    } catch (e) {
+      setGuardando(false);
+      alert((e as Error).message);
+    }
+  };
+
   const urlCompleta = link ? `${window.location.origin}${link.url}` : "";
 
   const copiar = async () => {
@@ -98,9 +129,16 @@ export function Share() {
     }
   };
 
-  const near = nota.length > LIMITE - 30;
-  // Loop WS14: si la pausa de hoy aún no se guardó, el siguiente paso es guardarla.
+  const limites = perfil?.limites ?? null;
+  const notaMax = limites?.reflexion_max ?? 0;
+  const near = notaMax > 0 && nota.length > notaMax - 30;
+  // Si la Pausa de hoy aún no se guardó, el siguiente paso es ofrecerle el Baúl.
   const pendienteGuardar = item ? !item.completada : false;
+  const reflexion = item?.reflexion?.trim() || "";
+  const fotos = item?.fotos ?? [];
+
+  // Sin perfil todavía no sabemos los límites del plan: esperamos.
+  if (!limites) return <div className="center-note">Preparando…</div>;
 
   return (
     <div>
@@ -110,9 +148,21 @@ export function Share() {
         <h1 className="screen-title">Vi esto y pensé en ti.</h1>
       </div>
 
+      {/* Lo que viaja, tal cual: la carta y —si existen— la reflexión y las fotos. */}
       {item && (
         <div className="share-preview">
-          <Card carta={item.carta} flipped />
+          <p className="share-preview-label">Así la va a recibir</p>
+          <div className="share-preview-card">
+            <Card carta={item.carta} flipped />
+          </div>
+          {reflexion && <p className="share-preview-refl">{reflexion}</p>}
+          {fotos.length > 0 && (
+            <div className="share-preview-fotos">
+              {fotos.map((src) => (
+                <FotoPrivada key={src} className="share-preview-foto" src={src} />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -121,13 +171,13 @@ export function Share() {
           <textarea
             className="textarea"
             placeholder="Agrega una nota personal (opcional)…"
-            maxLength={LIMITE}
+            maxLength={notaMax}
             value={nota}
             onChange={(e) => setNota(e.target.value)}
             style={{ minHeight: 92 }}
           />
           <div className={`counter ${near ? "near" : ""}`}>
-            {nota.length} / {LIMITE}
+            {nota.length} / {notaMax}
           </div>
 
           <div className="actions-stack" style={{ marginTop: 10 }}>
@@ -155,30 +205,40 @@ export function Share() {
               {nota.trim() ? "Cambiar la nota" : "Agregar una nota"}
             </Button>
           </div>
-          <div className="actions-stack">
-            {pendienteGuardar ? (
-              <>
-                <Button variant="primary" full onClick={() => navigate(`/reflexionar/${id}`)}>
-                  Guardar mi pausa
+
+          {pendienteGuardar ? (
+            <div className="share-guardar">
+              <p className="share-guardar-pregunta">¿Quieres guardar la Pausa?</p>
+              <p className="share-guardar-nota">
+                Lo que ya enviaste no cambia. Guardarla la deja en tu Baúl, para
+                volver cuando quieras.
+              </p>
+              <div className="actions-stack">
+                <Button variant="primary" full disabled={guardando} onClick={guardarPausa}>
+                  {guardando ? "Guardando…" : "Guardar en mi Baúl"}
                 </Button>
-                <Button variant="secondary" full onClick={() => navigate(`${link.url}?preview=1`)}>
+                <Button
+                  variant="secondary"
+                  full
+                  onClick={() => navigate(`${link.url}?preview=1`)}
+                >
                   Ver cómo lo recibe
                 </Button>
                 <Button variant="tertiary" onClick={() => navigate("/hoy")}>
-                  Más tarde
+                  Ahora no
                 </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="primary" full onClick={() => navigate(`${link.url}?preview=1`)}>
-                  Ver cómo lo recibe
-                </Button>
-                <Button variant="tertiary" onClick={() => navigate("/hoy")}>
-                  Listo
-                </Button>
-              </>
-            )}
-          </div>
+              </div>
+            </div>
+          ) : (
+            <div className="actions-stack">
+              <Button variant="primary" full onClick={() => navigate(`${link.url}?preview=1`)}>
+                Ver cómo lo recibe
+              </Button>
+              <Button variant="tertiary" onClick={() => navigate("/hoy")}>
+                Listo
+              </Button>
+            </div>
+          )}
         </>
       )}
     </div>

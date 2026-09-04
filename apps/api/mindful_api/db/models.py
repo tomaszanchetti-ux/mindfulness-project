@@ -19,6 +19,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    JSON,
     String,
     Text,
 )
@@ -100,6 +101,13 @@ class Usuario(Base):
     # WS20 · aviso diario: fecha LOCAL del último aviso enviado (1 por día, máximo).
     ultimo_aviso_fecha: Mapped[Optional[date]] = mapped_column(Date)
 
+    # WS24 · plan (Roadmap v2 §0/§1). `plan` es la etiqueta; la VERDAD es
+    # `plan_hasta`: premium vigente ⇔ plan == "premium" y plan_hasta > ahora.
+    # Nadie lee estas columnas directo: se pasa por `services/plan.py`.
+    plan: Mapped[str] = mapped_column(String(10), nullable=False, default="free")
+    plan_hasta: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    stripe_customer_id: Mapped[Optional[str]] = mapped_column(String(64), unique=True)
+
     push_suscripciones: Mapped[list["PushSuscripcion"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
     )
@@ -121,7 +129,16 @@ class Entrega(Base):
     # M3: opcionales, no bloquean Guardar.
     estrellas: Mapped[Optional[int]] = mapped_column(Integer)  # 1-5
     completada: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    reflexion: Mapped[Optional[str]] = mapped_column(Text)  # ≤150
+    reflexion: Mapped[Optional[str]] = mapped_column(Text)  # ≤150 free · ≤500 premium (WS24)
+    # WS24 · feedback privado de la carta (debajo de las estrellas). Nunca se publica.
+    comentario_carta: Mapped[Optional[str]] = mapped_column(Text)  # ≤150
+    # WS24 · cambiar la carta (premium): cuántas veces hoy (máx. 3) y cuáles descartó.
+    cambios: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    descartadas: Mapped[Optional[list]] = mapped_column(JSON)
+    # WS25 · quién ve la ficha de esta Pausa: `privada` (solo el dueño) o
+    # `compartida` (su comunidad). Default privada: nadie publica sin pedirlo.
+    # Es independiente del link de M5, que es un regalo puntual a una persona.
+    visibilidad: Mapped[str] = mapped_column(String(12), nullable=False, default="privada")
 
     fotos: Mapped[list["Foto"]] = relationship(
         back_populates="entrega", cascade="all, delete-orphan"

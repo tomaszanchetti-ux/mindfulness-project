@@ -116,3 +116,29 @@ def test_borrar_entrega_limpia_storage():
     assert len(list(Path(settings.storage_dir).rglob("*.png"))) == 1
     assert client.delete(f"/api/baul/{eid}", headers=h).status_code == 204
     assert list(Path(settings.storage_dir).rglob("*.png")) == []
+
+
+def test_el_png_del_demo_seed_es_una_imagen_valida():
+    """WS25 · el seed del Q/A visual arma sus PNG a mano (`zlib` + `struct`, sin
+    Pillow). Si los bytes estuvieran mal, Tomás vería cuadros rotos y no lo sabríamos
+    hasta abrir la app: acá se verifica la firma, los chunks y el tamaño declarado.
+
+    Además pasa por la puerta real de la API (`POST /entregas/{id}/fotos`), que es
+    como el seed las sube: si el content-type o los bytes no fueran de imagen, rebota.
+    """
+    import struct
+
+    from mindful_api.demo_seed import ALTO, ANCHO, png_plano
+
+    png = png_plano(ANCHO, ALTO, (122, 154, 128))
+    assert png.startswith(b"\x89PNG\r\n\x1a\n")
+    assert png[12:16] == b"IHDR" and png.endswith(b"IEND\xae\x42\x60\x82")
+    ancho, alto = struct.unpack(">II", png[16:24])
+    assert (ancho, alto) == (320, 240)
+
+    h = _onboard("fotos|demo-seed-png")
+    eid = _entrega_de_hoy(h)
+    r = client.post(f"/api/entregas/{eid}/fotos", headers=h,
+                    files={"foto": ("pausa.png", png, "image/png")})
+    assert r.status_code == 201
+    assert client.get(r.json()["url"], headers=h).content == png

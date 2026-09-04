@@ -6,7 +6,7 @@ VENV := $(API)/.venv
 PY := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 
-.PHONY: db-up db-down api-setup api-migrate api-seed api-dev api-test
+.PHONY: db-up db-down api-setup api-migrate api-seed api-dev api-test premium-demo free-demo demo-seed
 
 db-up:                ## Levanta Postgres local
 	docker compose up -d postgres
@@ -30,3 +30,28 @@ api-dev:              ## Levanta la API en :8000 con reload
 
 api-test:             ## Corre los tests
 	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/pytest
+
+# ── WS24/WS25 · Q/A visual local (Tomás) ─────────────────────────────────────
+demo-seed:            ## Siembra 9 Pausas reales (reflexiones, estrellas, fotos, links) en cada usuario demo|
+	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/python -m mindful_api.demo_seed
+
+premium-demo:         ## Vuelve PREMIUM (1 año) a todos los usuarios demo| del navegador local
+	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/python -c "\
+from datetime import datetime, timedelta, timezone; \
+from sqlalchemy import select; \
+from mindful_api.db.base import SessionLocal; \
+from mindful_api.db.models import Usuario; \
+from mindful_api.services.plan import activar_premium; \
+s=SessionLocal(); us=s.scalars(select(Usuario).where(Usuario.firebase_uid.like('demo|%'))).all(); \
+[activar_premium(u, datetime.now(timezone.utc)+timedelta(days=365)) for u in us]; s.commit(); \
+print(f'{len(us)} usuario(s) demo ahora premium')"
+
+free-demo:            ## Vuelve FREE a todos los usuarios demo| del navegador local
+	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/python -c "\
+from sqlalchemy import select; \
+from mindful_api.db.base import SessionLocal; \
+from mindful_api.db.models import Usuario; \
+from mindful_api.services.plan import vencer_premium; \
+s=SessionLocal(); us=s.scalars(select(Usuario).where(Usuario.firebase_uid.like('demo|%'))).all(); \
+[vencer_premium(u) for u in us]; s.commit(); \
+print(f'{len(us)} usuario(s) demo ahora free')"

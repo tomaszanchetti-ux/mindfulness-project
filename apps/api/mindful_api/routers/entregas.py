@@ -30,8 +30,9 @@ def cerrar(
     s: Session = Depends(get_session),
     usuario: Usuario = Depends(get_current_user),
 ) -> dict:
-    """M3 · cerrar el ritual: estrellas + reflexión + completada (opcionales)."""
+    """M3 · cerrar el ritual: estrellas + reflexión + comentario + completada (opcionales)."""
     return cerrar_ritual(
         s, usuario, entrega_id,
         estrellas=body.estrellas, reflexion=body.reflexion, completada=body.completada,
+        comentario_carta=body.comentario_carta,
     )

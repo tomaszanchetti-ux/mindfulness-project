@@ -28,3 +28,6 @@ python-multipart==0.0.20
 
 # Aviso diario por push web (WS21) — VAPID + Web Push estándar
 pywebpush==2.1.2
+
+# WS24 · pagos premium (Stripe Checkout + webhook)
+stripe==15.6.1

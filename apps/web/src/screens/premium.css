@@ -1,0 +1,177 @@
+/* WS24 · A2.1 · "Apoya Dwellia" (/premium), la vuelta del Checkout
+   (/premium/gracias) y el bloque "Tu plan" del Perfil.
+   Vive aparte de app.css a propósito (territorio de la card). Solo tokens de
+   theme.css: papel, sage y taupe — nada de urgencia ni de venta. */
+
+/* ——————————————————————————————— Apoya Dwellia */
+.premium {
+  display: flex;
+  flex-direction: column;
+}
+.premium .screen-head {
+  margin: 2px 0 18px;
+}
+
+/* El precio: grande pero sereno, en serif como las cartas. */
+.premium-precio {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+}
+.premium-precio-cifra {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--deep-umber);
+}
+.premium-precio-periodo {
+  font-size: 14px;
+  color: var(--warm-taupe);
+}
+.premium-precio-nota {
+  font-size: 13px;
+  color: var(--dust-taupe);
+  margin: 8px 0 0;
+}
+
+/* El porqué, sobre papel: es el corazón de la pantalla. */
+.premium-porque {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 18px 20px;
+  margin: 22px 0 6px;
+}
+.premium-porque p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--warm-taupe);
+  margin: 0;
+}
+.premium-porque p + p {
+  margin-top: 10px;
+}
+
+/* Lo que incluye: una lista tranquila, sin ✓ verdes gritando.
+   WS25 · R4: se fue el estado "pronto"; todo lo que está en la lista ya es tuyo. */
+.premium-lista {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+.premium-item {
+  display: flex;
+  gap: 13px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--sand-line);
+}
+.premium-item:last-child {
+  border-bottom: none;
+}
+.premium-item-glifo {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--sage);
+}
+.premium-item-nombre {
+  font-size: 15px;
+  color: var(--deep-umber);
+  margin: 0;
+}
+.premium-item-texto {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 3px 0 0;
+}
+
+/* Zona del botón. */
+.premium-cta {
+  margin-top: 26px;
+}
+.premium-cta-nota {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--dust-taupe);
+  text-align: center;
+  margin: 12px 0 0;
+}
+
+/* Aviso suave si Stripe devuelve un error: nunca rojo de alarma. */
+.premium-aviso {
+  background: var(--oat-milk);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 0 0 14px;
+}
+
+/* Ya es premium: se le agradece, no se le vende. */
+.premium-vigente {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 18px 20px;
+  margin-top: 22px;
+}
+.premium-vigente-titulo {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--deep-umber);
+  margin: 0;
+}
+.premium-vigente-texto {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--warm-taupe);
+  margin: 8px 0 0;
+}
+
+/* ——————————————————————————————— Gracias (vuelta del Checkout) */
+.premium-gracias {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 70vh;
+  text-align: center;
+  padding-bottom: 20px;
+}
+.premium-gracias-titulo {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 1.35;
+  color: var(--deep-umber);
+  margin: 0 0 14px;
+}
+.premium-gracias-texto {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--warm-taupe);
+  margin: 0 auto 28px;
+  max-width: 320px;
+}
+
+/* ——————————————————————————————— "Tu plan" (Perfil) */
+.plan-pill {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: var(--radius-pill);
+  background: var(--oat-milk);
+  color: var(--warm-taupe);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.plan-pill.es-premium {
+  background: rgba(143, 165, 138, 0.18);
+  color: var(--sage-deep);
+}

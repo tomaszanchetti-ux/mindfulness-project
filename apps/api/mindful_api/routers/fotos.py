@@ -24,9 +24,9 @@ async def subir(
     s: Session = Depends(get_session),
     usuario: Usuario = Depends(get_current_user),
 ) -> dict:
-    """Sube una foto a la entrega (hasta 3, solo imágenes, ≤8 MB)."""
+    """Sube una foto a la entrega (cupo según el plan: 1 free / 3 premium, ≤8 MB)."""
     contenido = await foto.read()
-    return subir_foto(s, usuario.id, entrega_id, contenido, foto.content_type)
+    return subir_foto(s, usuario, entrega_id, contenido, foto.content_type)
 
 
 @router.get("/fotos/{foto_id}")

@@ -1,18 +1,25 @@
-// Página pública del regalo (§12.6). El receptor abre y ve, SIN login ni instalar.
+// Página del regalo (§12.6). El receptor abre el enlace y ve la Pausa que le
+// enviaron: la carta, la nota, y —si viajaron— la reflexión y las fotos.
 // Es el destino, no un trampolín: girar la carta es parte de ver. CTA suave al final.
+//
+// WS25 · el regalo YA NO es público: `GET /api/c/{token}` exige login, y la ruta
+// vive detrás de `RequireAuth` (sin onboarding obligatorio — alguien recién
+// llegado puede abrir el regalo antes de configurar nada). Por eso las fotos se
+// bajan con `FotoPrivada` (fetch autenticado), no con un <img src> directo.
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Card } from "../components/Card";
 import { Button } from "../components/Button";
-import { assetUrl, api } from "../lib/api";
+import { FotoPrivada } from "../components/FotoPrivada";
+import { api } from "../lib/api";
 import type { Regalo } from "../lib/types";
 
 export function PublicShare() {
   const { token = "" } = useParams();
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  // Vista previa del remitente (no la ve el destinatario real, que no tiene "home").
+  // Vista previa del remitente: la misma pantalla, con un "volver" arriba.
   const preview = params.get("preview") === "1";
   const [regalo, setRegalo] = useState<Regalo | null | undefined>(undefined);
   const [flipped, setFlipped] = useState(false);
@@ -26,12 +33,12 @@ export function PublicShare() {
   if (regalo === null)
     return (
       <div className="empty">
-        <p className="empty-title">Esta pausa ya no está disponible.</p>
+        <p className="empty-title">Esta Pausa ya no está disponible.</p>
         <p className="empty-body">
           Puede que quien la envió haya decidido dejar de compartirla.
         </p>
-        <Button variant="primary" onClick={() => navigate("/login")}>
-          Crear mi propia pausa
+        <Button variant="primary" onClick={() => navigate("/hoy")}>
+          Ir a mi Pausa de hoy
         </Button>
       </div>
     );
@@ -46,7 +53,7 @@ export function PublicShare() {
         </button>
       )}
       <div className="gift">
-        <p className="gift-intro">{de} pensó en ti.</p>
+        <p className="gift-intro">{de} te envió esta Pausa.</p>
 
       <div className="gift-card-wrap">
         <Card carta={regalo.carta} flipped={flipped} onFlip={() => setFlipped((f) => !f)} />
@@ -61,7 +68,7 @@ export function PublicShare() {
         </div>
       )}
 
-      {/* Modo ejercicio (premium): reflexión + fotos, si la entrega sigue viva. */}
+      {/* Ficha entera: la reflexión y las fotos, si viajaron con el regalo. */}
       {regalo.modo === "ejercicio" && regalo.reflexion && (
         <p className="gift-message-text" style={{ fontStyle: "italic", margin: "0 0 12px" }}>
           {regalo.reflexion}
@@ -69,16 +76,16 @@ export function PublicShare() {
       )}
       {regalo.modo === "ejercicio" && regalo.fotos && regalo.fotos.length > 0 && (
         <div className="detail-photos" style={{ justifyContent: "center", marginBottom: 14 }}>
-          {regalo.fotos.map((src, i) => (
-            <img key={i} src={assetUrl(src)} alt="" />
+          {regalo.fotos.map((src) => (
+            <FotoPrivada key={src} src={src} />
           ))}
         </div>
       )}
 
       <div className="gift-cta">
-        <p>¿Quieres recibir una pausa así, cada día?</p>
-        <Button variant="secondary" full onClick={() => navigate("/login")}>
-          Configura tu cuenta para tener tus propias cartas
+        <p>¿Quieres recibir una Pausa así, cada día?</p>
+        <Button variant="secondary" full onClick={() => navigate("/")}>
+          Empieza tu propia Pausa diaria
         </Button>
         </div>
       </div>

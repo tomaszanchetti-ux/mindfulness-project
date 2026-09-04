@@ -1,5 +1,15 @@
-// Perfil y configuración (§21). Ajustar la experiencia sin panel administrativo.
-// Guardado automático cuando se puede (toggle de aviso, horario).
+// Perfil (§21 · rehecho en WS25 · R6). Es la ficha de quien eres dentro de
+// Dwellia, no un panel de ajustes: arriba el apodo con el que te conocen, y
+// debajo, en este orden, tu Pausa diaria · instalar · tu plan · el método ·
+// privacidad · cerrar sesión.
+//
+// Lo que cambia el ritual (toggle de aviso, horario) se guarda solo, en el acto.
+// Lo que es tu identidad (apodo, nombre, apellido) se edita a propósito, en un
+// panel que se abre con "Editar" y se confirma con "Guardar": nadie cambia su
+// nombre sin querer.
+//
+// Fuera desde WS25: la zona horaria (la detecta el navegador y nadie la toca) y
+// la vitrina de pilares (vive en "El método Dwellia").
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,16 +20,26 @@ import { cerrarSesion } from "../lib/firebase";
 import { useStore } from "../store";
 import { canInstall, isIOS, isStandalone, promptInstall } from "../pwa";
 import { activarPush, permisoPush, soportaPush, suscripcionActual } from "../lib/push";
+import { fechaLarga } from "./Premium";
+import "./premium.css";
+import "./profile.css";
 
 export function Profile() {
   const navigate = useNavigate();
-  const { perfil, categorias, refrescarPerfil } = useStore();
+  const { perfil, refrescarPerfil } = useStore();
   const [hora, setHora] = useState("");
   const [aviso, setAviso] = useState(true);
+  // Datos de identidad: se editan en el panel y solo viajan al confirmar.
+  const [editando, setEditando] = useState(false);
+  const [guardando, setGuardando] = useState(false);
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [apodo, setApodo] = useState("");
   const [installable, setInstallable] = useState(canInstall());
+  // WS24 · "Tu plan": abrir el portal de Stripe puede fallar (503 sin Stripe,
+  // 409 si nunca compró). Se avisa suave, en la misma sección.
+  const [abriendoPortal, setAbriendoPortal] = useState(false);
+  const [avisoPlan, setAvisoPlan] = useState<string | null>(null);
   const [verComoInstalar, setVerComoInstalar] = useState(false);
   // Estado del push EN ESTE dispositivo (WS21): el aviso diario llega por acá.
   const [push, setPush] = useState<"cargando" | "activas" | "pedir" | "bloqueadas" | "instalar" | "nosoporta">("cargando");
@@ -67,11 +87,16 @@ export function Profile() {
       setAviso(perfil.aviso_activo);
       setNombre(perfil.nombre ?? "");
       setApellido(perfil.apellido ?? "");
-      setApodo(perfil.apodo ?? "");
+      // Si nunca eligió apodo, el nombre hace de apodo (igual que el onboarding).
+      setApodo(perfil.apodo ?? perfil.nombre ?? "");
     }
   }, [perfil]);
 
   if (!perfil) return <div className="center-note">…</div>;
+
+  // El nombre grande de la cabecera: el apodo manda; si no hay, el nombre.
+  const comoTeLlaman = perfil.apodo || perfil.nombre || "Tu perfil";
+  const esPremium = perfil.plan === "premium";
 
   const guardarAviso = async (v: boolean) => {
     setAviso(v);
@@ -79,27 +104,44 @@ export function Profile() {
     refrescarPerfil();
   };
 
-  const guardarNombre = async () => {
-    const v = nombre.trim();
-    if (v && v !== perfil.nombre) {
-      await api.setPerfil({ nombre: v });
-      refrescarPerfil();
+  const abrirEditor = () => {
+    // Siempre se abre con lo que hay guardado: cancelar no deja rastros.
+    setNombre(perfil.nombre ?? "");
+    setApellido(perfil.apellido ?? "");
+    setApodo(perfil.apodo ?? perfil.nombre ?? "");
+    setEditando(true);
+  };
+
+  const guardarIdentidad = async () => {
+    setGuardando(true);
+    try {
+      await api.setPerfil({
+        apodo: apodo.trim(),
+        nombre: nombre.trim(),
+        apellido: apellido.trim(),
+      });
+      await refrescarPerfil();
+      setEditando(false);
+    } finally {
+      setGuardando(false);
     }
   };
 
-  const guardarApellido = async () => {
-    const v = apellido.trim();
-    if (v !== (perfil.apellido ?? "")) {
-      await api.setPerfil({ apellido: v });
-      refrescarPerfil();
-    }
-  };
-
-  const guardarApodo = async () => {
-    const v = apodo.trim();
-    if (v && v !== perfil.apodo) {
-      await api.setPerfil({ apodo: v });
-      refrescarPerfil();
+  const abrirPortal = async () => {
+    setAbriendoPortal(true);
+    setAvisoPlan(null);
+    try {
+      const { url } = await api.pagosPortal();
+      window.location.href = url;
+    } catch (e) {
+      // El `detail` de la API es de sistema; el aviso al usuario lo ponemos acá.
+      const status = (e as Error & { status?: number }).status;
+      setAvisoPlan(
+        status === 409
+          ? "Todavía no hay una suscripción que gestionar."
+          : "No pudimos abrir la gestión de tu suscripción. Inténtalo en un rato.",
+      );
+      setAbriendoPortal(false);
     }
   };
 
@@ -113,90 +155,90 @@ export function Profile() {
 
   return (
     <div className="profile">
-      <div className="screen-head">
-        <h1 className="screen-title">Perfil</h1>
+      {/* —— 1 · Quién eres aquí —— */}
+      <div className="perfil-cabecera">
+        <div className="perfil-identidad">
+          <h1 className="perfil-apodo">{comoTeLlaman}</h1>
+          <p className="perfil-email">{perfil.email}</p>
+        </div>
+        {!editando && (
+          <button className="perfil-editar" onClick={abrirEditor}>
+            Editar
+          </button>
+        )}
       </div>
 
-      <div className="profile-section">
-        <h3>Cuenta</h3>
-        <div className="profile-row">
-          <span>Nombre</span>
-          <input
-            type="text"
-            className="time-input"
-            style={{ width: "auto", textAlign: "right" }}
-            maxLength={80}
-            placeholder="Tu nombre"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            onBlur={guardarNombre}
-          />
+      {editando && (
+        <div className="perfil-editor">
+          <div className="perfil-campo">
+            <label className="perfil-campo-label" htmlFor="perfil-apodo">
+              Apodo · cómo te llamamos
+            </label>
+            <input
+              id="perfil-apodo"
+              className="time-input"
+              type="text"
+              maxLength={40}
+              placeholder="Cómo quieres que te llamemos"
+              value={apodo}
+              onChange={(e) => setApodo(e.target.value)}
+            />
+          </div>
+          <div className="perfil-campo">
+            <label className="perfil-campo-label" htmlFor="perfil-nombre">
+              Nombre
+            </label>
+            <input
+              id="perfil-nombre"
+              className="time-input"
+              type="text"
+              maxLength={80}
+              placeholder="Tu nombre"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+            />
+          </div>
+          <div className="perfil-campo">
+            <label className="perfil-campo-label" htmlFor="perfil-apellido">
+              Apellido (opcional)
+            </label>
+            <input
+              id="perfil-apellido"
+              className="time-input"
+              type="text"
+              maxLength={80}
+              placeholder="Tu apellido"
+              value={apellido}
+              onChange={(e) => setApellido(e.target.value)}
+            />
+          </div>
+          <div className="perfil-campo">
+            <span className="perfil-campo-label">Email</span>
+            {/* El email es la llave de la cuenta: se muestra, no se toca. */}
+            <p className="perfil-campo-fijo">{perfil.email}</p>
+          </div>
+          <p className="perfil-editor-nota">
+            Te encuentran por tu email, apodo, nombre y apellido.
+          </p>
+          <div className="perfil-editor-acciones">
+            <Button full disabled={guardando || !apodo.trim()} onClick={guardarIdentidad}>
+              {guardando ? "Guardando…" : "Guardar"}
+            </Button>
+            <Button
+              variant="tertiary"
+              full
+              disabled={guardando}
+              onClick={() => setEditando(false)}
+            >
+              Cancelar
+            </Button>
+          </div>
         </div>
-        <div className="profile-row">
-          <span>Apellido</span>
-          <input
-            type="text"
-            className="time-input"
-            style={{ width: "auto", textAlign: "right" }}
-            maxLength={80}
-            placeholder="Opcional"
-            value={apellido}
-            onChange={(e) => setApellido(e.target.value)}
-            onBlur={guardarApellido}
-          />
-        </div>
-        <div className="profile-row">
-          <span>Apodo</span>
-          <input
-            type="text"
-            className="time-input"
-            style={{ width: "auto", textAlign: "right" }}
-            maxLength={40}
-            placeholder="Cómo te llamamos"
-            value={apodo}
-            onChange={(e) => setApodo(e.target.value)}
-            onBlur={guardarApodo}
-          />
-        </div>
-        <div className="profile-row">
-          <span>Email</span>
-          <span className="val">{perfil.email}</span>
-        </div>
-        <div className="profile-row">
-          <span>Zona horaria</span>
-          <span className="val">{perfil.tz}</span>
-        </div>
-      </div>
+      )}
 
+      {/* —— 2 · Tu Pausa diaria —— */}
       <div className="profile-section">
-        <h3>Los pilares que recorres</h3>
-        <div className="cat-pills">
-          {categorias.map((c) => (
-            <span key={c.slug} className="cat-pill">
-              <span className="swatch" style={{ background: c.color_accent }} />
-              {c.nombre}
-            </span>
-          ))}
-        </div>
-        <p className="meta" style={{ marginTop: 8 }}>
-          Seis pilares en tres círculos, contigo en el centro. Cada semana los
-          recorres todos — uno distinto cada día, más un día sorpresa.
-        </p>
-      </div>
-
-      <div className="profile-section">
-        <h3>El método Dwellia</h3>
-        <p className="meta">
-          La pausa de dos tiempos, la calma como camino y los seis pilares: el
-          porqué de cada carta.
-        </p>
-        <button className="link" style={{ marginTop: 8 }} onClick={() => navigate("/metodo")}>
-          Leer el método
-        </button>
-      </div>
-
-      <div className="profile-section">
-        <h3>Tu pausa diaria</h3>
+        <h3>Tu Pausa diaria</h3>
         <div className="profile-row">
           <span>Avisarme cada día</span>
           <span className="switch">
@@ -256,14 +298,7 @@ export function Profile() {
         )}
       </div>
 
-      <div className="profile-section">
-        <h3>Privacidad</h3>
-        <p className="meta">Lo que escribes y tus fotos quedan solo para ti.</p>
-        <button className="link" style={{ marginTop: 8 }} onClick={() => navigate("/terminos")}>
-          Términos y política de privacidad
-        </button>
-      </div>
-
+      {/* —— 3 · Instalar Dwellia (solo si todavía no lo está) —— */}
       {!isStandalone() && (
         <div className="profile-section">
           <h3>Instalar Dwellia</h3>
@@ -298,8 +333,70 @@ export function Profile() {
         </div>
       )}
 
+      {/* —— 4 · Tu plan. Free: se cuenta que ya tiene todo el método y se invita,
+              sin presión. Premium: se agradece y se deja gestionar el cobro. —— */}
+      <div className="profile-section">
+        <h3>Tu plan</h3>
+        <div className="profile-row">
+          <span>{esPremium ? "Dwellia premium" : "Plan gratuito"}</span>
+          {/* La píldora se mantiene corta a propósito: la fecha va debajo, o en
+              móvil parte el renglón en dos. */}
+          <span className={`plan-pill ${esPremium ? "es-premium" : ""}`}>
+            {esPremium ? "activo" : "Gratis"}
+          </span>
+        </div>
+        {esPremium ? (
+          <>
+            <p className="meta" style={{ marginTop: 8 }}>
+              {perfil.plan_hasta
+                ? `Hasta el ${fechaLarga(perfil.plan_hasta)}. Gracias por sostener este lugar sin anuncios.`
+                : "Gracias por sostener este lugar sin anuncios."}
+            </p>
+            {avisoPlan && <p className="premium-aviso" style={{ marginTop: 10 }}>{avisoPlan}</p>}
+            <div className="actions-stack" style={{ marginTop: 12 }}>
+              <Button variant="secondary" full disabled={abriendoPortal} onClick={abrirPortal}>
+                {abriendoPortal ? "Abriendo…" : "Quiero dejar la comunidad"}
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="meta" style={{ marginTop: 8 }}>
+              Tienes el método Dwellia completo, sin anuncios.
+            </p>
+            <div className="actions-stack" style={{ marginTop: 12 }}>
+              <Button variant="primary" full onClick={() => navigate("/premium")}>
+                Quiero ser parte
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* —— 5 · El método —— */}
+      <div className="profile-section">
+        <h3>El método Dwellia</h3>
+        <p className="meta">
+          La Pausa de dos tiempos, la calma como camino y los seis pilares: el
+          porqué de cada carta.
+        </p>
+        <button className="link" style={{ marginTop: 8 }} onClick={() => navigate("/metodo")}>
+          Leer el método
+        </button>
+      </div>
+
+      {/* —— 6 · Privacidad —— */}
+      <div className="profile-section">
+        <h3>Privacidad</h3>
+        <p className="meta">Lo que escribes y tus fotos quedan solo para ti.</p>
+        <button className="link" style={{ marginTop: 8 }} onClick={() => navigate("/terminos")}>
+          Términos y política de privacidad
+        </button>
+      </div>
+
       {verComoInstalar && <InstallIOSModal onClose={() => setVerComoInstalar(false)} />}
 
+      {/* —— 7 · Demo (solo dev) y cerrar sesión —— */}
       {import.meta.env.DEV && (
         <div className="profile-section">
           <h3>Demo (solo dev)</h3>

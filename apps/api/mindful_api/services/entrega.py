@@ -24,6 +24,7 @@ from ..db.models import (
     Entrega,
     Usuario,
 )
+from .plan import COMENTARIO_CARTA_MAX, limites
 from .seleccion import Entrega as EntregaMotor
 from .seleccion import Perfil, elegir_carta
 
@@ -67,10 +68,41 @@ def _salida(s: Session, entrega: Entrega, ya_existia: bool) -> dict:
             "estrellas": entrega.estrellas,
             "completada": entrega.completada,
             "reflexion": entrega.reflexion,
+            "comentario_carta": entrega.comentario_carta,
+            # WS24 · A1.3: cuántas veces cambió la carta hoy (el front calcula los restantes
+            # con `limites.cambios_carta`, así lo sabe también al recargar).
+            "cambios": entrega.cambios or 0,
             "ya_existia": ya_existia,
         },
         "carta": _carta_enriquecida(s, carta),
     }
+
+
+def historial_motor(s: Session, rows, tz: ZoneInfo) -> list:
+    """Las entregas del usuario como las ve el motor (una por carta VISTA).
+
+    WS24 · A1.3: las cartas que el usuario descartó al cambiar la de hoy también
+    las vio, así que entran a las ventanas de 7 días (carta y concepto) como
+    vistas ese mismo día. Van ANTES de la carta servida, para que `historial[-1]`
+    siga siendo la carta con la que se quedó (la regla "nunca la de ayer").
+    Sin estrellas (no puntuó nada de ellas): no inclinan la afinidad.
+    """
+    historial = []
+    for (e, cat, acc, conc) in rows:
+        dia = _fecha_local(e.fecha, tz).toordinal()
+        for carta_id in (e.descartadas or []):
+            c = s.get(Carta, carta_id)
+            if c is None:
+                continue
+            historial.append(EntregaMotor(
+                carta_id=c.id, categoria=c.categoria_slug, accion=c.accion_slug,
+                dia=dia, concepto=c.concepto,
+            ))
+        historial.append(EntregaMotor(
+            carta_id=e.carta_id, categoria=cat, accion=acc, dia=dia, concepto=conc,
+            estrellas=e.estrellas, completada=e.completada,
+        ))
+    return historial
 
 
 def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
@@ -103,15 +135,7 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
             return _salida(s, ultima_entrega, ya_existia=True)
 
     # Construir el perfil para el motor.
-    historial = [
-        EntregaMotor(
-            carta_id=e.carta_id, categoria=cat, accion=acc,
-            dia=_fecha_local(e.fecha, tz).toordinal(), concepto=conc,
-            estrellas=e.estrellas, completada=e.completada,
-        )
-        for (e, cat, acc, conc) in rows
-    ]
-    perfil = Perfil(historial=historial)
+    perfil = Perfil(historial=historial_motor(s, rows, tz))
 
     # Pool global como dicts con las keys que el motor espera.
     pool = [
@@ -131,18 +155,44 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
 
 def cerrar_ritual(
     s: Session, usuario: Usuario, entrega_id: str,
-    estrellas=None, reflexion=None, completada=True,
+    estrellas=None, reflexion=None, completada=True, comentario_carta=None,
 ) -> dict:
-    """M3 · cierre: estrellas + reflexión + completada. Valida que la entrega sea del usuario."""
+    """M3 · cierre: estrellas + reflexión + comentario + completada (entrega del usuario).
+
+    WS24 · la reflexión se mide contra el plan (`limites`), no contra un número
+    hardcodeado: un free que manda 500 caracteres recibe 422 diga lo que diga el front.
+    """
     entrega = s.get(Entrega, entrega_id)
     # Aislamiento: 404 si no existe O es de otro usuario (no filtra existencia ajena).
     if entrega is None or entrega.usuario_id != usuario.id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Entrega no encontrada")
 
+    lim = limites(usuario)
+
     if estrellas is not None:
         entrega.estrellas = estrellas
     if reflexion is not None:
-        entrega.reflexion = reflexion
+        # El schema ya la entrega strippeada (y el blanco puro llega como None):
+        # medimos los caracteres ÚTILES, nunca el padding.
+        reflexion = reflexion.strip()
+        if len(reflexion) > lim.reflexion_max:
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                f"Tu reflexión puede tener hasta {lim.reflexion_max} caracteres "
+                f"en el plan {lim.plan} (mandaste {len(reflexion)})",
+            )
+        # Vacío → None: una reflexión en blanco no es una pausa "escrita".
+        entrega.reflexion = reflexion or None
+    if comentario_carta is not None:
+        comentario = comentario_carta.strip()
+        if len(comentario) > COMENTARIO_CARTA_MAX:
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                f"El comentario sobre la carta puede tener hasta "
+                f"{COMENTARIO_CARTA_MAX} caracteres",
+            )
+        # Vacío → None: no guardamos cadenas en blanco.
+        entrega.comentario_carta = comentario or None
     entrega.completada = completada
 
     s.add(entrega)
