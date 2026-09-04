@@ -178,6 +178,24 @@ Seed C: `make demo-seed` crea un segundo y tercer usuario demo (uno público, un
 privado) con fichas, un vínculo aceptado, una solicitud pendiente, un reenvío
 recibido y dos recomendaciones.
 
+## 5b. Bloque D — Promoción en TikTok (después de B y C · anotado WS25)
+
+Objetivo: dar a conocer Dwellia de forma indirecta, con contenido de valor, sin
+personas inventadas ni fotos falsas. Tomás abre y opera la cuenta; Claude deja cada
+pieza lista. TikTok es video primero: los carruseles de fotos sirven para las
+cartas, pero la tracción viene de videos cortos y reales.
+
+| Ola | Qué |
+|---|---|
+| **D0 · Bloque 0 + estrategia** | Medir la realidad: qué hacen apps parecidas en TikTok y qué les funciona. Tres ejes de contenido: la carta del día · la Pausa hecha en la vida real (Tomás o alguien de confianza, con el teléfono) · lo que la comunidad escribe. Tono, reglas, cadencia semanal, qué se mide. |
+| **D1 · Generador de piezas** | Posteos verticales (9:16) generados desde el catálogo real: dibujo del pilar + frase + "Dwellia" + link, con la estética de la app. Meses de contenido sin producir nada nuevo. |
+| **D2 · Guiones** | Treinta guiones de video de 15-30 s para grabar con el teléfono: gancho, tomas, texto en pantalla, descripción y hashtags. |
+| **D3 · Puerta de entrada** | Landing para el link de la bio, links con seguimiento (UTM) y tablero mínimo de cuánta gente llega desde TikTok y cuánta completa el onboarding. |
+
+Límites: Claude no crea ni opera la cuenta ni publica; no se generan fotos
+realistas de personas. El link en la bio puede exigir cuenta de empresa o un
+mínimo de seguidores: se ve al abrir la cuenta.
+
 ## 6. Costos del MVP (mensual, estimado)
 
 | Rubro | Hoy | Con la v2 |
