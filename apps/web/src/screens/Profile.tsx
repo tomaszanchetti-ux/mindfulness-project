@@ -10,6 +10,8 @@ import { cerrarSesion } from "../lib/firebase";
 import { useStore } from "../store";
 import { canInstall, isIOS, isStandalone, promptInstall } from "../pwa";
 import { activarPush, permisoPush, soportaPush, suscripcionActual } from "../lib/push";
+import { fechaLarga } from "./Premium";
+import "./premium.css";
 
 export function Profile() {
   const navigate = useNavigate();
@@ -20,6 +22,10 @@ export function Profile() {
   const [apellido, setApellido] = useState("");
   const [apodo, setApodo] = useState("");
   const [installable, setInstallable] = useState(canInstall());
+  // WS24 · "Tu plan": abrir el portal de Stripe puede fallar (503 sin Stripe,
+  // 409 si nunca compró). Se avisa suave, en la misma sección.
+  const [abriendoPortal, setAbriendoPortal] = useState(false);
+  const [avisoPlan, setAvisoPlan] = useState<string | null>(null);
   const [verComoInstalar, setVerComoInstalar] = useState(false);
   // Estado del push EN ESTE dispositivo (WS21): el aviso diario llega por acá.
   const [push, setPush] = useState<"cargando" | "activas" | "pedir" | "bloqueadas" | "instalar" | "nosoporta">("cargando");
@@ -100,6 +106,24 @@ export function Profile() {
     if (v && v !== perfil.apodo) {
       await api.setPerfil({ apodo: v });
       refrescarPerfil();
+    }
+  };
+
+  const abrirPortal = async () => {
+    setAbriendoPortal(true);
+    setAvisoPlan(null);
+    try {
+      const { url } = await api.pagosPortal();
+      window.location.href = url;
+    } catch (e) {
+      // El `detail` de la API es de sistema; el aviso al usuario lo ponemos acá.
+      const status = (e as Error & { status?: number }).status;
+      setAvisoPlan(
+        status === 409
+          ? "Todavía no hay una suscripción que gestionar."
+          : "No pudimos abrir la gestión de tu suscripción. Inténtalo en un rato.",
+      );
+      setAbriendoPortal(false);
     }
   };
 
@@ -193,6 +217,49 @@ export function Profile() {
         <button className="link" style={{ marginTop: 8 }} onClick={() => navigate("/metodo")}>
           Leer el método
         </button>
+      </div>
+
+      {/* WS24 · A2.1 · Tu plan. Free: se cuenta que ya tiene todo el método y se
+          invita, sin presión. Premium: se agradece y se deja gestionar el cobro. */}
+      <div className="profile-section">
+        <h3>Tu plan</h3>
+        <div className="profile-row">
+          <span>
+            {perfil.plan === "premium" ? "Dwellia premium" : "Plan gratuito"}
+          </span>
+          {/* La píldora se mantiene corta a propósito: la fecha va debajo, o en
+              móvil parte el renglón en dos. */}
+          <span className={`plan-pill ${perfil.plan === "premium" ? "es-premium" : ""}`}>
+            {perfil.plan === "premium" ? "activo" : "gratis"}
+          </span>
+        </div>
+        {perfil.plan === "premium" ? (
+          <>
+            <p className="meta" style={{ marginTop: 8 }}>
+              {perfil.plan_hasta
+                ? `Hasta el ${fechaLarga(perfil.plan_hasta)}. Gracias por sostener este lugar sin anuncios.`
+                : "Gracias por sostener este lugar sin anuncios."}
+            </p>
+            {avisoPlan && <p className="premium-aviso" style={{ marginTop: 10 }}>{avisoPlan}</p>}
+            <button
+              className="link"
+              style={{ marginTop: 8 }}
+              disabled={abriendoPortal}
+              onClick={abrirPortal}
+            >
+              {abriendoPortal ? "Abriendo…" : "Gestionar suscripción"}
+            </button>
+          </>
+        ) : (
+          <>
+            <p className="meta" style={{ marginTop: 8 }}>
+              Tienes todo el método Dwellia: una carta cada día, tu Baúl y compartir.
+            </p>
+            <button className="link" style={{ marginTop: 8 }} onClick={() => navigate("/premium")}>
+              Conoce Dwellia premium
+            </button>
+          </>
+        )}
       </div>
 
       <div className="profile-section">
