@@ -192,7 +192,7 @@ fichas, guiones, motor). Tomás abre y opera la cuenta; Claude deja cada volumen
 | **D0 · Referencias + estrategia** | Tomás junta material en `Tiktok/` (estilos, ideas, personajes nuevos con foto + ficha). Se mira qué hacen apps parecidas en TikTok. Cadencia semanal, qué se mide. |
 | **D1a · Personajes finales** | Pulir Teo (pelo) y Pipo con el material; secundarios de la temporada 1 (uno por pilar: padres, jefe, vecina, un desconocido…). Hoja de personajes aprobada por Tomás. |
 | **D1b · La fábrica** | `Flipbook/motor/render.py` generaliza: guion en archivo → marionetas → hojas → mp4. Portada y contratapa desde plantilla. Un volumen nuevo cuesta minutos de render. |
-| **D2 · Temporada 1** | 6 volúmenes, uno por pilar en el orden del reloj (amor propio · gratitud · vínculos · sentido · perspectiva · resiliencia). Guiones en `Flipbook/guiones/`. Descripciones y hashtags. |
+| **D2 · Temporada 1** | 6 volúmenes, uno por pilar en el orden del reloj (amor propio · gratitud · vínculos · sentido · perspectiva · resiliencia). Guiones en `Flipbook/guiones/`, **todos desde cero, incluido el vol. 1** (el de la WS26 es un boceto de mecánica, no un guion). Descripciones y hashtags. |
 | **D3 · Puerta de entrada** | Landing para el link de la bio, links con seguimiento (UTM) y tablero mínimo de cuánta gente llega desde TikTok y cuánta completa el onboarding. |
 
 Límites: Claude no crea ni opera la cuenta ni publica; no se generan fotos realistas de

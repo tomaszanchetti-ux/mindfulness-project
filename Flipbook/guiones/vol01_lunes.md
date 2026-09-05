@@ -1,8 +1,10 @@
 # Volumen 1 — "Lunes" (pilar: amor propio · secundario: Pipo)
 
 > Guion en el formato de la fábrica: cada escena = dibujo, duración, texto en pantalla, poses.
-> Renderizado en la WS26 como boceto (`pruebas/flipbook_v3.mp4`, 24,5 s). Boceto aprobado
-> por Tomás como base; el personaje se pule antes de la versión final.
+> Renderizado en la WS26 como boceto (`pruebas/flipbook_v3.mp4`, 24,5 s). **Nada de este
+> guion está fijo**: fue trabajo conceptual para probar la mecánica. El Volumen 1 se
+> reescribe entero junto con los demás; los volúmenes tienen que ser mucho más
+> representativos de cada pilar y del arco de Teo (Tomás, 05/09).
 
 **Portada:** VOLUMEN 1 · **Lunes** · viñeta: Teo (medio erguido, sonríe) paseando a Pipo · "capítulo 1".
 
@@ -16,7 +18,7 @@
 
 **Cierre:** última hoja 0,5 s → tapa se cierra 1 s → contratapa 3 s ("continúa en el volumen 2").
 
-## Notas para la versión final
+## Notas para la reescritura (el guion de arriba es solo el boceto)
 - Pulir el pelo de Teo (menos gorro).
 - Escena 4: el cuadernito flota un poco sobre las manos; anclarlo.
 - Pensar el gancho de la primera hoja: hoy "lunes." funciona, pero puede ser más específico

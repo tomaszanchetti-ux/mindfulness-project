@@ -1,6 +1,8 @@
 # El libro de Dwellia — concepto v1 (WS26 · 05/09/2026)
 
-> Estado: **cerrado como base** por Tomás (05/09). Se ejecuta como Bloque D, después de B y C.
+> Estado: **cerrado como base** por Tomás (05/09): el formato, los personajes y la manera de
+> contar. **Los guiones NO están fijos**, ni el del Volumen 1: todo lo de esta sesión es
+> conceptual y los volúmenes se trabajan desde cero para que sean representativos. Se ejecuta como Bloque D, después de B y C.
 > Pruebas: `pruebas/flipbook_poc.mp4` (mecánica, 8 s) · `pruebas/flipbook_v2.mp4` (estructura de libro, 23 s) · **`pruebas/flipbook_v3.mp4` (Teo y Pipo + historia abstracta, 24 s · la vigente; motor en `motor/render.py`)**. Los mp4 no van al repo; se regeneran con el motor.
 
 ## 1. Qué es
