@@ -26,3 +26,10 @@ dist/
 
 # Fotos en modo storage local (dev)
 apps/api/var/
+
+# Flipbook (Bloque D): fotos de referencia reales y videos renderizados no van al repo
+Tiktok/
+Flipbook/pruebas/*.mp4
+Flipbook/pruebas/frames*/
+Flipbook/motor/frames*/
+Flipbook/salida/

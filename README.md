@@ -14,6 +14,7 @@ del teléfono**; el teléfono es guía + baúl.
 |---|--------|
 | 📜 [`00_Documento_Madre.md`](00_Documento_Madre.md) | **Empezá por acá.** La idea, los principios rectores y los componentes de v2. |
 | 🗂️ [`WS/`](WS/) | Bitácoras de trabajo — qué se hizo y qué sigue, sesión por sesión. |
+| 📖 [`Flipbook/`](Flipbook/) | Bloque D: el libro animado para TikTok (Teo y Pipo) — concepto, reglas, fichas, guiones y motor. |
 | ⚙️ [`M0_Motor_de_Contenido/`](M0_Motor_de_Contenido/) | **Motor de contenido:** pilares, cartas, estética + la teoría ([`fundamentos_pilares.md`](M0_Motor_de_Contenido/fundamentos_pilares.md)) y el [`canon`](M0_Motor_de_Contenido/canon_cartas.md) (SoT del validador/judge). ✅ refundado WS22 — mazo nuevo de **77 cartas** (judge 77/77 ✅). |
 | 🚪 [`M1_Onboarding_y_Perfil/`](M1_Onboarding_y_Perfil/) | **Motor de onboarding y perfil:** login, storytelling (la pausa de dos tiempos + pilares en anillos), horario y aviso. ✅ lógica cerrada. |
 | 🎴 [`M2_Entrega_del_Dia/`](M2_Entrega_del_Dia/) | **Motor de entrega del día:** rotación 6+1 de pilares sobre todo el pool del pilar (nada se elige — WS22); sin repetir carta ni concepto en la semana. ✅ lógica cerrada. |

@@ -178,25 +178,26 @@ Seed C: `make demo-seed` crea un segundo y tercer usuario demo (uno público, un
 privado) con fichas, un vínculo aceptado, una solicitud pendiente, un reenvío
 recibido y dos recomendaciones.
 
-## 5b. Bloque D — Promoción en TikTok (después de B y C · anotado WS25)
+## 5b. Bloque D — Promoción en TikTok: el libro animado (después de B y C · concepto cerrado WS26)
 
-Objetivo: dar a conocer Dwellia de forma indirecta, con contenido de valor, sin
-personas inventadas ni fotos falsas. Tomás abre y opera la cuenta; Claude deja cada
-pieza lista. TikTok es video primero: los carruseles de fotos sirven para las
-cartas, pero la tracción viene de videos cortos y reales.
+Objetivo: dar a conocer Dwellia de forma indirecta, con una historia que la gente quiera
+seguir. Formato decidido en la WS26: **libros animados para hojear (flipbook)** de 15-30 s,
+verticales. Un protagonista (**Teo**) y su pug (**Pipo**) crecen capítulo a capítulo; Dwellia
+es la magia abstracta que los impulsa (algo se enciende de verde) y solo se nombra en la
+contratapa. Todo el detalle vive en [`Flipbook/`](Flipbook/) (`CONCEPTO.md`, `REGLAS.md`,
+fichas, guiones, motor). Tomás abre y opera la cuenta; Claude deja cada volumen listo.
 
 | Ola | Qué |
 |---|---|
-| **D0 · Bloque 0 + estrategia** | Medir la realidad: qué hacen apps parecidas en TikTok y qué les funciona. Tres ejes de contenido: la carta del día · la Pausa hecha en la vida real (Tomás o alguien de confianza, con el teléfono) · lo que la comunidad escribe. Tono, reglas, cadencia semanal, qué se mide. |
-| **D1a · Personajes + 3 sketches piloto** | Sketches animados de 15-30 s con personajes de caricatura sencillos y elegantes, en el estilo de la app (línea fina tierra, acentos salvia, fondo papel). Historias suaves de autosuperación: salir de la locura del día a día, conectar con uno mismo y con el entorno, pasear al perro, dejar el teléfono. Animación de recorte, limpia, sin sobrecargar: divertido pero sutil. Remate siempre igual: la carta del día de Dwellia + link. Sin voz (texto en pantalla + música libre elegida al subir). Se diseñan 2-3 personajes fijos con personalidad y 3 pilotos para decidir el tono. |
-| **D1b · La fábrica de sketches** | Cada sketch se escribe como un guion corto (escena, personaje, gesto, texto, remate) y un motor lo renderiza en vertical (Chrome cuadro a cuadro + ffmpeg, ya disponibles). Un sketch nuevo cuesta minutos: eso hace viable el ritmo diario. También saca los carruseles de cartas (dibujo + frase + link) desde el catálogo. |
-| **D2 · Guiones** | Banco de guiones para los sketches (gancho en el primer segundo, historia mínima, remate) + algunos videos reales con el teléfono como complemento. Descripciones y hashtags. |
+| **D0 · Referencias + estrategia** | Tomás junta material en `Tiktok/` (estilos, ideas, personajes nuevos con foto + ficha). Se mira qué hacen apps parecidas en TikTok. Cadencia semanal, qué se mide. |
+| **D1a · Personajes finales** | Pulir Teo (pelo) y Pipo con el material; secundarios de la temporada 1 (uno por pilar: padres, jefe, vecina, un desconocido…). Hoja de personajes aprobada por Tomás. |
+| **D1b · La fábrica** | `Flipbook/motor/render.py` generaliza: guion en archivo → marionetas → hojas → mp4. Portada y contratapa desde plantilla. Un volumen nuevo cuesta minutos de render. |
+| **D2 · Temporada 1** | 6 volúmenes, uno por pilar en el orden del reloj (amor propio · gratitud · vínculos · sentido · perspectiva · resiliencia). Guiones en `Flipbook/guiones/`. Descripciones y hashtags. |
 | **D3 · Puerta de entrada** | Landing para el link de la bio, links con seguimiento (UTM) y tablero mínimo de cuánta gente llega desde TikTok y cuánta completa el onboarding. |
 
-Límites: Claude no crea ni opera la cuenta ni publica; no se generan fotos
-realistas de personas; la música no se genera (se elige al subir); animación simple
-y cuidada, no cine. Se hace DESPUÉS de tener la app lista (B y C). El link en la bio puede exigir cuenta de empresa o un
-mínimo de seguidores: se ve al abrir la cuenta.
+Límites: Claude no crea ni opera la cuenta ni publica; no se generan fotos realistas de
+personas ni se usan las de referencia en los videos; la música se elige al subir; no se
+generan hojas con IA de imágenes (no mantiene el personaje). Se hace DESPUÉS de B y C.
 
 ## 6. Costos del MVP (mensual, estimado)
 
