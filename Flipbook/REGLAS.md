@@ -13,6 +13,12 @@ en personaje y al escribir un guion.
 - La línea **tiembla**: cada hoja se traza con su propio temblor (±2 px). Es lo que dice
   "esto está redibujado a mano".
 - Relleno solo donde hace falta leer una forma: pelo, máscara y orejas del pug. El resto es línea.
+- **Principio "Sin City" (Tomás, 06/09): todo simplón, salvo UN elemento con detalle por hoja.**
+  Como en la película, donde todo es blanco y negro y un detalle va en color, acá todo es
+  línea simple y **un solo elemento lleva detalle** fino: el que carga el chiste o la emoción.
+  La cara de Pipo con sus arrugas, la mirada triste en el espejo, las fotitos del feed pasando
+  una atrás de otra, el vapor del café. El resto se queda en línea de palito. El detalle es
+  un presupuesto: si dos cosas tienen detalle, ninguna se ve.
 
 ## 2. El ritmo del flipbook
 - **10 hojas por segundo** (30 fps, cada hoja dura 3 cuadros).
@@ -23,6 +29,11 @@ en personaje y al escribir un guion.
   página** abajo a la derecha; **pulgar fijo** en la esquina.
 - Movimiento por hoja: poco. Un paso, un gesto, un cambio de mirada. Si algo tiene que moverse
   mucho, se mueve el fondo (parallax) y el personaje camina "en el lugar".
+- **El zoom es un recurso del libro.** Una hoja puede ser un primer plano (la mano con el
+  teléfono, las fotitos pasando, el ojo de Pipo). Se entra al detalle en 2-3 hojas (la hoja
+  "acerca") y se vuelve al plano simple. Es donde vive el elemento con detalle del principio
+  Sin City. Nunca se muestra una marca ni una interfaz real: fotitos una atrás de otra, no
+  una app.
 
 ## 3. El libro
 - **Portada** (2 s, respira sin pasar página): tapa de cartón (`#c4b296`), doble marco, "VOLUMEN N",
@@ -53,6 +64,10 @@ en personaje y al escribir un guion.
   portada · conceptos · el espejo de Pipo · la situación de Teo · algo se enciende · la Pausa ·
   la evolución · el cierre de Pipo · contratapa. Un pilar y su opuesto moderno por volumen.
 - **La sátira es de la situación, nunca de la persona.** Pipo trata a Teo con amor siempre.
+- **Las situaciones son cosas MUY vividas, reconocibles en un segundo, y un poco grotescas.**
+  No "Teo está triste": Teo pasa dos horas sacándose mil fotos con poses para verse bien, y
+  después se mira al espejo con cara de tristeza. El grotesco es la exageración de algo que
+  todos hicimos; ahí está la risa y el "sos vos". Cada guion arranca por encontrar ESA escena.
 - Dwellia en la historia es **abstracta y mágica**: algo parecido a un teléfono se enciende de
   verde, el ruido mental se disuelve, el personaje hace la actividad, escribe, y se lo ve
   después con un **aura** distinta haciendo un acto que lo demuestra. Sin cartas, sin

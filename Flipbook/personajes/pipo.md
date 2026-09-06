@@ -11,6 +11,12 @@
 - **Regla de oro:** trata a Teo **con amor, siempre**. Satírico con la **situación**, nunca
   con la persona. Se impacienta porque lo quiere.
 - **Referencias:** `Tiktok/pipo/` (3 fotos: sentado de frente, panza arriba, de frente con la cara).
+  **Expresiones (06/09):** `Tiktok/pipo/Expresiones faciales/` — *Ironía* (cabeza ladeada,
+  lengua afuera, mirada de costado → la alegría sarcástica), *No entender nada* (cabeza
+  ladeada hacia arriba, arrugas marcadas → ¿en serio?), *Sorpresa* (ojos abiertos al máximo,
+  orejas atrás, frente arrugada → sospecha/sorpresa). Son el registro del juego de caras;
+  con ellas se dibuja el set en D1a. **Las caras llevan el detalle** (principio Sin City):
+  arrugas, brillo del ojo, lengua; el cuerpo sigue simple.
 - **Lo que lo hace reconocible (3 rasgos fijos):**
   1. **Máscara negra sólida** (hocico chato) con las arrugas de la frente.
   2. **Orejas negras plegadas**, sólidas.

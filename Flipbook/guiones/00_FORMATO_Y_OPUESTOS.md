@@ -17,6 +17,12 @@ que la hace volver.
   Es el narrador sutil (su voz es el texto en pantalla), el cómico (la cara) y el mentor.
 - **Dwellia es la magia** que enciende el cambio, abstracta, y solo se nombra en la contratapa.
 
+**Regla de las situaciones:** cosas **muy vividas** en la realidad, reconocibles en un
+segundo y un poco **grotescas** (la exageración de algo que todos hicimos). Con **zoom**:
+el libro se acerca al detalle que delata (las fotitos del feed pasando, la mano que no
+suelta el teléfono, el ojo de Pipo) y vuelve al plano simple. Principio "Sin City": todo
+simplón, un solo elemento con detalle por hoja, el que carga el chiste o la emoción.
+
 **Regla de oro del humor:** Pipo trata a Teo **con amor, siempre**. La sátira es sobre la
 **situación** (lo que la sociedad moderna nos hace hacer), nunca sobre la persona. Pipo se
 impacienta porque lo quiere. Si un chiste se ríe de Teo y no de la situación, está mal.
@@ -47,7 +53,7 @@ El opuesto se deriva de la **función** de cada pilar (definida en
 
 | Vol. | Pilar | Función (Dwellia) | **Opuesto moderno** | Cómo se ve en la vida de Teo | El espejo de Pipo (contrario total) | El acto que lo demuestra (tras la Pausa) |
 |---|---|---|---|---|---|---|
-| 1 | 🌸 **Amor propio** | Mirarse como a alguien que uno quiere. | **El juez interno.** Hablarse como no le hablaríamos a nadie; compararse con el feed. | Teo frente al espejo o al feed: "no es suficiente". Se mide, se corrige, se retoca. | Pipo frente al mismo espejo: cara aplastada, pliegues, un ojo para cada lado, **y se encanta**. Se queda mirándose con orgullo. | Teo se mira al espejo y se sonríe. O se pone la remera que le gusta sin pensar en nadie. |
+| 1 | 🌸 **Amor propio** | Mirarse como a alguien que uno quiere. | **El juez interno.** Hablarse como no le hablaríamos a nadie; compararse con el feed. | **Ejemplo de Tomás:** Teo pasa dos horas sacándose mil fotos con poses para verse bien (la hoja "acerca": el teléfono y las fotitos pasando una atrás de otra, sin mostrar ninguna app), y después se mira al espejo con cara de tristeza. | Pipo frente al mismo espejo: cara aplastada, pliegues, un ojo para cada lado, **y se encanta**. Se queda mirándose con orgullo. | Teo se mira al espejo y se sonríe. O se pone la remera que le gusta sin pensar en nadie. |
 | 2 | 🌅 **Gratitud** | Re-valorar lo que ya está; antídoto contra acostumbrarse a lo bueno. | **Darlo por sentado.** La queja automática con todo lo bueno en la mano. | Lunes: café caliente, casa, perro, sol por la ventana, y Teo se queja del lunes. | El mismo plato de croquetas de todos los días, y Pipo lo recibe como **la mejor fiesta de su vida**. Otra vez. | Teo le dice gracias a alguien concreto (el del bar, la mamá, Pipo) mirándolo. |
 | 3 | 🕊 **Vínculos** | Acercarse un milímetro a quien importa. | **Estar sin estar.** Compañía con el teléfono en la mano; el "te llamo" que no llega. | Cena con amigos o familia: todos mirando el teléfono, Teo también. Nadie se mira. | Alguien entra por la puerta y Pipo **entrega el cuerpo entero** al saludo. No sabe estar a medias. | Teo pone el teléfono boca abajo y mira a la persona. O llama al que hace meses dice que va a llamar. |
 | 4 | 🌙 **Sentido** | Conectar lo cotidiano con lo que importa; la luz que orienta. | **El piloto automático.** Agenda llena, vida vacía; correr sin saber a dónde. | Teo corre de una cosa a otra con la agenda al tope; no sabe a dónde va, pero llega tarde. | En el paseo, Pipo **se para a oler una flor cuatro minutos**. Él sabe exactamente qué le importa: la flor. | Teo borra algo de la agenda y pone en su lugar una cosa que le importa (chica, concreta). |
@@ -81,6 +87,7 @@ deje en `Tiktok/Ideas/`.
 
 1. Diseñar las 6 caras de Pipo y su pose a cámara (D1a). Pulir a Teo.
 2. Un mini-guion por volumen, en este orden: investigación del opuesto (cómo se ve hoy,
-   qué es reconocible al instante), 3 ideas de espejo de Pipo, elegir la más graciosa,
-   escribir las 8 hojas de estructura, renderizar, revisar con Tomás.
+   qué es reconocible al instante), **encontrar LA escena vivida y grotesca** (con su hoja
+   de zoom), 3 ideas de espejo de Pipo, elegir la más graciosa, escribir las 8 hojas de
+   estructura, decidir qué elemento lleva el detalle en cada hoja, renderizar, revisar con Tomás.
 3. Empezar por el que tenga el chiste más claro, no necesariamente por el 1.
