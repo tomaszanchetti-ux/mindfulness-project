@@ -23,6 +23,13 @@ hojas que se achica, el pulgar que las pasa, y una hoja en vuelo en cada pase.
 | **Cierre** | 4 s | La última hoja se sostiene medio segundo, la tapa se cierra (1 s), contratapa: hoja salvia + "Dwellia · una Pausa al día, fuera del teléfono" + "continúa en el volumen N+1" + "link en la bio". |
 
 ## 3. La historia: arco del personaje sobre los 6 pilares
+**Línea narrativa (Tomás, 06/09, confirmada): el libro es "El diario de Pipo".** Pipo
+narra (su voz es el texto en pantalla), Teo es el héroe que recorre el camino y Pipo es
+"the guy", el que ya lo caminó: un perro vive en el presente. Cada volumen = un pilar y su
+**opuesto moderno** contado como sátira **de la situación, nunca de la persona** (Pipo trata
+a Teo con amor). Formato único de 8 bloques y la tabla de los 6 opuestos:
+**`guiones/00_FORMATO_Y_OPUESTOS.md` (el componente central).**
+
 **Decisión de Tomás (05/09): sin carta ni objeto literal de la app.** Dwellia dentro de la
 historia es abstracta y mágica: el personaje toma algo parecido a un teléfono, ese algo se
 enciende de verde (salvia), el ruido mental se disuelve, hace la actividad, escribe, y después

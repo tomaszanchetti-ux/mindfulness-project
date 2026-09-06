@@ -39,14 +39,20 @@ en personaje y al escribir un guion.
   cualquier tamaño. Se eligen mirando las fotos de referencia; el resto se simplifica a línea.
 - Ficticios siempre: se inspiran en personas o animales reales, pero tienen nombre propio y no
   son esa persona. No se usan fotos reales en los videos.
-- Estados de ánimo con lo mínimo: boca plana / sonrisa; mirada abajo / frente / arriba / costado;
-  postura encorvada (0) → erguida (1). Sin cejas ni expresiones complejas.
+- **Teo** con lo mínimo: boca plana / sonrisa; mirada abajo / frente / arriba / costado;
+  postura encorvada (0) → erguida (1). Sin cejas ni expresiones complejas. Nunca mira a cámara.
+- **Pipo es la excepción: su cara es el chiste.** Seis caras fijas (fastidio · resignación ·
+  sospecha · ¿en serio? · alegría sarcástica · orgullo) con las herramientas del pug (arrugas
+  como cejas, orejas, lengua, cabeza ladeada). **Pipo mira a cámara.** Teo lleva el arco,
+  Pipo lleva la cara.
 - Cada personaje es una **marioneta de partes** en `motor/render.py`: cabeza, cuerpo, poses
   (sentado, camina, erguido). Una pose nueva se agrega una vez y sirve para todos los volúmenes.
 
 ## 5. La historia
-- Regla de oro del capítulo: **un problema chiquito y reconocible en la primera hoja → algo se
-  enciende → un gesto → un final abierto**.
+- Cada volumen sigue el **formato único de 8 bloques** de `guiones/00_FORMATO_Y_OPUESTOS.md`:
+  portada · conceptos · el espejo de Pipo · la situación de Teo · algo se enciende · la Pausa ·
+  la evolución · el cierre de Pipo · contratapa. Un pilar y su opuesto moderno por volumen.
+- **La sátira es de la situación, nunca de la persona.** Pipo trata a Teo con amor siempre.
 - Dwellia en la historia es **abstracta y mágica**: algo parecido a un teléfono se enciende de
   verde, el ruido mental se disuelve, el personaje hace la actividad, escribe, y se lo ve
   después con un **aura** distinta haciendo un acto que lo demuestra. Sin cartas, sin
@@ -54,9 +60,10 @@ en personaje y al escribir un guion.
 - **Una temporada = 6 volúmenes**, uno por pilar en el orden del reloj del onboarding: amor
   propio · gratitud · vínculos · sentido · perspectiva · resiliencia. Cada volumen presenta un
   secundario ligado al pilar.
-- Texto en pantalla: **máximo 4 palabras por hoja**, minúsculas, con punto si es una frase
-  ("lunes." · "algo se enciende." · "salir un rato"). Sin voz. Georgia o serif parecida.
-- Tono suave, humor de gesto, nunca sermón. Pipo lleva el humor; Teo lleva el arco.
+- Texto en pantalla = **la voz de Pipo** (el libro es su diario): primera persona,
+  minúsculas, **hasta 6 palabras por hoja**, con punto si es una frase ("lunes. otra vez el
+  espejo." · "yo me veo perfecto."). Sin voz grabada. Georgia o serif parecida.
+- Tono: sátira con ternura (Mafalda, Macanudo, Snoopy), humor de gesto, nunca sermón. Lo gracioso engancha; lo emocional hace volver.
 
 ## 6. Lo que no se hace
 - Generar cada hoja con IA de imágenes (no mantiene el personaje entre hojas).

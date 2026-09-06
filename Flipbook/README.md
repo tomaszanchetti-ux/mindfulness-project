@@ -1,8 +1,8 @@
 # Flipbook — el libro animado de Dwellia (Bloque D)
 
-Serie de **libros animados para hojear** de 15-30 s, verticales, para TikTok. Un personaje
-(Teo) y su pug (Pipo) crecen capítulo a capítulo; Dwellia es la magia que los impulsa y solo
-se nombra en la contratapa. El concepto completo está en [`CONCEPTO.md`](CONCEPTO.md); las
+Serie de **libros animados para hojear** de 25-30 s, verticales, para TikTok: **"El diario de
+Pipo"**. Pipo (el pug) narra con humor cómo Teo (el héroe) se pierde en la vida moderna y
+crece con cada Pausa; Dwellia es la magia que lo impulsa y solo se nombra en la contratapa. El concepto completo está en [`CONCEPTO.md`](CONCEPTO.md); las
 reglas de dibujo y animación, en [`REGLAS.md`](REGLAS.md).
 
 Estado (WS26 · 05/09/2026): concepto cerrado como base. Se ejecuta **después** de los
@@ -15,7 +15,7 @@ Bloques B y C. Mientras tanto Tomás junta material de referencia (ver abajo).
 | `CONCEPTO.md` | El concepto (estructura del volumen, arco por pilares, decisiones). |
 | `REGLAS.md` | La gramática visual: cómo se dibuja y se anima para que se lea como flipbook Dwellia. |
 | `personajes/` | Una **ficha** por personaje (`teo.md`, `pipo.md`) + la hoja de personajes dibujada. La plantilla para uno nuevo es `_plantilla.md`. |
-| `guiones/` | Un archivo por volumen (`vol01_lunes.md`): escenas, duración, texto en pantalla, poses. |
+| `guiones/` | **`00_FORMATO_Y_OPUESTOS.md` = el componente central** (formato único de 8 bloques + los 6 pilares y sus opuestos modernos + el espejo de Pipo). Después, un archivo por volumen (`vol01_lunes.md` es solo el boceto de mecánica). |
 | `motor/` | `render.py` renderiza un volumen (hojas → ffmpeg → mp4). `inventario.py` lista qué personajes tienen fotos y ficha. |
 | `pruebas/` | Las pruebas de la WS26 (mp4 fuera del repo, hojas de contacto dentro). |
 | `../Tiktok/` | **La bandeja de entrada de Tomás** (fuera del repo): una subcarpeta por personaje (`teo/`, `pipo/`) y `Ideas/` para material general de estilo (portadas, auras, viñetas que gusten). |
