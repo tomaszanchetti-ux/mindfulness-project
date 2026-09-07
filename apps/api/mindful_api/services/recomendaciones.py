@@ -162,7 +162,8 @@ def limpiar_url(valor) -> Optional[str]:
     url = (valor or "").strip()
     if not url:
         return None
-    if not url.startswith(URL_PREFIJO):
+    # Q/A C1.3: el esquema no distingue mayúsculas (RFC 3986): "HTTPS://" vale.
+    if not url.lower().startswith(URL_PREFIJO):
         raise _422(MSG_URL)
     if len(url) > URL_MAX:
         raise _422(MSG_URL_LARGO)
