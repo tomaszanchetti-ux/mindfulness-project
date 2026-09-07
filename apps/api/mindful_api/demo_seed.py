@@ -49,6 +49,13 @@ from .config import settings
 from .db.base import SessionLocal
 from .db.models import (
     AVISO_CARTA_ESTADO,
+    AVISO_REENVIO,
+    VINCULO_ACEPTADA,
+    VINCULO_PENDIENTE,
+    Guardada,
+    PausaProgramada,
+    Reenvio,
+    Vinculo,
     ESTADO_A_REVISAR,
     ESTADO_APROBADA,
     ESTADO_RECHAZADA,
@@ -65,7 +72,7 @@ from .db.models import (
 from .services.avisos import TEXTOS_ESTADO
 from .services.compartir import crear_compartido
 from .services.fotos import subir_foto
-from .services.plan import limites
+from .services.plan import activar_premium, limites
 
 # La huella que hace idempotente al seed. Va en `descartadas` (JSON): no es un id de
 # carta real, así que `historial_motor` la saltea sin enterarse.
@@ -594,6 +601,106 @@ def sembrar_comunidad(s: Session, usuario: Usuario) -> dict:
     return resumen
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# WS29 · Bloque C · Dos personas fijas y la comunidad de cada usuario demo|
+# ─────────────────────────────────────────────────────────────────────────────
+# uid · email · apodo · nombre · apellido · perfil público · premium
+PERSONAS_DEMO = (
+    ("demo|lu", "lu@dwellia.local", "Lu", "Lucía", "Pérez", True, True),
+    ("demo|mar", "mar@dwellia.local", "Mar", "Martín", "Sosa", False, False),
+)
+UIDS_PERSONAS = {p[0] for p in PERSONAS_DEMO}
+TEXTO_REENVIO = "Lu te envió una Pausa."
+
+
+def _personas_demo(s: Session) -> list:
+    """Lu (pública, premium) y Mar (privado, free): existen siempre, con sus datos
+    fijos. Sus Pausas las siembra `sembrar_usuario` como a cualquier demo|."""
+    ahora = datetime.now(timezone.utc)
+    personas = []
+    for uid, email, apodo, nombre, apellido, publico, premium in PERSONAS_DEMO:
+        u = s.scalar(select(Usuario).where(Usuario.firebase_uid == uid))
+        if u is None:
+            u = Usuario(firebase_uid=uid, email=email, terminos_aceptados_at=ahora)
+            s.add(u)
+        u.apodo, u.nombre, u.apellido, u.perfil_publico = apodo, nombre, apellido, publico
+        if premium and not limites(u).plan == "premium":
+            activar_premium(u, ahora + timedelta(days=365))
+        s.commit()
+        s.refresh(u)
+        personas.append(u)
+    return personas
+
+
+def _compartidas_de(s: Session, usuario: Usuario) -> list:
+    return s.scalars(
+        select(Entrega)
+        .where(Entrega.usuario_id == usuario.id, Entrega.completada.is_(True),
+               Entrega.visibilidad == "compartida", Entrega.extra.is_(False))
+        .order_by(Entrega.fecha.desc())
+    ).all()
+
+
+def _vinculo(s: Session, a: Usuario, b: Usuario, estado: str) -> bool:
+    """Crea el vínculo a→b si no hay ninguno entre los dos. True si lo creó."""
+    existe = s.scalar(select(Vinculo).where(
+        ((Vinculo.solicitante_id == a.id) & (Vinculo.destinatario_id == b.id))
+        | ((Vinculo.solicitante_id == b.id) & (Vinculo.destinatario_id == a.id))
+    ))
+    if existe is not None:
+        return False
+    ahora = datetime.now(timezone.utc)
+    s.add(Vinculo(solicitante_id=a.id, destinatario_id=b.id, estado=estado,
+                  aceptada_at=ahora if estado == VINCULO_ACEPTADA else None))
+    s.commit()
+    return True
+
+
+def sembrar_vinculos(s: Session, usuario: Usuario, lu: Usuario, mar: Usuario) -> dict:
+    """Para UN usuario demo| del navegador: Lu es su comunidad (aceptada), Mar le
+    pidió (pendiente, recibida), Lu le reenvió una Pausa (sin leer), tiene una
+    Pausa de Lu guardada y una programada de Lu como próxima carta. Idempotente:
+    cada pieza se crea solo si falta."""
+    r = {"vinculo": False, "solicitud": False, "reenvio": False, "guardada": False,
+         "programada": False}
+    if usuario.firebase_uid in UIDS_PERSONAS:
+        return r
+    r["vinculo"] = _vinculo(s, usuario, lu, VINCULO_ACEPTADA)
+    r["solicitud"] = _vinculo(s, mar, usuario, VINCULO_PENDIENTE)
+
+    de_lu = _compartidas_de(s, lu)
+    if len(de_lu) < 3:
+        return r                                   # Lu todavía sin Pausas: nada que reenviar
+    ahora = datetime.now(timezone.utc)
+
+    # Reenvío (la primera compartida de Lu) + su aviso, sin leer.
+    if s.scalar(select(Reenvio).where(Reenvio.a_usuario_id == usuario.id,
+                                      Reenvio.de_usuario_id == lu.id)) is None:
+        s.add(Reenvio(de_usuario_id=lu.id, a_usuario_id=usuario.id,
+                      entrega_id=de_lu[0].id, created_at=ahora - timedelta(hours=3)))
+        s.add(Aviso(usuario_id=usuario.id, tipo=AVISO_REENVIO, referencia_id=de_lu[0].id,
+                    texto=TEXTO_REENVIO, leido=False,
+                    created_at=ahora - timedelta(hours=3)))
+        s.commit()
+        r["reenvio"] = True
+
+    # Guardada (la segunda).
+    if s.scalar(select(Guardada).where(Guardada.usuario_id == usuario.id,
+                                       Guardada.entrega_id == de_lu[1].id)) is None:
+        s.add(Guardada(usuario_id=usuario.id, entrega_id=de_lu[1].id))
+        s.commit()
+        r["guardada"] = True
+
+    # Programada (la tercera): será la próxima carta del día de este usuario.
+    if s.scalar(select(PausaProgramada).where(PausaProgramada.usuario_id == usuario.id,
+                                              PausaProgramada.servida_at.is_(None))) is None:
+        s.add(PausaProgramada(usuario_id=usuario.id, carta_id=de_lu[2].carta_id,
+                              de_usuario_id=lu.id, entrega_origen_id=de_lu[2].id))
+        s.commit()
+        r["programada"] = True
+    return r
+
+
 def sembrar() -> list:
     if settings.auth_mode == "firebase":
         raise SystemExit(
@@ -602,11 +709,12 @@ def sembrar() -> list:
         )
 
     with SessionLocal() as s:
+        lu, mar = _personas_demo(s)              # WS29: siempre existen
         usuarios = _usuarios_demo(s)
         creado = None
-        if not usuarios:
+        if all(u.firebase_uid in UIDS_PERSONAS for u in usuarios):
             creado = _crear_usuario_demo(s)
-            usuarios = [creado]
+            usuarios = _usuarios_demo(s)
 
         resumenes = []
         for u in usuarios:
@@ -615,8 +723,11 @@ def sembrar() -> list:
             # idempotencia, así que se siembran aunque las Pausas ya estuvieran.
             resumen["comunidad"] = sembrar_comunidad(s, u)
             resumenes.append(resumen)
+        # WS29 · Bloque C: recién ahora, con las Pausas de Lu ya sembradas.
+        for u, resumen in zip(usuarios, resumenes):
+            resumen["vinculos"] = sembrar_vinculos(s, u, lu, mar)
 
-    print("Seed de Q/A visual (WS25 + WS27) — usuarios demo|:")
+    print("Seed de Q/A visual (WS25 + WS27 + WS29) — usuarios demo|:")
     if creado is not None:
         print(f"  · no había ninguno: creé {creado.firebase_uid} "
               f"(apodo {DEMO_APODO}, términos aceptados)")
@@ -643,6 +754,12 @@ def sembrar() -> list:
                 f"{c['avisos']} avisos (1 sin leer) · {c['comentarios']} comentarios · "
                 f"carta en el mazo: {c['carta_publicada']}"
             )
+        v = r.get("vinculos") or {}
+        if any(v.values()):
+            piezas = [k for k, ok in v.items() if ok]
+            print(f"      comunidad C: creé {', '.join(piezas)} (Lu pública+premium · Mar privado)")
+        elif r["uid"] not in UIDS_PERSONAS:
+            print("      comunidad C: ya tenía vínculo, solicitud, reenvío, guardada y programada")
     return resumenes
 
 
