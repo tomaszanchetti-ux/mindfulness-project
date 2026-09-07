@@ -64,7 +64,7 @@ grandes, cola enrulada, **collar salvia** (el acento de color). Hoja de personaj
 - Estilo: línea tierra sobre papel crema, un solo acento de color salvia por hoja (el collar del
   pug, el sol, el objeto encendido, el aura, la hoja).
 
-## 5. La fábrica (Bloque D1b, reescrito)
+## 5. La fábrica (Bloque D1.2, reescrito)
 Pipeline ya probado en la Mac, sin instalar nada (Python + Pillow + ffmpeg):
 
 1. **Guion** en texto: `volumen`, `título`, lista de escenas `(escena, duración, texto en pantalla, poses)`.
@@ -83,7 +83,7 @@ personaje idéntico entre 60 hojas y el flipbook lo delata.
    El cartel de apertura **cambia por volumen** (color, formas, título satírico "Teo y Pipo
    en…") con la imagen fija de Teo y Pipo a lo Tintín; el cierre es **siempre el mismo**
    (iris Looney Tunes sobre la cara de Pipo + contratapa). Los activos que se repiten (las 6
-   caras de Pipo, los gestos de Teo) se hacen en serio en D1a/D1b antes de cualquier volumen.
+   caras de Pipo, los gestos de Teo) se hacen en serio en D1.1/D1.2 antes de cualquier volumen.
 
 1. Peso del pase de página: **aprobado** (1 cuadro en vuelo por hoja).
 2. Dwellia en la historia: **abstracta y mágica**, sin carta (ver §3).

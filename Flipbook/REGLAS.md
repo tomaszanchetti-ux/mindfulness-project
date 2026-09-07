@@ -19,6 +19,16 @@ en personaje y al escribir un guion.
   La cara de Pipo con sus arrugas, la mirada triste en el espejo, las fotitos del feed pasando
   una atrás de otra, el vapor del café. El resto se queda en línea de palito. El detalle es
   un presupuesto: si dos cosas tienen detalle, ninguna se ve.
+- **Dos capas de dibujo (Tomás, 07/09, WS31): "que no parezca algo así nomás".**
+  **Capa de detalle (ilustrada):** Teo, Pipo (sus 6 caras), los personajes que vayan
+  apareciendo y **el elemento clave de cada historieta** se dibujan UNA vez como piezas
+  ilustradas con fondo transparente (cabeza, cuerpo, poses), se limpian y se registran como
+  partes del motor; después el motor las usa en todas las hojas con temblor y registro
+  imperfecto, así que es el mismo personaje en las 60 hojas. **Capa simple (programada):**
+  fondos, extras, props, formas del cartel, taco de hojas: línea de palito, ahí se ahorra y
+  el contraste hace que el personaje detallado se vea más. Lo que se genera es el ASSET,
+  nunca la hoja (la regla de §6 sigue). Los activos que se repiten se hacen en D1.1/D1.2;
+  los elementos puntuales de cada historieta, en la WS de ese volumen.
 
 ## 2. El ritmo del flipbook
 - **10 hojas por segundo** (30 fps, cada hoja dura 3 cuadros).

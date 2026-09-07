@@ -7,8 +7,8 @@ reglas de dibujo y animación, en [`REGLAS.md`](REGLAS.md).
 
 Estado (WS31 · 07/09/2026): **Bloque D en curso.** D0 cerrada: el formato v2 (5 escenas,
 cartel variable, cierre fijo con iris, banco de ideas por volumen) es la definición
-principal y vive en `guiones/00_FORMATO_Y_OPUESTOS.md`. Sigue **D1a** (las 6 caras y poses
-de Pipo, pulir a Teo) y **D1b** (la fábrica: cartel, cierre, biblioteca de gestos, guion en
+principal y vive en `guiones/00_FORMATO_Y_OPUESTOS.md`. Sigue **D1.1** (las 6 caras y poses
+de Pipo, pulir a Teo) y **D1.2** (la fábrica: cartel, cierre, biblioteca de gestos, guion en
 archivo). Contrato en `WS/WS31_07-09-2026.md` §3.
 
 ## Carpetas

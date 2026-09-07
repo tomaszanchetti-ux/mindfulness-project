@@ -1,7 +1,7 @@
 # El componente central: el formato único y los opuestos de los 6 pilares (v2 · D0)
 
 > **v2 cerrada con Tomás el 07/09/2026 (WS31, ola D0).** Es la definición principal del
-> Bloque D: sobre esto se escriben TODOS los volúmenes y se dibujan los activos de D1a/D1b.
+> Bloque D: sobre esto se escriben TODOS los volúmenes y se dibujan los activos de D1.1/D1.2.
 > La v1 (WS26, 8 bloques) queda superada; lo que cambió está en §7. Los mini-guiones
 > específicos se trabajan después, uno por uno, en D2. Nada de lo de abajo es un guion:
 > son los cimientos.
@@ -22,6 +22,9 @@ que la hace volver.
 **La regla de oro del libreto (Tomás, 07/09):** *elementos graciosos en las imágenes,
 mensajes lindos en los textos.* Las caras de Pipo y los gestos de Teo son LA CLAVE; son
 los activos que se repiten en todos los volúmenes y por eso se les dedica tiempo en serio.
+**Dos capas de dibujo** (`REGLAS.md` §1): lo que se repite y lo que carga el chiste va
+**ilustrado con detalle** (Teo, Pipo, personajes nuevos, el elemento clave de cada volumen);
+fondos, extras y props van **simples, de línea**. "Que no parezca algo así nomás."
 
 **Regla de las situaciones:** cosas **muy vividas** en la realidad, reconocibles en un
 segundo y un poco **grotescas** (la exageración de algo que todos hicimos). Con **zoom**:
@@ -54,7 +57,7 @@ Reglas del formato:
 ## 3. El cartel de apertura (varía por volumen)
 
 - **Lo fijo:** la imagen de Teo y Pipo, a lo Tintín (los dos en movimiento, Pipo adelante),
-  dibujada UNA vez en D1b y usada en todos los volúmenes. El rótulo "TEO Y PIPO" con
+  dibujada UNA vez en D1.2 y usada en todos los volúmenes. El rótulo "TEO Y PIPO" con
   tipografía condensada, grande, tipo cartel (la referencia: la tapa de Tintín y los
   carteles de los años 30 de `Tiktok/Portadas (ejemplos)/`).
 - **Lo que cambia, volumen a volumen:** el **color de fondo**, las **formas** (diagonales,
@@ -75,7 +78,7 @@ Reglas del formato:
   gesto, el mismo ritmo, todos los volúmenes. Dura ~1,5 s.
 - La tapa se cierra (1 s) → contratapa 3 s: hoja salvia · "Dwellia" · "una Pausa al día,
   fuera del teléfono" · "Teo y Pipo volverán próximamente" · "link en la bio".
-- Se construye una vez en D1b (plantilla) y no se vuelve a tocar.
+- Se construye una vez en D1.2 (plantilla) y no se vuelve a tocar.
 
 ## 5. Los 6 pilares y sus opuestos, con el banco de ideas
 
@@ -103,7 +106,7 @@ claro es el 3 (Vínculos, Spiderman). Los títulos se validan con cada guion.
   aprieta en una: "todo el día pendiente de otros." / "y los que importan, esperando."
   **Español neutro** en pantalla (como en la app); lo rioplatense queda en el chat.
   "Teito querido" sí es neutro y es puro Pipo.
-- **Su cara = el chiste.** Juego de **6 caras fijas** (activo principal, D1a):
+- **Su cara = el chiste.** Juego de **6 caras fijas** (activo principal, D1.1):
   1. **fastidio** ("ay no") · 2. **resignación** ("otra vez") · 3. **sospecha** (la mirada
   de reojo, el "side-eye dog") · 4. **¿en serio?** (cabeza ladeada) · 5. **alegría
   sarcástica** (el "te lo dije" del cierre; el perro engreído tipo "smug Doge") ·
@@ -111,7 +114,7 @@ claro es el 3 (Vínculos, Spiderman). Los títulos se validan con cada guion.
   Con la 3 y la 5 ancladas en memes que la gente reconoce al instante, las otras cuatro
   salen solas. Herramientas del pug: arrugas como cejas, orejas que suben o caen, lengua
   que asoma, cabeza ladeada. **Pipo mira a cámara**; Teo nunca.
-- **Poses de Pipo** (D1a): sentado a cámara · camina · **panza arriba** (el espejo del vol. 3)
+- **Poses de Pipo** (D1.1): sentado a cámara · camina · **panza arriba** (el espejo del vol. 3)
   · plantado (correa tensa) · cae del sofá.
 - **Pipo no usa Dwellia.** No lo necesita. La magia es para humanos.
 
@@ -119,7 +122,7 @@ claro es el 3 (Vínculos, Spiderman). Los títulos se validan con cada guion.
 
 Teo lleva el arco (encorvado → erguido) y los gestos grotescos. Cada gesto es una pose en
 `motor/render.py`, se dibuja una vez y sirve para todos los volúmenes. **Regla de costo:
-cada volumen agrega como máximo 2-3 poses nuevas.** Biblioteca inicial (D1b):
+cada volumen agrega como máximo 2-3 poses nuevas.** Biblioteca inicial (D1.2):
 
 | Gesto | Volumen | Meme de origen |
 |---|---|---|
