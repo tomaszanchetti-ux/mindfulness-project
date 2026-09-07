@@ -132,7 +132,7 @@ juez + Tomás. Al cerrar B la barra tiene 4 pestañas (Hoy · Baúl · Crear · 
 
 Seed B: `make demo-seed` suma 4 cartas del usuario demo, una por estado.
 
-## 5. Bloque C — Comunidad (≈3-4 sesiones) · 🟢 API COMPLETA con Q/A (WS29) · front pendiente (WS30)
+## 5. Bloque C — Comunidad (≈3-4 sesiones) · 🌅 EN PRODUCCIÓN (WS30 · merge `c9896ba` · API rev 00019) — la v2 (A+B+C) COMPLETA
 
 Objetivo: la pestaña **Comunidad**, sin feed ni seguidores: personas, solicitudes,
 reenvíos y las fichas de recomendación.
@@ -155,7 +155,11 @@ exacto vive en `WS/WS29_07-09-2026.md` §4):**
 - T&C v3 = texto y fecha nuevos, sin re-aceptación. Q/A adversarial en Sonnet 5.
 - Construido en la WS29: C0 (contrato + cableado del front) · C1.1 · C1.2 · C1.3 ·
   seed C · 3 Q/A adversariales (4 hallazgos, todos cerrados) · suite 751 ✓.
-  Falta: **C2 (front) · C3 · E2E · deploy** (WS30).
+  WS30: C2.1 + C2.2 (2 Opus) · Q/A visual de Tomás → C2b (quitar de mi comunidad con
+  CTA rojo · reenviar CON comentario ≤200 · perfil ajeno en pestañas · recomendación
+  ajena en su pantalla con enlace rotulado · **Crear = la única puerta**, ambas premium) ·
+  C3 (Términos v3 + fotos huérfanas en el barrido) · suite 758 ✓ · deploy. Fotos en
+  recomendaciones → POST_MVP P7. **Sigue el Bloque D (§5b).**
 
 ### Ola C0 (orquestador) — el contrato
 - `usuarios.perfil_publico` (bool, default false) · índices por `lower(email)`,
