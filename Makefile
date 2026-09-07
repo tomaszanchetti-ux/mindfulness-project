@@ -6,7 +6,7 @@ VENV := $(API)/.venv
 PY := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 
-.PHONY: db-up db-down api-setup api-migrate api-seed api-dev api-test premium-demo free-demo demo-seed
+.PHONY: db-up db-down api-setup api-migrate api-seed api-dev api-dev-admin api-test premium-demo free-demo demo-seed
 
 db-up:                ## Levanta Postgres local
 	docker compose up -d postgres
@@ -27,6 +27,9 @@ api-seed:             ## Carga el contenido global de M0 (categorías/acciones/c
 
 api-dev:              ## Levanta la API en :8000 con reload
 	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/uvicorn mindful_api.main:app --port 8000 --reload
+
+api-dev-admin:        ## WS28 · como api-dev, pero dev|user y demo|a22 son admin (para ver /admin en local)
+	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) MINDFUL_ADMIN_UIDS='dev|user,demo|a22' .venv/bin/uvicorn mindful_api.main:app --port 8000 --reload
 
 api-test:             ## Corre los tests
 	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/pytest
