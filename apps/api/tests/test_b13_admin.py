@@ -119,13 +119,19 @@ def _sembrar(
     concepto=None,
     veredicto=None,
     created_at=None,
+    cesion: bool = True,
 ) -> str:
-    """Una propuesta en la tabla, sin pasar por B1.1 (esta card no depende de ella)."""
+    """Una propuesta en la tabla, sin pasar por B1.1 (esta card no depende de ella).
+
+    La cesión viene aceptada por defecto porque es lo que hace B1.1 al proponer
+    (es obligatoria): sin ella, `aprobar` responde 409 y no publica nada.
+    """
     with SessionLocal() as s:
         p = CartaComunidad(
             usuario_id=usuario_id, categoria_slug=categoria, accion_slug=accion,
             frase=frase, prompt=prompt, firma=firma, estado=estado,
             concepto=concepto, veredicto=veredicto,
+            cesion_aceptada_at=datetime.now(timezone.utc) if cesion else None,
         )
         if created_at is not None:
             p.created_at = created_at
@@ -482,6 +488,13 @@ def test_a_revisar_guarda_la_sugerencia_y_el_fix(admin):
 
 
 def test_a_revisar_sin_fix_y_sin_veredicto_previo(admin):
+    """Sin retoque concreto, `fix_sugerido` NO se escribe (Q/A B1.3 · BUG-B13-4).
+
+    Escribirlo en None sería lo mismo que no escribirlo cuando no hay veredicto
+    previo… pero cuando SÍ lo hay, pisaría la sugerencia del juez. Se escribe
+    solo lo que Tomás mandó; el autor lee `veredicto.get("fix_sugerido")` y ve
+    None igual.
+    """
     autor_id = _crear_usuario("b13|autor-retoque-pelado")
     propuesta = _sembrar(autor_id, estado=ESTADO_EN_REVISION, veredicto=None)
     item = client.post(
@@ -489,7 +502,7 @@ def test_a_revisar_sin_fix_y_sin_veredicto_previo(admin):
         json={"sugerencia": "El prompt no invita a escribir en el diario."},
         headers=admin,
     ).json()
-    assert item["veredicto"] == {"fix_sugerido": None, "fuente": "dwellia"}
+    assert item["veredicto"] == {"fuente": "dwellia"}
 
 
 @pytest.mark.parametrize(

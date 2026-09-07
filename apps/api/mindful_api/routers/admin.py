@@ -11,6 +11,8 @@ más: son el formulario del panel, no el contrato público de la app.
 
 from __future__ import annotations
 
+import re
+import unicodedata
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
@@ -29,6 +31,7 @@ from ..services.admin import (
     marcar_a_revisar,
     rechazar as rechazar_carta,
 )
+from ..services.cartas_comunidad import FRASE_MAX, PROMPT_MAX, PROMPT_MIN
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -41,17 +44,40 @@ def _limpio(v):
     return v
 
 
+# El concepto es un SLUG, no un título: `scripts/validar_cartas.py` (capa 1, R8)
+# exige `[a-z0-9-]+` y M2 lo usa como huella de dedupe semanal. Tomás escribe en
+# un input libre ("Gratitud POR el Día!!"), así que se normaliza acá.
+CONCEPTO_MAX = 80
+
+
+def _kebab(v):
+    """"  Gratitud POR el Día!!  " → "gratitud-por-el-dia". Vacío → None.
+
+    Sin acentos (NFKD y se descartan los diacríticos), en minúscula, y todo lo
+    que no sea `[a-z0-9]` pasa a ser un guion — colapsado y sin guiones en los
+    bordes. NO se recorta a `CONCEPTO_MAX`: un concepto más largo que la columna
+    es un 422 del borde Pydantic, no un texto cortado a la mitad a escondidas.
+    """
+    v = _limpio(v)
+    if not isinstance(v, str):
+        return v
+    v = unicodedata.normalize("NFKD", v)
+    v = "".join(ch for ch in v if not unicodedata.combining(ch))
+    v = re.sub(r"[^a-z0-9]+", "-", v.lower()).strip("-")
+    return v or None
+
+
 class AprobarBody(BaseModel):
     """El concepto es la huella de dedupe (M2 no repite concepto en la ventana
     semanal). Si Tomás no escribe uno, se usa el que propuso el juez y, si no hay,
     uno derivado del id — nunca se publica una carta sin concepto."""
 
-    concepto: Optional[str] = Field(default=None, max_length=80)
+    concepto: Optional[str] = Field(default=None, max_length=CONCEPTO_MAX)
 
     @field_validator("concepto", mode="before")
     @classmethod
-    def _strip(cls, v):
-        return _limpio(v)
+    def _slug(cls, v):
+        return _kebab(v)
 
 
 class RechazarBody(BaseModel):
@@ -66,15 +92,35 @@ class RechazarBody(BaseModel):
 
 
 class FixSugerido(BaseModel):
-    """La frase/prompt que Tomás propone. Ambos opcionales: se puede sugerir solo uno."""
+    """La frase/prompt que Tomás propone. Ambos opcionales: se puede sugerir solo uno.
 
-    frase: Optional[str] = Field(default=None, max_length=200)
-    prompt: Optional[str] = Field(default=None, max_length=500)
+    Q/A B1.3 (BUG-B13-6): los límites son los MISMOS del contrato (`FRASE_MAX`,
+    `PROMPT_MIN`/`PROMPT_MAX` de B1.1), no unos propios más anchos. Una sugerencia
+    tiene que ser APLICABLE: si Tomás sugiere una frase de 61, el autor la copia,
+    la reenvía y el PUT se la rechaza con 422 — una trampa. Se mide sobre el texto
+    ya strippeado, igual que en B1.1.
+    """
 
-    @field_validator("frase", "prompt", mode="before")
+    frase: Optional[str] = None
+    prompt: Optional[str] = None
+
+    @field_validator("frase", mode="before")
     @classmethod
-    def _strip(cls, v):
-        return _limpio(v)
+    def _v_frase(cls, v):
+        v = _limpio(v)
+        if isinstance(v, str) and len(v) > FRASE_MAX:
+            raise ValueError(f"La frase no puede pasar de {FRASE_MAX} caracteres.")
+        return v
+
+    @field_validator("prompt", mode="before")
+    @classmethod
+    def _v_prompt(cls, v):
+        v = _limpio(v)
+        if isinstance(v, str) and not (PROMPT_MIN <= len(v) <= PROMPT_MAX):
+            raise ValueError(
+                f"El prompt tiene que medir entre {PROMPT_MIN} y {PROMPT_MAX} caracteres."
+            )
+        return v
 
 
 class ARevisarBody(BaseModel):

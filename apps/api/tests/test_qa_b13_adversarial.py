@@ -14,8 +14,14 @@ Nombres de los tests, y qué significan:
   `test_nota_*` → comportamiento documentado, defendible hoy, que hay que mirar
                   (o que espera a otra card).
 
-Los nueve bugs numerados están en el informe de la sesión (BUG-B13-1 … BUG-B13-9);
-cada `xfail` lleva su número en el `reason`.
+Los nueve bugs numerados están en el informe de la sesión (BUG-B13-1 … BUG-B13-9).
+
+ESTADO (WS27 · corrección): los NUEVE están corregidos, así que ya no queda
+ningún `xfail`. Los `test_bug_*` conservan el nombre a propósito — es la única
+manera de seguir leyendo el informe contra la suite —, pero hoy son candados de
+regresión que pasan. Dos `test_nota_*` que documentaban el daño (los límites del
+contenido al aprobar, y el prompt del `fix` fuera de rango) se convirtieron en
+`test_ok_*` parametrizados por borde: ahora afirman el comportamiento corregido.
 
 Todo lo que este archivo escribe se borra al empezar Y al terminar cada test:
 usuarios `qa13|…` (que arrastran en cascada entregas, avisos y propuestas) y
@@ -257,11 +263,6 @@ def test_nota_en_modo_dev_un_header_vacio_cae_a_dev_user(monkeypatch):
 # ═════════════════════════════════════════════════════════════════════════════
 # 2 · APROBAR = CARGAR (lo que se publica, y lo que no debería publicarse)
 # ═════════════════════════════════════════════════════════════════════════════
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B13-1: aprobar NO revalida el contenido. Una propuesta con frase de 200 "
-    "y prompt de 5 se publica tal cual en `cartas`, rompiendo los límites del "
-    "Roadmap §0 (frase ≤60, prompt 100-220) que B1.1 sí exige."
-))
 def test_bug_aprobar_publica_frase_y_prompt_fuera_de_los_limites(admin):
     """Los límites son del CONTENIDO, no del formulario del autor.
 
@@ -280,28 +281,30 @@ def test_bug_aprobar_publica_frase_y_prompt_fuera_de_los_limites(admin):
     assert _cuantas_publicadas() == 0
 
 
-def test_nota_los_limites_del_contrato_no_se_miran_al_aprobar(admin):
-    """El MISMO escenario que BUG-B13-1, afirmando lo que hoy hace (para que el
-    informe tenga la evidencia sin depender de un xfail).
+@pytest.mark.parametrize("frase,prompt,esperado", [
+    ("F" * FRASE_MAX, "p" * PROMPT_MIN, 200),        # los dos bordes de adentro
+    ("F" * FRASE_MAX, "p" * PROMPT_MAX, 200),
+    ("F" * (FRASE_MAX + 1), "p" * PROMPT_MIN, 422),  # …y los tres de afuera
+    ("F" * FRASE_MAX, "p" * (PROMPT_MIN - 1), 422),
+    ("F" * FRASE_MAX, "p" * (PROMPT_MAX + 1), 422),
+])
+def test_ok_los_limites_del_contrato_se_miran_al_aprobar(admin, frase, prompt, esperado):
+    """El otro lado de BUG-B13-1, ya corregido: los cuatro bordes, uno por uno.
 
-    Obtenido: 200 y una carta publicada con frase de 200 caracteres y prompt de
-    5 — la carta llega al mazo y `/api/carta-del-dia` la puede servir así.
+    Antes esto era un `test_nota_` que documentaba el daño (200 y una carta con
+    frase de 200 caracteres publicada en el mazo). Ahora es el candado: los
+    límites se miden donde el texto SE PUBLICA, no solo en el formulario del
+    autor, y de a un borde por vez.
     """
     autor = _usuario(AUTOR_SUB)
-    pid = _sembrar(autor, frase="X" * 200, prompt="corto")
+    pid = _sembrar(autor, frase=frase, prompt=prompt)
 
-    assert client.post(f"/api/admin/cartas/{pid}/aprobar", headers=admin,
-                       json={}).status_code == 200
-    carta = _carta_publicada()
-    assert len(carta.frase) == 200 > FRASE_MAX
-    assert len(carta.prompt) == 5 < PROMPT_MIN
+    r = client.post(f"/api/admin/cartas/{pid}/aprobar", headers=admin, json={})
+
+    assert r.status_code == esperado
+    assert _cuantas_publicadas() == (1 if esperado == 200 else 0)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B13-3: el `concepto` se guarda tal cual (solo strip). El canon exige "
-    "kebab-case (scripts/validar_cartas.py, capa 1 R8) y M2 lo usa como huella "
-    "de dedupe: 'Gratitud POR el Día!!' no empata con ningún concepto del mazo."
-))
 def test_bug_el_concepto_del_body_no_se_normaliza_a_kebab_case(admin):
     """El concepto es la huella de deduplicación semanal, no un título libre.
 
@@ -320,11 +323,6 @@ def test_bug_el_concepto_del_body_no_se_normaliza_a_kebab_case(admin):
     assert " " not in concepto
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B13-8: aprobar no verifica `cesion_aceptada_at`. Se publica al mazo "
-    "contenido de un autor que nunca aceptó la cesión de uso (Roadmap §0: "
-    "'cesión obligatoria')."
-))
 def test_bug_se_publica_una_propuesta_sin_cesion_aceptada(admin):
     """La cesión es el permiso legal para publicar lo que escribió otra persona.
 
@@ -339,11 +337,6 @@ def test_bug_se_publica_una_propuesta_sin_cesion_aceptada(admin):
     assert r.status_code == 409, f"se publicó sin cesión (status {r.status_code})"
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B13-9: aprobar no limpia `motivo`. La propuesta queda `aprobada` con el "
-    "texto de un rechazo anterior y `GET /api/cartas-comunidad/mias` se lo muestra "
-    "al autor: 'Cargada a la comunidad' + 'La frase no cumple el canon.'"
-))
 def test_bug_aprobar_no_limpia_el_motivo_viejo(admin):
     """Aprobar cierra el recorrido: no puede quedar un reproche pegado.
 
@@ -541,12 +534,6 @@ def test_nota_la_categoria_inexistente_la_frena_la_base(admin):
 # ═════════════════════════════════════════════════════════════════════════════
 # 3 · LA FIRMA (congelada al publicar vs. viva en la pantalla del autor)
 # ═════════════════════════════════════════════════════════════════════════════
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B13-2: después de aprobada, `GET …/mias` y la previa del panel siguen "
-    "calculando la firma desde `usuarios.apodo` en vivo, mientras la carta ya "
-    "publicada la lleva congelada. Si el autor cambia el apodo, el autor lee "
-    "'OtroApodo' y la comunidad lee 'Tomi'."
-))
 def test_bug_la_firma_que_ve_el_autor_no_es_la_que_lee_la_comunidad(admin):
     """La carta publicada lleva el apodo DE ENTONCES: la app tiene que decir lo mismo.
 
@@ -632,22 +619,24 @@ def test_ok_un_fix_que_no_es_objeto_es_422_no_500(admin):
 
 
 def test_ok_las_claves_de_mas_en_el_fix_se_ignoran(admin):
-    """`fix` con una clave inventada no rompe ni se filtra al veredicto."""
+    """`fix` con una clave inventada no rompe ni se filtra al veredicto.
+
+    (La frase y el prompt del `fix` tienen que estar DENTRO del contrato: desde
+    que BUG-B13-6 está corregido, una sugerencia inaplicable es 422. Acá se usan
+    valores válidos porque lo que se prueba es la clave de más, no el largo.)
+    """
     autor = _usuario(AUTOR_SUB)
     pid = _sembrar(autor)
     r = client.post(f"/api/admin/cartas/{pid}/a-revisar", headers=admin,
                     json={"sugerencia": "retoca",
-                          "fix": {"frase": "ok", "prompt": "p", "inventada": 1}})
+                          "fix": {"frase": FRASE_OK, "prompt": PROMPT_OK,
+                                  "inventada": 1}})
     assert r.status_code == 200
-    assert r.json()["veredicto"]["fix_sugerido"] == {"frase": "ok", "prompt": "p"}
+    assert r.json()["veredicto"]["fix_sugerido"] == {
+        "frase": FRASE_OK, "prompt": PROMPT_OK,
+    }
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B13-5: `fix: {}` se guarda como {'frase': None, 'prompt': None} en vez de "
-    "None. B1.1 (`_fix_sugerido`) normaliza ese caso a None, así que el autor "
-    "recibe en `sugerencia` un objeto vacío en lugar de nada y el front dibuja "
-    "una caja de sugerencia sin texto."
-))
 def test_bug_un_fix_vacio_no_se_normaliza_a_nada(admin):
     """Un fix sin frase ni prompt es "no hay sugerencia concreta", no un objeto.
 
@@ -666,11 +655,6 @@ def test_bug_un_fix_vacio_no_se_normaliza_a_nada(admin):
     )
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B13-6: `FixSugerido` usa límites propios (frase ≤200, prompt ≤500, sin "
-    "mínimo) en vez de los del contrato (FRASE_MAX=60, PROMPT_MIN/MAX=100/220). "
-    "Tomás puede sugerir una frase de 61 que el PUT del autor rechaza con 422."
-))
 def test_bug_el_fix_admite_una_frase_que_el_autor_no_puede_reenviar(admin):
     """La sugerencia tiene que ser aplicable: si no, es una trampa para el autor.
 
@@ -684,25 +668,25 @@ def test_bug_el_fix_admite_una_frase_que_el_autor_no_puede_reenviar(admin):
     assert r.status_code == 422, f"aceptó una frase de {FRASE_MAX + 1} ({r.status_code})"
 
 
-def test_nota_el_fix_tambien_admite_un_prompt_fuera_de_rango(admin):
-    """MISMA raíz que BUG-B13-6, del otro lado: un prompt de 10 caracteres.
+@pytest.mark.parametrize("largo,esperado", [
+    (PROMPT_MIN - 1, 422), (PROMPT_MIN, 200), (PROMPT_MAX, 200), (PROMPT_MAX + 1, 422),
+])
+def test_ok_el_fix_mide_el_prompt_con_el_rango_del_contrato(admin, largo, esperado):
+    """La MISMA raíz que BUG-B13-6, del otro lado: el prompt sugerido.
 
-    Obtenido: 200. El autor recibiría como "sugerencia" un prompt más corto que
-    el mínimo de 100 que su propio reenvío exige.
+    Antes era un `test_nota_` que documentaba el daño (un prompt de 10 pasaba con
+    200 y el autor recibía como "sugerencia" algo más corto que el mínimo que su
+    propio reenvío exige). Ahora es candado, y con los cuatro bordes.
     """
     autor = _usuario(AUTOR_SUB)
     pid = _sembrar(autor)
     r = client.post(f"/api/admin/cartas/{pid}/a-revisar", headers=admin,
-                    json={"sugerencia": "reescribe", "fix": {"prompt": "x" * 10}})
-    assert r.status_code == 200
-    assert len(r.json()["veredicto"]["fix_sugerido"]["prompt"]) < PROMPT_MIN < PROMPT_MAX
+                    json={"sugerencia": "reescribe", "fix": {"prompt": "x" * largo}})
+    assert r.status_code == esperado
+    if esperado == 200:
+        assert len(r.json()["veredicto"]["fix_sugerido"]["prompt"]) == largo
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B13-4: `marcar_a_revisar` escribe `fix_sugerido: fix` siempre. Si Tomás "
-    "manda solo `sugerencia` (sin `fix`), pisa con None el `fix_sugerido` que "
-    "había escrito el juez — justo lo que el docstring promete conservar."
-))
 def test_bug_a_revisar_sin_fix_borra_la_sugerencia_del_juez(admin):
     """"Tomás decide, no borra evidencia" (docstring de `marcar_a_revisar`).
 
@@ -803,12 +787,6 @@ def test_ok_aprobar_avisa_una_sola_vez(admin):
     assert "cargada" in avisos[0].texto.lower()
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B13-7: `avisos.crear_aviso` llama a `enviar_push` DENTRO de la "
-    "transacción y sin guarda. Si el envío levanta, la aprobación entera se "
-    "cae con 500 y la carta no se publica: un problema del push service tumba "
-    "una decisión de negocio ya tomada."
-))
 def test_bug_un_push_que_levanta_tumba_la_aprobacion(admin, monkeypatch):
     """La buena noticia: es atómico (no queda media carta publicada).
 
@@ -832,24 +810,27 @@ def test_bug_un_push_que_levanta_tumba_la_aprobacion(admin, monkeypatch):
 
     assert r.status_code == 200, f"obtenido {r.status_code}"
     assert _cuantas_publicadas() == 1
+    assert len(_avisos(autor)) == 1   # el aviso queda: lo best-effort es el push
 
 
-def test_ok_el_push_roto_no_deja_la_carta_a_medio_publicar(admin, monkeypatch):
-    """El otro lado de BUG-B13-7, que SÍ está bien: todo o nada.
+def test_ok_si_el_aviso_explota_no_queda_la_carta_a_medio_publicar(admin, monkeypatch):
+    """El otro lado de BUG-B13-7, que SÍ está bien y NO se rompió al arreglarlo: todo o nada.
 
-    Si el aviso explota, la sesión se cierra sin commit y no queda ni la carta
-    en `cartas`, ni el estado `aprobada`, ni el aviso. Es la parte del contrato
-    que no hay que romper al arreglar el 500.
+    El push pasó a ser best-effort (ya no tumba la aprobación), pero el AVISO
+    sigue siendo parte de la transacción: si escribirlo falla de verdad, la
+    sesión se cierra sin commit y no queda ni la carta en `cartas`, ni el estado
+    `aprobada`, ni el aviso. Media aprobación no existe.
+
+    Por eso acá se revienta `crear_aviso` (la escritura), no `enviar_push` (la
+    red): el escenario se CONSTRUYE sobre lo que sigue siendo crítico.
     """
     autor = _usuario(AUTOR_SUB)
     pid = _sembrar(autor)
-    with SessionLocal() as s:
-        s.add(PushSuscripcion(usuario_id=autor, endpoint="https://push.qa13/y",
-                              p256dh="k", auth="a"))
-        s.commit()
 
-    monkeypatch.setattr(avisos_mod, "enviar_push",
-                        lambda *_a, **_k: (_ for _ in ()).throw(RuntimeError("caído")))
+    def _revienta(*_a, **_k):
+        raise RuntimeError("la tabla avisos no responde")
+
+    monkeypatch.setattr(avisos_mod, "crear_aviso", _revienta)
     client_500.post(f"/api/admin/cartas/{pid}/aprobar", headers=admin, json={})
 
     with SessionLocal() as s:

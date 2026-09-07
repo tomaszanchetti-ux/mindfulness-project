@@ -49,6 +49,8 @@ from ..db.models import (
     Usuario,
 )
 from .avisos import avisar_estado_carta
+from .cartas_comunidad import FRASE_MAX, PROMPT_MAX, PROMPT_MIN, _fix_sugerido
+from .entrega import _carta_enriquecida
 
 # El filtro por defecto de la bandeja: lo que espera decisión de Tomás.
 ESTADO_DEFAULT = ESTADO_REVISION_DWELLIA
@@ -88,7 +90,18 @@ def _carta_previa(s: Session, propuesta: CartaComunidad, autor: Optional[Usuario
     especial para el panel de administración: Tomás ve exactamente la carta que
     vería un usuario si la aprobara. `id` es el de la PROPUESTA (todavía no hay
     carta publicada) y `origen` es `comunidad` por definición.
+
+    Q/A B1.3 (BUG-B13-2): en cuanto la propuesta se aprueba y existe la fila
+    publicada, la ÚNICA verdad es esa fila. La firma viaja CONGELADA en
+    `cartas.firma_publica`, así que recalcularla desde el apodo de hoy haría que
+    el panel (y la pantalla del autor) mostraran una firma distinta de la que
+    lee la comunidad. Con `carta_id` cargado se sirve la carta de verdad.
     """
+    if propuesta.carta_id:
+        publicada = s.get(Carta, propuesta.carta_id)
+        if publicada is not None:
+            return _carta_enriquecida(s, publicada)
+
     cat = s.get(Categoria, propuesta.categoria_slug)
     acc = s.get(Accion, propuesta.accion_slug)
     return {
@@ -208,11 +221,47 @@ def _nuevo_id_carta(s: Session) -> str:
     )
 
 
+def _publicable(propuesta: CartaComunidad) -> tuple:
+    """Los límites del CONTENIDO, revisados en el punto donde el texto se publica.
+
+    Q/A B1.3 (BUG-B13-1): B1.1 los exige al proponer, pero una fila puede llegar
+    a `cartas_comunidad` por otro camino (una migración, el demo-seed, un fix a
+    mano en la base) y `aprobar` la copiaba al mazo sin mirarla. Los límites son
+    del contenido, no del formulario: se miden acá también, sobre el texto ya
+    strippeado, y con las MISMAS constantes de B1.1 (un solo lugar).
+
+    Q/A B1.3 (BUG-B13-8): y la cesión de uso es el permiso legal para publicar lo
+    que escribió otra persona. Sin ella no se publica: 409, no 422 — el contenido
+    está bien, lo que falta es un paso del recorrido.
+    """
+    if propuesta.cesion_aceptada_at is None:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "Falta la cesión del autor: no se puede publicar esta carta.",
+        )
+
+    frase = (propuesta.frase or "").strip()
+    prompt = (propuesta.prompt or "").strip()
+    if not frase or len(frase) > FRASE_MAX:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"La frase de la carta no puede pasar de {FRASE_MAX} caracteres.",
+        )
+    if len(prompt) < PROMPT_MIN or len(prompt) > PROMPT_MAX:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"El prompt de la carta tiene que medir entre {PROMPT_MIN} y "
+            f"{PROMPT_MAX} caracteres.",
+        )
+    return frase, prompt
+
+
 def aprobar(
     s: Session, carta_comunidad_id: str, concepto: Optional[str] = None
 ) -> dict:
     """APROBAR = CARGAR AL MAZO. Publica la carta y avisa al autor."""
     propuesta = _propuesta(s, carta_comunidad_id, DESDE_APROBAR)
+    frase, prompt = _publicable(propuesta)
     autor = s.get(Usuario, propuesta.usuario_id)
 
     concepto_final = (concepto or "").strip() or propuesta.concepto
@@ -226,8 +275,8 @@ def aprobar(
         categoria_slug=propuesta.categoria_slug,
         accion_slug=propuesta.accion_slug,
         concepto=concepto_final,
-        frase=propuesta.frase,
-        prompt=propuesta.prompt,
+        frase=frase,
+        prompt=prompt,
         origen=ORIGEN_COMUNIDAD,
         autor_usuario_id=None if autor is None else autor.id,
         firma_publica=_firma_publica(propuesta, autor),
@@ -238,6 +287,10 @@ def aprobar(
     propuesta.estado = ESTADO_APROBADA
     propuesta.carta_id = carta.id
     propuesta.concepto = concepto_final
+    # Q/A B1.3 (BUG-B13-9): aprobar CIERRA el recorrido. Si venía de un
+    # `a_revisar` o de un rechazo del juez, el motivo viejo no puede quedar
+    # pegado: el autor leería "Cargada a la comunidad" junto a un reproche.
+    propuesta.motivo = None
     propuesta.updated_at = _now()
     s.add(propuesta)
 
@@ -274,16 +327,26 @@ def marcar_a_revisar(
     vive en `veredicto["fix_sugerido"]`, venga del juez o de Dwellia. Por eso acá
     se ESCRIBE esa misma clave y se marca `fuente: "dwellia"` — el resto del
     veredicto del juez se conserva intacto (Tomás decide, no borra evidencia).
+
+    Q/A B1.3 (BUG-B13-5): el retoque pasa por `_fix_sugerido`, el mismo canon que
+    usa B1.1, así que un `fix` vacío es None (nada) y no un objeto con las dos
+    claves en null que el front dibujaría como una caja de sugerencia en blanco.
+
+    Q/A B1.3 (BUG-B13-4): y `fix_sugerido` se escribe SOLO si Tomás mandó uno. Si
+    manda nada más su comentario, la sugerencia que ya había redactado el juez se
+    conserva — que es justo lo que promete "no borra evidencia".
     """
     propuesta = _propuesta(s, carta_comunidad_id, DESDE_A_REVISAR)
     autor = s.get(Usuario, propuesta.usuario_id)
+
+    fix = _fix_sugerido(fix)
 
     propuesta.estado = ESTADO_A_REVISAR
     propuesta.motivo = sugerencia
     # Reasignación (no mutación) para que SQLAlchemy vea el cambio en la columna JSON.
     propuesta.veredicto = {
         **(propuesta.veredicto or {}),
-        "fix_sugerido": fix,
+        **({"fix_sugerido": fix} if fix else {}),
         "fuente": "dwellia",
     }
     propuesta.updated_at = _now()
