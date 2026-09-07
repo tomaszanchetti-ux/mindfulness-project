@@ -31,6 +31,9 @@ api-dev:              ## Levanta la API en :8000 con reload
 api-dev-admin:        ## WS28 · como api-dev, pero dev|user y demo|a22 son admin (para ver /admin en local)
 	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) MINDFUL_ADMIN_UIDS='dev|user,demo|a22' .venv/bin/uvicorn mindful_api.main:app --port 8000 --reload
 
+limpiar-fotos:        ## WS30 · C3 · Ensayo de fotos huérfanas (--borrar para aplicar): make limpiar-fotos ARGS='--borrar'
+	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/python -m mindful_api.services.limpieza $(ARGS)
+
 api-test:             ## Corre los tests
 	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/pytest
 
