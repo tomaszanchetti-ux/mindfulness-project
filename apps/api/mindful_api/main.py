@@ -14,7 +14,10 @@ from sqlalchemy.orm import Session
 from .config import settings
 from .db.base import get_session
 from .db.models import Accion, Carta, Categoria
-from .routers import baul, cambio, compartir, entregas, fotos, interno, pagos, perfil, push
+from .routers import (
+    admin, baul, cambio, cartas_comunidad, compartir, entregas, fotos, interno, pagos,
+    perfil, push,
+)
 
 app = FastAPI(title="Mindful API", version="0.0.1")
 
@@ -37,6 +40,9 @@ app.include_router(push.router)
 # WS24 · Bloque A
 app.include_router(pagos.router)
 app.include_router(cambio.router)
+# WS27 · Bloque B
+app.include_router(cartas_comunidad.router)
+app.include_router(admin.router)
 
 
 @app.get("/health")
