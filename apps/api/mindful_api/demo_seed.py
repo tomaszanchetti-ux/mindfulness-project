@@ -42,7 +42,7 @@ import sys
 import zlib
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from .config import settings
@@ -454,6 +454,33 @@ def _publicar_carta_demo(s: Session, usuario: Usuario, propuesta: CartaComunidad
     return carta
 
 
+def _sembrar_impacto(s: Session, carta: Carta, autor: Usuario) -> int:
+    """WS28 · B2.2 · el impacto de la carta cargada: a quién le llegó y qué puntaje tuvo.
+
+    Hasta tres lectores (otros usuarios `demo|`; si no hay, el propio autor, que
+    también puede recibir su carta) con estrellas 5, 4 y una sin puntuar, así la
+    pestaña Crear muestra "3 personas la recibieron · ★ 4,5 · 2 valoraciones".
+    Idempotente: si la carta ya tiene entregas, no se toca. Fechas de hace 40+
+    días para no chocar con las 9 Pausas sembradas de cada usuario.
+    """
+    ya = s.scalar(select(func.count(Entrega.id)).where(Entrega.carta_id == carta.id))
+    if ya:
+        return 0
+    otros = [u for u in _usuarios_demo(s) if u.id != autor.id][:3]
+    lectores = otros or [autor]
+    puntajes = [5, 4, None]
+    ahora = datetime.now(timezone.utc)
+    for i, lector in enumerate(lectores):
+        s.add(Entrega(
+            usuario_id=lector.id, carta_id=carta.id,
+            fecha=ahora - timedelta(days=40 + i),
+            estrellas=puntajes[i], completada=True,
+            descartadas=[MARCA],
+        ))
+    s.commit()
+    return len(lectores)
+
+
 def sembrar_comunidad(s: Session, usuario: Usuario) -> dict:
     """Las 4 propuestas (una por estado visible), sus avisos y 3 comentarios.
 
@@ -464,7 +491,7 @@ def sembrar_comunidad(s: Session, usuario: Usuario) -> dict:
     todo: republica solo la carta que falta y vuelve a apuntarla.
     """
     ya = _propuestas_sembradas(s, usuario)
-    resumen = {"propuestas": 0, "avisos": 0, "comentarios": 0,
+    resumen = {"propuestas": 0, "avisos": 0, "comentarios": 0, "lectores": 0,
                "carta_publicada": None, "republicada": False, "saltado": False}
 
     firma = FIRMA_APODO if (usuario.apodo or "").strip() else FIRMA_ANONIMA
@@ -477,15 +504,15 @@ def sembrar_comunidad(s: Session, usuario: Usuario) -> dict:
         for propuesta in ya:
             if propuesta.estado != ESTADO_APROBADA:
                 continue
-            if propuesta.carta_id and s.get(Carta, propuesta.carta_id) is not None:
-                resumen["carta_publicada"] = propuesta.carta_id
-                continue
-            carta = _publicar_carta_demo(s, usuario, propuesta, propuesta.firma)
-            propuesta.carta_id = carta.id
-            s.add(propuesta)
-            s.commit()
+            carta = (s.get(Carta, propuesta.carta_id) if propuesta.carta_id else None)
+            if carta is None:
+                carta = _publicar_carta_demo(s, usuario, propuesta, propuesta.firma)
+                propuesta.carta_id = carta.id
+                s.add(propuesta)
+                s.commit()
+                resumen["republicada"] = True
             resumen["carta_publicada"] = carta.id
-            resumen["republicada"] = True
+            resumen["lectores"] = _sembrar_impacto(s, carta, usuario)
         return resumen
 
     for (clave, estado, categoria, accion, frase, prompt, motivo, veredicto,
@@ -522,6 +549,7 @@ def sembrar_comunidad(s: Session, usuario: Usuario) -> dict:
             s.add(propuesta)
             s.commit()
             resumen["carta_publicada"] = carta.id
+            resumen["lectores"] = _sembrar_impacto(s, carta, usuario)
 
         # El aviso, con el MISMO texto canónico que escribe la app
         # (`services/avisos.TEXTOS_ESTADO`). La fila se arma acá y no con
