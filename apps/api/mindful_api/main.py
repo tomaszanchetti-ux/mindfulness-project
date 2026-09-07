@@ -16,8 +16,8 @@ from .db.base import get_session
 from .db.models import Accion, Carta, Categoria
 from .services.canon import MATRIZ_VIABLE
 from .routers import (
-    admin, avisos, baul, cambio, cartas_comunidad, compartir, entregas, fotos, interno,
-    pagos, perfil, push,
+    admin, avisos, baul, cambio, cartas_comunidad, comunidad, compartir, entregas, fichas,
+    fotos, interno, pagos, perfil, push, recomendaciones, reenvios,
 )
 
 app = FastAPI(title="Mindful API", version="0.0.1")
@@ -46,6 +46,16 @@ app.include_router(cartas_comunidad.router)
 app.include_router(admin.router)
 # WS27 · B2.1 · la campana (la escriben B1.1/B1.3, la lee el usuario)
 app.include_router(avisos.router)
+# WS29 · Bloque C · C1.1 · personas, solicitudes y la foto que ve la comunidad
+app.include_router(comunidad.router)
+# WS29 · Bloque C · C1.2 · las fichas ajenas y lo que se hace con ellas
+app.include_router(fichas.router)
+app.include_router(reenvios.router)
+app.include_router(reenvios.guardadas_router)
+app.include_router(reenvios.pausas_router)
+app.include_router(perfil.usuarios_router)
+# WS29 · Bloque C · C1.3 · las recomendaciones (premium) del Baúl y la vitrina
+app.include_router(recomendaciones.router)
 
 
 @app.get("/health")

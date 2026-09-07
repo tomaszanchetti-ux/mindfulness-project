@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from ..config import settings
 from ..db.base import get_session
 from ..services.aviso import enviar_avisos
+from ..services.limpieza import limpiar_fotos_huerfanas
 
 router = APIRouter(prefix="/api/internal", tags=["interno"])
 
@@ -27,4 +28,11 @@ def aviso_diario(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     if not _secrets.compare_digest(x_aviso_secret, settings.aviso_secret):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    return enviar_avisos(s)
+    resultado = enviar_avisos(s)
+    # WS30 · C3 · el mismo barrido limpia las fotos huérfanas (deuda T7). Nunca
+    # tumba el aviso: si Storage falla, se reintenta en el próximo golpe.
+    try:
+        resultado["fotos_huerfanas"] = limpiar_fotos_huerfanas(s)
+    except Exception as exc:  # noqa: BLE001
+        resultado["fotos_huerfanas"] = {"error": str(exc)[:200]}
+    return resultado

@@ -47,8 +47,12 @@ export function Reflect() {
   // WS25 · qué salida está esperando confirmación inline (null = ninguna).
   const [confirmando, setConfirmando] = useState<Salida | null>(null);
 
+  // WS30 · C2.1 · la entrega de la RUTA, no "la carta del día": desde el Bloque C
+  // se puede cerrar una Pausa EXTRA (la carta de otra persona vivida hoy), y con
+  // `cartaDelDia()` esta pantalla mostraría la carta equivocada. Misma forma
+  // (`CartaDelDia`), y el backend solo devuelve entregas mías.
   useEffect(() => {
-    api.cartaDelDia().then(setData).catch(() => setData(null));
+    api.entrega(id).then(setData).catch(() => setData(null));
   }, [id]);
 
   // Los límites del plan (el backend es el que manda; acá solo se muestran).

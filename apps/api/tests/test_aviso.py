@@ -166,4 +166,5 @@ def test_endpoint_interno_protegido(monkeypatch):
     assert client.post("/api/internal/aviso-diario").status_code == 401
     r = client.post("/api/internal/aviso-diario", headers={"X-Aviso-Secret": "s3creto"})
     assert r.status_code == 200
-    assert set(r.json()) == {"candidatos", "enviados", "saltados"}
+    # WS30 · C3: el mismo barrido informa la limpieza de fotos huérfanas.
+    assert set(r.json()) == {"candidatos", "enviados", "saltados", "fotos_huerfanas"}

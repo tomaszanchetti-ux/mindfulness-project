@@ -28,7 +28,8 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ..db.models import Entrega, PushSuscripcion, Usuario
+from ..db.models import Entrega, PausaProgramada, PushSuscripcion, Usuario
+from .comunidad import como_se_llama
 from .push import enviar_push
 
 _TZ_FALLBACK = ZoneInfo("Europe/Madrid")
@@ -36,6 +37,9 @@ _TZ_FALLBACK = ZoneInfo("Europe/Madrid")
 TITULO = "Tu carta de hoy te espera"
 CUERPO = "Ábrela, vive tu pausa lejos del teléfono y escribe lo que sentiste."
 URL = "/hoy"
+# WS29 · C1.2: si hay una Pausa programada esperando, el aviso la nombra (es lo
+# que va a encontrar al abrir, y saber de quién viene es la mitad del gesto).
+ALGUIEN = "alguien de tu comunidad"
 
 
 def _minutos(hhmm: str) -> int:
@@ -48,6 +52,27 @@ def _pausa_guardada_hoy(s: Session, usuario: Usuario, tz: ZoneInfo, hoy_local) -
         select(Entrega).where(Entrega.usuario_id == usuario.id, Entrega.completada.is_(True))
     ).all()
     return any(e.fecha.astimezone(tz).date() == hoy_local for e in entregas)
+
+
+def _cuerpo_para(s: Session, usuario: Usuario) -> str:
+    """El texto del push. Si hay una Pausa programada sin servir, la nombra."""
+    programada = s.scalar(
+        select(PausaProgramada)
+        .where(
+            PausaProgramada.usuario_id == usuario.id,
+            PausaProgramada.servida_at.is_(None),
+        )
+        .order_by(PausaProgramada.created_at)
+        .limit(1)
+    )
+    if programada is None:
+        return CUERPO
+    apodo = ALGUIEN
+    if programada.de_usuario_id:
+        de = s.get(Usuario, programada.de_usuario_id)
+        if de is not None:
+            apodo = como_se_llama(de)
+    return f"Hoy te espera la Pausa que te envió {apodo}."
 
 
 def enviar_avisos(s: Session, ahora_utc: datetime | None = None) -> dict:
@@ -86,9 +111,10 @@ def enviar_avisos(s: Session, ahora_utc: datetime | None = None) -> dict:
         subs = s.scalars(
             select(PushSuscripcion).where(PushSuscripcion.usuario_id == u.id)
         ).all()
+        cuerpo = _cuerpo_para(s, u)
         ok = False
         for sub in subs:
-            resultado = enviar_push(sub, TITULO, CUERPO, URL)
+            resultado = enviar_push(sub, TITULO, cuerpo, URL)
             if resultado == "ok":
                 ok = True
             elif resultado == "gone":

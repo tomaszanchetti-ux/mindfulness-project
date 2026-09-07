@@ -1,17 +1,21 @@
 // El marco mobile-first (§24): contenedor centrado en desktop, fondo cálido alrededor.
-// WS27 · B2.2: la tab bar pasa a CUATRO — Hoy · Baúl · Crear · Perfil (§4 del
-// roadmap v2). "Crear" lleva una pluma, el mismo sello que cierra toda pausa.
+// WS29 · C0: la tab bar sigue siendo de CUATRO, pero cambia quiénes son —
+// Hoy · Baúl · Comunidad · Crear. Perfil deja de ser pestaña y sube al cluster de
+// arriba a la derecha, junto a la campana (`AccionesArriba`), que se ve en las
+// cuatro. "Crear" pasa de la pluma a un signo +, y va en verde: es lo único que
+// se hace desde la barra, no un lugar al que se va.
 // `/admin` NO es una pestaña: es el escritorio de Dwellia y se entra desde Perfil.
 // La tab bar se oculta en pantallas de ritual/público (foco total).
 
 import type { ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { AccionesArriba } from "./AccionesArriba";
 
 const TABS = [
-  { to: "/hoy", label: "Hoy", glyph: "sun" },
-  { to: "/baul", label: "Baúl", glyph: "chest" },
-  { to: "/crear", label: "Crear", glyph: "pluma" },
-  { to: "/perfil", label: "Perfil", glyph: "person" },
+  { to: "/hoy", label: "Hoy", glyph: "sun", clase: "" },
+  { to: "/baul", label: "Baúl", glyph: "chest", clase: "" },
+  { to: "/comunidad", label: "Comunidad", glyph: "personas", clase: "" },
+  { to: "/crear", label: "Crear", glyph: "mas", clase: "tab-crear" },
 ];
 
 // Rutas sin tab bar (experiencias de foco): ritual, compartir, onboarding, login,
@@ -20,6 +24,9 @@ const TABS = [
 // del Checkout "/premium/gracias" no, es un momento de cierre a pantalla limpia.
 // WS27: el wizard de Crear ("/crear/" ≠ "/crear") es un foco como el onboarding,
 // y el adminland es otro lugar: se entra y se sale por su propio enlace.
+// WS29 · C0: la ficha de otra persona y la Pausa extra son lecturas a pantalla
+// completa, igual que el detalle del Baúl. El perfil ajeno ("/comunidad/:id") sí
+// lleva tabs: sigue siendo un recorrido dentro de Comunidad.
 const SIN_TABS = [
   "/onboarding",
   "/login",
@@ -29,6 +36,8 @@ const SIN_TABS = [
   "/compartir",
   "/baul/",
   "/crear/",
+  "/comunidad/ficha/",
+  "/pausa/",
   "/admin",
   "/terminos",
   "/premium/gracias",
@@ -47,6 +56,7 @@ export function Frame({ children }: { children: ReactNode }) {
       <div
         className={`frame-inner ${showTabs ? "with-tabs" : ""} ${ancha ? "is-wide" : ""}`}
       >
+        {showTabs && <AccionesArriba />}
         {children}
       </div>
       {showTabs && (
@@ -55,7 +65,9 @@ export function Frame({ children }: { children: ReactNode }) {
             <NavLink
               key={t.to}
               to={t.to}
-              className={({ isActive }) => `tab ${isActive ? "tab-active" : ""}`}
+              className={({ isActive }) =>
+                `tab ${t.clase} ${isActive ? "tab-active" : ""}`
+              }
             >
               <TabIcon name={t.glyph} />
               <span>{t.label}</span>
@@ -93,13 +105,25 @@ function TabIcon({ name }: { name: string }) {
         <path d="M5 8c0-2.2 1.8-4 4-4h6c2.2 0 4 1.8 4 4" />
       </svg>
     );
-  // La pluma: el mismo gesto del sello de la carta (escribir es el cierre).
-  if (name === "pluma")
+  // Comunidad: el mismo trazo del ícono de persona, pero tres — una al frente y
+  // dos detrás. Las de atrás son medias cabezas: quedan a la sombra de la de
+  // adelante y el ícono no se ensucia a 22 px.
+  if (name === "personas")
     return (
       <svg {...common}>
-        <path d="M6.4 18.6c1-5.2 4.4-9.4 11.2-12-1.4 6.6-4.6 10.6-9.8 12.2" />
-        <path d="M6.4 18.6 4 21" />
-        <path d="M9.2 16.2c1.6-2.6 3.8-4.8 6.6-6.4" strokeWidth="1.2" />
+        <circle cx="12" cy="9" r="3.1" />
+        <path d="M6.6 19.6c0-3.1 2.4-5.2 5.4-5.2s5.4 2.1 5.4 5.2" />
+        <path d="M17.6 6.4a2.6 2.6 0 0 1 0 5.2" />
+        <path d="M19 13.6c1.8.7 2.9 2.2 2.9 4.1" />
+        <path d="M6.4 6.4a2.6 2.6 0 0 0 0 5.2" />
+        <path d="M5 13.6c-1.8.7-2.9 2.2-2.9 4.1" />
+      </svg>
+    );
+  // Crear: un + limpio. Se hace algo, no se va a ningún lado.
+  if (name === "mas")
+    return (
+      <svg {...common}>
+        <path d="M12 6v12M6 12h12" />
       </svg>
     );
   return (

@@ -9,6 +9,17 @@ import { auth, cerrarSesion } from "./firebase";
 import type {
   AccionContenido,
   BandejaAvisos,
+  BaulAjeno,
+  FichaAjena,
+  ItemFicha,
+  ItemRecomendacion,
+  MiComunidad,
+  ModoPausa,
+  PausaHecha,
+  Persona,
+  RecomendacionBody,
+  ReenviosRecibidos,
+  CartaDelDia as EntregaCompleta,
   CartaDelDia,
   CartaPropuesta,
   CartaPropuestaBody,
@@ -141,6 +152,7 @@ export const api = {
     hora_aviso: string;
     aviso_activo: boolean;
     aceptar_terminos: boolean;
+    perfil_publico: boolean; // WS30 · C0 · Bloque C
   }>) =>
     req<Perfil>("/api/perfil", {
       method: "PUT",
@@ -273,6 +285,76 @@ export const api = {
     }),
   adminComentarios: (limit = 500) =>
     req<ComentarioAdmin[]>(`/api/admin/comentarios?limit=${limit}`),
+
+  // ————————————————————————————————————————————————————————————————————————
+  // WS29 · Bloque C · Comunidad (contrato en WS/WS29 §4). Los agentes de C1
+  // implementan estos endpoints; los de C2 los consumen desde acá.
+  // ————————————————————————————————————————————————————————————————————————
+
+  // —— C1.1 · personas, solicitudes, foto de perfil ——
+  buscarPersonas: (q: string) =>
+    req<Persona[]>(`/api/comunidad/buscar?q=${encodeURIComponent(q)}`),
+  miComunidad: () => req<MiComunidad>("/api/comunidad"),
+  pedirVinculo: (usuarioId: string) =>
+    req<Persona>(`/api/comunidad/solicitudes/${usuarioId}`, { method: "POST" }),
+  aceptarVinculo: (usuarioId: string) =>
+    req<Persona>(`/api/comunidad/solicitudes/${usuarioId}/aceptar`, { method: "POST" }),
+  // Rechazar (si me la mandaron) o cancelar (si la mandé yo): la misma puerta.
+  descartarSolicitud: (usuarioId: string) =>
+    req<void>(`/api/comunidad/solicitudes/${usuarioId}`, { method: "DELETE" }),
+  quitarDeMiComunidad: (usuarioId: string) =>
+    req<void>(`/api/comunidad/${usuarioId}`, { method: "DELETE" }),
+  subirFotoPerfil: (file: File) => {
+    const fd = new FormData();
+    fd.append("foto", file);
+    return req<{ foto_url: string }>("/api/perfil/foto", { method: "POST", body: fd });
+  },
+  quitarFotoPerfil: () => req<void>("/api/perfil/foto", { method: "DELETE" }),
+
+  // —— C1.2 · fichas ajenas, descubrir, reenviar, guardar, hacer la Pausa ——
+  descubrir: () => req<FichaAjena[]>("/api/fichas/descubrir"),
+  baulDe: (usuarioId: string) => req<BaulAjeno>(`/api/fichas/de/${usuarioId}`),
+  fichaAjena: (entregaId: string) => req<FichaAjena>(`/api/fichas/${entregaId}`),
+  reenviar: (entregaId: string, aUsuarioId: string, comentario?: string | null) =>
+    req<{ id: string }>("/api/reenvios", {
+      method: "POST",
+      // WS30 · comentario opcional (≤200); vacío viaja como null.
+      body: JSON.stringify({
+        entrega_id: entregaId,
+        a_usuario_id: aUsuarioId,
+        comentario: comentario?.trim() ? comentario.trim() : null,
+      }),
+    }),
+  reenviosRecibidos: () => req<ReenviosRecibidos>("/api/reenvios/recibidos"),
+  reenvioLeido: (id: string) => req<void>(`/api/reenvios/${id}/leido`, { method: "PUT" }),
+  guardarFicha: (entregaId: string) =>
+    req<void>(`/api/guardadas/${entregaId}`, { method: "POST" }),
+  quitarGuardada: (entregaId: string) =>
+    req<void>(`/api/guardadas/${entregaId}`, { method: "DELETE" }),
+  hacerPausa: (entregaId: string, modo: ModoPausa) =>
+    req<PausaHecha>("/api/pausas/hacer", {
+      method: "POST",
+      body: JSON.stringify({ entrega_id: entregaId, modo }),
+    }),
+  // Una entrega MÍA por id (la Pausa extra en /pausa/:id). Misma forma que la carta del día.
+  entrega: (entregaId: string) => req<EntregaCompleta>(`/api/entregas/${entregaId}`),
+
+  // —— C1.3 · recomendaciones (premium) ——
+  // El Baúl propio devuelve Pausas y recomendaciones mezcladas (ItemFicha).
+  baulCompleto: (orden: "reciente" | "valoradas" = "reciente") =>
+    req<ItemFicha[]>(`/api/baul?orden=${orden}`),
+  recomendaciones: () => req<ItemRecomendacion[]>("/api/recomendaciones"),
+  crearRecomendacion: (body: RecomendacionBody) =>
+    req<ItemRecomendacion>("/api/recomendaciones", { method: "POST", body: JSON.stringify(body) }),
+  editarRecomendacion: (id: string, body: Partial<RecomendacionBody>) =>
+    req<ItemRecomendacion>(`/api/recomendaciones/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+  borrarRecomendacion: (id: string) =>
+    req<void>(`/api/recomendaciones/${id}`, { method: "DELETE" }),
+  setVisibilidadRecomendacion: (id: string, visibilidad: Visibilidad) =>
+    req<ItemRecomendacion>(`/api/recomendaciones/${id}/visibilidad`, {
+      method: "PUT",
+      body: JSON.stringify({ visibilidad }),
+    }),
 };
 
 // Las imágenes/glifos viven en /public/assets (copiados de M0). La API guarda

@@ -53,7 +53,13 @@ export function Avisos() {
       );
       api.avisoLeido(aviso.id).catch(() => {});
     }
+    // WS30 · C2.1 · cada aviso lleva a donde está lo que cuenta: una carta al
+    // recorrido de Crear, una Pausa reenviada a esa ficha (la referencia es la
+    // entrega) y una solicitud a la pestaña Comunidad, que es donde se resuelve.
     if (aviso.tipo === "carta_estado") navigate("/crear");
+    else if (aviso.tipo === "reenvio" && aviso.referencia_id)
+      navigate(`/comunidad/ficha/${aviso.referencia_id}`);
+    else if (aviso.tipo === "solicitud") navigate("/comunidad");
   };
 
   const marcarTodos = async () => {

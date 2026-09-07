@@ -26,6 +26,8 @@ class LimitesOut(BaseModel):
     cambios_carta: int
     propone_cartas: bool
     recomendaciones: bool
+    # WS29 · Bloque C: "Hacer la Pausa" desde la ficha de otro (ahora o programada).
+    pausas_extra: bool
 
 
 class PerfilOut(BaseModel):
@@ -47,15 +49,23 @@ class PerfilOut(BaseModel):
     limites: LimitesOut
     # WS27 · B2: si esta cuenta puede entrar al adminland (MINDFUL_ADMIN_UIDS).
     es_admin: bool = False
+    # WS29 · Bloque C: privado por defecto (te encuentran; tus fichas las ve tu
+    # comunidad). Público: cualquier usuario logueado ve tus fichas compartidas.
+    perfil_publico: bool = False
+    # WS29 · el id con el que otros te encuentran/reenvían (nunca el firebase_uid).
+    usuario_id: str
+    # WS29 · la URL de la foto de perfil (`/api/usuarios/{id}/foto`) o None.
+    foto_url: Optional[str] = None
 
 
 class PerfilUpdate(BaseModel):
-    """Actualización parcial del perfil (apodo / horario / TZ / aviso / términos)."""
+    """Actualización parcial del perfil (apodo / horario / TZ / aviso / términos / público)."""
 
     nombre: Optional[str] = Field(default=None, max_length=80)
     apellido: Optional[str] = Field(default=None, max_length=80)
     apodo: Optional[str] = Field(default=None, max_length=40)
     tz: Optional[str] = None
+    perfil_publico: Optional[bool] = None
     hora_aviso: Optional[str] = None
     aviso_activo: Optional[bool] = None
     aceptar_terminos: Optional[bool] = None

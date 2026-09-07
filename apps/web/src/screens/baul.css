@@ -1,0 +1,316 @@
+/* WS30 · C2.2 · Lo NUEVO del Baúl, su detalle, el wizard de recomendación y el
+   Perfil con foto.
+
+   Vive aparte de app.css a propósito (territorio de la card, como crear.css y
+   profile.css). Todo lo que ya existe en app.css (.entry*, .pill-pausa, .chip*,
+   .baul-toolbar, .baul-pager, .ficha*, .textarea, .counter, .helper, .ob*,
+   .modal*, .confirm-inline*, .toggle-row, .switch, .avatar*) se REUSA, no se
+   redefine: acá está solo lo que falta.
+
+   Mobile-first: la pantalla de referencia es 375×812. Solo tokens de theme.css:
+   papel, tierra y salvia. Ni rojos de alarma ni verdes de logro. */
+
+/* ═══════════════════════════════════════════ El Baúl · las tres clases de fila */
+/* La píldora nombra qué es cada ficha de un vistazo. "Pausa" (verde salvia) ya
+   vive en app.css; las otras dos son de tierra, para que el verde siga siendo
+   solo lo que uno vivió. */
+.pill-guardada,
+.pill-reco {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+/* Una Pausa que guardé de otra persona: sigue siendo una Pausa, pero no es mía. */
+.pill-guardada {
+  background: var(--oat-milk);
+  color: var(--warm-taupe);
+}
+/* Una recomendación: lo que alguien deja para el resto, no lo que vivió. */
+.pill-reco {
+  background: color-mix(in srgb, var(--sand) 72%, transparent);
+  color: var(--deep-umber);
+}
+
+/* De quién es la Pausa guardada: la cara y el apodo, en voz baja, debajo de la
+   frase. Sin estrellas: la puntuación es del dueño y nunca viaja. */
+.entry-de {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--warm-taupe);
+  min-width: 0;
+}
+.entry-de span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* La fila de una recomendación: el tipo en cristiano, el título en serif y las
+   primeras líneas del texto. */
+.entry-reco-tipo {
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--warm-taupe);
+}
+.entry-reco-titulo {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--deep-umber);
+  margin: 9px 0 0;
+  overflow-wrap: anywhere;
+}
+.entry-reco-texto {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 6px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.entry-reco-link {
+  display: inline-block;
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--dust-taupe);
+}
+
+/* WS30 · C2b · el CTA "Agregar recomendación" se fue del Baúl a Crear (la única
+   puerta para hacer algo nuevo): acá ya no queda nada que colgarle. */
+
+/* ═══════════════════════════════════════════ Detalle · la ficha propia */
+/* "Reenviar" no entra dentro de <Ficha modo="propia"> (no acepta acciones en ese
+   modo): vive justo debajo, con el mismo ancho. Los dos van dentro de un
+   envoltorio porque `.baul-page-inner` se centra con `margin: auto 0`, y con un
+   hermano suelto ese auto empujaría el botón al pie de la pantalla. */
+.ficha-con-reenviar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: auto 0;
+  flex-shrink: 0;
+}
+.ficha-con-reenviar > .baul-page-inner {
+  margin: 0;
+}
+.ficha-con-reenviar > .baul-more {
+  margin-top: 10px;
+}
+.ficha-reenviar {
+  margin: 10px 0 0;
+}
+
+/* Las dos maneras de hacer la Pausa de otra persona, reveladas al tocar
+   "Hacer la Pausa". Reusa `.confirm-inline` de app.css para el papel. */
+/* `.baul-page-actions` centra a sus hijos: estos dos piden el ancho completo. */
+.pausa-opciones {
+  align-self: stretch;
+  width: 100%;
+}
+.pausa-opciones .actions-stack {
+  margin-top: 0;
+}
+.pausa-aviso {
+  align-self: stretch;
+  width: 100%;
+  background: var(--oat-milk);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 10px 0 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* ═══════════════════════════════════════════ Detalle · la recomendación */
+/* No es una carta: no lleva pager ni héroe. Se lee de arriba abajo. */
+.reco-detalle {
+  padding-top: 4px;
+}
+.reco-detalle-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 12px;
+}
+.reco-detalle-fecha {
+  flex: none;
+  font-size: 12px;
+  color: var(--dust-taupe);
+}
+.reco-detalle-titulo {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 25px;
+  line-height: 1.25;
+  color: var(--deep-umber);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.reco-detalle-texto {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--warm-taupe);
+  margin: 14px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.reco-detalle-link {
+  display: inline-block;
+  margin: 16px 0 0;
+  font-size: 14px;
+  color: var(--sage-deep);
+  overflow-wrap: anywhere;
+}
+.reco-detalle .visibilidad-row {
+  margin-top: 22px;
+}
+.reco-detalle-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* ═══════════════════════════════════════════ El wizard de una recomendación */
+/* Se apoya en `.ob*` (el molde del onboarding y del wizard de Crear). */
+.reco-wizard .ob-field-label {
+  margin-top: 18px;
+}
+/* El tipo: cinco chips en una grilla que no se desborda en 375 px. */
+.reco-tipos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.reco-tipo {
+  border: 1px solid var(--sand-line);
+  background: transparent;
+  color: var(--warm-taupe);
+  border-radius: var(--radius-pill);
+  padding: 9px 18px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+.reco-tipo.on {
+  background: var(--oat-milk);
+  border-color: var(--oat-milk);
+  color: var(--deep-umber);
+}
+/* El campo de una línea (título, enlace): el mismo papel que la textarea. */
+.reco-input {
+  width: 100%;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: 14px;
+  padding: 13px 15px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--deep-umber);
+}
+.reco-input:focus {
+  outline: none;
+  border-color: var(--dust-taupe);
+}
+.reco-input::placeholder {
+  color: var(--dust-taupe);
+}
+/* Lo que rebota (el enlace mal escrito, el 409 del tope, el 403 de free):
+   papel y taupe, nunca rojo de alarma. */
+.reco-aviso {
+  background: var(--oat-milk);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 10px 0 0;
+  overflow-wrap: anywhere;
+}
+/* Cuántas llevas: el tope existe, pero no se grita. */
+.reco-cupo {
+  font-size: 12px;
+  color: var(--dust-taupe);
+  text-align: center;
+  margin: 0 0 14px;
+}
+
+/* ═══════════════════════════════════════════ Perfil · la foto y el perfil público */
+/* Tu cara arriba del todo, al lado del apodo. */
+.perfil-quien {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.perfil-foto-acciones {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: -8px 0 20px;
+}
+/* El input de archivo real queda escondido: el botón es la etiqueta. */
+.perfil-foto-input {
+  display: none;
+}
+.perfil-foto-aviso {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  background: var(--oat-milk);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 10px 14px;
+  margin: -10px 0 18px;
+}
+
+/* El toggle "Perfil público", junto a quién eres: la decisión de quién puede
+   llegar a tus Pausas compartidas. */
+.perfil-publico {
+  margin: 0 0 22px;
+}
+.perfil-publico .toggle-row {
+  border-radius: 16px;
+}
+.perfil-publico-nota {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--dust-taupe);
+  margin: 10px 4px 0;
+}
+.perfil-publico-nota b {
+  font-weight: 600;
+  color: var(--warm-taupe);
+}
+
+/* El botón de perfil de arriba a la derecha, cuando hay foto: la foto ES el
+   botón, sin el relleno verde ni el borde de papel. */
+.boton-perfil.tiene-foto {
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  border-color: var(--sage);
+}
+.boton-perfil.tiene-foto .avatar {
+  border: 0;
+}

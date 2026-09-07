@@ -10,9 +10,15 @@
 //
 // Fuera desde WS25: la zona horaria (la detecta el navegador y nadie la toca) y
 // la vitrina de pilares (vive en "El método Dwellia").
+//
+// WS30 · C2.2 · arriba del todo suma tu FOTO (la que ve tu comunidad en las
+// búsquedas y en tus fichas) y, junto al apodo, el toggle "Perfil público": la
+// decisión de quién puede llegar a tus Pausas compartidas. Todo lo demás queda
+// en el mismo orden de siempre.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Avatar } from "../components/Avatar";
 import { Button } from "../components/Button";
 import { InstallIOSModal } from "../components/InstallIOSModal";
 import { api, reiniciarDemo } from "../lib/api";
@@ -23,6 +29,12 @@ import { activarPush, permisoPush, soportaPush, suscripcionActual } from "../lib
 import { fechaLarga } from "./Premium";
 import "./premium.css";
 import "./profile.css";
+import "./baul.css";
+
+// Lo que acepta la foto de perfil (el backend aplica lo mismo: FORMATOS_AVATAR
+// y 8 MB). Se valida acá para no hacer subir 9 MB y recién entonces avisar.
+const FORMATOS_FOTO = ["image/jpeg", "image/png", "image/webp"];
+const FOTO_MAX_MB = 8;
 
 export function Profile() {
   const navigate = useNavigate();
@@ -44,6 +56,12 @@ export function Profile() {
   // Estado del push EN ESTE dispositivo (WS21): el aviso diario llega por acá.
   const [push, setPush] = useState<"cargando" | "activas" | "pedir" | "bloqueadas" | "instalar" | "nosoporta">("cargando");
   const [activando, setActivando] = useState(false);
+  // WS30 · C2.2 · la foto de perfil y el perfil público.
+  const fotoRef = useRef<HTMLInputElement>(null);
+  const [subiendoFoto, setSubiendoFoto] = useState(false);
+  const [avisoFoto, setAvisoFoto] = useState<string | null>(null);
+  const [publico, setPublico] = useState(false);
+  const [guardandoPublico, setGuardandoPublico] = useState(false);
 
   useEffect(() => {
     if (!soportaPush()) {
@@ -89,6 +107,7 @@ export function Profile() {
       setApellido(perfil.apellido ?? "");
       // Si nunca eligió apodo, el nombre hace de apodo (igual que el onboarding).
       setApodo(perfil.apodo ?? perfil.nombre ?? "");
+      setPublico(perfil.perfil_publico);
     }
   }, [perfil]);
 
@@ -102,6 +121,60 @@ export function Profile() {
     setAviso(v);
     await api.setPerfil({ aviso_activo: v });
     refrescarPerfil();
+  };
+
+  // —— WS30 · C2.2 · la foto: la cara con la que te encuentran ——
+  // El <input type="file"> vive escondido; el botón es quien lo abre.
+  const elegirFoto = async (file: File | undefined) => {
+    if (!file) return;
+    setAvisoFoto(null);
+    if (!FORMATOS_FOTO.includes(file.type)) {
+      setAvisoFoto("La foto tiene que ser JPG, PNG o WebP.");
+      return;
+    }
+    if (file.size > FOTO_MAX_MB * 1024 * 1024) {
+      setAvisoFoto(`La foto no puede pesar más de ${FOTO_MAX_MB} MB.`);
+      return;
+    }
+    setSubiendoFoto(true);
+    try {
+      await api.subirFotoPerfil(file);
+      await refrescarPerfil();
+    } catch (e) {
+      setAvisoFoto((e as Error).message || "No pudimos guardar tu foto. Inténtalo en un rato.");
+    } finally {
+      setSubiendoFoto(false);
+      // Que elegir el MISMO archivo otra vez vuelva a disparar el cambio.
+      if (fotoRef.current) fotoRef.current.value = "";
+    }
+  };
+
+  const quitarFoto = async () => {
+    setAvisoFoto(null);
+    setSubiendoFoto(true);
+    try {
+      await api.quitarFotoPerfil();
+      await refrescarPerfil();
+    } catch (e) {
+      setAvisoFoto((e as Error).message || "No pudimos quitar tu foto. Inténtalo en un rato.");
+    } finally {
+      setSubiendoFoto(false);
+    }
+  };
+
+  // —— WS30 · C2.2 · perfil público ——
+  // `perfil_publico` viaja en el mismo PUT /api/perfil (contrato C0 §4.3).
+  const guardarPublico = async (v: boolean) => {
+    setPublico(v);
+    setGuardandoPublico(true);
+    try {
+      await api.setPerfil({ perfil_publico: v });
+      await refrescarPerfil();
+    } catch {
+      setPublico(!v); // no se guardó: el switch vuelve a donde estaba
+    } finally {
+      setGuardandoPublico(false);
+    }
   };
 
   const abrirEditor = () => {
@@ -155,11 +228,14 @@ export function Profile() {
 
   return (
     <div className="profile">
-      {/* —— 1 · Quién eres aquí —— */}
+      {/* —— 1 · Quién eres aquí: tu cara y tu nombre —— */}
       <div className="perfil-cabecera">
-        <div className="perfil-identidad">
-          <h1 className="perfil-apodo">{comoTeLlaman}</h1>
-          <p className="perfil-email">{perfil.email}</p>
+        <div className="perfil-quien">
+          <Avatar apodo={comoTeLlaman} fotoUrl={perfil.foto_url} size={64} />
+          <div className="perfil-identidad">
+            <h1 className="perfil-apodo">{comoTeLlaman}</h1>
+            <p className="perfil-email">{perfil.email}</p>
+          </div>
         </div>
         {!editando && (
           <button className="perfil-editar" onClick={abrirEditor}>
@@ -167,6 +243,31 @@ export function Profile() {
           </button>
         )}
       </div>
+
+      {/* La foto es la cara con la que te encuentran y con la que firman tus
+          fichas: se cambia en un gesto y se quita en otro. */}
+      <div className="perfil-foto-acciones">
+        <input
+          ref={fotoRef}
+          className="perfil-foto-input"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={(e) => elegirFoto(e.target.files?.[0])}
+        />
+        <button
+          className="link"
+          disabled={subiendoFoto}
+          onClick={() => fotoRef.current?.click()}
+        >
+          {subiendoFoto ? "Un momento…" : perfil.foto_url ? "Cambiar foto" : "Poner una foto"}
+        </button>
+        {perfil.foto_url && (
+          <button className="link" disabled={subiendoFoto} onClick={quitarFoto}>
+            Quitar
+          </button>
+        )}
+      </div>
+      {avisoFoto && <p className="perfil-foto-aviso">{avisoFoto}</p>}
 
       {editando && (
         <div className="perfil-editor">
@@ -235,6 +336,28 @@ export function Profile() {
           </div>
         </div>
       )}
+
+      {/* —— Perfil público: quién puede llegar a tus Pausas compartidas.
+              Va junto a quién eres, porque es parte de eso. —— */}
+      <div className="perfil-publico">
+        <label className="toggle-row">
+          <span className="visibilidad-label">Perfil público</span>
+          <span className="switch">
+            <input
+              type="checkbox"
+              checked={publico}
+              disabled={guardandoPublico}
+              onChange={(e) => guardarPublico(e.target.checked)}
+            />
+            <span className="slider" />
+          </span>
+        </label>
+        <p className="perfil-publico-nota">
+          <b>Privado:</b> te encuentran, pero ven tus Pausas solo quienes aceptaste.
+          <br />
+          <b>Público:</b> cualquier persona de Dwellia ve tus Pausas compartidas.
+        </p>
+      </div>
 
       {/* —— 2 · Tu Pausa diaria —— */}
       <div className="profile-section">

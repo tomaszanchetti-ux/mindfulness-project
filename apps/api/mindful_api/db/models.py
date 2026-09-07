@@ -65,7 +65,37 @@ ESTADOS_EN_CURSO = (ESTADO_EN_REVISION, ESTADO_REVISION_DWELLIA, ESTADO_A_REVISA
 
 AVISO_CARTA_ESTADO = "carta_estado"   # B · cambió el estado de tu carta
 AVISO_REENVIO = "reenvio"             # C · te reenviaron una Pausa
-AVISO_SOLICITUD = "solicitud"         # C · solicitud de comunidad
+AVISO_SOLICITUD = "solicitud"         # C · solicitud de comunidad (recibida o aceptada)
+
+# ── WS29 · Bloque C · vocabulario cerrado ────────────────────────────────────
+VISIBILIDAD_PRIVADA = "privada"
+VISIBILIDAD_COMPARTIDA = "compartida"
+VISIBILIDADES = (VISIBILIDAD_PRIVADA, VISIBILIDAD_COMPARTIDA)
+
+# Un vínculo nace `pendiente` (A le pidió a B) y pasa a `aceptada` (B dijo que sí).
+# Rechazar o cancelar BORRA la fila: no hay estado "rechazada" que alguien pueda
+# leer para saber que le dijeron que no.
+VINCULO_PENDIENTE = "pendiente"
+VINCULO_ACEPTADA = "aceptada"
+VINCULOS = (VINCULO_PENDIENTE, VINCULO_ACEPTADA)
+
+TIPO_LIBRO = "libro"
+TIPO_VIDEO = "video"
+TIPO_PODCAST = "podcast"
+TIPO_DOCUMENTAL = "documental"
+TIPO_OTRO = "otro"
+TIPOS_RECOMENDACION = (TIPO_LIBRO, TIPO_VIDEO, TIPO_PODCAST, TIPO_DOCUMENTAL, TIPO_OTRO)
+RECOMENDACIONES_MAX = 30
+RECOMENDACION_TITULO_MAX = 80
+RECOMENDACION_TEXTO_MAX = 500
+
+# Cómo llega una Pausa que no sorteó el motor (`POST /api/pausas/hacer`):
+#   `ahora`     → una entrega EXTRA hoy (no toca la diaria)
+#   `siguiente` → entra a la cola `pausas_programadas` y el motor la sirve como
+#                 la próxima carta del día, en lugar de sortear.
+PAUSA_AHORA = "ahora"
+PAUSA_SIGUIENTE = "siguiente"
+MODOS_PAUSA = (PAUSA_AHORA, PAUSA_SIGUIENTE)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -153,6 +183,15 @@ class Usuario(Base):
     # reglas que las de Dwellia (decisión de Tomás, WS27 §6): la columna
     # `recibe_comunidad` que había creado B0 se eliminó en `l2a3b4c5d6e7`.
 
+    # WS29 · Bloque C: perfil PRIVADO por defecto (Roadmap v2 §0). Privado = te
+    # encuentran en la búsqueda, pero tus fichas compartidas solo las ve quien
+    # tiene un vínculo aceptado contigo. Público = las ve cualquier usuario logueado.
+    # La regla completa vive en `services/comunidad.puede_ver` y NADIE la reescribe.
+    perfil_publico: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # WS29 · foto de perfil: solo la ruta en Storage (lleva el usuario_id adentro,
+    # jamás viaja); se sirve por `GET /api/usuarios/{usuario_id}/foto` con login.
+    foto_path: Mapped[Optional[str]] = mapped_column(String(300))
+
     push_suscripciones: Mapped[list["PushSuscripcion"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
     )
@@ -184,6 +223,15 @@ class Entrega(Base):
     # `compartida` (su comunidad). Default privada: nadie publica sin pedirlo.
     # Es independiente del link de M5, que es un regalo puntual a una persona.
     visibilidad: Mapped[str] = mapped_column(String(12), nullable=False, default="privada")
+    # WS29 · Bloque C: una Pausa EXTRA ("Hacer ahora" desde la ficha de otro,
+    # premium) no es la carta del día: el motor la ignora al decidir si hoy ya
+    # hay carta y al armar el historial de rotación. `de_usuario_id` = quién me la
+    # hizo llegar (dueño de la ficha reenviada), para que la ficha pueda decir
+    # "te la envió Lu". Vale también para la Pausa programada que el motor sirvió.
+    extra: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    de_usuario_id: Mapped[Optional[str]] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="SET NULL")
+    )
 
     fotos: Mapped[list["Foto"]] = relationship(
         back_populates="entrega", cascade="all, delete-orphan"
@@ -304,3 +352,113 @@ class Aviso(Base):
     texto: Mapped[str] = mapped_column(Text, nullable=False)
     leido: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WS29 · BLOQUE C · COMUNIDAD (todo Mundo 2: cada fila nombra a su(s) usuario(s)
+# y cae en cascada si uno se borra; el `conftest` limpia usuarios y se lleva todo)
+# ─────────────────────────────────────────────────────────────────────────────
+class Vinculo(Base):
+    """Una relación entre dos personas. Dirección: `solicitante` le pidió a
+    `destinatario`. Único por PAR sin importar la dirección (índice funcional
+    LEAST/GREATEST en la migración): nunca hay dos filas entre las mismas dos
+    personas. "Mi comunidad" = vínculos `aceptada` en cualquier dirección."""
+
+    __tablename__ = "vinculos"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    solicitante_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    destinatario_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    estado: Mapped[str] = mapped_column(String(12), nullable=False, default=VINCULO_PENDIENTE)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    aceptada_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+
+
+class Reenvio(Base):
+    """`de` le reenvió a `a` la ficha `entrega` (que puede ser de un tercero).
+    El reenvío da PERMISO de lectura a `a` mientras la ficha siga compartida:
+    el dueño manda siempre (si la vuelve privada o la borra, el reenvío muere
+    con ella por la cascada o por `puede_ver`)."""
+
+    __tablename__ = "reenvios"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    de_usuario_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    a_usuario_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    entrega_id: Mapped[str] = mapped_column(
+        ForeignKey("entregas.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    leido: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # WS30 · lo que le dije al mandársela (≤ COMENTARIO_REENVIO_MAX). Opcional.
+    comentario: Mapped[Optional[str]] = mapped_column(String(200))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class Guardada(Base):
+    """La ficha de OTRO que guardé en mi Baúl ("Pausa de <apodo>"). No es una
+    copia: se lee en vivo con `puede_ver`, así desaparece si el dueño la vuelve
+    privada, la borra o me quita de su comunidad. Única por (usuario, entrega)."""
+
+    __tablename__ = "guardadas"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    usuario_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    entrega_id: Mapped[str] = mapped_column(
+        ForeignKey("entregas.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class PausaProgramada(Base):
+    """La cola de "Programar": la próxima carta del día de `usuario` es ESTA
+    (`carta_id`), en lugar de la que sortearía el motor. FIFO por `created_at`;
+    `servida_at` marca cuándo el motor la convirtió en entrega. Una por vez en
+    cola (decisión de Tomás: "reemplaza la inmediata siguiente")."""
+
+    __tablename__ = "pausas_programadas"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    usuario_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    carta_id: Mapped[str] = mapped_column(ForeignKey("cartas.id"), nullable=False)
+    de_usuario_id: Mapped[Optional[str]] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="SET NULL")
+    )
+    entrega_origen_id: Mapped[Optional[str]] = mapped_column(
+        ForeignKey("entregas.id", ondelete="SET NULL")
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    servida_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+
+
+class Recomendacion(Base):
+    """Una ficha de recomendación (premium): libro, video, podcast, documental u
+    otro. Vive en el Baúl con la misma visibilidad que una Pausa. Los largos los
+    aplica el servicio (RECOMENDACION_*), nunca la tabla."""
+
+    __tablename__ = "recomendaciones"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    usuario_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    titulo: Mapped[str] = mapped_column(String(80), nullable=False)
+    tipo: Mapped[str] = mapped_column(String(12), nullable=False, default=TIPO_OTRO)
+    texto: Mapped[str] = mapped_column(Text, nullable=False)
+    url: Mapped[Optional[str]] = mapped_column(String(500))
+    visibilidad: Mapped[str] = mapped_column(
+        String(12), nullable=False, default=VISIBILIDAD_PRIVADA
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, onupdate=_now)

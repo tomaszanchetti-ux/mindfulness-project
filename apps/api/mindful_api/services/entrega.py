@@ -22,8 +22,10 @@ from ..db.models import (
     Carta,
     Categoria,
     Entrega,
+    PausaProgramada,
     Usuario,
 )
+from .comunidad import persona_min
 from .plan import COMENTARIO_CARTA_MAX, limites
 from .seleccion import Entrega as EntregaMotor
 from .seleccion import Perfil, elegir_carta
@@ -76,6 +78,12 @@ def _salida(s: Session, entrega: Entrega, ya_existia: bool) -> dict:
             # con `limites.cambios_carta`, así lo sabe también al recargar).
             "cambios": entrega.cambios or 0,
             "ya_existia": ya_existia,
+            # WS29 · C1.2: de quién vino esta Pausa (la hice desde su ficha o me
+            # la programaron); None = la carta del día de siempre. Y si es EXTRA
+            # (no cuenta como la carta del día ni entra a la rotación).
+            "de": persona_min(s.get(Usuario, entrega.de_usuario_id))
+                  if entrega.de_usuario_id else None,
+            "extra": entrega.extra,
         },
         "carta": _carta_enriquecida(s, carta),
     }
@@ -124,10 +132,13 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
     # (`usuario_acciones` quedó obsoleta; nada la lee.)
 
     # Historial del usuario (con categoría/acción/concepto de cada carta), por fecha.
+    # WS29 · C1.2: las EXTRA quedan afuera. Una Pausa que hice desde la ficha de
+    # otro no es la carta del día (no decide si hoy ya hay carta) ni entra a la
+    # rotación del motor: si contara, hacer una extra me dejaría sin carta mañana.
     rows = s.execute(
         select(Entrega, Carta.categoria_slug, Carta.accion_slug, Carta.concepto)
         .join(Carta, Carta.id == Entrega.carta_id)
-        .where(Entrega.usuario_id == usuario.id)
+        .where(Entrega.usuario_id == usuario.id, Entrega.extra.is_(False))
         .order_by(Entrega.fecha)
     ).all()
 
@@ -136,6 +147,32 @@ def obtener_carta_del_dia(s: Session, usuario: Usuario) -> dict:
         ultima_entrega = rows[-1][0]
         if _fecha_local(ultima_entrega.fecha, tz) == hoy:
             return _salida(s, ultima_entrega, ya_existia=True)
+
+    # WS29 · C1.2: antes de sortear, la COLA. Si alguien me envió una Pausa y la
+    # programé, la carta de hoy es ESA (y se marca servida para no repetirla).
+    # Si hoy ya había carta, este bloque no se alcanza: la programada espera a
+    # mañana intacta.
+    programada = s.scalar(
+        select(PausaProgramada)
+        .where(
+            PausaProgramada.usuario_id == usuario.id,
+            PausaProgramada.servida_at.is_(None),
+        )
+        .order_by(PausaProgramada.created_at)
+        .limit(1)
+    )
+    if programada is not None:
+        servida = Entrega(
+            usuario_id=usuario.id,
+            carta_id=programada.carta_id,
+            de_usuario_id=programada.de_usuario_id,
+        )
+        programada.servida_at = datetime.now(timezone.utc)
+        s.add(servida)
+        s.add(programada)
+        s.commit()
+        s.refresh(servida)
+        return _salida(s, servida, ya_existia=False)
 
     # Construir el perfil para el motor.
     perfil = Perfil(historial=historial_motor(s, rows, tz))

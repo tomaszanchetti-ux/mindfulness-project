@@ -15,6 +15,7 @@
 | P4 | **Dos rituales por día** (mañana/noche, estilo diario guiado). | Palanca premium pensada desde el arranque. | Documento Madre | Orden compuesto del Baúl (fecha → estrella) y aviso doble. |
 | P5 | **Fotos en el regalo** (link `/c/{token}`) y **compresión de imágenes** al subir. | Hoy el link muestra la ficha sin fotos y las fotos van tal cual (cap 8 MB). | WS16 | Redimensión en el backend (Pillow) o en el navegador antes de subir. |
 | P6 | **Métricas suaves para el autor**: "se abrió tu carta", "tu Pausa se reenvió". | Impacto sin likes ni contadores públicos. | M5, WS06 | Que exista reenviar (Bloque C). |
+| P7 | **Fotos en las recomendaciones** (hasta 3, como en las Pausas). | Una recomendación con la tapa del libro o una captura se lee mejor y se comparte más. | Tomás, Q/A visual WS30 | Extender `fotos` (hoy cuelgan de `entregas`) a recomendaciones, subida a Storage, la regla de lectura de fichas ajenas aplicada a esas fotos, y el wizard con el mismo cargador de 3 fotos de Reflexionar. Media sesión. |
 
 ## 2. Técnico / infra
 
@@ -26,7 +27,7 @@
 | T4 | **OG dinámico por token** en el link compartido (imagen de la carta real). | Hoy una sola imagen de marca para todos los links (SPA sin render server-side). | WS09 | Render server-side por token (Cloud Run) o pre-render. |
 | T5 | **Zona horaria hacia el este duplica la carta del día** (caso borde del cambio de TZ). | Anotado en WS24 como deuda. | WS24 | Reproducir y decidir (probablemente comparar por fecha local guardada). |
 | T6 | **Una suscripción de Stripe por usuario**: la baja de una vieja apaga la nueva. | Aceptable en v1. | WS24 | Guardar `subscription_id` y comparar en el webhook. |
-| T7 | **Limpieza de fotos huérfanas** en Storage (entregas nunca completadas). | Costo y prolijidad. | WS16 | Job periódico (está en la ola C3 del roadmap). |
+| T9 | **`GET /api/fichas/descubrir` hace ~6 queries por ficha** (183 para 30: persona, fotos, guardada, carta enriquecida por ítem). | Con cientos de usuarios no se nota; con miles, sí. | Q/A C1.2, WS29 | Cargar personas/fotos/guardadas en 3 queries por lote (`IN`) y `_carta_enriquecida` con las categorías/acciones cacheadas. |
 | T8 | **Esfuerzo del juez** (`output_config.effort`) si el costo por carta molesta: hoy ≈ 4-6 ¢ porque Sonnet 5 piensa 3-6k tokens por veredicto. | Volumen premium lo hace irrelevante por ahora. | WS27 | Medir calidad con `medium`/`low` sobre cartas reales antes de bajarlo. |
 
 ## 3. Bloque D (promoción) — vive en `Flipbook/` y en el roadmap §5b
