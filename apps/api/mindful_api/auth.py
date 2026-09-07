@@ -18,6 +18,7 @@ from typing import Optional
 
 from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .config import settings
@@ -88,8 +89,18 @@ def get_current_user(
     if usuario is None:
         usuario = Usuario(firebase_uid=ident.sub, email=ident.email)
         s.add(usuario)
-        s.commit()
-        s.refresh(usuario)
+        try:
+            s.commit()
+        except IntegrityError:
+            # WS27: dos pedidos a la vez de un usuario NUEVO (el primer login dispara
+            # varios en paralelo) intentaban crearlo los dos; el segundo chocaba con
+            # el unique de firebase_uid y devolvía 500. Se relee lo que creó el otro.
+            s.rollback()
+            usuario = s.scalar(select(Usuario).where(Usuario.firebase_uid == ident.sub))
+            if usuario is None:
+                raise
+        else:
+            s.refresh(usuario)
     return usuario
 
 

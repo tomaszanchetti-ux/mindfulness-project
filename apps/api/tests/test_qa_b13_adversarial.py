@@ -398,10 +398,13 @@ def test_ok_dos_aprobaciones_en_paralelo_publican_una_sola_carta(admin):
     codigos = []
 
     def golpear():
-        c = TestClient(app)
-        codigos.append(
-            c.post(f"/api/admin/cartas/{pid}/aprobar", headers=admin, json={}).status_code
-        )
+        try:
+            c = TestClient(app)
+            codigos.append(
+                c.post(f"/api/admin/cartas/{pid}/aprobar", headers=admin, json={}).status_code
+            )
+        except Exception as exc:  # noqa: BLE001 — que el hilo cuente qué le pasó
+            codigos.append(repr(exc)[:300])
 
     hilos = [threading.Thread(target=golpear) for _ in range(2)]
     for h in hilos:
@@ -409,6 +412,7 @@ def test_ok_dos_aprobaciones_en_paralelo_publican_una_sola_carta(admin):
     for h in hilos:
         h.join(timeout=30)
 
+    assert all(isinstance(c, int) for c in codigos), f"un hilo reventó: {codigos}"
     assert sorted(codigos) == [200, 409], f"códigos: {codigos}"
     assert _cuantas_publicadas() == 1
     assert len(_avisos(autor)) == 1
