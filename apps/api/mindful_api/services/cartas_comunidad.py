@@ -271,14 +271,14 @@ def personas_acompanadas(s: Session, propuesta: CartaComunidad) -> int:
     aprobada no hay carta publicada y el impacto es 0, no "todavía no se sabe":
     el autor ve un cero honesto.
 
-    Se cuentan las entregas, no los usuarios distintos: la misma persona no puede
-    recibir dos veces la misma carta (la ventana de 7 días del motor lo impide y,
-    aunque cambiara, cada entrega es un día en que alguien la vivió).
+    Se cuentan PERSONAS distintas (Q/A B2.1): la ventana del motor dura 7 días,
+    así que la misma persona puede volver a recibir la carta más adelante, y el
+    rótulo del front dice "N personas la recibieron", no "N veces".
     """
     if not propuesta.carta_id:
         return 0
     total = s.scalar(
-        select(func.count()).select_from(Entrega)
+        select(func.count(func.distinct(Entrega.usuario_id)))
         .where(Entrega.carta_id == propuesta.carta_id)
     )
     return int(total or 0)

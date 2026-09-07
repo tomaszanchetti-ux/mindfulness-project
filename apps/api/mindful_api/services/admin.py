@@ -161,7 +161,11 @@ def _veredicto_resumen(veredicto) -> Optional[dict]:
         # `juez` o `dwellia`: quién escribió la sugerencia que se está mirando.
         "fuente": _texto(veredicto.get("fuente")),
         # Cuántas reglas del canon marcó (el detalle está en el veredicto crudo).
-        "hallazgos": len(veredicto.get("hallazgos") or []),
+        # Q/A B2.1: la columna es JSON y puede venir de un seed o de un fix a mano;
+        # un valor que no sea lista no puede tumbar la bandeja entera.
+        "hallazgos": (len(veredicto["hallazgos"]) if isinstance(veredicto.get("hallazgos"), list)
+                      else (1 if isinstance(veredicto.get("hallazgos"), str)
+                            and veredicto["hallazgos"].strip() else 0)),
     }
     if all(v in (None, 0) for v in resumen.values()):
         return None
@@ -189,7 +193,8 @@ def _item(s: Session, propuesta: CartaComunidad) -> dict:
         "veredicto_resumen": _veredicto_resumen(propuesta.veredicto),
         # v1 del funnel. Lista vacía (no None) si la propuesta es anterior a la
         # migración `l2a3b4c5d6e7`: el front itera, no pregunta si existe.
-        "historial": list(propuesta.historial or []),
+        "historial": ([v for v in propuesta.historial if isinstance(v, dict)]
+                      if isinstance(propuesta.historial, list) else []),
         "carta_id": propuesta.carta_id,
         "created_at": propuesta.created_at,
         "updated_at": propuesta.updated_at,
@@ -544,7 +549,7 @@ def marcar_a_revisar(
     propuesta.motivo = sugerencia
     # Reasignación (no mutación) para que SQLAlchemy vea el cambio en la columna JSON.
     propuesta.veredicto = {
-        **(propuesta.veredicto or {}),
+        **(propuesta.veredicto if isinstance(propuesta.veredicto, dict) else {}),
         **({"fix_sugerido": fix} if fix else {}),
         "fuente": "dwellia",
     }
