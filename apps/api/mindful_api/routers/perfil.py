@@ -42,6 +42,9 @@ def _a_salida(s: Session, usuario: Usuario) -> PerfilOut:
         plan_hasta=usuario.plan_hasta if lim.plan == "premium" else None,
         limites=LimitesOut(**lim.dict()),
         es_admin=usuario.firebase_uid in settings.admin_uids_list,
+        perfil_publico=usuario.perfil_publico,
+        usuario_id=usuario.id,
+        foto_url=f"/api/usuarios/{usuario.id}/foto" if usuario.foto_path else None,
     )
 
 
@@ -71,6 +74,8 @@ def actualizar_perfil(
         usuario.hora_aviso = body.hora_aviso
     if body.aviso_activo is not None:
         usuario.aviso_activo = body.aviso_activo
+    if body.perfil_publico is not None:
+        usuario.perfil_publico = body.perfil_publico
     if body.aceptar_terminos:
         usuario.terminos_aceptados_at = datetime.now(timezone.utc)
 

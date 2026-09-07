@@ -1189,8 +1189,16 @@ def test_ok_la_columna_historial_si_existe_y_es_json():
 
 
 def test_ok_la_base_esta_en_la_cabeza_de_la_migracion():
+    # WS29: la cabeza se lee de alembic, no se fija a mano (cada bloque la mueve).
+    from pathlib import Path
+
+    from alembic.config import Config
+    from alembic.script import ScriptDirectory
+
+    cfg = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
+    head = ScriptDirectory.from_config(cfg).get_current_head()
     with SessionLocal() as s:
-        assert s.scalar(text("select version_num from alembic_version")) == "l2a3b4c5d6e7"
+        assert s.scalar(text("select version_num from alembic_version")) == head
 
 
 def test_ok_put_perfil_con_recibe_comunidad_se_ignora_sin_500():

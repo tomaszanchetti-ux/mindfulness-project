@@ -37,6 +37,7 @@ class Limites:
     cambios_carta: int          # veces por día que puede cambiar la carta (0 = no puede)
     propone_cartas: bool        # puede escribir cartas para la comunidad (Bloque B)
     recomendaciones: bool       # puede subir recomendaciones al perfil (Bloque C)
+    pausas_extra: bool          # WS29 · puede "hacer la Pausa" de una ficha ajena (ahora o programada)
 
     def dict(self) -> dict:
         return asdict(self)
@@ -44,11 +45,11 @@ class Limites:
 
 LIMITES_FREE = Limites(
     plan=PLAN_FREE, reflexion_max=150, fotos_max=1,
-    cambios_carta=0, propone_cartas=False, recomendaciones=False,
+    cambios_carta=0, propone_cartas=False, recomendaciones=False, pausas_extra=False,
 )
 LIMITES_PREMIUM = Limites(
     plan=PLAN_PREMIUM, reflexion_max=500, fotos_max=3,
-    cambios_carta=3, propone_cartas=True, recomendaciones=True,
+    cambios_carta=3, propone_cartas=True, recomendaciones=True, pausas_extra=True,
 )
 
 

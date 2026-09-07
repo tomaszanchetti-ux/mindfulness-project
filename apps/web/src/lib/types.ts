@@ -72,6 +72,8 @@ export interface Limites {
   cambios_carta: number;
   propone_cartas: boolean;
   recomendaciones: boolean;
+  // WS29 · Bloque C: "Hacer la Pausa" desde la ficha de otro (ahora o programada).
+  pausas_extra: boolean;
 }
 
 // WS24 · A1.2 · GET /api/pagos/estado
@@ -86,6 +88,7 @@ export interface EstadoPagos {
 export type Visibilidad = "privada" | "compartida";
 
 export interface ItemBaul {
+  tipo?: "pausa"; // WS29 · ausente o "pausa" = una Pausa (ver ItemRecomendacion)
   id: string;
   fecha: string;
   estrellas: number | null;
@@ -94,6 +97,10 @@ export interface ItemBaul {
   fotos: string[]; // URLs de la API (/api/fotos/{id}) — privadas, se piden con auth
   carta: Carta;
   visibilidad: Visibilidad; // WS25 · PUT /api/baul/{id}/visibilidad
+  // WS29 · C1.2 · una "Pausa de <apodo>" guardada desde la comunidad: `de` es su
+  // dueño, `guardada` true, `estrellas` null y las fotos vienen por /api/fichas/….
+  de?: Persona | null;
+  guardada?: boolean;
 }
 
 // Respuesta al subir una foto de la pausa (hasta 3 por entrega).
@@ -119,6 +126,11 @@ export interface Perfil {
   // WS27 · B2 · si esta cuenta entra al adminland (MINDFUL_ADMIN_UIDS).
   // El backend lo resuelve; el front solo muestra u oculta la puerta.
   es_admin: boolean;
+  // WS29 · Bloque C · privado por defecto; el id con el que otros me encuentran;
+  // la foto de perfil (URL con login) o null.
+  perfil_publico: boolean;
+  usuario_id: string;
+  foto_url: string | null;
 }
 
 export interface Compartido {
@@ -312,4 +324,105 @@ export interface ComentarioAdmin {
   frase: string;
   categoria: string; // slug del pilar (el color lo pone el catálogo del store)
   apodo: string | null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WS29 · Bloque C · Comunidad. Espejo de `services/comunidad.py`, `services/fichas.py`,
+// `services/reenvios.py`, `services/recomendaciones.py` (contrato en WS/WS29 §4).
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Estado del vínculo entre YO y esa persona (vocabulario cerrado). */
+export type EstadoVinculo = "ninguno" | "pendiente_enviada" | "pendiente_recibida" | "aceptada";
+
+/** Una persona vista por otra. NUNCA trae el email. */
+export interface Persona {
+  usuario_id: string;
+  apodo: string; // apodo · nombre · "Alguien"
+  foto_url: string | null; // /api/usuarios/{id}/foto (con login) o null
+  perfil_publico: boolean;
+  nombre?: string | null;
+  apellido?: string | null;
+  vinculo?: EstadoVinculo; // ausente en las formas mínimas (de una ficha, un reenvío)
+}
+
+/** GET /api/comunidad */
+export interface MiComunidad {
+  gente: Persona[]; // vínculos aceptados
+  recibidas: Persona[]; // me pidieron (Aceptar / Rechazar)
+  enviadas: Persona[]; // pedí yo (Cancelar)
+}
+
+/** La ficha de una Pausa AJENA: sin estrellas, sin visibilidad, sin comentario. */
+export interface FichaAjena {
+  tipo: "pausa";
+  id: string; // entrega_id
+  fecha: string;
+  reflexion: string | null;
+  fotos: string[]; // /api/fichas/{id}/fotos/{foto_id} (con login)
+  carta: Carta;
+  de: Persona;
+  guardada: boolean; // ya la guardé en mi Baúl
+}
+
+export type TipoRecomendacion = "libro" | "video" | "podcast" | "documental" | "otro";
+export const TIPOS_RECOMENDACION: { id: TipoRecomendacion; label: string }[] = [
+  { id: "libro", label: "Libro" },
+  { id: "video", label: "Video" },
+  { id: "podcast", label: "Podcast" },
+  { id: "documental", label: "Documental" },
+  { id: "otro", label: "Otro" },
+];
+
+/** Una ficha de recomendación (premium), propia o ajena (`de`). */
+export interface ItemRecomendacion {
+  tipo: "recomendacion";
+  id: string;
+  fecha: string;
+  titulo: string;
+  tipo_recomendacion: TipoRecomendacion;
+  texto: string;
+  url: string | null;
+  visibilidad: Visibilidad;
+  de?: Persona | null;
+}
+
+export interface RecomendacionBody {
+  titulo: string;
+  tipo: TipoRecomendacion;
+  texto: string;
+  url?: string | null;
+  visibilidad?: Visibilidad;
+}
+
+/** Lo que trae el Baúl (propio o ajeno): Pausas y recomendaciones mezcladas por fecha. */
+export type ItemFicha = ItemBaul | ItemRecomendacion;
+export type FichaDeOtro = FichaAjena | ItemRecomendacion;
+
+/** GET /api/fichas/de/{usuario_id} · `fichas` null = privado y sin vínculo. */
+export interface BaulAjeno {
+  persona: Persona;
+  fichas: FichaDeOtro[] | null;
+}
+
+export interface ReenvioRecibido {
+  id: string;
+  de: Persona;
+  ficha: FichaAjena;
+  leido: boolean;
+  created_at: string;
+}
+
+export interface ReenviosRecibidos {
+  no_leidos: number;
+  reenvios: ReenvioRecibido[];
+}
+
+export type ModoPausa = "ahora" | "siguiente";
+
+/** POST /api/pausas/hacer · `ahora` → la entrega extra (como CartaDelDia) ·
+ *  `siguiente` → programada. */
+export interface PausaHecha {
+  programada?: boolean;
+  entrega?: Entrega;
+  carta: Carta;
 }
