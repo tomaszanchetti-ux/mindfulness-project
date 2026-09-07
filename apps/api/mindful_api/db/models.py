@@ -36,6 +36,38 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+# ── WS27 · Bloque B · vocabulario cerrado (un solo lugar) ────────────────────
+ORIGEN_DWELLIA = "dwellia"
+ORIGEN_COMUNIDAD = "comunidad"
+
+FIRMA_ANONIMA = "anonima"
+FIRMA_APODO = "apodo"
+FIRMAS = (FIRMA_ANONIMA, FIRMA_APODO)
+
+# Recorrido de una carta propuesta (Roadmap v2 §4 · B0):
+#   en_revision (el juez corriendo) → revision_dwellia (le toca a Tomás)
+#                                   → a_revisar (vuelve al autor con sugerencia)
+#                                   → rechazada (el juez o Tomás)
+#   revision_dwellia → aprobada (= publicada en `cartas`, cargada al mazo) | rechazada
+#   a_revisar → en_revision (el autor la reenvía) · cualquiera → retirada (el autor)
+ESTADO_EN_REVISION = "en_revision"
+ESTADO_REVISION_DWELLIA = "revision_dwellia"
+ESTADO_A_REVISAR = "a_revisar"
+ESTADO_APROBADA = "aprobada"
+ESTADO_RECHAZADA = "rechazada"
+ESTADO_RETIRADA = "retirada"
+ESTADOS_CARTA_COMUNIDAD = (
+    ESTADO_EN_REVISION, ESTADO_REVISION_DWELLIA, ESTADO_A_REVISAR,
+    ESTADO_APROBADA, ESTADO_RECHAZADA, ESTADO_RETIRADA,
+)
+# Estados "vivos": mientras hay una en alguno de estos, no se puede proponer otra.
+ESTADOS_EN_CURSO = (ESTADO_EN_REVISION, ESTADO_REVISION_DWELLIA, ESTADO_A_REVISAR)
+
+AVISO_CARTA_ESTADO = "carta_estado"   # B · cambió el estado de tu carta
+AVISO_REENVIO = "reenvio"             # C · te reenviaron una Pausa
+AVISO_SOLICITUD = "solicitud"         # C · solicitud de comunidad
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # MUNDO 1 · CONTENIDO GLOBAL  (seed = los 3 JSON de M0_Motor_de_Contenido/data/)
 # Sin user_id. Iguales para todos. Acá vive M0.
@@ -73,6 +105,15 @@ class Carta(Base):
     concepto: Mapped[Optional[str]] = mapped_column(String(80), index=True)
     frase: Mapped[str] = mapped_column(Text, nullable=False)
     prompt: Mapped[str] = mapped_column(Text, nullable=False)
+    # WS27 · Bloque B: de dónde viene la carta. `dwellia` = mazo propio (los JSON de
+    # M0, el seed las sincroniza) · `comunidad` = escrita por un usuario premium y
+    # aprobada por Tomás (el seed NUNCA las toca). La firma pública es lo que ve
+    # el resto en el dorso: el apodo del autor o None (= "alguien de la comunidad").
+    origen: Mapped[str] = mapped_column(String(12), nullable=False, default="dwellia", index=True)
+    autor_usuario_id: Mapped[Optional[str]] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="SET NULL")
+    )
+    firma_publica: Mapped[Optional[str]] = mapped_column(String(40))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -107,6 +148,8 @@ class Usuario(Base):
     plan: Mapped[str] = mapped_column(String(10), nullable=False, default="free")
     plan_hasta: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     stripe_customer_id: Mapped[Optional[str]] = mapped_column(String(64), unique=True)
+    # WS27 · Bloque B: opt-in a recibir cartas de la comunidad el día comodín.
+    recibe_comunidad: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     push_suscripciones: Mapped[list["PushSuscripcion"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
@@ -201,3 +244,55 @@ class PushSuscripcion(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
     usuario: Mapped["Usuario"] = relationship(back_populates="push_suscripciones")
+
+
+class CartaComunidad(Base):
+    """WS27 · Bloque B · la carta que un usuario premium propone para la comunidad.
+
+    Es Mundo 2 (lleva `usuario_id`): es SU propuesta, con su recorrido. Cuando
+    Tomás la aprueba se PUBLICA como una fila nueva en `cartas` (Mundo 1, origen
+    `comunidad`) y `carta_id` apunta a ella. Límites del contenido (frase ≤60,
+    prompt 100-220) los aplica el servicio, nunca la tabla.
+    """
+
+    __tablename__ = "cartas_comunidad"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    usuario_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    categoria_slug: Mapped[str] = mapped_column(ForeignKey("categorias.slug"), nullable=False)
+    accion_slug: Mapped[str] = mapped_column(ForeignKey("acciones.slug"), nullable=False)
+    frase: Mapped[str] = mapped_column(Text, nullable=False)
+    prompt: Mapped[str] = mapped_column(Text, nullable=False)
+    firma: Mapped[str] = mapped_column(String(10), nullable=False, default=FIRMA_ANONIMA)
+    estado: Mapped[str] = mapped_column(
+        String(20), nullable=False, default=ESTADO_EN_REVISION, index=True
+    )
+    veredicto: Mapped[Optional[dict]] = mapped_column(JSON)   # lo que dijo el juez
+    motivo: Mapped[Optional[str]] = mapped_column(Text)        # sugerencia / motivo visible al autor
+    concepto: Mapped[Optional[str]] = mapped_column(String(80))
+    cesion_aceptada_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    carta_id: Mapped[Optional[str]] = mapped_column(ForeignKey("cartas.id", ondelete="SET NULL"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, onupdate=_now)
+
+
+class Aviso(Base):
+    """WS27 · Bloque B · lo que la app le cuenta al usuario (y empuja por push).
+
+    `tipo` = AVISO_* · `referencia_id` = la carta_comunidad (B), el reenvío o la
+    solicitud (C). Privado: siempre por `usuario_id`.
+    """
+
+    __tablename__ = "avisos"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    usuario_id: Mapped[str] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    tipo: Mapped[str] = mapped_column(String(20), nullable=False)
+    referencia_id: Mapped[Optional[str]] = mapped_column(String(36))
+    texto: Mapped[str] = mapped_column(Text, nullable=False)
+    leido: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

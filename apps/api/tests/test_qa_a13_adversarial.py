@@ -404,7 +404,9 @@ def test_ok_el_contrato_coincide_con_types_ts():
         "comentario_carta", "cambios", "ya_existia",
     }
     assert d["entrega"]["ya_existia"] is True
-    assert set(d["carta"]) == {"id", "frase", "prompt", "categoria", "accion"}
+    # WS27 · B0: la carta declara además de dónde viene y quién la firma.
+    assert set(d["carta"]) == {"id", "frase", "prompt", "categoria", "accion",
+                               "origen", "firma_publica"}
 
 
 def test_ok_la_rotacion_de_manana_cuenta_el_pilar_de_hoy_aunque_haya_cambiado():

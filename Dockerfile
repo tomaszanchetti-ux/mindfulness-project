@@ -16,6 +16,8 @@ RUN pip install -U pip && pip install -r /app/apps/api/requirements.txt
 # 2) Código del backend + contenido global M0 (preserva el layout que espera el seed)
 COPY apps/api /app/apps/api
 COPY M0_Motor_de_Contenido/data /app/M0_Motor_de_Contenido/data
+# WS27 · el canon del juez de cartas (services/canon.py y services/juez.py lo leen)
+COPY M0_Motor_de_Contenido/canon_cartas.md M0_Motor_de_Contenido/fundamentos_pilares.md /app/M0_Motor_de_Contenido/
 
 WORKDIR /app/apps/api
 

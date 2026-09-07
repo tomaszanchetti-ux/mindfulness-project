@@ -31,3 +31,7 @@ pywebpush==2.1.2
 
 # WS24 · pagos premium (Stripe Checkout + webhook)
 stripe==15.6.1
+
+# WS27 · Bloque B · juez de cartas de la comunidad (Anthropic SDK). Pineado en 0.x:
+# el venv local corre Python 3.9 y el SDK 1.x exige ≥3.10.
+anthropic==0.109.1

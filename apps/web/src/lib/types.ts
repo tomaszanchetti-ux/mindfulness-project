@@ -35,6 +35,9 @@ export interface Carta {
   prompt: string;
   categoria: CategoriaCarta;
   accion: AccionCarta;
+  // WS27 · B0: de dónde viene y quién la firma (null = de Dwellia o anónima).
+  origen?: "dwellia" | "comunidad";
+  firma_publica?: string | null;
 }
 
 export interface Entrega {

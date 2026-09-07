@@ -56,6 +56,9 @@ def _carta_enriquecida(s: Session, carta: Carta) -> dict:
             "color_accent": cat.color_accent, "color_text": cat.color_text, "img": cat.img,
         },
         "accion": {"slug": acc.slug, "nombre": acc.nombre, "glifo": acc.glifo},
+        # WS27 · Bloque B: de dónde viene y quién la firma (None = anónima o de Dwellia).
+        "origen": carta.origen,
+        "firma_publica": carta.firma_publica,
     }
 
 
