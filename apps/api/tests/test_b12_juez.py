@@ -304,8 +304,8 @@ def test_con_key_la_llamada_usa_el_modelo_el_cache_y_el_esquema(
     juez.evaluar(_propuesta(), mazo, categorias, acciones)
 
     assert registro["model"] == settings.juez_modelo
-    assert registro["max_tokens"] == 2000
-    assert registro["timeout"] == 60
+    assert registro["max_tokens"] == 8000  # WS27: Sonnet 5 piensa dentro del tope
+    assert registro["timeout"] == 120
     assert "thinking" not in registro and "temperature" not in registro
 
     # El bloque grande (canon + mazo) va cacheado.

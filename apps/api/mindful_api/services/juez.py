@@ -46,8 +46,12 @@ from .canon import (
     validar_candidata,
 )
 
-MAX_TOKENS = 2000
-TIMEOUT_SEGUNDOS = 60
+# Sonnet 5 piensa antes de responder (thinking adaptativo por defecto) y esos
+# tokens cuentan dentro de `max_tokens`: con 2000 la primera llamada real se
+# quedó sin espacio para el JSON (WS27). 8000 deja aire de sobra; el veredicto
+# en sí pesa ~500.
+MAX_TOKENS = 8000
+TIMEOUT_SEGUNDOS = 120
 
 
 @dataclass
@@ -212,6 +216,19 @@ def _sistema(mazo: list, calibracion: str, alcance: str = "") -> list:
     ]
 
 
+def _texto_de(respuesta) -> str:
+    """El bloque de texto de la respuesta. Si no hay (se cortó por `max_tokens`,
+    el modelo rehusó, etc.) levanta con el `stop_reason`, que es lo que hay que
+    leer en `detalle["error"]`; un StopIteration pelado no decía nada."""
+    for b in respuesta.content:
+        if getattr(b, "type", None) == "text":
+            return b.text
+    raise ValueError(
+        "la respuesta no trae texto (stop_reason={})".format(
+            getattr(respuesta, "stop_reason", None))
+    )
+
+
 def _cliente():
     """El cliente Anthropic. Aislado acá para poder simularlo en los tests."""
     import anthropic
@@ -354,7 +371,7 @@ def evaluar(propuesta: dict, mazo: list, categorias: set, acciones: set) -> Vere
             output_config={"format": {"type": "json_schema", "schema": ESQUEMA_VEREDICTO}},
             timeout=TIMEOUT_SEGUNDOS,
         )
-        texto = next(b.text for b in respuesta.content if b.type == "text")
+        texto = _texto_de(respuesta)
         crudo = json.loads(texto)
         resultado = crudo["veredicto"]
     except Exception as e:  # red, JSON, esquema, modelo… el juez NUNCA levanta.
@@ -437,7 +454,7 @@ def juzgar_lote(cartas_a_juzgar: list, mazo: list, modelo: str,
             }],
             output_config={"format": {"type": "json_schema", "schema": ESQUEMA_VEREDICTO}},
         )
-        texto = next(b.text for b in respuesta.content if b.type == "text")
+        texto = _texto_de(respuesta)
         v = json.loads(texto)
         v["id"] = c.get("id", "(candidata)")
         veredictos.append(v)
