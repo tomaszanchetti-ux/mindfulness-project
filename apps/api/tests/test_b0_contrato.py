@@ -116,3 +116,13 @@ def test_defaults_del_contrato():
         s.expire_all()  # el CASCADE lo hizo Postgres: que la sesión vuelva a mirar
         assert s.get(CartaComunidad, cc_id) is None
         assert s.get(Aviso, av_id) is None
+
+
+def test_perfil_declara_si_es_admin(monkeypatch):
+    """WS27 · B2: el front decide si muestra /admin leyendo `es_admin` del perfil."""
+    from mindful_api.config import settings
+
+    h = {"X-Debug-Sub": "b0|admin", "X-Debug-Email": "b0admin@mindful.local"}
+    assert client.get("/api/perfil", headers=h).json()["es_admin"] is False
+    monkeypatch.setattr(settings, "admin_uids", "b0|admin")
+    assert client.get("/api/perfil", headers=h).json()["es_admin"] is True

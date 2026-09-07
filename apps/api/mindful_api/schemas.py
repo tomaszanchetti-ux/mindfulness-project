@@ -45,6 +45,8 @@ class PerfilOut(BaseModel):
     plan: str
     plan_hasta: Optional[datetime] = None
     limites: LimitesOut
+    # WS27 · B2: si esta cuenta puede entrar al adminland (MINDFUL_ADMIN_UIDS).
+    es_admin: bool = False
 
 
 class PerfilUpdate(BaseModel):
