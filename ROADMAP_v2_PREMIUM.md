@@ -132,11 +132,30 @@ juez + Tomás. Al cerrar B la barra tiene 4 pestañas (Hoy · Baúl · Crear · 
 
 Seed B: `make demo-seed` suma 4 cartas del usuario demo, una por estado.
 
-## 5. Bloque C — Comunidad (≈3-4 sesiones)
+## 5. Bloque C — Comunidad (≈3-4 sesiones) · 🟢 API COMPLETA con Q/A (WS29) · front pendiente (WS30)
 
-Objetivo: la pestaña **Comunidad** (5 pestañas: Hoy · Baúl · Comunidad · Crear ·
-Perfil), sin feed ni seguidores: personas, solicitudes, reenvíos y las fichas de
-recomendación.
+Objetivo: la pestaña **Comunidad**, sin feed ni seguidores: personas, solicitudes,
+reenvíos y las fichas de recomendación.
+
+**Estado y decisiones de la WS29 (mandan sobre las tablas de abajo; el contrato
+exacto vive en `WS/WS29_07-09-2026.md` §4):**
+- **Barra de CUATRO: Hoy · Baúl · Comunidad · Crear.** Perfil (botón verde) y la
+  campana van arriba a la derecha. Comunidad = tres personas; Crear = "+" verde.
+- **Comunidad estilo Instagram:** buscador arriba (email, apodo, nombre, apellido)
+  y debajo **Descubrir**: una grilla de fichas de Pausas compartidas (foto +
+  reflexión, la persona visible), de perfiles públicos y de mi comunidad.
+- **Foto de perfil** (`usuarios.foto_path`; se ve en búsqueda, comunidad y fichas).
+- **Hacer la Pausa** (premium): "Hacer ahora" = una Pausa EXTRA hoy, no toca la
+  diaria · "Programar" = tu PRÓXIMA carta del día (cola de una), sin fecha.
+- **Una Pausa extra vivida y compartida es una ficha más** (Descubrir incluida).
+- **Reenviar por WhatsApp una ficha ajena** = link in-app `/comunidad/ficha/{id}`
+  (con login y la regla de lectura), nunca un token de un tercero.
+- **La regla de lectura** es UNA (`services/comunidad.puede_ver`): compartida ∧
+  vivida ∧ (dueño ∨ dueño público ∨ vínculo aceptado ∨ me la reenviaron) → si no, 404.
+- T&C v3 = texto y fecha nuevos, sin re-aceptación. Q/A adversarial en Sonnet 5.
+- Construido en la WS29: C0 (contrato + cableado del front) · C1.1 · C1.2 · C1.3 ·
+  seed C · 3 Q/A adversariales (4 hallazgos, todos cerrados) · suite 751 ✓.
+  Falta: **C2 (front) · C3 · E2E · deploy** (WS30).
 
 ### Ola C0 (orquestador) — el contrato
 - `usuarios.perfil_publico` (bool, default false) · índices por `lower(email)`,
