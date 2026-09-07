@@ -31,6 +31,7 @@ from sqlalchemy.orm import Session
 
 from ..db.models import (
     VINCULO_ACEPTADA,
+    VINCULO_PENDIENTE,
     VISIBILIDAD_COMPARTIDA,
     Entrega,
     Reenvio,
@@ -74,6 +75,35 @@ def vinculo_entre(s: Session, a_id: str, b_id: str) -> Optional[Vinculo]:
             )
         )
     )
+
+
+# Cómo se ve el vínculo DESDE mí (vocabulario cerrado, espejo de `EstadoVinculo` en types.ts).
+ESTADO_NINGUNO = "ninguno"
+ESTADO_PENDIENTE_ENVIADA = "pendiente_enviada"     # yo pedí, falta que acepte
+ESTADO_PENDIENTE_RECIBIDA = "pendiente_recibida"   # me pidieron, me toca aceptar/rechazar
+ESTADO_ACEPTADA = "aceptada"
+
+
+def estado_vinculo(s: Session, yo_id: str, otro_id: str) -> str:
+    v = vinculo_entre(s, yo_id, otro_id)
+    if v is None:
+        return ESTADO_NINGUNO
+    if v.estado == VINCULO_ACEPTADA:
+        return ESTADO_ACEPTADA
+    if v.estado == VINCULO_PENDIENTE and v.solicitante_id == yo_id:
+        return ESTADO_PENDIENTE_ENVIADA
+    return ESTADO_PENDIENTE_RECIBIDA
+
+
+def persona_de(s: Session, yo: Usuario, otro: Usuario) -> dict:
+    """`Persona` completa: la mínima + nombre/apellido + el vínculo desde mí.
+    Es la forma que devuelven la búsqueda, mi comunidad y `GET /api/fichas/de/{id}`."""
+    return {
+        **persona_min(otro),
+        "nombre": otro.nombre,
+        "apellido": otro.apellido,
+        "vinculo": ESTADO_ACEPTADA if yo.id == otro.id else estado_vinculo(s, yo.id, otro.id),
+    }
 
 
 def son_comunidad(s: Session, a_id: str, b_id: str) -> bool:

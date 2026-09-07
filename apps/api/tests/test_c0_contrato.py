@@ -201,3 +201,22 @@ def test_entrega_extra_nace_como_no_diaria_y_recuerda_de_quien_vino():
         assert e.extra is True and e.de_usuario_id == duenio.id
         normal = _pausa(s, yo)
         assert normal.extra is False and normal.de_usuario_id is None
+
+
+def test_persona_de_lleva_el_vinculo_desde_mi_y_nunca_el_email():
+    from mindful_api.services.comunidad import persona_de
+
+    with SessionLocal() as s:
+        yo = _usuario(s, "yo4")
+        otro = _usuario(s, "otro4", nombre="Lucía", apellido="Pérez")
+        p = persona_de(s, yo, otro)
+        assert p["vinculo"] == "ninguno" and p["nombre"] == "Lucía" and "email" not in p
+        s.add(Vinculo(solicitante_id=yo.id, destinatario_id=otro.id))
+        s.commit()
+        assert persona_de(s, yo, otro)["vinculo"] == "pendiente_enviada"
+        assert persona_de(s, otro, yo)["vinculo"] == "pendiente_recibida"
+        v = vinculo_entre(s, yo.id, otro.id)
+        v.estado = VINCULO_ACEPTADA
+        s.commit()
+        assert persona_de(s, yo, otro)["vinculo"] == "aceptada"
+        assert persona_de(s, yo, yo)["vinculo"] == "aceptada"
