@@ -56,7 +56,7 @@ paralelo; cada ola arranca cuando la anterior está commiteada.
 - Branch: `epic/v2-freemium`. Merge a `main` y deploy solo con OK explícito de Tomás.
 - Tests: cada card suma los suyos (suite hoy: 35 ✓). Front: `tsc` estricto + e2e en preview.
 - Bitácora por sesión en `WS/`. Este roadmap se actualiza al cierre de cada bloque.
-- **E2E por bloque (Tomás, WS27):** al terminar cada bloque, ANTES de mergear y desplegar, un recorrido completo en local con datos sembrados (`make demo-seed`, que crece con cada bloque: usuarios premium y free, cartas en todos los estados, avisos, comentarios; en C, vínculos y reenvíos) mirando el adminland con la cuenta admin local y la app con un usuario premium y uno free. Entra solo lo construido en ese bloque. Después del deploy, prueba real en producción con la cuenta de Tomás.
+- **E2E (Tomás, WS28):** el Bloque B se validó con el contrato en navegador (Claude) + Q/A visual (Tomás) y se desplegó; el **E2E completísimo** se hace UNA vez, al cerrar el Bloque C (fin del desarrollo), antes del Bloque D. Regla original:  al terminar cada bloque, ANTES de mergear y desplegar, un recorrido completo en local con datos sembrados (`make demo-seed`, que crece con cada bloque: usuarios premium y free, cartas en todos los estados, avisos, comentarios; en C, vínculos y reenvíos) mirando el adminland con la cuenta admin local y la app con un usuario premium y uno free. Entra solo lo construido en ese bloque. Después del deploy, prueba real en producción con la cuenta de Tomás.
 - Antes de desplegar: `gcloud auth login` (la sesión está vencida desde junio).
 
 ## 3. Bloque A — Base freemium (≈2 sesiones) · 🟢 CONSTRUIDO WS24 (branch, sin deploy)
@@ -96,7 +96,7 @@ que Tomás active la cuenta real (lo único que hace él: crear cuenta Stripe + 
 
 ## 4. Bloque B — Crear: cartas de la comunidad (≈3 sesiones)
 
-> **Estado (WS28, 07/09):** backend (B0-B2.1) y front (B2.2) CONSTRUIDOS en `epic/v2-bloque-b-crear`, contrato validado en navegador. Falta: Q/A visual de Tomás (WS28) → E2E del bloque con casos construidos en la base (WS29) → deploy → prueba real en producción.
+> **Estado (WS28, 07/09): BLOQUE B EN PRODUCCIÓN** (API rev 00018, migraciones aplicadas, merge a `main`). Q/A visual de Tomás hecho (admin "perfecto"). Falta la prueba real de Tomás en prod con su cuenta (admin = premium). Sigue el Bloque C.
 
 Objetivo: la feature insignia del premium, con la pestaña **Crear** y el pipeline
 juez + Tomás. Al cerrar B la barra tiene 4 pestañas (Hoy · Baúl · Crear · Perfil).
