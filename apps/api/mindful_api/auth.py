@@ -91,3 +91,19 @@ def get_current_user(
         s.commit()
         s.refresh(usuario)
     return usuario
+
+
+def get_admin(usuario: Usuario = Depends(get_current_user)) -> Usuario:
+    """WS27 · B1.3 · Dependency de administración (/api/admin).
+
+    Admin = el `firebase_uid` está en `MINDFUL_ADMIN_UIDS` (CSV). La lista se lee
+    EN CADA REQUEST (`settings.admin_uids_list`), nunca al importar: así cambiarla
+    en Cloud Run (o en un test) tiene efecto sin reiniciar nada. Lista vacía =
+    NADIE es admin, que es el default seguro: /api/admin nace cerrado.
+
+    Parte de `get_current_user`, o sea que primero resuelve la identidad como
+    cualquier otra request (dev o Firebase) y recién después decide el permiso.
+    """
+    if usuario.firebase_uid not in settings.admin_uids_list:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Solo administración")
+    return usuario
