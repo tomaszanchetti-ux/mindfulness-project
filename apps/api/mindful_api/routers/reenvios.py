@@ -12,6 +12,8 @@ Los bodies viven acá (Pydantic) y no en `schemas.py`: son de esta card.
 
 from __future__ import annotations
 
+from typing import Optional
+
 from fastapi import APIRouter, Depends, Response, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -31,6 +33,7 @@ pausas_router = APIRouter(prefix="/api/pausas", tags=["pausas"])
 class ReenvioIn(BaseModel):
     entrega_id: str
     a_usuario_id: str
+    comentario: Optional[str] = None   # WS30 · opcional, ≤200 (lo valida el servicio)
 
 
 class HacerPausaIn(BaseModel):
@@ -49,7 +52,7 @@ def crear(
     usuario: Usuario = Depends(get_current_user),
 ) -> dict:
     """Le envío una Pausa (mía o de un tercero que puedo ver) a alguien de mi comunidad."""
-    return reenviar(s, usuario, body.entrega_id, body.a_usuario_id)
+    return reenviar(s, usuario, body.entrega_id, body.a_usuario_id, body.comentario)
 
 
 @router.get("/recibidos")

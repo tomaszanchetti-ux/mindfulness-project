@@ -705,10 +705,16 @@ def sembrar_vinculos(s: Session, usuario: Usuario, lu: Usuario, mar: Usuario) ->
     ahora = datetime.now(timezone.utc)
 
     # Reenvío (la primera compartida de Lu) + su aviso, sin leer.
-    if s.scalar(select(Reenvio).where(Reenvio.a_usuario_id == usuario.id,
-                                      Reenvio.de_usuario_id == lu.id)) is None:
+    COMENTARIO_LU = "Me acordé de ti con esta. Cuando puedas, hazla despacio."
+    reenvio_lu = s.scalar(select(Reenvio).where(Reenvio.a_usuario_id == usuario.id,
+                                                Reenvio.de_usuario_id == lu.id))
+    if reenvio_lu is not None and reenvio_lu.comentario is None:
+        reenvio_lu.comentario = COMENTARIO_LU          # WS30 · el seed viejo no lo traía
+        s.commit()
+    if reenvio_lu is None:
         s.add(Reenvio(de_usuario_id=lu.id, a_usuario_id=usuario.id,
-                      entrega_id=de_lu[0].id, created_at=ahora - timedelta(hours=3)))
+                      entrega_id=de_lu[0].id, created_at=ahora - timedelta(hours=3),
+                      comentario=COMENTARIO_LU))
         s.add(Aviso(usuario_id=usuario.id, tipo=AVISO_REENVIO, referencia_id=de_lu[0].id,
                     texto=TEXTO_REENVIO, leido=False,
                     created_at=ahora - timedelta(hours=3)))

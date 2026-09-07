@@ -11,6 +11,8 @@ ficha o la persona existen.
 
 from __future__ import annotations
 
+from typing import Optional
+
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -36,7 +38,29 @@ def _url_ficha(entrega_id: str) -> str:
     return f"/comunidad/ficha/{entrega_id}"
 
 
-def reenviar(s: Session, yo: Usuario, entrega_id: str, a_usuario_id: str) -> dict:
+COMENTARIO_REENVIO_MAX = 200
+
+
+def _comentario_limpio(comentario: Optional[str]) -> Optional[str]:
+    """WS30 · el comentario del reenvío: se recorta, vacío es NULL, largo es 422."""
+    if comentario is None:
+        return None
+    texto = comentario.strip()
+    if not texto:
+        return None
+    if len(texto) > COMENTARIO_REENVIO_MAX:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"El comentario puede tener hasta {COMENTARIO_REENVIO_MAX} caracteres.",
+        )
+    return texto
+
+
+def reenviar(
+    s: Session, yo: Usuario, entrega_id: str, a_usuario_id: str,
+    comentario: Optional[str] = None,
+) -> dict:
+    comentario = _comentario_limpio(comentario)   # antes de tocar la base: 422 sin efectos
     entrega = entrega_visible(s, yo, entrega_id)
     if entrega is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, NO_ESTA)
@@ -62,7 +86,8 @@ def reenviar(s: Session, yo: Usuario, entrega_id: str, a_usuario_id: str) -> dic
     if ya is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "Ya le enviaste esta Pausa.")
 
-    reenvio = Reenvio(de_usuario_id=yo.id, a_usuario_id=a.id, entrega_id=entrega.id)
+    reenvio = Reenvio(de_usuario_id=yo.id, a_usuario_id=a.id, entrega_id=entrega.id,
+                      comentario=comentario)
     s.add(reenvio)
     crear_aviso(
         s, a, AVISO_REENVIO, f"{como_se_llama(yo)} te envió una Pausa.",
@@ -94,6 +119,7 @@ def recibidos(s: Session, yo: Usuario) -> dict:
             "de": persona_min(de) if de is not None else None,
             "ficha": ficha_ajena(s, yo, entrega),
             "leido": r.leido,
+            "comentario": r.comentario,
             "created_at": r.created_at,
         })
 

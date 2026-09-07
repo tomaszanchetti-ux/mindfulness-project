@@ -41,6 +41,7 @@ import { Admin } from "./screens/Admin";
 // WS29 · C0 · Comunidad: la pestaña y sus lugares reservados (la C2 los llena).
 import { Comunidad } from "./screens/Comunidad";
 import { PerfilAjeno } from "./screens/PerfilAjeno";
+import { RecomendacionAjena } from "./screens/RecomendacionAjena";
 import { FichaAjena } from "./screens/FichaAjena";
 import { PausaExtra } from "./screens/PausaExtra";
 
@@ -171,6 +172,7 @@ function App() {
                 pantalla completa (sin tab bar, ver SIN_TABS del Frame). */}
             <Route path="/comunidad" element={<RequireAuth><RequireOnboarding><Comunidad /></RequireOnboarding></RequireAuth>} />
             <Route path="/comunidad/ficha/:entregaId" element={<RequireAuth><RequireOnboarding><FichaAjena /></RequireOnboarding></RequireAuth>} />
+            <Route path="/comunidad/:usuarioId/recomendacion/:recomendacionId" element={<RequireAuth><RequireOnboarding><RecomendacionAjena /></RequireOnboarding></RequireAuth>} />
             <Route path="/comunidad/:usuarioId" element={<RequireAuth><RequireOnboarding><PerfilAjeno /></RequireOnboarding></RequireAuth>} />
             <Route path="/pausa/:entregaId" element={<RequireAuth><RequireOnboarding><PausaExtra /></RequireOnboarding></RequireAuth>} />
             {/* El escritorio de Dwellia: solo `perfil.es_admin`. */}

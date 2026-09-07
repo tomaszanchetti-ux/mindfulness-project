@@ -397,6 +397,8 @@ class Reenvio(Base):
         ForeignKey("entregas.id", ondelete="CASCADE"), nullable=False, index=True
     )
     leido: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # WS30 · lo que le dije al mandársela (≤ COMENTARIO_REENVIO_MAX). Opcional.
+    comentario: Mapped[Optional[str]] = mapped_column(String(200))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
 

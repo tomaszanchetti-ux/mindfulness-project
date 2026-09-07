@@ -315,10 +315,15 @@ export const api = {
   descubrir: () => req<FichaAjena[]>("/api/fichas/descubrir"),
   baulDe: (usuarioId: string) => req<BaulAjeno>(`/api/fichas/de/${usuarioId}`),
   fichaAjena: (entregaId: string) => req<FichaAjena>(`/api/fichas/${entregaId}`),
-  reenviar: (entregaId: string, aUsuarioId: string) =>
+  reenviar: (entregaId: string, aUsuarioId: string, comentario?: string | null) =>
     req<{ id: string }>("/api/reenvios", {
       method: "POST",
-      body: JSON.stringify({ entrega_id: entregaId, a_usuario_id: aUsuarioId }),
+      // WS30 · comentario opcional (≤200); vacío viaja como null.
+      body: JSON.stringify({
+        entrega_id: entregaId,
+        a_usuario_id: aUsuarioId,
+        comentario: comentario?.trim() ? comentario.trim() : null,
+      }),
     }),
   reenviosRecibidos: () => req<ReenviosRecibidos>("/api/reenvios/recibidos"),
   reenvioLeido: (id: string) => req<void>(`/api/reenvios/${id}/leido`, { method: "PUT" }),

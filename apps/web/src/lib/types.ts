@@ -413,6 +413,8 @@ export interface ReenvioRecibido {
   de: Persona;
   ficha: FichaAjena;
   leido: boolean;
+  /** WS30 · lo que escribió quien la envió (≤200), o null. */
+  comentario: string | null;
   created_at: string;
 }
 
