@@ -204,26 +204,28 @@ Seed C: `make demo-seed` crea un segundo y tercer usuario demo (uno público, un
 privado) con fichas, un vínculo aceptado, una solicitud pendiente, un reenvío
 recibido y dos recomendaciones.
 
-## 5b. Bloque D — Promoción en TikTok: el libro animado (después de B y C · concepto cerrado WS26)
+## 5b. Bloque D — Promoción en TikTok: el libro animado · 🟢 EN CURSO (D0 cerrada WS31 · 07/09)
 
 Objetivo: dar a conocer Dwellia de forma indirecta, con una historia que la gente quiera
-seguir. Formato decidido en la WS26: **libros animados para hojear (flipbook)** de 15-30 s,
-verticales. Un protagonista (**Teo**) y su pug (**Pipo**) crecen capítulo a capítulo; Dwellia
-es la magia abstracta que los impulsa (algo se enciende de verde) y solo se nombra en la
-contratapa. Todo el detalle vive en [`Flipbook/`](Flipbook/) (`CONCEPTO.md`, `REGLAS.md`,
-fichas, guiones, motor). Tomás abre y opera la cuenta; Claude deja cada volumen listo.
+seguir. Formato: **libros animados para hojear (flipbook)** de 25-30 s, verticales. Un
+protagonista (**Teo**) y su pug (**Pipo**) crecen capítulo a capítulo; Dwellia es la magia
+abstracta que los impulsa (algo se enciende de verde) y solo se nombra en la contratapa.
+**La definición principal es el formato v2 de 5 escenas** (cartel variable · problema ·
+espejo · magia · cierre fijo con iris) en
+[`Flipbook/guiones/00_FORMATO_Y_OPUESTOS.md`](Flipbook/guiones/00_FORMATO_Y_OPUESTOS.md).
+Tomás abre y opera la cuenta; Claude deja cada volumen listo.
 
-| Ola | Qué |
-|---|---|
-| **D0 · Referencias + estrategia** | Tomás junta material en `Tiktok/` (estilos, ideas, personajes nuevos con foto + ficha). Se mira qué hacen apps parecidas en TikTok. Cadencia semanal, qué se mide. |
-| **D1a · Personajes finales** | Pulir Teo (pelo) y Pipo con el material; secundarios de la temporada 1 (uno por pilar: padres, jefe, vecina, un desconocido…). Hoja de personajes aprobada por Tomás. |
-| **D1b · La fábrica** | `Flipbook/motor/render.py` generaliza: guion en archivo → marionetas → hojas → mp4. Portada y contratapa desde plantilla. Un volumen nuevo cuesta minutos de render. |
-| **D2 · Temporada 1** | 6 volúmenes, uno por pilar en el orden del reloj (amor propio · gratitud · vínculos · sentido · perspectiva · resiliencia). Guiones en `Flipbook/guiones/`, **todos desde cero, incluido el vol. 1** (el de la WS26 es un boceto de mecánica, no un guion). Descripciones y hashtags. |
-| **D3 · Puerta de entrada** | Landing para el link de la bio, links con seguimiento (UTM) y tablero mínimo de cuánta gente llega desde TikTok y cuánta completa el onboarding. |
+| Ola | Qué | Estado |
+|---|---|---|
+| **D0 · Definición principal** | Formato v2 (5 escenas), cartel de apertura variable por volumen con imagen fija de Teo y Pipo, cierre fijo (iris Looney Tunes + contratapa), banco de ideas y memes replicables por volumen, biblioteca de gestos, dónde va Dwellia en TikTok. | ✅ WS31 |
+| **D1a · Activos principales: Pipo y Teo** | Las **6 caras de Pipo** (fastidio · resignación · sospecha · ¿en serio? · alegría sarcástica · orgullo) + sus poses (a cámara, camina, panza arriba, plantado, cae del sofá) · pulir a Teo (pelo). Hoja de personajes v2 aprobada por Tomás mirando PNG. | próxima |
+| **D1b · La fábrica** | `render.py` generaliza: guion en archivo → marionetas → hojas → mp4. **Cartel** desde plantilla (imagen fija de Teo y Pipo a lo Tintín + color/formas/título por volumen) · **cierre fijo** (iris + contratapa) · **biblioteca de gestos de Teo** (encorvado, selfie, cara de piedra, paso de Spiderman, correr en el lugar, banco, escribir con burbuja, aura). Cada volumen nuevo suma ≤2-3 poses. | próxima |
+| **D2 · Temporada 1** | 6 volúmenes, uno por pilar, **todos desde cero** (el vol. 1 de la WS26 es un boceto). Orden por el chiste más claro (hoy: Vínculos, Spiderman). Guiones en `Flipbook/guiones/`, descripciones, comentario fijado y hashtags. Una sesión por volumen: guion → render → revisión de Tomás. | — |
+| **D3 · Puerta de entrada** | Landing para el link de la bio, links con seguimiento (UTM) y tablero mínimo de cuánta gente llega desde TikTok y cuánta completa el onboarding. | — |
 
 Límites: Claude no crea ni opera la cuenta ni publica; no se generan fotos realistas de
 personas ni se usan las de referencia en los videos; la música se elige al subir; no se
-generan hojas con IA de imágenes (no mantiene el personaje). Se hace DESPUÉS de B y C.
+generan hojas con IA de imágenes (no mantiene el personaje).
 
 ## 6. Costos del MVP (mensual, estimado)
 

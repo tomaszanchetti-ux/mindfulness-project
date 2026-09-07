@@ -5,8 +5,11 @@ Pipo"**. Pipo (el pug) narra con humor cómo Teo (el héroe) se pierde en la vid
 crece con cada Pausa; Dwellia es la magia que lo impulsa y solo se nombra en la contratapa. El concepto completo está en [`CONCEPTO.md`](CONCEPTO.md); las
 reglas de dibujo y animación, en [`REGLAS.md`](REGLAS.md).
 
-Estado (WS26 · 05/09/2026): concepto cerrado como base. Se ejecuta **después** de los
-Bloques B y C. Mientras tanto Tomás junta material de referencia (ver abajo).
+Estado (WS31 · 07/09/2026): **Bloque D en curso.** D0 cerrada: el formato v2 (5 escenas,
+cartel variable, cierre fijo con iris, banco de ideas por volumen) es la definición
+principal y vive en `guiones/00_FORMATO_Y_OPUESTOS.md`. Sigue **D1a** (las 6 caras y poses
+de Pipo, pulir a Teo) y **D1b** (la fábrica: cartel, cierre, biblioteca de gestos, guion en
+archivo). Contrato en `WS/WS31_07-09-2026.md` §3.
 
 ## Carpetas
 
@@ -15,7 +18,7 @@ Bloques B y C. Mientras tanto Tomás junta material de referencia (ver abajo).
 | `CONCEPTO.md` | El concepto (estructura del volumen, arco por pilares, decisiones). |
 | `REGLAS.md` | La gramática visual: cómo se dibuja y se anima para que se lea como flipbook Dwellia. |
 | `personajes/` | Una **ficha** por personaje (`teo.md`, `pipo.md`) + la hoja de personajes dibujada. La plantilla para uno nuevo es `_plantilla.md`. |
-| `guiones/` | **`00_FORMATO_Y_OPUESTOS.md` = el componente central** (formato único de 8 bloques + los 6 pilares y sus opuestos modernos + el espejo de Pipo). Después, un archivo por volumen (`vol01_lunes.md` es solo el boceto de mecánica). |
+| `guiones/` | **`00_FORMATO_Y_OPUESTOS.md` = el componente central (v2)**: las 5 escenas, el cartel y el cierre, los 6 pilares con su banco de ideas y memes replicables, las caras de Pipo, la biblioteca de gestos de Teo y dónde va Dwellia en TikTok. Después, un archivo por volumen (`vol01_lunes.md` es solo el boceto de mecánica de la WS26). |
 | `motor/` | `render.py` renderiza un volumen (hojas → ffmpeg → mp4). `inventario.py` lista qué personajes tienen fotos y ficha. |
 | `pruebas/` | Las pruebas de la WS26 (mp4 fuera del repo, hojas de contacto dentro). |
 | `../Tiktok/` | **La bandeja de entrada de Tomás** (fuera del repo): una subcarpeta por personaje (`teo/`, `pipo/`) y `Ideas/` para material general de estilo (portadas, auras, viñetas que gusten). |

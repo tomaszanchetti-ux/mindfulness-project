@@ -1,10 +1,12 @@
-# El libro de Dwellia — concepto v1 (WS26 · 05/09/2026)
+# El libro de Dwellia — concepto v1 (WS26 · 05/09/2026) · formato v2 (WS31 · 07/09/2026)
 
 > Estado: **cerrado como base** por Tomás (05/09): el formato, los personajes y la manera de
-> contar. **Los guiones NO están fijos**, ni el del Volumen 1: todo lo de esta sesión es
-> conceptual y los volúmenes se trabajan desde cero para que sean representativos. Se ejecuta como Bloque D, después de B y C.
+> contar. **El 07/09 (WS31, ola D0) se cerró el formato v2 = la definición principal del
+> Bloque D:** 5 escenas, cartel de apertura variable por volumen, cierre fijo con iris, banco
+> de ideas por volumen. **Vive en `guiones/00_FORMATO_Y_OPUESTOS.md`; donde este documento
+> difiera, manda ese.** Los guiones NO están fijos, ni el del Volumen 1: los volúmenes se
+> trabajan desde cero en D2.
 > Pruebas: `pruebas/flipbook_poc.mp4` (mecánica, 8 s) · `pruebas/flipbook_v2.mp4` (estructura de libro, 23 s) · **`pruebas/flipbook_v3.mp4` (Teo y Pipo + historia abstracta, 24 s · la vigente; motor en `motor/render.py`)**. Los mp4 no van al repo; se regeneran con el motor.
-
 ## 1. Qué es
 Una serie de **libros animados para hojear** (flipbook) de 15-30 s, verticales, para TikTok.
 Cada video es un **volumen** de la misma historieta: un personaje entrañable que va creciendo
@@ -15,7 +17,7 @@ Lo que lo hace leerse como flipbook, y que cuesta poco: pocas hojas por segundo 
 línea que tiembla porque cada hoja está "redibujada", papel con número de página, taco de
 hojas que se achica, el pulgar que las pasa, y una hoja en vuelo en cada pase.
 
-## 2. Estructura de cada volumen (lo que muestran `pruebas/flipbook_v2.mp4` y `pruebas/flipbook_v3.mp4`)
+## 2. Estructura de cada volumen (v1 de la WS26 · superada por las 5 escenas de `guiones/00_FORMATO_Y_OPUESTOS.md` §2)
 | Parte | Duración | Qué pasa |
 |---|---|---|
 | **Portada** | 2 s | Tapa de cartón: "VOLUMEN N · Título", viñeta redonda con el personaje, "capítulo N · día". Es el gancho: la primera cosa que se ve en el feed. |
@@ -76,7 +78,13 @@ Costo por volumen nuevo una vez diseñados los personajes: minutos de render, un
 guion + ajuste de poses. Descartado generar cada hoja con IA de imágenes: no mantiene el
 personaje idéntico entre 60 hojas y el flipbook lo delata.
 
-## 6. Decisiones (05/09)
+## 6. Decisiones (05/09 · 07/09)
+6. **(07/09, WS31)** Formato v2 de 5 escenas: cartel → problema → espejo → magia → cierre.
+   El cartel de apertura **cambia por volumen** (color, formas, título satírico "Teo y Pipo
+   en…") con la imagen fija de Teo y Pipo a lo Tintín; el cierre es **siempre el mismo**
+   (iris Looney Tunes sobre la cara de Pipo + contratapa). Los activos que se repiten (las 6
+   caras de Pipo, los gestos de Teo) se hacen en serio en D1a/D1b antes de cualquier volumen.
+
 1. Peso del pase de página: **aprobado** (1 cuadro en vuelo por hoja).
 2. Dwellia en la historia: **abstracta y mágica**, sin carta (ver §3).
 3. Nombres: **Teo** (protagonista) y **Pipo** (el pug). Fotos de referencia recibidas y usadas solo para rasgos.

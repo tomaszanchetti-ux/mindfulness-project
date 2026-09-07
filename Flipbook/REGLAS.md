@@ -35,14 +35,20 @@ en personaje y al escribir un guion.
   Sin City. Nunca se muestra una marca ni una interfaz real: fotitos una atrás de otra, no
   una app.
 
-## 3. El libro
-- **Portada** (2 s, respira sin pasar página): tapa de cartón (`#c4b296`), doble marco, "VOLUMEN N",
-  título de 1-2 palabras grande, viñeta redonda con el personaje, "un libro para hojear",
-  "capítulo N". Es el gancho del feed.
-- **Historia** 15-20 s, 4-6 escenas.
-- **Cierre**: última hoja sostenida 0,5 s → la tapa se cierra en 1 s → **contratapa** 3 s: hoja
-  salvia, "Dwellia", "una Pausa al día, fuera del teléfono", "continúa en el volumen N+1",
-  "impulsado por Dwellia · link en la bio". Dwellia **solo** aparece aquí.
+## 3. El libro (v2 · WS31)
+- **Cartel de apertura** (2 s, respira sin pasar página): cartel retro de historieta,
+  **distinto por volumen** (color de fondo, formas, título) con **lo fijo**: la imagen de Teo
+  y Pipo a lo Tintín y el rótulo "TEO Y PIPO" en tipografía condensada grande. Título en el
+  formato **"Teo y Pipo en [TÍTULO SATÍRICO] · Vol. N"**. El cartel es otro objeto, no una
+  hoja: además de crema, tierra y salvia usa **una cuarta tinta reservada solo para carteles**,
+  distinta por volumen. Es el gancho del feed: el título ya cuenta el chiste.
+- **Historia** 20-24 s, 3 escenas (problema · espejo · magia), ver
+  `guiones/00_FORMATO_Y_OPUESTOS.md` §2.
+- **Cierre, siempre el mismo:** Pipo a cámara con alegría sarcástica → **el iris se cierra**
+  sobre su cara al estilo Looney Tunes (~1,5 s) → la tapa se cierra (1 s) → **contratapa** 3 s:
+  hoja salvia, "Dwellia", "una Pausa al día, fuera del teléfono", "Teo y Pipo volverán
+  próximamente", "link en la bio". Dwellia **solo** aparece aquí. Se construye una vez (D1b).
+- TikTok repite en bucle: el libro cerrado vuelve solo al cartel. El cierre pide la apertura.
 
 ## 4. Los personajes
 - **Uno principal (Teo)** y secundarios que entran de a uno por volumen (**Pipo** desde el 1).
@@ -60,9 +66,10 @@ en personaje y al escribir un guion.
   (sentado, camina, erguido). Una pose nueva se agrega una vez y sirve para todos los volúmenes.
 
 ## 5. La historia
-- Cada volumen sigue el **formato único de 8 bloques** de `guiones/00_FORMATO_Y_OPUESTOS.md`:
-  portada · conceptos · el espejo de Pipo · la situación de Teo · algo se enciende · la Pausa ·
-  la evolución · el cierre de Pipo · contratapa. Un pilar y su opuesto moderno por volumen.
+- Cada volumen sigue el **formato único de 5 escenas** de `guiones/00_FORMATO_Y_OPUESTOS.md`:
+  cartel · el problema · el espejo de Pipo · la magia · el cierre. Un pilar y su opuesto
+  moderno por volumen. **Chiste en las imágenes, mensaje lindo en los textos.** Las caras
+  de Pipo y los gestos de Teo son la clave y se dibujan una vez para todos los volúmenes.
 - **La sátira es de la situación, nunca de la persona.** Pipo trata a Teo con amor siempre.
 - **Las situaciones son cosas MUY vividas, reconocibles en un segundo, y un poco grotescas.**
   No "Teo está triste": Teo pasa dos horas sacándose mil fotos con poses para verse bien, y
@@ -77,7 +84,8 @@ en personaje y al escribir un guion.
   secundario ligado al pilar.
 - Texto en pantalla = **la voz de Pipo** (el libro es su diario): primera persona,
   minúsculas, **hasta 6 palabras por hoja**, con punto si es una frase ("lunes. otra vez el
-  espejo." · "yo me veo perfecto."). Sin voz grabada. Georgia o serif parecida.
+  espejo." · "yo me veo perfecto."). Una idea larga se reparte en 2-3 hojas. **Español
+  neutro** en pantalla. Sin voz grabada. Georgia o serif parecida.
 - Tono: sátira con ternura (Mafalda, Macanudo, Snoopy), humor de gesto, nunca sermón. Lo gracioso engancha; lo emocional hace volver.
 
 ## 6. Lo que no se hace
