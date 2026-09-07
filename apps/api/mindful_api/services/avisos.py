@@ -45,12 +45,17 @@ def crear_aviso(
     aviso = Aviso(usuario_id=usuario.id, tipo=tipo, referencia_id=referencia_id, texto=texto)
     s.add(aviso)
     if push:
-        subs = s.scalars(
-            select(PushSuscripcion).where(PushSuscripcion.usuario_id == usuario.id)
-        ).all()
-        for sub in subs:
-            if enviar_push(sub, "Dwellia", texto, url) == "gone":
-                s.delete(sub)
+        # El push es red: si falla, el aviso queda igual y la transición que lo
+        # disparó también (Q/A B1.3: un push que levantaba tumbaba la aprobación).
+        try:
+            subs = s.scalars(
+                select(PushSuscripcion).where(PushSuscripcion.usuario_id == usuario.id)
+            ).all()
+            for sub in subs:
+                if enviar_push(sub, "Dwellia", texto, url) == "gone":
+                    s.delete(sub)
+        except Exception as exc:  # noqa: BLE001 — el aviso no depende del push
+            print(f"[avisos:push] usuario={usuario.id}: {exc}", flush=True)
     return aviso
 
 
