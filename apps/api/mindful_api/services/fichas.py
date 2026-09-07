@@ -32,6 +32,8 @@ from ..db.models import (
 from . import storage
 from .comunidad import persona_de, persona_min, puede_ver_perfil
 from .entrega import _carta_enriquecida
+# WS29 · C1.3: la vitrina muestra Pausas Y recomendaciones compartidas.
+from .recomendaciones import compartidas_de, item_recomendacion
 
 # Cuántas fichas devuelve "Descubrir" como mucho (una pantalla, no un feed infinito).
 DESCUBRIR_MAX = 30
@@ -136,7 +138,16 @@ def vitrina_de(s: Session, yo: Usuario, usuario_id: str) -> dict:
         .where(*_publicables(), Entrega.usuario_id == otro.id)
         .order_by(Entrega.fecha.desc())
     )
-    return {"persona": persona, "fichas": [ficha_ajena(s, yo, e) for e in s.scalars(q).all()]}
+    fichas = [ficha_ajena(s, yo, e) for e in s.scalars(q).all()]
+
+    # WS29 · C1.3: la vitrina también lleva las recomendaciones que el dueño
+    # PUBLICÓ, mezcladas por fecha con sus Pausas. Solo las `compartida`, incluso
+    # cuando el que mira es él mismo: esta pantalla es "como me ven los demás".
+    de = persona_min(otro)
+    fichas += [item_recomendacion(r, de=de) for r in compartidas_de(s, otro.id)]
+    fichas.sort(key=lambda i: i["fecha"], reverse=True)
+
+    return {"persona": persona, "fichas": fichas}
 
 
 def foto_de_ficha(

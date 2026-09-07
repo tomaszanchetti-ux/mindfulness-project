@@ -26,11 +26,16 @@ from .comunidad import persona_min, puede_ver
 from .entrega import _carta_enriquecida
 from .fichas import ficha_ajena
 from .fotos import urls_de
+# WS29 · C1.3: el Baúl deja de ser solo Pausas (ver `listar_baul`).
+from .recomendaciones import item_recomendacion, mias as recomendaciones_mias
 
 
 def _item(s: Session, entrega: Entrega) -> dict:
     carta = s.get(Carta, entrega.carta_id)
     return {
+        # WS29 · C1.3: qué clase de ficha es. El Baúl mezcla "pausa" y
+        # "recomendacion"; el front filtra por acá (las ajenas ya lo traían).
+        "tipo": "pausa",
         "id": entrega.id,
         "fecha": entrega.fecha,
         "estrellas": entrega.estrellas,
@@ -98,16 +103,22 @@ def listar_baul(s: Session, usuario_id: str, orden: str = "reciente") -> list[di
 
     # WS29 · C1.2: el Baúl también muestra lo que guardé de otros.
     yo = s.get(Usuario, usuario_id)
-    if yo is None:
-        return mias
-    guardadas = _guardadas(s, yo)
-    if not guardadas:
+    guardadas = _guardadas(s, yo) if yo is not None else []
+
+    # WS29 · C1.3: …y mis recomendaciones. NO pasan por `limites`: escribir una
+    # es premium, leerla no. Quien tuvo premium y se le venció sigue viendo en su
+    # Baúl todo lo que subió (recibe 403 recién cuando quiere tocarlo).
+    recomendaciones = [item_recomendacion(r) for r in recomendaciones_mias(s, usuario_id)]
+
+    otros = guardadas + recomendaciones
+    if not otros:
         return mias
     if orden == "valoradas":
-        # Las guardadas no tienen estrellas mías: van al fondo, entre ellas por fecha.
-        guardadas.sort(key=lambda i: i["fecha"], reverse=True)
-        return mias + guardadas
-    return sorted(mias + guardadas, key=lambda i: i["fecha"], reverse=True)
+        # Ni las guardadas ni las recomendaciones tienen estrellas mías: van al
+        # fondo, después de las Pausas valoradas, y entre ellas por fecha.
+        otros.sort(key=lambda i: i["fecha"], reverse=True)
+        return mias + otros
+    return sorted(mias + otros, key=lambda i: i["fecha"], reverse=True)
 
 
 def cambiar_visibilidad(
