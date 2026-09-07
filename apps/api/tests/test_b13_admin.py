@@ -569,7 +569,11 @@ def test_comentarios_orden_limite_y_sin_email(admin):
     _fechar(nueva, ahora - timedelta(hours=1))
     _fechar(muda, ahora)  # la más nueva, pero sin comentario: no aparece
 
-    datos = client.get("/api/admin/comentarios", headers=admin).json()
+    # La base local puede traer comentarios de los usuarios `demo|` de Tomás (el
+    # conftest los preserva): miramos SOLO las entregas de este test.
+    mias = {vieja, nueva, muda}
+    todos = client.get("/api/admin/comentarios", headers=admin).json()
+    datos = [d for d in todos if d["entrega_id"] in mias]
     assert [d["entrega_id"] for d in datos] == [nueva, vieja]
 
     primero = datos[0]
@@ -583,13 +587,15 @@ def test_comentarios_orden_limite_y_sin_email(admin):
     assert primero["carta_id"] and primero["frase"] and primero["categoria"]
 
     # Es feedback ANÓNIMO para Dwellia: el email no viaja por ningún lado.
-    crudo = json.dumps(datos)
+    crudo = json.dumps(todos)
     assert "@mindful.local" not in crudo
     assert "email" not in crudo
 
-    # El límite recorta desde la más nueva.
+    # El límite recorta desde la más nueva (la nuestra es la más nueva con
+    # comentario, salvo que un demo| haya comentado hace menos de una hora).
     uno = client.get("/api/admin/comentarios?limit=1", headers=admin).json()
-    assert [d["entrega_id"] for d in uno] == [nueva]
+    assert len(uno) == 1
+    assert uno[0]["entrega_id"] == todos[0]["entrega_id"]
 
     # Y está acotado por contrato.
     assert client.get("/api/admin/comentarios?limit=0", headers=admin).status_code == 422
@@ -598,6 +604,7 @@ def test_comentarios_orden_limite_y_sin_email(admin):
 
 def test_comentarios_sin_apodo_no_rompe(admin):
     _crear_usuario("b13|coment-sin-apodo", terminos=True)
-    _pausa_con_comentario("b13|coment-sin-apodo", "Esta no me llegó.", 1)
-    datos = client.get("/api/admin/comentarios", headers=admin).json()
+    entrega = _pausa_con_comentario("b13|coment-sin-apodo", "Esta no me llegó.", 1)
+    todos = client.get("/api/admin/comentarios", headers=admin).json()
+    datos = [d for d in todos if d["entrega_id"] == entrega]
     assert len(datos) == 1 and datos[0]["apodo"] is None
