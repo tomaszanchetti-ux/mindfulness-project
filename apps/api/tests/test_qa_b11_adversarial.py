@@ -4,10 +4,14 @@ No valida la card: intenta ROMPERLA. Cada test lleva el veredicto en el nombre:
 
   `test_ok_*`      → candado que aguanta (queda como test de regresión).
   `test_reparo_*`  → comportamiento defendible pero desalineado con el docstring
-                     o con lo que el front/el negocio necesita: se documenta.
-  `test_bug_*`     → defecto real. Va marcado `xfail(strict=True)` con su
-                     BUG-B11-N: afirma el comportamiento BUENO, así el día que se
-                     arregle el xfail se destapa solo y avisa.
+                     o con lo que el front/el negocio necesita.
+  `test_bug_*`     → defecto real. Afirma el comportamiento BUENO.
+
+Los siete BUG-B11-1…7 y los cuatro reparos YA ESTÁN CORREGIDOS: los `xfail` se
+fueron y cada test quedó como candado de regresión, con un comentario arriba que
+cuenta qué hacía mal la card antes. Los reparos llevan `r1`…`r4` en el nombre y
+afirman la decisión del orquestador, no lo que la card hacía cuando se escribió
+el Q/A.
 
 Lo que ya cubre `tests/test_b11_cartas_comunidad.py` no se repite: acá van los
 bordes, las carreras, los veredictos malformados y el cruce con B1.3.
@@ -49,6 +53,7 @@ from mindful_api.db.models import (
 from mindful_api.main import app
 from mindful_api.services import admin as admin_mod
 from mindful_api.services import avisos as avisos_mod
+from mindful_api.services import cartas_comunidad as cartas_mod
 from mindful_api.services import juez as juez_mod
 from mindful_api.services.cartas_comunidad import (
     FRASE_MAX,
@@ -233,22 +238,24 @@ def test_ok_los_limites_cuentan_caracteres_no_bytes(monkeypatch):
     assert _leer(r.json()["id"])["frase"] == frase
 
 
-def test_reparo_la_frase_acepta_saltos_de_linea_en_el_medio(monkeypatch):
-    """`\\n` cuenta como un carácter y se guarda tal cual: la frase del frente puede
-    llegar al render con saltos que el diseño de `Card` no previó. El backend no
-    los normaliza ni los prohíbe; queda documentado."""
+def test_reparo_r4_la_frase_colapsa_los_saltos_de_linea(monkeypatch):
+    """REPARO 4 (decisión del orquestador): un `\\n` en la frase del frente llegaba
+    tal cual al render, con saltos que el diseño de `Card` no previó. Ahora los
+    saltos, los tabs y los espacios repetidos se colapsan a UN espacio antes de
+    medir y de guardar: lo que se guarda es lo que se lee."""
     _juez_off(monkeypatch)
     h = _premium("qa11|salto")
-    frase = "Primera línea\nsegunda línea del frente."
+    frase = "Primera línea\nsegunda   línea\tdel frente."
     r = _proponer(h, frase=frase)
     assert r.status_code == 201, r.text
-    assert _leer(r.json()["id"])["frase"] == frase   # ni se limpia ni se colapsa
+    limpia = "Primera línea segunda línea del frente."
+    assert r.json()["carta"]["frase"] == limpia
+    assert _leer(r.json()["id"])["frase"] == limpia
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B11-4: los caracteres de ancho cero burlan el candado de 'no puede quedar "
-    "vacía': una carta visualmente en blanco se guarda y llega al juez"
-))
+# BUG-B11-4 (corregido): los caracteres de ancho cero burlaban el candado de "no
+# puede quedar vacía" y una carta visualmente en blanco se guardaba y llegaba al
+# juez. `_limpiar_texto` tira las categorías Unicode `Cf`/`Cc` antes de medir.
 def test_bug_una_carta_invisible_pasa_la_validacion(monkeypatch):
     _juez_off(monkeypatch)
     h = _premium("qa11|invisible")
@@ -256,11 +263,10 @@ def test_bug_una_carta_invisible_pasa_la_validacion(monkeypatch):
     assert r.status_code == 422, "una carta sin un solo carácter visible no debería entrar"
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B11-7: un `\\u0000` dentro de la frase (JSON válido, Pydantic lo acepta y "
-    "`strip()` no lo saca) llega crudo al INSERT y Postgres lo rechaza: 500 sin "
-    "controlar. Cualquier cliente puede tumbar el endpoint con un carácter"
-))
+# BUG-B11-7 (corregido): un `\u0000` dentro de la frase (JSON válido, Pydantic lo
+# acepta y `strip()` no lo saca) llegaba crudo al INSERT, Postgres lo rechazaba y
+# cualquier cliente tumbaba el endpoint con un carácter. Lo saca la misma limpieza
+# del BUG-B11-4 (categoría `Cc`); lo que quede vacío, 422 — jamás un 500.
 def test_bug_un_byte_nulo_en_la_frase_tumba_el_endpoint(monkeypatch):
     _juez_off(monkeypatch)
     h = _premium("qa11|nul")
@@ -284,11 +290,11 @@ def test_ok_un_premium_vencido_no_puede_proponer(monkeypatch):
     assert "premium" in r.json()["detail"].lower()
 
 
-def test_reparo_un_premium_vencido_todavia_reenvia_y_gasta_juez(monkeypatch):
-    """Retirar sin plan está bien (nadie queda atrapado en su propia carta), pero
-    REENVIAR dispara otra corrida del juez — o sea otra llamada paga a Anthropic —
-    desde un usuario que ya no paga, y sin techo: `a_revisar → PUT → a_revisar → …`.
-    `reenviar_propuesta` no mira `limites()`, solo `crear_propuesta` lo hace."""
+def test_reparo_r1_un_premium_vencido_ya_no_puede_reenviar(monkeypatch):
+    """REPARO 1 (decisión del orquestador): REENVIAR dispara otra corrida del juez
+    —o sea otra llamada paga a Anthropic— y sin techo (`a_revisar → PUT →
+    a_revisar → …`), así que ahora pide plan igual que proponer. RETIRAR sigue
+    abierto sin plan: nadie queda atrapado en su propia carta."""
     _juez_off(monkeypatch)
     h = _premium("qa11|vence-en-medio")
     propuesta_id = _proponer(h).json()["id"]
@@ -299,11 +305,14 @@ def test_reparo_un_premium_vencido_todavia_reenvia_y_gasta_juez(monkeypatch):
         f"/api/cartas-comunidad/{propuesta_id}", headers=h,
         json={"frase": "Otra frase, ya sin plan vigente.", "prompt": PROMPT_OK},
     )
-    assert r.status_code == 200, r.text          # ← lo que hace hoy
-    assert _leer(propuesta_id)["estado"] == ESTADO_REVISION_DWELLIA   # el juez corrió
+    assert r.status_code == 403, r.text
+    assert "premium" in r.json()["detail"].lower()
+    # Ni se movió el estado ni se gastó una corrida del juez.
+    fila = _leer(propuesta_id)
+    assert fila["estado"] == ESTADO_A_REVISAR
+    assert fila["frase"] == FRASE_OK
 
-    # Retirar sí es razonable que siga abierto.
-    _forzar(propuesta_id, estado=ESTADO_A_REVISAR)
+    # Retirar sí sigue abierto.
     assert client.delete(f"/api/cartas-comunidad/{propuesta_id}",
                          headers=h).status_code == 204
 
@@ -384,12 +393,10 @@ def test_ok_ids_raros_dan_404_y_nunca_500(monkeypatch, id_raro):
 # ─────────────────────────────────────────────────────────────────────────────
 # 5 · El juez en background
 # ─────────────────────────────────────────────────────────────────────────────
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B11-1: el chequeo de estado del juez es RANCIO — se hace antes de evaluar "
-    "y no se repite al guardar, así que el veredicto pisa la decisión que se tomó "
-    "mientras el modelo pensaba (acá: una carta ya APROBADA y publicada queda "
-    "'rechazada' con la carta viva en el mazo)"
-))
+# BUG-B11-1 (corregido): el chequeo de estado del juez era RANCIO — se hacía antes
+# de evaluar y no se repetía al guardar, así que el veredicto pisaba la decisión
+# tomada mientras el modelo pensaba (acá: una carta ya APROBADA y publicada
+# quedaba 'rechazada' con la carta viva en el mazo). Ahora se relee con FOR UPDATE.
 def test_bug_el_juez_pisa_una_aprobacion_tomada_mientras_evaluaba(monkeypatch):
     _juez_off(monkeypatch)
     propuesta_id = _propuesta_en_revision("qa11|pisa-admin")
@@ -410,11 +417,9 @@ def test_bug_el_juez_pisa_una_aprobacion_tomada_mientras_evaluaba(monkeypatch):
     assert len(_avisos(propuesta_id)) == 1, "el autor no puede recibir dos avisos opuestos"
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B11-1: misma causa — el autor retira la carta mientras el juez evalúa, "
-    "escribe otra, y el veredicto RESUCITA la retirada: queda con DOS cartas en "
-    "curso, rompiendo la regla de 'una por vez'"
-))
+# BUG-B11-1 (corregido): misma causa — el autor retiraba la carta mientras el juez
+# evaluaba, escribía otra, y el veredicto RESUCITABA la retirada: quedaba con DOS
+# cartas en curso, rompiendo la regla de "una por vez".
 def test_bug_el_juez_resucita_una_carta_retirada_mientras_evaluaba(monkeypatch):
     _juez_off(monkeypatch)
     sub = "qa11|pisa-retiro"
@@ -436,12 +441,10 @@ def test_bug_el_juez_resucita_una_carta_retirada_mientras_evaluaba(monkeypatch):
     assert len(_en_curso_de(sub)) == 1, "una carta en curso por vez"
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B11-2: el guardado del veredicto no está blindado — un `concepto` de más "
-    "de 80 caracteres (la columna es varchar(80) y `juez.evaluar` no lo recorta) "
-    "revienta el commit, hace rollback y deja la propuesta CLAVADA en `en_revision` "
-    "para siempre: sin aviso, sin reintento y ocupando el único lugar del autor"
-))
+# BUG-B11-2 (corregido): el guardado del veredicto no estaba blindado — un
+# `concepto` de más de 80 caracteres (la columna es varchar(80) y `juez.evaluar` no
+# lo recorta) reventaba el commit, hacía rollback y dejaba la propuesta CLAVADA en
+# `en_revision`: sin aviso, sin reintento y ocupando el único lugar del autor.
 def test_bug_un_concepto_largo_deja_la_carta_clavada_en_revision(monkeypatch):
     _juez_off(monkeypatch)
     propuesta_id = _propuesta_en_revision("qa11|concepto-largo")
@@ -453,10 +456,9 @@ def test_bug_un_concepto_largo_deja_la_carta_clavada_en_revision(monkeypatch):
     assert _leer(propuesta_id)["estado"] == ESTADO_REVISION_DWELLIA
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B11-2: misma causa — unos `hallazgos` que no son JSON-serializables "
-    "revientan el commit y la propuesta queda clavada en `en_revision`"
-))
+# BUG-B11-2 (corregido): misma causa — unos `hallazgos` que no eran
+# JSON-serializables reventaban el commit y la propuesta quedaba clavada en
+# `en_revision`. Ahora pasan por `_json_seguro` (`default=str`).
 def test_bug_hallazgos_no_serializables_dejan_la_carta_clavada(monkeypatch):
     _juez_off(monkeypatch)
     propuesta_id = _propuesta_en_revision("qa11|hallazgos-raros")
@@ -470,11 +472,10 @@ def test_bug_hallazgos_no_serializables_dejan_la_carta_clavada(monkeypatch):
     assert _leer(propuesta_id)["estado"] == ESTADO_A_REVISAR
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B11-2: misma causa — si el aviso levanta (push roto), el rollback se lleva "
-    "puesta la TRANSICIÓN: la carta se queda en `en_revision` por un problema del "
-    "canal de notificación, que no debería poder tocar el recorrido"
-))
+# BUG-B11-2 (corregido): misma causa — si el aviso levantaba (push roto), el
+# rollback se llevaba puesta la TRANSICIÓN y la carta se quedaba en `en_revision`
+# por un problema del canal de notificación. Ahora la transición se commitea
+# ANTES y el aviso corre en su propio try.
 def test_bug_un_aviso_que_levanta_se_lleva_la_transicion(monkeypatch):
     _juez_off(monkeypatch)
     propuesta_id = _propuesta_en_revision("qa11|push-roto")
@@ -495,6 +496,23 @@ def test_bug_un_aviso_que_levanta_se_lleva_la_transicion(monkeypatch):
     ))
 
     assert _leer(propuesta_id)["estado"] == ESTADO_RECHAZADA
+
+    # Y el candado PROPIO de B1.1: que el push esté envuelto en `crear_aviso` es
+    # de B0 y mañana puede cambiar. Acá levanta el aviso ENTERO —cualquier
+    # problema del canal de notificación— y la transición tiene que seguir en pie
+    # igual: se commitea ANTES de avisar.
+    otra_id = _propuesta_en_revision("qa11|aviso-roto")
+
+    def aviso_roto(*a, **k):
+        raise RuntimeError("el canal de avisos se cayó entero")
+
+    monkeypatch.setattr(cartas_mod, "avisar_estado_carta", aviso_roto)
+    procesar_juez(otra_id, evaluar=lambda *a, **k: Veredicto(
+        resultado="rechaza", motivo="Tampoco esta vez.",
+    ))
+
+    assert _leer(otra_id)["estado"] == ESTADO_RECHAZADA
+    assert _avisos(otra_id) == []
 
 
 def test_ok_un_resultado_desconocido_va_a_la_mesa_de_tomas(monkeypatch):
@@ -556,11 +574,10 @@ def test_ok_una_propuesta_borrada_entre_medio_no_rompe_al_juez(monkeypatch):
     assert _avisos(propuesta_id) == []
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B11-3: `_veredicto_json` TIRA el `detalle` del Veredicto — el informe de "
-    "la capa 1, la respuesta cruda del modelo y el consumo de tokens. B1.3 promete "
-    "que Tomás lee 'literalmente lo que dijo el juez' y lo que guarda es un resumen"
-))
+# BUG-B11-3 (corregido): `_veredicto_json` TIRABA el `detalle` del Veredicto — el
+# informe de la capa 1, la respuesta cruda del modelo y el consumo de tokens. B1.3
+# le promete a Tomás que lee "literalmente lo que dijo el juez" y lo que guardaba
+# era un resumen. Ahora se guarda saneado, y solo cuando hay algo que guardar.
 def test_bug_el_veredicto_guardado_pierde_la_evidencia_del_juez(monkeypatch):
     _juez_off(monkeypatch)
     propuesta_id = _propuesta_en_revision("qa11|detalle")
@@ -610,11 +627,12 @@ def test_ok_reenviar_firmando_con_un_apodo_que_no_existe_rebota(monkeypatch):
     assert _leer(propuesta_id)["estado"] == ESTADO_A_REVISAR
 
 
-def test_reparo_reenviar_solo_la_frase_rebota_con_un_422_de_pydantic(monkeypatch):
-    """`categoria`, `accion` y `firma` son opcionales (lo que no se manda, no se
-    toca) pero `frase` y `prompt` son OBLIGATORIOS: mandar solo la frase no
-    conserva el prompt viejo, devuelve el 422 crudo de Pydantic ('Field required'),
-    no uno de los mensajes en español que el resto de la card se esmera en dar."""
+def test_reparo_r2_reenviar_solo_la_frase_rebota_con_un_422_en_espanol(monkeypatch):
+    """REPARO 2 (decisión del orquestador): `categoria`, `accion` y `firma` son
+    opcionales (lo que no se manda, no se toca) pero `frase` y `prompt` son
+    OBLIGATORIOS — el reenvío manda la carta entera. Mandar solo la frase seguía
+    rebotando, pero con el 422 CRUDO de Pydantic ('Field required'); ahora el que
+    falta se reclama en español, como el resto de la card."""
     _juez_off(monkeypatch)
     h = _premium("qa11|reenvia-parcial")
     propuesta_id = _proponer(h).json()["id"]
@@ -626,15 +644,25 @@ def test_reparo_reenviar_solo_la_frase_rebota_con_un_422_de_pydantic(monkeypatch
     )
     assert r.status_code == 422
     detalle = r.json()["detail"]
-    assert isinstance(detalle, list) and detalle[0]["loc"][-1] == "prompt"
+    assert isinstance(detalle, str), detalle
+    assert detalle == "Falta el prompt de la carta."
     assert _leer(propuesta_id)["prompt"] == PROMPT_OK      # el viejo sigue ahí
 
+    # Y al revés: sin la frase, el mismo trato.
+    r = client.put(
+        f"/api/cartas-comunidad/{propuesta_id}", headers=h,
+        json={"prompt": PROMPT_OK},
+    )
+    assert r.status_code == 422
+    assert r.json()["detail"] == "Falta la frase de la carta."
+    assert _leer(propuesta_id)["estado"] == ESTADO_A_REVISAR
 
-def test_reparo_el_veredicto_anterior_se_anida_sin_techo(monkeypatch):
-    """Cada reenvío mete el veredicto entero adentro de `anterior`, incluido el
-    `anterior` que ya traía: tras N vueltas la columna JSON guarda N veredictos
-    anidados. Con el histórico completo no hay problema hoy (N es chico), pero
-    nadie lo poda y no hay forma barata de leer 'la vuelta anterior'."""
+
+def test_reparo_r3_el_veredicto_anterior_guarda_solo_una_vuelta(monkeypatch):
+    """REPARO 3 (decisión del orquestador): cada reenvío metía el veredicto entero
+    adentro de `anterior`, incluido el `anterior` que ya traía, así que tras N
+    vueltas la columna JSON guardaba N veredictos anidados que nadie podaba. Ahora
+    se guarda SOLO la vuelta inmediatamente anterior, podada un nivel."""
     _juez_off(monkeypatch)
     h = _premium("qa11|anidado")
     propuesta_id = _proponer(h).json()["id"]
@@ -648,7 +676,8 @@ def test_reparo_el_veredicto_anterior_se_anida_sin_techo(monkeypatch):
         )
 
     v = _leer(propuesta_id)["veredicto"]
-    assert v["anterior"]["anterior"]["anterior"] is not None   # 3 niveles
+    assert v["anterior"] is not None                  # la vuelta anterior, sí
+    assert "anterior" not in v["anterior"]            # y nada más abajo
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -696,15 +725,17 @@ def test_ok_la_sugerencia_escrita_por_dwellia_llega_al_autor(monkeypatch):
     assert _leer(propuesta_id)["veredicto"]["fuente"] == "dwellia"
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B11-5: `_salida` sirve `veredicto['fix_sugerido']` CRUDO, sin pasarlo por "
-    "`_fix_sugerido`. Si el panel manda el formulario de retoque vacío, el autor "
-    "recibe `sugerencia={'frase': None, 'prompt': None}` — un cuadro de sugerencia "
-    "que el front va a dibujar en blanco en vez de no dibujarlo"
-))
+# BUG-B11-5 (corregido): `_salida` servía `veredicto['fix_sugerido']` CRUDO, sin
+# pasarlo por `_fix_sugerido`. Si el panel mandaba el formulario de retoque vacío,
+# el autor recibía `sugerencia={'frase': None, 'prompt': None}` — un cuadro de
+# sugerencia que el front dibuja en blanco en vez de no dibujarlo.
 def test_bug_un_retoque_vacio_de_dwellia_llega_como_sugerencia_fantasma(monkeypatch):
     _juez_off(monkeypatch)
-    h = _premium("qa11|fix-vacio")
+    # OJO con el sub: `qa11|fix-vacio` ya lo usa el caso "vacio" de
+    # `test_ok_un_fix_malformado_no_ensucia_la_sugerencia`, que le deja una carta
+    # EN CURSO — proponer acá rebotaba con un 409 y el test nunca llegaba a mirar
+    # el bug (fallaba con un `KeyError: 'id'` que el xfail tapaba).
+    h = _premium("qa11|retoque-vacio")
     propuesta_id = _proponer(h).json()["id"]
     _forzar(propuesta_id, estado=ESTADO_REVISION_DWELLIA, veredicto=None)
 
@@ -718,6 +749,15 @@ def test_bug_un_retoque_vacio_de_dwellia_llega_como_sugerencia_fantasma(monkeypa
     )
     assert r.status_code == 200, r.text
 
+    mia = client.get("/api/cartas-comunidad/mias", headers=h).json()[0]
+    assert mia["sugerencia"] is None
+
+    # Y el candado del lado de B1.1, que es donde vivía el bug: aunque en la
+    # columna HAYA un retoque fantasma (una fila vieja, o cualquier otro que
+    # escriba `fix_sugerido` sin canonizarlo), `mias` no lo sirve.
+    _forzar(propuesta_id, veredicto={
+        "fuente": "dwellia", "fix_sugerido": {"frase": None, "prompt": "   "},
+    })
     mia = client.get("/api/cartas-comunidad/mias", headers=h).json()[0]
     assert mia["sugerencia"] is None
 
@@ -761,12 +801,10 @@ def test_ok_una_aprobada_se_ve_cerrada_no_se_retira_y_libera_el_lugar(monkeypatc
     assert _proponer(h, frase="La segunda carta de la misma autora.").status_code == 201
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "BUG-B11-6: para una carta YA APROBADA, `mias.carta` sigue siendo una carta "
-    "SINTÉTICA (id = id de la propuesta, firma calculada con el apodo de HOY) en vez "
-    "de la fila publicada en `cartas`: si el autor cambia su apodo después de "
-    "aprobada, la app le muestra una firma que la comunidad no ve"
-))
+# BUG-B11-6 (corregido): para una carta YA APROBADA, `mias.carta` seguía siendo una
+# carta SINTÉTICA (id = id de la propuesta, firma calculada con el apodo de HOY) en
+# vez de la fila publicada en `cartas`: si el autor cambiaba su apodo después de
+# aprobada, la app le mostraba una firma que la comunidad no ve.
 def test_bug_mias_de_una_aprobada_no_muestra_la_carta_publicada(monkeypatch):
     _juez_off(monkeypatch)
     h = _premium("qa11|firma-cambia")

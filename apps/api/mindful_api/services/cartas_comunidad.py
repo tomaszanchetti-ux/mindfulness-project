@@ -22,6 +22,9 @@ Recorrido (el vocabulario cerrado está en `db/models.py`):
 
 from __future__ import annotations
 
+import json
+import re
+import unicodedata
 from datetime import datetime, timezone
 from typing import Callable, Optional
 
@@ -76,9 +79,54 @@ ESTADOS_CON_MOTIVO = (ESTADO_A_REVISAR, ESTADO_RECHAZADA)
 FUENTE_JUEZ = "juez"
 MOTIVO_JUEZ_CAIDO = "El juez no pudo evaluar la carta."
 
+# La columna `cartas_comunidad.concepto` es `varchar(80)`: lo que no entra, no
+# se guarda — y un concepto largo no puede costarle la carta al autor.
+CONCEPTO_MAX = 80
+
 
 def _ahora() -> datetime:
     return datetime.now(timezone.utc)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# La limpieza del texto · UN SOLO LUGAR
+#
+# `strip()` no alcanza. Lo que se guarda tiene que ser exactamente lo que se lee:
+#
+#   · los caracteres INVISIBLES (categorías Unicode `Cf` = formato y `Cc` =
+#     control) pasan cualquier `strip()`. Una frase de veinte espacios de ancho
+#     cero se guardaba "llena" y se dibujaba en blanco, y un `\x00` —que Postgres
+#     no acepta en un `text`— tumbaba el INSERT con un 500 de cara al usuario;
+#   · los saltos de línea, los tabs y los espacios repetidos se colapsan a UN
+#     espacio: el frente y el dorso de una carta se renderizan en un componente
+#     que no previó saltos, y el largo se mide sobre los caracteres que se ven.
+# ─────────────────────────────────────────────────────────────────────────────
+_SEPARAN_PALABRAS = "\t\n\r\v\f"     # controles que sí valen como un espacio
+_INVISIBLES = ("Cf", "Cc")
+
+
+def _limpiar_texto(valor) -> str:
+    """El texto útil: sin caracteres invisibles y con los espacios colapsados."""
+    if not isinstance(valor, str):
+        return ""
+    visible = "".join(
+        ch for ch in valor
+        if ch in _SEPARAN_PALABRAS or unicodedata.category(ch) not in _INVISIBLES
+    )
+    return " ".join(visible.split())
+
+
+def _texto(valor) -> Optional[str]:
+    """Un texto opcional que viene de afuera (el juez, el panel): str o nada.
+
+    El veredicto lo escribe un modelo: `motivo` puede llegar como número, dict o
+    None. Se lo lleva a str antes de tocarlo, así un `.strip()` sobre algo que no
+    era texto no se lleva puesta la transición."""
+    if valor is None:
+        return None
+    if not isinstance(valor, str):
+        valor = str(valor)
+    return valor.strip() or None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -93,10 +141,10 @@ def _validar_contenido(
     frase: str, prompt: str, firma: str,
 ) -> dict:
     """Devuelve los campos ya limpios, o levanta un 422 que el autor entiende."""
-    categoria = (categoria or "").strip()
-    accion = (accion or "").strip()
-    frase = (frase or "").strip()
-    prompt = (prompt or "").strip()
+    categoria = _limpiar_texto(categoria)
+    accion = _limpiar_texto(accion)
+    frase = _limpiar_texto(frase)
+    prompt = _limpiar_texto(prompt)
 
     if s.get(Categoria, categoria) is None:
         raise _error("Elige uno de los pilares de Dwellia.")
@@ -138,10 +186,18 @@ def _carta_de_la_propuesta(s: Session, propuesta: CartaComunidad, usuario: Usuar
     """La propuesta con la forma EXACTA de una carta del mazo, para que el front la
     dibuje con el mismo componente sin saber que todavía no está publicada.
 
-    Se arma una `Carta` en memoria (transitoria: nunca se agrega a la sesión ni se
-    flushea) y se la pasa por `_carta_enriquecida`, el único punto que arma una
-    carta en todo el backend. Si mañana la carta suma un campo, esto lo hereda.
+    Si la carta YA se publicó (B1.3 la aprobó y `carta_id` apunta al mazo), se
+    sirve LA carta publicada: su id es el del mazo y su firma quedó fija el día
+    que salió. Si no, se arma una `Carta` en memoria (transitoria: nunca se
+    agrega a la sesión ni se flushea) y se la pasa por `_carta_enriquecida`, el
+    único punto que arma una carta en todo el backend. Si mañana la carta suma un
+    campo, esto lo hereda.
     """
+    if propuesta.carta_id:
+        publicada = s.get(Carta, propuesta.carta_id)
+        if publicada is not None:
+            return _carta_enriquecida(s, publicada)
+
     carta = Carta(
         id=propuesta.id,   # la propuesta todavía no tiene id de carta: se usa el suyo
         categoria_slug=propuesta.categoria_slug,
@@ -163,8 +219,11 @@ def _salida(s: Session, propuesta: CartaComunidad, usuario: Usuario) -> dict:
         "estado": propuesta.estado,
         "firma": propuesta.firma,
         "motivo": propuesta.motivo,
-        # La sugerencia concreta del juez (frase/prompt reescritos), si la hubo.
-        "sugerencia": veredicto.get("fix_sugerido"),
+        # La sugerencia concreta (frase/prompt reescritos), si la hubo. Pasa por
+        # `_fix_sugerido` SIEMPRE: el panel de B1.3 puede guardar un retoque vacío
+        # (`{}` → `{"frase": None, "prompt": None}`) y el autor no tiene por qué
+        # ver un cuadro de sugerencia dibujado en blanco.
+        "sugerencia": _fix_sugerido(veredicto.get("fix_sugerido")),
         "concepto": propuesta.concepto,
         "carta_id": propuesta.carta_id,
         # B2.1 lo calcula (cuánta gente recibió la carta). Hasta entonces, 0.
@@ -186,31 +245,76 @@ def _linea_de_hallazgos(hallazgos) -> Optional[str]:
     elegido = (mayores or [h for h in hallazgos if isinstance(h, dict)] or [None])[0]
     if not elegido:
         return None
-    return (elegido.get("detalle") or elegido.get("regla") or "").strip() or None
+    return _texto(elegido.get("detalle")) or _texto(elegido.get("regla"))
 
 
 def _fix_sugerido(fix) -> Optional[dict]:
     """Forma canónica de la sugerencia: `{"frase","prompt"}` o nada."""
     if not isinstance(fix, dict):
         return None
-    frase = (fix.get("frase") or "").strip() or None
-    prompt = (fix.get("prompt") or "").strip() or None
+    frase = _texto(fix.get("frase"))
+    prompt = _texto(fix.get("prompt"))
     if frase is None and prompt is None:
         return None
     return {"frase": frase, "prompt": prompt}
 
 
+# ── Blindaje de lo que escribe el juez ───────────────────────────────────────
+_NO_KEBAB = re.compile(r"[^a-z0-9-]+")
+_GUIONES = re.compile(r"-{2,}")
+
+
+def _concepto_canonico(valor) -> Optional[str]:
+    """El `concepto` en kebab-case y del largo que entra en la columna.
+
+    El juez es un modelo: puede devolver "Aire de la mañana", 240 caracteres o
+    nada. `concepto` es una ETIQUETA (la usa el dedupe semanal de M2), no un
+    texto, y la columna mide 80: un concepto largo reventaba el commit entero y
+    dejaba la carta clavada en `en_revision`, sin aviso y ocupando el único lugar
+    del autor. Acá se normaliza y se recorta; la evidencia cruda de lo que dijo
+    el juez queda igual en `veredicto`.
+    """
+    texto = _limpiar_texto(valor).lower()
+    # "mañana" → "manana": se descompone el acento y se tira la marca.
+    texto = "".join(
+        ch for ch in unicodedata.normalize("NFKD", texto)
+        if unicodedata.category(ch) != "Mn"
+    )
+    texto = _GUIONES.sub("-", _NO_KEBAB.sub("-", texto)).strip("-")
+    return texto[:CONCEPTO_MAX].strip("-") or None
+
+
+def _json_seguro(valor):
+    """Lo mismo, pero garantizado guardable en una columna JSON.
+
+    Si el juez devuelve algo que `json` no sabe serializar, antes reventaba el
+    commit y la propuesta se quedaba en `en_revision` para siempre. `default=str`
+    lo baja a su representación: preferimos un hallazgo feo a una carta clavada.
+    """
+    try:
+        return json.loads(json.dumps(valor, default=str))
+    except Exception:  # noqa: BLE001 — ni así: se guarda su repr y se sigue
+        return json.loads(json.dumps(repr(valor)))
+
+
 def _veredicto_json(resultado: str, hallazgos=None, concepto=None,
-                    fix_sugerido=None, motivo=None) -> dict:
+                    fix_sugerido=None, motivo=None, detalle=None) -> dict:
     """La forma canónica de la columna `veredicto` (la comparte B1.3)."""
-    return {
+    veredicto = {
         "resultado": resultado,
-        "hallazgos": list(hallazgos or []),
+        "hallazgos": _json_seguro(list(hallazgos or [])),
         "concepto": concepto,
         "fix_sugerido": fix_sugerido,
         "motivo": motivo,
         "fuente": FUENTE_JUEZ,
     }
+    # La evidencia cruda del juez: el informe de la capa 1, la respuesta del
+    # modelo y el consumo de tokens. B1.3 le promete a Tomás "literalmente lo que
+    # dijo el juez", así que se guarda. Solo se escribe la clave si hay algo (un
+    # veredicto sin detalle no estrena una clave vacía).
+    if detalle:
+        veredicto["detalle"] = _json_seguro(detalle)
+    return veredicto
 
 
 def _contexto_del_mazo(s: Session) -> tuple:
@@ -227,25 +331,72 @@ def _contexto_del_mazo(s: Session) -> tuple:
 
 def _leer_veredicto(veredicto) -> tuple:
     """`Veredicto` (dataclass de `services/juez.py`) → (estado, motivo, concepto, json)."""
-    resultado = getattr(veredicto, "resultado", None) or RESULTADO_OFF
+    resultado = _texto(getattr(veredicto, "resultado", None)) or RESULTADO_OFF
     estado = ESTADO_POR_RESULTADO.get(resultado, ESTADO_REVISION_DWELLIA)
 
     hallazgos = getattr(veredicto, "hallazgos", None) or []
-    concepto = (getattr(veredicto, "concepto", None) or "").strip() or None
+    if not isinstance(hallazgos, list):
+        hallazgos = [hallazgos]
+    hallazgos = _json_seguro(hallazgos)     # antes de leerlos: ya guardables
+    concepto = _concepto_canonico(getattr(veredicto, "concepto", None))
     fix = _fix_sugerido(getattr(veredicto, "fix", None))
 
     # El texto que ve el autor. Si el juez no redactó uno, se arma con el primer
     # hallazgo mayor. En los estados sin motivo (revision_dwellia) no se muestra nada.
     motivo = None
     if estado in ESTADOS_CON_MOTIVO:
-        motivo = (getattr(veredicto, "motivo", None) or "").strip() or None
+        motivo = _texto(getattr(veredicto, "motivo", None))
         if motivo is None:
             motivo = _linea_de_hallazgos(hallazgos)
 
     return estado, motivo, concepto, _veredicto_json(
         resultado, hallazgos=hallazgos, concepto=concepto,
         fix_sugerido=fix, motivo=motivo,
+        detalle=getattr(veredicto, "detalle", None),
     )
+
+
+def _releer_en_revision(s: Session, carta_comunidad_id: str) -> Optional[CartaComunidad]:
+    """La fila de AHORA, bloqueada, y solo si sigue esperando al juez.
+
+    Entre que el modelo empieza a pensar y termina pasan segundos, y en esos
+    segundos la carta puede haberse decidido: Tomás la aprobó desde el panel (y
+    ya está publicada en el mazo), o el autor la retiró y escribió otra. El
+    estado que se leyó al arrancar quedó VIEJO, así que antes de escribir una
+    sola letra se vuelve a mirar la fila con `FOR UPDATE`. Si ya no está
+    `en_revision`, el juez llegó tarde y no opina: ni estado, ni motivo, ni aviso.
+    """
+    # Cierra la transacción de lectura (la del contexto del mazo): lo que sigue
+    # tiene que ver el mundo de ahora, no el de hace un rato.
+    s.rollback()
+    return s.scalars(
+        select(CartaComunidad)
+        .where(CartaComunidad.id == carta_comunidad_id)
+        .where(CartaComunidad.estado == ESTADO_EN_REVISION)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    ).first()
+
+
+def _avisar_al_autor(s: Session, usuario_id: str, carta_comunidad_id: str,
+                     estado: str) -> None:
+    """El aviso al autor, DESPUÉS de la transición y con su propia red de contención.
+
+    `revision_dwellia` no avisa (para el autor sigue "en evaluación"). Y si el
+    canal de notificación falla, falla solo: el recorrido de una carta no se
+    revierte porque un push devolvió basura.
+    """
+    try:
+        usuario = s.get(Usuario, usuario_id)
+        if usuario is not None:
+            avisar_estado_carta(s, usuario, carta_comunidad_id, estado)
+            s.commit()
+    except Exception as exc:  # noqa: BLE001 — el aviso nunca se lleva la transición
+        print(f"[juez:aviso] carta_comunidad={carta_comunidad_id}: {exc!r}", flush=True)
+        try:
+            s.rollback()
+        except Exception:  # noqa: BLE001
+            pass
 
 
 def procesar_juez(carta_comunidad_id: str, evaluar: Optional[Callable] = None) -> None:
@@ -253,7 +404,8 @@ def procesar_juez(carta_comunidad_id: str, evaluar: Optional[Callable] = None) -
 
     Abre su propia sesión: corre en `BackgroundTasks`, o sea DESPUÉS de que la
     sesión de la request se cerró. Si la propuesta ya no está `en_revision`
-    (el autor la retiró mientras tanto), no toca nada.
+    (el autor la retiró, o Tomás la decidió mientras el modelo pensaba), no toca
+    nada: el estado se relee con `FOR UPDATE` justo antes de escribir.
 
     `evaluar` se resuelve en tiempo de llamada contra el módulo `services.juez`
     (no se importa la función): así B1.2 puede llenarlo y los tests pueden
@@ -264,9 +416,6 @@ def procesar_juez(carta_comunidad_id: str, evaluar: Optional[Callable] = None) -
         propuesta = s.get(CartaComunidad, carta_comunidad_id)
         if propuesta is None or propuesta.estado != ESTADO_EN_REVISION:
             return
-
-        # Lo que ya había: al reenviar se conserva el veredicto de la vuelta anterior.
-        anterior = (propuesta.veredicto or {}).get("anterior")
 
         try:
             propuesta_dict = {
@@ -281,28 +430,31 @@ def procesar_juez(carta_comunidad_id: str, evaluar: Optional[Callable] = None) -
             estado, motivo, concepto, veredicto_json = _leer_veredicto(veredicto)
         except Exception as exc:  # noqa: BLE001 — un juez caído no bloquea a nadie
             print(f"[juez:error] carta_comunidad={carta_comunidad_id}: {exc!r}", flush=True)
-            s.rollback()
-            propuesta = s.get(CartaComunidad, carta_comunidad_id)
-            if propuesta is None or propuesta.estado != ESTADO_EN_REVISION:
-                return
             estado, motivo, concepto = ESTADO_REVISION_DWELLIA, None, None
             veredicto_json = _veredicto_json(RESULTADO_OFF, motivo=MOTIVO_JUEZ_CAIDO)
 
+        # La decisión se escribe sobre la fila de AHORA, no sobre la que se leyó
+        # antes de pensar.
+        propuesta = _releer_en_revision(s, carta_comunidad_id)
+        if propuesta is None:
+            s.commit()          # suelta la transacción sin escribir nada
+            return
+
+        # Al reenviar se conserva el veredicto de la vuelta anterior (uno solo).
+        anterior = (propuesta.veredicto or {}).get("anterior")
         if anterior is not None:
             veredicto_json["anterior"] = anterior
 
+        usuario_id = propuesta.usuario_id
         propuesta.estado = estado
         propuesta.motivo = motivo
         if concepto:
             propuesta.concepto = concepto
         propuesta.veredicto = veredicto_json   # columna JSON: siempre un dict NUEVO
         s.add(propuesta)
+        s.commit()              # la transición ya está guardada, pase lo que pase
 
-        usuario = s.get(Usuario, propuesta.usuario_id)
-        if usuario is not None:
-            # `revision_dwellia` no avisa: para el autor sigue "en evaluación".
-            avisar_estado_carta(s, usuario, propuesta.id, estado)
-        s.commit()
+        _avisar_al_autor(s, usuario_id, carta_comunidad_id, estado)
     except Exception as exc:  # noqa: BLE001 — el background NUNCA levanta
         print(f"[juez:fatal] carta_comunidad={carta_comunidad_id}: {exc!r}", flush=True)
         try:
@@ -393,13 +545,30 @@ def reenviar_propuesta(s: Session, usuario: Usuario, carta_comunidad_id: str,
 
     Solo desde `a_revisar`: es la única vuelta que el recorrido le da al autor.
     La cesión no se vuelve a pedir (ya la aceptó al proponerla).
+
+    Pide plan igual que proponer: cada reenvío es OTRA corrida del juez, o sea
+    otra llamada paga, y `a_revisar → PUT → a_revisar` no tiene techo. Retirar,
+    en cambio, sigue abierto sin plan: nadie queda atrapado en su propia carta.
     """
+    if not limites(usuario).propone_cartas:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "Escribir cartas para la comunidad es parte de Dwellia premium",
+        )
+
     propuesta = _mia_o_404(s, usuario, carta_comunidad_id)
     if propuesta.estado != ESTADO_A_REVISAR:
         raise HTTPException(
             status.HTTP_409_CONFLICT,
             "Solo puedes reenviar una carta que necesita un retoque.",
         )
+
+    # El reenvío manda la carta ENTERA: lo que no llega no se conserva, se pide.
+    # (Pilar, acción y firma sí son opcionales: lo que no se manda, no se toca.)
+    if datos.frase is None:
+        raise _error("Falta la frase de la carta.")
+    if datos.prompt is None:
+        raise _error("Falta el prompt de la carta.")
 
     campos = _validar_contenido(
         s, usuario,
@@ -413,7 +582,13 @@ def reenviar_propuesta(s: Session, usuario: Usuario, carta_comunidad_id: str,
         setattr(propuesta, campo, valor)
     propuesta.estado = ESTADO_EN_REVISION
     propuesta.motivo = None                       # la sugerencia vieja ya no aplica
-    anterior = propuesta.veredicto
+    # Se guarda SOLO la vuelta inmediatamente anterior, podada de su propio
+    # `anterior`: si no, cada reenvío anida el histórico entero adentro de la
+    # columna JSON y nadie lo poda nunca. Lo que hace falta leer es "qué decía
+    # antes de este retoque", no las N vueltas.
+    anterior = propuesta.veredicto or None
+    if anterior:
+        anterior = {k: v for k, v in anterior.items() if k != "anterior"}
     propuesta.veredicto = {"anterior": anterior} if anterior else None
 
     s.add(propuesta)

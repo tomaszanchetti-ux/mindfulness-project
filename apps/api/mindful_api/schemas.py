@@ -169,12 +169,18 @@ class CartaComunidadUpdate(BaseModel):
     """El reenvío desde `a_revisar`: cambia el texto (y, si quiere, pilar/acción/firma).
 
     La cesión NO se vuelve a pedir: se aceptó al proponerla.
+
+    `frase` y `prompt` son OBLIGATORIOS igual (el reenvío manda la carta entera),
+    pero acá se declaran opcionales a propósito: así el que falta lo reclama el
+    servicio con un mensaje en español ("Falta el prompt de la carta.") y no el
+    422 crudo de Pydantic, que le dice "Field required" a un autor que está
+    corrigiendo su carta.
     """
 
     categoria: Optional[str] = Field(default=None, max_length=40)
     accion: Optional[str] = Field(default=None, max_length=40)
-    frase: str = Field(max_length=_TOPE_DURO)
-    prompt: str = Field(max_length=_TOPE_DURO)
+    frase: Optional[str] = Field(default=None, max_length=_TOPE_DURO)
+    prompt: Optional[str] = Field(default=None, max_length=_TOPE_DURO)
     firma: Optional[str] = Field(default=None, pattern=_FIRMAS)
 
     @field_validator("categoria", "accion", "frase", "prompt", mode="before")
