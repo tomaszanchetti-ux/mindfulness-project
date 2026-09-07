@@ -15,6 +15,7 @@
 | P4 | **Dos rituales por día** (mañana/noche, estilo diario guiado). | Palanca premium pensada desde el arranque. | Documento Madre | Orden compuesto del Baúl (fecha → estrella) y aviso doble. |
 | P5 | **Fotos en el regalo** (link `/c/{token}`) y **compresión de imágenes** al subir. | Hoy el link muestra la ficha sin fotos y las fotos van tal cual (cap 8 MB). | WS16 | Redimensión en el backend (Pillow) o en el navegador antes de subir. |
 | P6 | **Métricas suaves para el autor**: "se abrió tu carta", "tu Pausa se reenvió". | Impacto sin likes ni contadores públicos. | M5, WS06 | Que exista reenviar (Bloque C). |
+| P7 | **Fotos en las recomendaciones** (hasta 3, como en las Pausas). | Una recomendación con la tapa del libro o una captura se lee mejor y se comparte más. | Tomás, Q/A visual WS30 | Extender `fotos` (hoy cuelgan de `entregas`) a recomendaciones, subida a Storage, la regla de lectura de fichas ajenas aplicada a esas fotos, y el wizard con el mismo cargador de 3 fotos de Reflexionar. Media sesión. |
 
 ## 2. Técnico / infra
 
