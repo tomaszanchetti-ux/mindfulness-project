@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../components/Card";
 import { Button } from "../components/Button";
+import { Campana } from "../components/Campana";
 import { Spotlight } from "../components/Spotlight";
 import { StoryArt } from "../components/StoryArt";
 import { useAuth } from "../auth";
@@ -96,12 +97,15 @@ export function Home() {
   if (esperando) {
     return (
       <div>
-        <div className="home-greet">
-          <p className="screen-kicker">
-            {saludo()}
-            {perfil?.apodo ? `, ${perfil.apodo}` : ""}.
-          </p>
-          <p className="home-date">{fechaLarga(entrega.fecha)}</p>
+        <div className="home-greet campana-fila">
+          <div className="campana-fila-txt">
+            <p className="screen-kicker">
+              {saludo()}
+              {perfil?.apodo ? `, ${perfil.apodo}` : ""}.
+            </p>
+            <p className="home-date">{fechaLarga(entrega.fecha)}</p>
+          </div>
+          <Campana />
         </div>
         <div className="home-wait">
           <div className="home-wait-art">
@@ -118,12 +122,15 @@ export function Home() {
 
   return (
     <div>
-      <div className="home-greet">
-        <p className="screen-kicker">
-          {saludo()}
-          {perfil?.apodo ? `, ${perfil.apodo}` : ""}.
-        </p>
-        <p className="home-date">{fechaLarga(entrega.fecha)}</p>
+      <div className="home-greet campana-fila">
+        <div className="campana-fila-txt">
+          <p className="screen-kicker">
+            {saludo()}
+            {perfil?.apodo ? `, ${perfil.apodo}` : ""}.
+          </p>
+          <p className="home-date">{fechaLarga(entrega.fecha)}</p>
+        </div>
+        <Campana />
       </div>
 
       <div

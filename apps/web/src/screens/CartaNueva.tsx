@@ -20,6 +20,7 @@ import { api, assetUrl } from "../lib/api";
 import { FRASE_MAX, PROMPT_MAX, PROMPT_MIN } from "../lib/propuestas";
 import { useStore } from "../store";
 import type { AccionContenido, Carta, FirmaCarta } from "../lib/types";
+import "./crear.css";
 
 const PASOS = 4;
 
@@ -45,6 +46,14 @@ export function CartaNueva() {
   const [listo, setListo] = useState(false);
 
   const apodo = perfil?.apodo?.trim() || "";
+  const puedeEscribir = perfil?.limites.propone_cartas === true;
+
+  // Escribir cartas es SOLO de quien es parte. El backend responde 403 igual,
+  // pero a alguien free no se le enseña un formulario que va a rebotar: se
+  // vuelve a Crear, que es donde está la invitación.
+  useEffect(() => {
+    if (perfil && !puedeEscribir) navigate("/crear", { replace: true });
+  }, [perfil, puedeEscribir, navigate]);
 
   useEffect(() => {
     api.acciones().then(setAcciones).catch(() => setAcciones([]));
@@ -138,7 +147,8 @@ export function CartaNueva() {
     }
   };
 
-  if (!listo) return <div className="center-note">…</div>;
+  // Mientras el efecto de arriba redirige, no se dibuja ni un campo.
+  if (!perfil || !puedeEscribir || !listo) return <div className="center-note">…</div>;
 
   return (
     <div className="ob crear-wizard">

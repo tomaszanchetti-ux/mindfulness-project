@@ -1,0 +1,731 @@
+/*
+  WS28 · B2.2b · El escritorio de Dwellia (/admin).
+
+  Es la única pantalla de la app que no es un teléfono: acá se revisa, se compara
+  y se decide, y eso pide ancho. El lenguaje visual es el mismo (papel cálido,
+  serif para lo que se lee, píldoras y chips), solo que en tres columnas cuando
+  la pantalla da y apiladas cuando no.
+
+  TODO el CSS del adminland vive en este archivo. Las píldoras de estado
+  (`.pill-estado.es-*`) NO se definen acá: son de la pestaña Crear y se comparten.
+*/
+
+/* ——————————————————————————————————————————————— El marco ancho */
+/* `Frame.tsx` ya pone `.is-wide` en /admin; la regla vivía en ningún lado. */
+.frame-inner.is-wide {
+  max-width: 960px;
+}
+
+@media (min-width: 760px) {
+  .frame-inner.is-wide {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+.adm {
+  padding-bottom: 40px;
+}
+
+/* ——————————————————————————————————————————————— Cabecera y pestañas */
+.adm-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 4px 0 20px;
+}
+.adm-head-txt {
+  min-width: 0;
+}
+.adm-head .btn {
+  height: 42px;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.adm-tabs.segmented {
+  display: inline-flex;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 0 22px;
+}
+.adm-tabs.segmented::-webkit-scrollbar {
+  display: none;
+}
+.adm-tabs.segmented button {
+  padding: 8px 16px;
+  font-size: 13.5px;
+}
+
+/* ——————————————————————————————————————————————— Avisos de la pantalla */
+.adm-aviso {
+  background: color-mix(in srgb, var(--sage) 18%, transparent);
+  color: var(--sage-deep);
+  border-radius: var(--radius-soft);
+  padding: 10px 14px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  margin: 0 0 16px;
+}
+.adm-error {
+  background: color-mix(in srgb, #b9795f 14%, transparent);
+  color: #8d5641;
+  border-radius: var(--radius-soft);
+  padding: 10px 14px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
+}
+.adm-error-inline {
+  color: #8d5641;
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 10px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.adm-cerrado {
+  padding-top: 16vh;
+}
+
+/* ——————————————————————————————————————————————— Barra de filtros */
+.adm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 18px;
+}
+.adm-tool-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dust-taupe);
+}
+.adm-conteo {
+  font-size: 13px;
+  color: var(--warm-taupe);
+  margin-left: auto;
+}
+
+/* ——————————————————————————————————————————————— Un ítem de la cola */
+.adm-item {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+.adm-item.is-open {
+  box-shadow: 0 10px 30px var(--warm-shadow);
+}
+
+.adm-item-head {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  padding: 14px;
+}
+
+.adm-item-info {
+  flex: 1;
+  min-width: 0;
+  display: block;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+.adm-item-frase {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.38;
+  color: var(--deep-umber);
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+.adm-item-meta {
+  display: block;
+  font-size: 12.5px;
+  color: var(--warm-taupe);
+  margin: 0 0 8px;
+}
+.adm-item-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.adm-autor {
+  font-size: 12.5px;
+  color: var(--deep-umber);
+}
+.adm-email {
+  font-size: 11px;
+  color: var(--dust-taupe);
+  overflow-wrap: anywhere;
+}
+.adm-fecha {
+  font-size: 12px;
+  color: var(--dust-taupe);
+  margin-left: auto;
+}
+
+.adm-chevron {
+  align-self: center;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--dust-taupe);
+  font-size: 18px;
+  line-height: 1;
+  padding: 8px;
+  transition: transform 0.2s ease;
+}
+.adm-item.is-open .adm-chevron {
+  transform: rotate(180deg);
+}
+
+/* La carta en miniatura, dibujada acá (no hay componente chico compartido). */
+.adm-mini {
+  position: relative;
+  flex-shrink: 0;
+  width: 64px;
+  height: 88px;
+  border: 1px solid var(--sand-line);
+  border-radius: 12px;
+  background: var(--card-body);
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.adm-mini:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px var(--warm-shadow);
+}
+.adm-mini-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 7px;
+}
+.adm-mini-dibujo {
+  width: 74%;
+  height: auto;
+  margin-top: 6px;
+  opacity: 0.92;
+}
+.adm-mini-ver {
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dust-taupe);
+}
+
+/* ——————————————————————————————————————————————— El funnel (v1 · v2 · vFinal) */
+.adm-funnel {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  border-top: 1px solid var(--sand-line);
+  padding: 16px 14px 18px;
+  background: var(--warm-cream);
+}
+@media (min-width: 820px) {
+  .adm-funnel {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+.adm-col {
+  min-width: 0;
+}
+.adm-col-t {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--deep-umber);
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--sand-line);
+}
+.adm-col-n {
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dust-taupe);
+}
+
+.adm-lbl {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dust-taupe);
+  margin: 12px 0 4px;
+}
+.adm-lbl:first-child {
+  margin-top: 0;
+}
+.adm-txt {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--deep-umber);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.adm-nota {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* v1 — cada redacción del autor */
+.adm-redaccion {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.adm-redaccion-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--dust-taupe);
+  margin: 0 0 6px;
+}
+.adm-redaccion-v {
+  color: var(--sage-deep);
+  font-weight: 600;
+}
+.adm-redaccion-frase {
+  font-family: var(--font-serif);
+  font-size: 15.5px;
+  line-height: 1.4;
+  color: var(--deep-umber);
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+.adm-redaccion-prompt {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--warm-taupe);
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+}
+.adm-redaccion-meta {
+  font-size: 11.5px;
+  color: var(--dust-taupe);
+  margin: 0;
+}
+
+/* v2 — el veredicto */
+.adm-veredicto-res {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--deep-umber);
+  margin: 0 0 4px;
+}
+.adm-hallazgos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.adm-hallazgo {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-left: 3px solid var(--sand-line);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.adm-hallazgo.is-mayor {
+  border-left-color: #b9795f;
+}
+.adm-hallazgo-regla {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--warm-taupe);
+  margin: 0 0 4px;
+}
+.adm-hallazgo-mayor {
+  color: #8d5641;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+.adm-hallazgo-detalle {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--deep-umber);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.adm-fix {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+/* vFinal — la decisión */
+.adm-decidir-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 12px;
+}
+.adm-forma {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 14px;
+}
+.adm-campo {
+  margin-bottom: 12px;
+}
+.adm-campo:last-of-type {
+  margin-bottom: 14px;
+}
+.adm-campo-lbl {
+  display: block;
+  font-size: 12px;
+  color: var(--warm-taupe);
+  margin: 0 0 5px;
+}
+.adm-input,
+.adm-textarea {
+  width: 100%;
+  background: var(--warm-cream);
+  border: 1px solid var(--sand-line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--deep-umber);
+  resize: vertical;
+}
+.adm-input:focus,
+.adm-textarea:focus {
+  outline: none;
+  border-color: var(--sage);
+}
+.adm-textarea {
+  min-height: 84px;
+}
+.adm-contador {
+  display: block;
+  text-align: right;
+  font-size: 11px;
+  color: var(--dust-taupe);
+  margin-top: 4px;
+}
+.adm-contador.is-mal {
+  color: #8d5641;
+}
+.adm-forma .btn {
+  height: 46px;
+  font-size: 14px;
+}
+.adm-forma .actions-stack {
+  align-items: stretch;
+}
+
+.adm-decidida {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 14px;
+}
+.adm-decidida .adm-txt {
+  margin-top: 10px;
+}
+
+/* ——————————————————————————————————————————————— Termómetro */
+.adm-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 0 0 24px;
+}
+@media (min-width: 560px) {
+  .adm-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 860px) {
+  .adm-cards {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.adm-card {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 16px;
+  box-shadow: 0 6px 18px var(--warm-shadow-soft);
+}
+.adm-card-t {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--deep-umber);
+  margin: 0 0 12px;
+}
+.adm-nums {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.adm-num {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.adm-num.is-fuerte .adm-num-v {
+  color: var(--sage-deep);
+  font-size: 22px;
+}
+.adm-num-k {
+  font-size: 13px;
+  color: var(--warm-taupe);
+  min-width: 0;
+}
+.adm-num-hint {
+  display: block;
+  font-size: 11px;
+  color: var(--dust-taupe);
+}
+.adm-num-v {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--deep-umber);
+  flex-shrink: 0;
+}
+
+.adm-sub-t {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--deep-umber);
+  margin: 0 0 6px;
+}
+.adm-leyenda {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 0 0 14px;
+}
+.adm-leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--warm-taupe);
+}
+.adm-punto {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.adm-pilares {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.adm-pilar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+@media (min-width: 620px) {
+  .adm-pilar {
+    grid-template-columns: 150px 1fr auto;
+    align-items: center;
+    gap: 14px;
+  }
+}
+.adm-pilar-n {
+  font-size: 14px;
+  font-weight: 500;
+}
+.adm-pilar-barra {
+  display: flex;
+  height: 14px;
+  border-radius: var(--radius-pill);
+  background: var(--oat-milk);
+  overflow: hidden;
+}
+.adm-seg {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.adm-pilar-cifras {
+  font-size: 12px;
+  color: var(--warm-taupe);
+  white-space: nowrap;
+}
+.adm-pilar-total {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--deep-umber);
+  margin-right: 6px;
+}
+
+/* ——————————————————————————————————————————————— Comentarios */
+.adm-grupo {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.adm-grupo-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 14px;
+  cursor: pointer;
+  color: inherit;
+}
+.adm-grupo-spine {
+  width: 4px;
+  align-self: stretch;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.adm-grupo-txt {
+  display: block;
+  flex: 1;
+  min-width: 0;
+}
+.adm-grupo-frase {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--deep-umber);
+  margin: 0 0 5px;
+  overflow-wrap: anywhere;
+}
+.adm-grupo-meta {
+  display: block;
+  font-size: 12px;
+  color: var(--warm-taupe);
+  margin: 0;
+}
+.adm-grupo-prom {
+  flex-shrink: 0;
+  text-align: right;
+}
+.adm-grupo-prom-v {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--deep-umber);
+  display: block;
+}
+.adm-grupo-prom.is-baja .adm-grupo-prom-v {
+  color: #8d5641;
+}
+.adm-grupo-prom-k {
+  font-size: 11px;
+  color: var(--dust-taupe);
+}
+
+.adm-coms {
+  border-top: 1px solid var(--sand-line);
+  background: var(--warm-cream);
+  padding: 6px 14px 14px;
+}
+.adm-com {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--sand-line);
+}
+.adm-com:last-child {
+  border-bottom: none;
+}
+.adm-com-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 0 5px;
+}
+.adm-estrellas {
+  color: #b9905f;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+.adm-estrellas.is-vacio {
+  color: var(--dust-taupe);
+  letter-spacing: normal;
+}
+.adm-com-apodo {
+  font-size: 12.5px;
+  color: var(--deep-umber);
+}
+.adm-com-fecha {
+  font-size: 11.5px;
+  color: var(--dust-taupe);
+  margin-left: auto;
+}
+.adm-com-txt {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--deep-umber);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.adm-pie {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--dust-taupe);
+  border-top: 1px solid var(--sand-line);
+  margin-top: 20px;
+  padding-top: 14px;
+}

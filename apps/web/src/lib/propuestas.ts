@@ -52,6 +52,19 @@ export function impacto(personas: number): string {
   return `${personas} personas la recibieron.`;
 }
 
+/**
+ * "★ 4,5 · 3 valoraciones" · cómo le fue a una carta que ya está en el mazo.
+ *
+ * El promedio llega del backend con un decimal y se escribe con COMA, que es
+ * como se lee un número en español. Sin nadie que la haya puntuado no se dibuja
+ * un "★ 0,0": se dice que todavía nadie la puntuó, que es otra cosa.
+ */
+export function textoPuntaje(promedio: number | null, veces: number): string {
+  if (promedio === null || veces <= 0) return "Todavía nadie la puntuó.";
+  const nota = promedio.toFixed(1).replace(".", ",");
+  return `★ ${nota} · ${veces === 1 ? "1 valoración" : `${veces} valoraciones`}`;
+}
+
 /** Cómo salió firmada (lo que lee la comunidad en el dorso). */
 export function textoFirma(firma: string, apodo: string | null): string {
   if (firma === "apodo" && apodo) return `Firmada como ${apodo}.`;

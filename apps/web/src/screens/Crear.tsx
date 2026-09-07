@@ -18,13 +18,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
+import { Campana } from "../components/Campana";
 import { CartaMini } from "../components/CartaMini";
 import { SoloComunidad } from "../components/SoloComunidad";
 import { api } from "../lib/api";
 import { fechaCorta } from "../lib/format";
-import { enCurso, impacto, rotulo, textoFirma } from "../lib/propuestas";
+import { enCurso, impacto, rotulo, textoFirma, textoPuntaje } from "../lib/propuestas";
 import { useStore } from "../store";
 import type { CartaPropuesta } from "../lib/types";
+import "./crear.css";
 
 export function Crear() {
   const navigate = useNavigate();
@@ -78,9 +80,12 @@ export function Crear() {
   if (perfil && !puedeEscribir) {
     return (
       <div className="crear">
-        <div className="screen-head">
-          <h1 className="screen-title">Crear</h1>
-          <p className="screen-sub">Escribe una carta para la comunidad</p>
+        <div className="crear-head">
+          <div className="screen-head">
+            <h1 className="screen-title">Crear</h1>
+            <p className="screen-sub">Escribe una carta para la comunidad</p>
+          </div>
+          <Campana />
         </div>
 
         <div className="crear-porque">
@@ -110,9 +115,12 @@ export function Crear() {
 
   return (
     <div className="crear">
-      <div className="screen-head">
-        <h1 className="screen-title">Crear</h1>
-        <p className="screen-sub">Tus cartas para la comunidad</p>
+      <div className="crear-head">
+        <div className="screen-head">
+          <h1 className="screen-title">Crear</h1>
+          <p className="screen-sub">Tus cartas para la comunidad</p>
+        </div>
+        <Campana />
       </div>
 
       {error && <p className="crear-aviso">{error}</p>}
@@ -245,10 +253,15 @@ function PropuestaItem({
         </div>
       )}
 
-      {/* —— Cargada a la comunidad: a cuánta gente le llegó y cómo salió firmada —— */}
+      {/* —— Cargada a la comunidad: a cuánta gente le llegó, cómo le fue y cómo
+             salió firmada. El impacto y el puntaje son dos cosas distintas: a
+             cuántos acompañó, y qué les pareció (decisión de Tomás, WS28). —— */}
       {estado === "aprobada" && (
         <div className="prop-extra">
           <p className="prop-impacto">{impacto(propuesta.personas_acompanadas)}</p>
+          <p className="prop-puntaje">
+            {textoPuntaje(propuesta.estrellas_promedio, propuesta.veces_puntuada)}
+          </p>
           <p className="prop-firma">{textoFirma(propuesta.firma, apodo)}</p>
         </div>
       )}
