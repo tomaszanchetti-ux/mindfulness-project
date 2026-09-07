@@ -9,6 +9,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, field_validator
 
+from .db.models import FIRMA_ANONIMA, FIRMAS
 from .services.plan import COMENTARIO_CARTA_MAX
 
 _HORA = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")  # HH:MM 24h
@@ -132,3 +133,73 @@ class VisibilidadUpdate(BaseModel):
     """
 
     visibilidad: str = Field(pattern="^(privada|compartida)$")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WS27 · B1.1 · Cartas de la comunidad (Roadmap v2 §4)
+#
+# Los largos REALES (frase ≤60, prompt 100-220) los aplica
+# `services/cartas_comunidad.py`, que es donde viven los límites: acá solo hay un
+# tope duro anti-abuso, para no leer megabytes de JSON. Si el borde cortara en 60,
+# el autor vería un 422 sin explicación en vez del mensaje que lo ayuda a corregir.
+# ─────────────────────────────────────────────────────────────────────────────
+_FIRMAS = "^(" + "|".join(FIRMAS) + ")$"
+_TOPE_DURO = 5000
+
+
+class CartaComunidadCreate(BaseModel):
+    """Lo que manda el wizard de Crear: la carta + cómo firma + la cesión."""
+
+    categoria: str = Field(max_length=40)
+    accion: str = Field(max_length=40)
+    frase: str = Field(max_length=_TOPE_DURO)
+    prompt: str = Field(max_length=_TOPE_DURO)
+    # Anónima por defecto: firmar con el apodo es una decisión explícita.
+    firma: str = Field(default=FIRMA_ANONIMA, pattern=_FIRMAS)
+    # Sin cesión no hay publicación (el servicio la exige con un 422 legible).
+    cesion_aceptada: bool = False
+
+    @field_validator("categoria", "accion", "frase", "prompt", mode="before")
+    @classmethod
+    def _limpia(cls, v):
+        return v.strip() if isinstance(v, str) else v
+
+
+class CartaComunidadUpdate(BaseModel):
+    """El reenvío desde `a_revisar`: cambia el texto (y, si quiere, pilar/acción/firma).
+
+    La cesión NO se vuelve a pedir: se aceptó al proponerla.
+    """
+
+    categoria: Optional[str] = Field(default=None, max_length=40)
+    accion: Optional[str] = Field(default=None, max_length=40)
+    frase: str = Field(max_length=_TOPE_DURO)
+    prompt: str = Field(max_length=_TOPE_DURO)
+    firma: Optional[str] = Field(default=None, pattern=_FIRMAS)
+
+    @field_validator("categoria", "accion", "frase", "prompt", mode="before")
+    @classmethod
+    def _limpia(cls, v):
+        return v.strip() if isinstance(v, str) else v
+
+
+class CartaComunidadOut(BaseModel):
+    """Una carta propuesta, como la ve su autor en la pestaña Crear.
+
+    `carta` trae la MISMA forma que cualquier carta del mazo (`_carta_enriquecida`),
+    para que el front la dibuje con el componente de siempre aunque todavía no esté
+    publicada. `sugerencia` es el `fix_sugerido` del juez (frase/prompt reescritos).
+    """
+
+    id: str
+    estado: str
+    firma: str
+    motivo: Optional[str] = None
+    sugerencia: Optional[dict] = None
+    concepto: Optional[str] = None
+    carta_id: Optional[str] = None
+    # B2.1 lo calcula; hasta entonces, 0.
+    personas_acompanadas: int = 0
+    created_at: datetime
+    updated_at: datetime
+    carta: dict
