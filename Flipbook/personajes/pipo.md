@@ -15,8 +15,18 @@
   lengua afuera, mirada de costado → la alegría sarcástica), *No entender nada* (cabeza
   ladeada hacia arriba, arrugas marcadas → ¿en serio?), *Sorpresa* (ojos abiertos al máximo,
   orejas atrás, frente arrugada → sospecha/sorpresa). Son el registro del juego de caras;
-  con ellas se dibuja el set en D1a. **Las caras llevan el detalle** (principio Sin City):
+  con ellas se dibuja el set en D1.1. **Las caras llevan el detalle** (principio Sin City):
   arrugas, brillo del ojo, lengua; el cuerpo sigue simple.
+  **Mapeo de Tomás (07/09, cierre WS31), a afinar en D1.1:**
+  - *Ironía* (cabeza ladeada, lengua afuera, un ojo arriba y otro abajo, sonrisa torcida) =
+    **la más graciosa de todas → el cierre con el iris** (alegría sarcástica, "te lo dije").
+  - *Clásica* (mira hacia arriba, arrugas marcadas, cabeza inclinada, ojos enormes) +
+    *No entender nada* = **las escenas del problema**: Pipo no entiende cómo Teo se
+    comporta así (¿en serio? / resignación).
+  - *Enojado* (los dientes de abajo asomando, ceño fruncido) = **fastidio**.
+  - *Sorpresa* (ojos al máximo, orejas atrás) = **sospecha / sorpresa**.
+  - Una **sonriendo** (falta la foto) = **el crecimiento de Teo** (escena 4, orgullo).
+  Hay muchas caras graciosas de pug: el set de 6 se cierra mañana mirando estas fotos.
 - **Lo que lo hace reconocible (3 rasgos fijos):**
   1. **Máscara negra sólida** (hocico chato) con las arrugas de la frente.
   2. **Orejas negras plegadas**, sólidas.
