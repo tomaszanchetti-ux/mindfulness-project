@@ -212,9 +212,9 @@ generan hojas con IA de imágenes (no mantiene el personaje). Se hace DESPUÉS d
 No se toca la infra. El costo real es el tiempo de moderación de Tomás, y por eso
 proponer cartas es premium: el que paga casi nunca hace spam.
 
-## 6b. Ideas para después del MVP (anotadas, no planificadas)
-- **Reparto ponderado por puntaje (Tomás, WS27):** el motor sirve menos las cartas con peor promedio de estrellas y más las mejores (nuestras y de la comunidad por igual). Sustituye a "sacar" una carta (imposible una vez entregada: `entregas.carta_id`) y empuja a la comunidad a escribir buenas cartas. Necesita volumen de estrellas real; hasta entonces, el reparto es parejo.
-- **Carta inactiva (Bloque C):** `cartas.activa=false` para retirar del reparto sin borrar nada (el Baúl de quien la recibió no cambia).
+## 6b. Después del MVP
+Todo lo que queda para la v2 (reparto ponderado por puntaje, carta inactiva, dos
+rituales por día, deudas técnicas) vive en [`POST_MVP.md`](POST_MVP.md), una línea por idea.
 
 ## 7. Lo que sigue abierto de la v1
 - Tomás prueba el push en su iPhone (WS21).
