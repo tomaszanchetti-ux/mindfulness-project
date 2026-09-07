@@ -1,0 +1,758 @@
+/* WS30 · C2.1 · La pestaña Comunidad, el perfil de otra persona, la ficha ajena,
+   la Pausa extra y el panel "Reenviar".
+
+   Vive aparte de app.css a propósito (territorio de la card, como crear.css y
+   profile.css). Solo tokens de theme.css: papel, tierra y salvia. Nada de rojos
+   de alarma: una solicitud que se rechaza no es un error, es una decisión.
+
+   Mobile-first: la pantalla de referencia es 375×812. Todo lo que ya existe en
+   app.css (.screen-head, .empty*, .center-note, .chip, .link, .back-link,
+   .avatar*, .actions-stack, .confirm-inline*, .modal*, .btn*) se REUSA, no se
+   redefine: lo que hay acá es lo que falta. */
+
+/* ═══════════════════════════════════════════════ El buscador */
+.com-buscador {
+  position: relative;
+  margin: 0 0 24px;
+}
+.com-buscador input {
+  width: 100%;
+  height: 46px;
+  padding: 0 40px 0 16px;
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-pill);
+  background: var(--soft-ivory);
+  color: var(--deep-umber);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.com-buscador input::placeholder {
+  color: var(--dust-taupe);
+}
+/* La × la ponemos nosotros (con el papel de la app): que Safari no dibuje otra. */
+.com-buscador input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+.com-buscador input:focus {
+  border-color: var(--sage);
+}
+/* La × para volver al inicio de la pestaña: solo aparece con algo escrito. */
+.com-buscador-limpiar {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dust-taupe);
+  font-size: 18px;
+  line-height: 1;
+}
+.com-buscador-limpiar:hover {
+  color: var(--deep-umber);
+}
+.com-buscando {
+  font-size: 13px;
+  color: var(--dust-taupe);
+  text-align: center;
+  margin: 18px 0;
+}
+
+/* El error del backend (llega en español): suave, nunca rojo de alarma. */
+.com-aviso {
+  background: var(--oat-milk);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 0 0 14px;
+  overflow-wrap: anywhere;
+}
+
+/* ═══════════════════════════════════════════════ Secciones */
+.com-seccion {
+  margin: 0 0 30px;
+}
+.com-seccion-titulo {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 19px;
+  color: var(--deep-umber);
+  margin: 0 0 12px;
+}
+.com-seccion-nota {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--warm-taupe);
+  margin: 0;
+}
+.com-sub {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dust-taupe);
+  margin: 16px 0 8px;
+}
+.com-sub:first-of-type {
+  margin-top: 0;
+}
+
+/* ═══════════════════════════════════════════════ Una persona en una fila */
+.com-fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 10px 12px;
+}
+.com-fila + .com-fila {
+  margin-top: 8px;
+}
+/* La parte que lleva al perfil: toda la identidad es el enlace. */
+.com-fila-quien {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+}
+.com-fila-datos {
+  min-width: 0;
+}
+.com-fila-apodo {
+  display: block;
+  font-size: 15px;
+  line-height: 1.3;
+  color: var(--deep-umber);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.com-fila-nombre {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--dust-taupe);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.com-fila-cta {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+/* Botón chico de fila: la acción no compite con la persona. */
+.com-btn {
+  flex: none;
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--warm-taupe);
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.3;
+  padding: 8px 14px;
+  white-space: nowrap;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.com-btn:hover:not(:disabled) {
+  background: var(--oat-milk);
+  color: var(--deep-umber);
+}
+.com-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.com-btn.es-si {
+  background: var(--sage);
+  border-color: var(--sage);
+  color: #fff;
+}
+.com-btn.es-si:hover:not(:disabled) {
+  background: var(--sage-deep);
+  border-color: var(--sage-deep);
+  color: #fff;
+}
+/* "En tu comunidad": no es un botón, es un estado. */
+.com-estado {
+  flex: none;
+  font-size: 12px;
+  color: var(--sage-deep);
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════ Te enviaron */
+.com-reenvio {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 10px 12px;
+  color: var(--deep-umber);
+  font-family: inherit;
+  transition: box-shadow 0.18s ease;
+}
+.com-reenvio + .com-reenvio {
+  margin-top: 8px;
+}
+.com-reenvio:hover {
+  box-shadow: 0 4px 14px var(--warm-shadow-soft);
+}
+.com-reenvio.es-no-leido {
+  background: #fff;
+  border-color: rgba(143, 165, 138, 0.5);
+}
+.com-reenvio-txt {
+  flex: 1;
+  min-width: 0;
+}
+.com-reenvio-quien {
+  display: block;
+  font-size: 13px;
+  color: var(--warm-taupe);
+  overflow-wrap: anywhere;
+}
+.com-reenvio-frase {
+  display: block;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--deep-umber);
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+.com-punto {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sage);
+}
+
+/* La ficha en miniatura (46×62): la foto si la hay, si no el dibujo del pilar. */
+.com-mini {
+  flex: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 62px;
+  border-radius: 12px;
+  background: var(--card-body);
+  overflow: hidden;
+}
+.com-mini-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+}
+.com-mini-dibujo,
+.com-mini-foto {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+.com-mini-foto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ═══════════════════════════════════════════════ Tu comunidad (tira) */
+.com-tira {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0 4px;
+}
+.com-tira::-webkit-scrollbar {
+  display: none;
+}
+.com-tira-uno {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 62px;
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--warm-taupe);
+  font-family: inherit;
+  font-size: 12px;
+}
+.com-tira-apodo {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════ Descubrir (grilla de 2) */
+.com-grilla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.com-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  background: var(--soft-ivory);
+  padding: 0 0 10px;
+  overflow: hidden;
+  text-align: left;
+  color: inherit;
+  font-family: inherit;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.com-tile:hover {
+  box-shadow: 0 6px 18px var(--warm-shadow-soft);
+}
+.com-tile:active {
+  transform: scale(0.985);
+}
+/* El héroe del mosaico: la foto de la Pausa o, si no hay, el dibujo del pilar
+   sobre su propio color, muy lavado (el mismo gesto de la carta en miniatura). */
+.com-tile-art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--card-body);
+  overflow: hidden;
+}
+.com-tile-foto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.com-tile-dibujo {
+  width: 58%;
+  height: 58%;
+  object-fit: contain;
+}
+.com-tile-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+}
+.com-tile-frase {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--deep-umber);
+  margin: 10px 10px 0;
+  overflow-wrap: anywhere;
+  /* Tres líneas: lo justo para que la frase entre y el mosaico quede parejo. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.com-tile-de {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 10px 10px 0;
+  font-size: 12px;
+  color: var(--warm-taupe);
+  min-width: 0;
+}
+.com-tile-de span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* La foto todavía bajando: un papel quieto que llena su hueco. El placeholder
+   de app.css trae su propio tamaño y borde redondeado; acá manda el recuadro. */
+.foto-cargando.com-tile-foto,
+.foto-cargando.com-mini-foto {
+  display: block;
+  background: var(--oat-milk);
+  border: none;
+  border-radius: 0;
+}
+
+/* ═══════════════════════════════════════════════ El perfil de otra persona */
+.com-perfil-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 6px 0 26px;
+}
+.com-perfil-apodo {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 24px;
+  color: var(--deep-umber);
+  margin: 14px 0 0;
+}
+.com-perfil-nombre {
+  font-size: 14px;
+  color: var(--warm-taupe);
+  margin: 5px 0 0;
+}
+.com-perfil-cta {
+  margin-top: 16px;
+}
+.com-perfil-privado {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 18px 20px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--warm-taupe);
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════ Sus fichas (lista) */
+.com-fichas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.com-ficha {
+  display: flex;
+  gap: 13px;
+  align-items: stretch;
+  width: 100%;
+  text-align: left;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 12px 14px;
+  color: var(--deep-umber);
+  font-family: inherit;
+  transition: box-shadow 0.18s ease;
+}
+.com-ficha:hover {
+  box-shadow: 0 4px 14px var(--warm-shadow-soft);
+}
+.com-ficha-datos {
+  flex: 1;
+  min-width: 0;
+}
+.com-ficha-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.com-ficha-cat {
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.com-ficha-fecha {
+  flex: none;
+  font-size: 12px;
+  color: var(--dust-taupe);
+}
+.com-ficha-frase {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--deep-umber);
+  margin: 8px 0 0;
+  overflow-wrap: anywhere;
+}
+.com-ficha-refl {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 7px 0 0;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Una recomendación: no se abre, se lee entera acá. */
+.com-reco {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 14px 16px;
+}
+.com-reco-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.com-pill {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  background: var(--oat-milk);
+  color: var(--warm-taupe);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.com-reco-titulo {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.35;
+  color: var(--deep-umber);
+  margin: 10px 0 0;
+  overflow-wrap: anywhere;
+}
+.com-reco-texto {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--warm-taupe);
+  margin: 7px 0 0;
+  overflow-wrap: anywhere;
+}
+.com-reco-url {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--sage-deep);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+/* ═══════════════════════════════════════════════ La ficha ajena · acciones */
+/* Las tres acciones van apiladas debajo de la ficha, con el ancho de la ficha:
+   `.baul-page-actions` (app.css) ya las centra; acá solo se les da el ancho. */
+.com-acciones {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.com-confirmacion {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--sage-deep);
+  text-align: center;
+  margin: 4px 0 0;
+}
+.com-error {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  text-align: center;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* ═══════════════════════════════════════════════ Panel inferior (bottom sheet) */
+/* Se usa para "Hacer la Pausa" y para "Reenviar". Sube desde abajo, ocupa el
+   ancho del marco y se cierra tocando afuera. */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(47, 41, 35, 0.4);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 60;
+}
+.sheet {
+  width: 100%;
+  max-width: var(--frame-max);
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--warm-cream);
+  border-radius: 24px 24px 0 0;
+  padding: 10px 20px calc(22px + env(safe-area-inset-bottom));
+  box-shadow: 0 -20px 60px rgba(70, 55, 35, 0.28);
+  animation: sheet-in 0.22s ease both;
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(18px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+/* El tirador: dice "esto se cierra hacia abajo" sin escribirlo. */
+.sheet-asa {
+  width: 42px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--sand-line);
+  margin: 0 auto 14px;
+}
+.sheet-titulo {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 20px;
+  color: var(--deep-umber);
+  text-align: center;
+  margin: 0 0 4px;
+}
+.sheet-nota {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  text-align: center;
+  margin: 0 0 18px;
+}
+.sheet-lbl {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dust-taupe);
+  margin: 4px 0 10px;
+}
+.sheet-sep {
+  border: none;
+  border-top: 1px solid var(--sand-line);
+  margin: 20px 0 4px;
+}
+.sheet-cerrar {
+  margin-top: 16px;
+}
+/* Una opción del panel: un renglón de papel que se toca entero. */
+.sheet-opcion {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 14px 16px;
+  color: var(--deep-umber);
+  font-family: inherit;
+  transition: box-shadow 0.18s ease;
+}
+.sheet-opcion + .sheet-opcion {
+  margin-top: 10px;
+}
+.sheet-opcion:hover:not(:disabled) {
+  box-shadow: 0 4px 14px var(--warm-shadow-soft);
+}
+.sheet-opcion:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.sheet-opcion-tit {
+  display: block;
+  font-size: 15px;
+  line-height: 1.35;
+}
+.sheet-opcion-nota {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin-top: 4px;
+}
+/* Una persona de mi comunidad, dentro del panel. */
+.sheet-persona {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 14px;
+  padding: 9px 8px;
+  color: var(--deep-umber);
+  font-family: inherit;
+  font-size: 15px;
+  transition: background 0.18s ease;
+}
+.sheet-persona:hover:not(:disabled) {
+  background: var(--soft-ivory);
+}
+.sheet-persona:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.sheet-vacio {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--warm-taupe);
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════ La Pausa extra */
+.pausa-extra {
+  display: flex;
+  flex-direction: column;
+}
+.pausa-extra-kicker {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--warm-taupe);
+  text-align: center;
+  margin: 0 0 4px;
+}
+.pausa-extra-de {
+  font-size: 13px;
+  color: var(--dust-taupe);
+  text-align: center;
+  margin: 0 0 20px;
+}
+.pausa-extra-card {
+  margin-bottom: 26px;
+}
+.pausa-extra-nota {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--warm-taupe);
+  text-align: center;
+  margin: 0 0 18px;
+}
