@@ -9,78 +9,11 @@
    Mobile-first: la pantalla de referencia es 375×812. Todo lo que ya existe en
    app.css (.ob*, .opt*, .textarea, .counter, .helper, .terms-row, .empty*,
    .confirm-inline*, .modal*, .lightbox*, .screen-head) se REUSA, no se redefine:
-   lo que hay acá es lo que falta. */
+   lo que hay acá es lo que falta.
 
-/* ═══════════════════════════════════════════════ Cabecera con campana */
-/* La campana convive con el título sin empujarlo: el texto se encoge, ella no. */
-.crear-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-.crear-head .screen-head {
-  flex: 1;
-  min-width: 0;
-}
-
-/* La misma fila, en la Home, alrededor del saludo (no toca `.home-greet`). */
-.campana-fila {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-.campana-fila-txt {
-  min-width: 0;
-}
-
-.campana {
-  position: relative;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  margin-top: 4px;
-  padding: 0;
-  border: 1px solid var(--sand-line);
-  border-radius: 50%;
-  background: var(--soft-ivory);
-  color: var(--warm-taupe);
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease;
-}
-.campana:hover {
-  color: var(--deep-umber);
-  border-color: var(--dust-taupe);
-}
-.campana:active {
-  transform: scale(0.96);
-}
-/* Con avisos sin leer la campana se enciende: el punto es el aviso, no una alarma. */
-.campana.tiene {
-  color: var(--sage-deep);
-}
-.campana-badge {
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  min-width: 19px;
-  height: 19px;
-  padding: 0 5px;
-  border-radius: var(--radius-pill);
-  background: var(--sage);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 19px;
-  text-align: center;
-  /* El borde del color del papel recorta la píldora contra el ícono. */
-  border: 2px solid var(--warm-cream);
-}
+   WS29 · C0: la campana (`.campana*`) se mudó a app.css — dejó de ser la
+   cabecera de Crear para ser el cluster de arriba a la derecha de las cuatro
+   pestañas (`components/AccionesArriba.tsx`). */
 
 /* ═══════════════════════════════════════════════ Crear · la pantalla */
 .crear {

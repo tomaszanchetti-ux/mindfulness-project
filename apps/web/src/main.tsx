@@ -37,6 +37,11 @@ import { Crear } from "./screens/Crear";
 import { CartaNueva } from "./screens/CartaNueva";
 import { Avisos } from "./screens/Avisos";
 import { Admin } from "./screens/Admin";
+// WS29 · C0 · Comunidad: la pestaña y sus lugares reservados (la C2 los llena).
+import { Comunidad } from "./screens/Comunidad";
+import { PerfilAjeno } from "./screens/PerfilAjeno";
+import { FichaAjena } from "./screens/FichaAjena";
+import { PausaExtra } from "./screens/PausaExtra";
 
 // Guarda de sesión: sin usuario logueado, todo lo privado vuelve al login.
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -157,6 +162,14 @@ function App() {
             <Route path="/crear/nueva" element={<RequireAuth><RequireOnboarding><CartaNueva /></RequireOnboarding></RequireAuth>} />
             <Route path="/crear/:id/editar" element={<RequireAuth><RequireOnboarding><CartaNueva /></RequireOnboarding></RequireAuth>} />
             <Route path="/avisos" element={<RequireAuth><RequireOnboarding><Avisos /></RequireOnboarding></RequireAuth>} />
+
+            {/* WS29 · C0 · Comunidad. Mismos guardas que el Baúl: sesión y
+                onboarding completo. La ficha ajena y la Pausa extra se leen a
+                pantalla completa (sin tab bar, ver SIN_TABS del Frame). */}
+            <Route path="/comunidad" element={<RequireAuth><RequireOnboarding><Comunidad /></RequireOnboarding></RequireAuth>} />
+            <Route path="/comunidad/ficha/:entregaId" element={<RequireAuth><RequireOnboarding><FichaAjena /></RequireOnboarding></RequireAuth>} />
+            <Route path="/comunidad/:usuarioId" element={<RequireAuth><RequireOnboarding><PerfilAjeno /></RequireOnboarding></RequireAuth>} />
+            <Route path="/pausa/:entregaId" element={<RequireAuth><RequireOnboarding><PausaExtra /></RequireOnboarding></RequireAuth>} />
             {/* El escritorio de Dwellia: solo `perfil.es_admin`. */}
             <Route path="/admin" element={<RequireAuth><RequireOnboarding><RequireAdmin><Admin /></RequireAdmin></RequireOnboarding></RequireAuth>} />
 

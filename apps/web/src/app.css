@@ -54,6 +54,117 @@
 .tab-active {
   color: var(--sage-deep);
 }
+/* WS29 · C0 · "Crear" no es un lugar al que se va: es lo único que se HACE desde
+   la barra. Por eso va en verde siempre — suave cuando no está activa, profundo
+   cuando sí. */
+.tab-crear {
+  color: var(--sage);
+}
+.tab-crear.tab-active {
+  color: var(--sage-deep);
+}
+
+/* ——————————————————————————————————————————————— WS29 · C0 · Cluster de arriba */
+/* Avisos y Perfil, arriba a la derecha, en las cuatro pestañas. Vive UNA vez, en
+   el Frame, y se apoya en el `position: relative` de `.frame-inner`: así queda
+   dentro del ancho del marco (--frame-max) en desktop y respeta el notch. No es
+   fixed a propósito — con el teclado abierto o al hacer scroll, un botón pegado
+   a la pantalla molesta más de lo que sirve. */
+.acciones-arriba {
+  position: absolute;
+  top: max(36px, env(safe-area-inset-top));
+  right: var(--pad-x);
+  z-index: 6;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+/* Que el cluster no tape los títulos ni el saludo: la cabecera se corre.
+   42 + 10 + 42 = 94, más un respiro = 104. */
+.frame-inner.with-tabs .screen-head,
+.frame-inner.with-tabs .home-greet {
+  padding-right: 104px;
+}
+/* Salvo cuando la pantalla abre con un "← Volver": ahí el cluster queda a la
+   altura del enlace, no del título, y el título recupera todo el ancho
+   (Método, Premium). */
+.frame-inner.with-tabs .back-link + .screen-head {
+  padding-right: 0;
+}
+/* Perfil abre con su propia cabecera (apodo + "Editar" a la derecha): ahí el
+   cluster no se esquiva de lado, se baja. */
+.frame-inner.with-tabs .perfil-cabecera {
+  padding-top: 52px;
+}
+
+/* ——————————————————————————————————————————————— La campana y el botón de perfil */
+/* WS28 · nació en `screens/crear.css` como cabecera de Crear; WS29 · C0 la subió
+   al cluster y por eso es global. Los dos botones son el mismo círculo de 42 px:
+   avisos en papel, perfil en verde. */
+.campana {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-top: 4px;
+  padding: 0;
+  border: 1px solid var(--sand-line);
+  border-radius: 50%;
+  background: var(--soft-ivory);
+  color: var(--warm-taupe);
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+.campana:hover {
+  color: var(--deep-umber);
+  border-color: var(--dust-taupe);
+}
+.campana:active {
+  transform: scale(0.96);
+}
+/* Con avisos sin leer la campana se enciende: el punto es el aviso, no una alarma. */
+.campana.tiene {
+  color: var(--sage-deep);
+}
+.campana-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--sage);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 19px;
+  text-align: center;
+  /* El borde del color del papel recorta la píldora contra el ícono. */
+  border: 2px solid var(--warm-cream);
+}
+/* Tu cara dentro de Dwellia: relleno verde, para distinguirla de la campana de
+   un vistazo. Activo (ya estás en Perfil) = el verde profundo. */
+.boton-perfil {
+  background: var(--sage);
+  border-color: var(--sage);
+  color: #fff;
+}
+.boton-perfil:hover {
+  background: var(--sage-deep);
+  border-color: var(--sage-deep);
+  color: #fff;
+}
+.boton-perfil.es-activo {
+  background: var(--sage-deep);
+  border-color: var(--sage-deep);
+  color: #fff;
+}
 
 /* ——————————————————————————————————————————————— Encabezados de pantalla */
 .screen-head {
@@ -2178,6 +2289,15 @@
 /* ——————————————————————————————————————————————— WS25 · La ficha (detalle del Baúl) */
 /* Entera en una pantalla: título = pilar · héroe (carta miniatura + fotos) ·
    reflexión en caja fija deslizable · visibilidad · acciones. */
+/* WS29 · C0 · Modo "ajena": de quién es la Pausa, arriba del pilar y en voz baja. */
+.ficha-de {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dust-taupe);
+}
 .ficha-head {
   display: flex;
   align-items: baseline;

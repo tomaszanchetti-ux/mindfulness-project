@@ -18,7 +18,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
-import { Campana } from "../components/Campana";
 import { CartaMini } from "../components/CartaMini";
 import { SoloComunidad } from "../components/SoloComunidad";
 import { api } from "../lib/api";
@@ -80,12 +79,9 @@ export function Crear() {
   if (perfil && !puedeEscribir) {
     return (
       <div className="crear">
-        <div className="crear-head">
-          <div className="screen-head">
-            <h1 className="screen-title">Crear</h1>
-            <p className="screen-sub">Escribe una carta para la comunidad</p>
-          </div>
-          <Campana />
+        <div className="screen-head">
+          <h1 className="screen-title">Crear</h1>
+          <p className="screen-sub">Escribe una carta para la comunidad</p>
         </div>
 
         <div className="crear-porque">
@@ -115,12 +111,9 @@ export function Crear() {
 
   return (
     <div className="crear">
-      <div className="crear-head">
-        <div className="screen-head">
-          <h1 className="screen-title">Crear</h1>
-          <p className="screen-sub">Tus cartas para la comunidad</p>
-        </div>
-        <Campana />
+      <div className="screen-head">
+        <h1 className="screen-title">Crear</h1>
+        <p className="screen-sub">Tus cartas para la comunidad</p>
       </div>
 
       {error && <p className="crear-aviso">{error}</p>}

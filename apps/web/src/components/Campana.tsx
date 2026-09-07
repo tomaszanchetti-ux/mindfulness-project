@@ -8,11 +8,13 @@
 // Se refresca al montar y al volver a la pestaña visible (el caso real: la carta
 // se aprueba mientras la app está abierta en otra solapa del teléfono). Nunca en
 // un intervalo: una app de calma no hace polling.
+//
+// WS29 · C0 · vive en el cluster de arriba a la derecha (`AccionesArriba`), en
+// las cuatro pestañas. Su CSS (`.campana*`) es global: está en `app.css`.
 
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
-import "../screens/crear.css";
 
 export function Campana() {
   const navigate = useNavigate();
