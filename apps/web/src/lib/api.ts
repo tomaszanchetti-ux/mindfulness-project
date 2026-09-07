@@ -152,6 +152,7 @@ export const api = {
     hora_aviso: string;
     aviso_activo: boolean;
     aceptar_terminos: boolean;
+    perfil_publico: boolean; // WS30 · C0 · Bloque C
   }>) =>
     req<Perfil>("/api/perfil", {
       method: "PUT",

@@ -163,16 +163,12 @@ export function Profile() {
   };
 
   // —— WS30 · C2.2 · perfil público ——
-  // `perfil_publico` viaja en el mismo PUT /api/perfil (contrato C0 §4.3). El
-  // tipo del cliente todavía no lo declara y `lib/api.ts` no se toca en esta
-  // card: por eso el paso está acotado a esta línea.
+  // `perfil_publico` viaja en el mismo PUT /api/perfil (contrato C0 §4.3).
   const guardarPublico = async (v: boolean) => {
     setPublico(v);
     setGuardandoPublico(true);
     try {
-      await (api.setPerfil as (b: Record<string, unknown>) => Promise<unknown>)({
-        perfil_publico: v,
-      });
+      await api.setPerfil({ perfil_publico: v });
       await refrescarPerfil();
     } catch {
       setPublico(!v); // no se guardó: el switch vuelve a donde estaba
