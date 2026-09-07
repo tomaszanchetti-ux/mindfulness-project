@@ -12,9 +12,19 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ..db.models import Carta, Compartido, Entrega, Foto
+from ..db.models import (
+    VISIBILIDAD_COMPARTIDA,
+    Carta,
+    Compartido,
+    Entrega,
+    Foto,
+    Guardada,
+    Usuario,
+)
 from . import storage
+from .comunidad import persona_min, puede_ver
 from .entrega import _carta_enriquecida
+from .fichas import ficha_ajena
 from .fotos import urls_de
 
 
@@ -32,7 +42,43 @@ def _item(s: Session, entrega: Entrega) -> dict:
         # URLs de la API (las imágenes son privadas; se sirven con login).
         "fotos": urls_de(s, entrega.id),
         "carta": _carta_enriquecida(s, carta),
+        # WS29 · C1.2: de quién vino (Pausa extra o programada); None = mía y de hoy.
+        "de": persona_min(s.get(Usuario, entrega.de_usuario_id))
+              if entrega.de_usuario_id else None,
+        # Mis fichas no son "guardadas": la clave existe para que el Baúl sea una
+        # lista homogénea (las ajenas guardadas llegan con `guardada: True`).
+        "guardada": False,
     }
+
+
+def _item_guardado(s: Session, yo: Usuario, entrega: Entrega) -> dict:
+    """La ficha AJENA que guardé, vestida de ítem del Baúl.
+
+    Se le suman las claves que el Baúl siempre trae y la ficha ajena no lleva:
+    `estrellas` es None SIEMPRE (las estrellas son del dueño y nunca viajan),
+    `completada` es True (solo se publica lo vivido) y la visibilidad es
+    `compartida` (si dejara de serlo, esta ficha ya no estaría en la lista)."""
+    return {
+        **ficha_ajena(s, yo, entrega),
+        "estrellas": None,
+        "completada": True,
+        "visibilidad": VISIBILIDAD_COMPARTIDA,
+    }
+
+
+def _guardadas(s: Session, yo: Usuario) -> list:
+    """Las fichas ajenas que guardé y TODAVÍA puedo ver. Se leen en vivo: si el
+    dueño repliega o borra la suya, desaparecen de mi Baúl sin que nadie limpie
+    nada (y vuelven si la comparte de nuevo)."""
+    salida = []
+    for g in s.scalars(
+        select(Guardada).where(Guardada.usuario_id == yo.id)
+    ).all():
+        entrega = s.get(Entrega, g.entrega_id)
+        if entrega is None or not puede_ver(s, yo, entrega):
+            continue
+        salida.append(_item_guardado(s, yo, entrega))
+    return salida
 
 
 def listar_baul(s: Session, usuario_id: str, orden: str = "reciente") -> list[dict]:
@@ -48,7 +94,20 @@ def listar_baul(s: Session, usuario_id: str, orden: str = "reciente") -> list[di
         q = q.order_by(Entrega.estrellas.desc().nullslast(), Entrega.fecha.desc())
     else:  # reciente (default)
         q = q.order_by(Entrega.fecha.desc())
-    return [_item(s, e) for e in s.scalars(q).all()]
+    mias = [_item(s, e) for e in s.scalars(q).all()]
+
+    # WS29 · C1.2: el Baúl también muestra lo que guardé de otros.
+    yo = s.get(Usuario, usuario_id)
+    if yo is None:
+        return mias
+    guardadas = _guardadas(s, yo)
+    if not guardadas:
+        return mias
+    if orden == "valoradas":
+        # Las guardadas no tienen estrellas mías: van al fondo, entre ellas por fecha.
+        guardadas.sort(key=lambda i: i["fecha"], reverse=True)
+        return mias + guardadas
+    return sorted(mias + guardadas, key=lambda i: i["fecha"], reverse=True)
 
 
 def cambiar_visibilidad(

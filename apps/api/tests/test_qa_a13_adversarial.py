@@ -401,6 +401,8 @@ def test_ok_el_contrato_coincide_con_types_ts():
     assert set(d) == {"entrega", "carta", "cambios", "cambios_restantes"}
     assert set(d["entrega"]) == {
         "id", "fecha", "estrellas", "completada", "reflexion",
+        # WS29 · C1.2: quién me hizo llegar la carta y si es una Pausa extra.
+        "de", "extra",
         "comentario_carta", "cambios", "ya_existia",
     }
     assert d["entrega"]["ya_existia"] is True

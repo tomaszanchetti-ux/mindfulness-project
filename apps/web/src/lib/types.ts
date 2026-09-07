@@ -53,6 +53,10 @@ export interface Entrega {
   comentario_carta?: string | null; // WS24: feedback privado de la carta (nunca se publica)
   cambios?: number; // WS24: veces que cambió la carta hoy (restantes = limites.cambios_carta - cambios)
   ya_existia?: boolean;
+  // WS29 · C1.2: quién me hizo llegar esta carta (reenvío hecho ahora o programado)
+  // y si es una Pausa EXTRA (no la del día).
+  de?: Persona | null;
+  extra?: boolean;
 }
 
 export interface CartaDelDia {
