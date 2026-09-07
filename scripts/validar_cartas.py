@@ -25,7 +25,13 @@ Usos (desde la raíz del repo, con el intérprete del backend — el motor vive 
                                                      # (el flujo premium de cartas
                                                      # de usuarios entra por acá)
 
-Salida: informe legible + exit code 1 si hay errores (sirve de gate en CI).
+`--carta` corre la MISMA capa 1 que el runtime (`canon.validar_candidata`): los
+límites de la comunidad (frase ≤60 · prompt 100-220), sin pedir `concepto` —el
+autor no lo escribe, lo sugiere el juez— y con los parecidos contra el mazo real.
+
+Salida: informe legible + exit code 1 si algo frena la carta (errores duros, o un
+parecido por encima del umbral en el camino `--carta`), 2 si el JSON de `--carta`
+está mal formado. Sirve de gate en CI.
 """
 
 from __future__ import annotations
@@ -41,8 +47,58 @@ DATA = RAIZ / "M0_Motor_de_Contenido" / "data"
 # El motor vive en el backend (WS27 · B1.2): se importa desde `apps/api`.
 sys.path.insert(0, str(RAIZ / "apps" / "api"))
 
-from mindful_api.services.canon import validar_deterministica  # noqa: E402
+from mindful_api.services.canon import (  # noqa: E402
+    validar_candidata,
+    validar_deterministica,
+)
 from mindful_api.services.juez import ESQUEMA_VEREDICTO, juzgar_lote  # noqa: E402,F401
+
+CAMPOS_CANDIDATA = ("categoria", "accion", "frase", "prompt")
+
+
+def _morir(mensaje: str) -> "SystemExit":
+    """Un mensaje legible en stderr y exit 2. Nunca un traceback en la cara."""
+    print(f"🔴 {mensaje}", file=sys.stderr)
+    return SystemExit(2)
+
+
+def _leer_candidata(ruta: str) -> dict:
+    """El JSON de la candidata, o un mensaje claro y exit 2.
+
+    El `concepto` NO se pide: el autor no lo escribe, lo sugiere el juez.
+    """
+    try:
+        datos = json.loads(Path(ruta).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        raise _morir(f"no existe el archivo: {ruta}")
+    except json.JSONDecodeError as e:
+        raise _morir(f"{ruta} no es un JSON válido: {e}")
+    if not isinstance(datos, dict):
+        raise _morir(f"{ruta} tiene que ser un objeto JSON con los campos "
+                     + ", ".join(CAMPOS_CANDIDATA))
+    return datos
+
+
+def _informe_candidata(candidata: dict, mazo: list, categorias: set,
+                       acciones: set) -> dict:
+    """La CAPA 1 DEL RUNTIME sobre una candidata: la misma que corre el juez.
+
+    Una regla, un solo lugar: acá se aplican los límites de la comunidad (frase
+    ≤60 · prompt 100-220), no los del mazo propio (75/300), y no se exige
+    `concepto`. Un parecido por encima del umbral frena la carta igual que un
+    error duro — es lo que hace `InformeCandidata.limpia()` en el runtime.
+    """
+    inf = validar_candidata(candidata, mazo, categorias, acciones)
+    return {
+        "errores": [f"[{e['regla']}] {e['detalle']}" for e in inf.errores],
+        "avisos": [f"[{a['regla']}] {a['detalle']}" for a in inf.avisos],
+        "similares": [
+            "se parece a la carta {id} ({campo}, {pct:.0%} de coincidencia)".format(
+                id=s["id"], campo=s["campo"], pct=s["similitud"])
+            for s in inf.similares
+        ],
+        "frena": not inf.limpia(),
+    }
 
 
 def main() -> int:
@@ -58,15 +114,21 @@ def main() -> int:
     acciones = {a["slug"] for a in json.loads((DATA / "acciones.json").read_text(encoding="utf-8"))}
 
     if args.carta:
-        candidata = json.loads(Path(args.carta).read_text(encoding="utf-8"))
+        # UNA candidata de la comunidad → la capa 1 DEL RUNTIME (`validar_candidata`),
+        # exactamente la que corre `juez.evaluar`: mismos límites, mismas reglas.
+        candidata = _leer_candidata(args.carta)
         candidata.setdefault("id", "(candidata)")
         a_validar = [candidata]
-        universo = mazo + [candidata]  # similitud/conceptos contra el mazo real
+        informe = _informe_candidata(candidata, mazo, categorias, acciones)
     else:
         a_validar = mazo
-        universo = mazo
-
-    inf = validar_deterministica(universo, categorias, acciones)
+        inf = validar_deterministica(mazo, categorias, acciones)
+        informe = {
+            "errores": list(inf.errores), "avisos": list(inf.avisos),
+            "similares": [], "observaciones": list(inf.observaciones),
+            "frena": bool(inf.errores),
+        }
+    informe.setdefault("observaciones", [])
 
     veredictos = []
     if args.judge:
@@ -78,14 +140,18 @@ def main() -> int:
 
     if args.json:
         print(json.dumps({
-            "errores": inf.errores, "avisos": inf.avisos,
-            "observaciones": inf.observaciones, "judge": veredictos,
+            "errores": informe["errores"], "avisos": informe["avisos"],
+            "similares": informe["similares"],
+            "observaciones": informe["observaciones"], "judge": veredictos,
         }, ensure_ascii=False, indent=2))
     else:
         print(f"\n=== VALIDADOR DE CARTAS · {len(a_validar)} carta(s) ===")
-        for titulo, lista, marca in (("ERRORES (gate)", inf.errores, "🔴"),
-                                     ("AVISOS (revisar)", inf.avisos, "🟡"),
-                                     ("OBSERVACIONES", inf.observaciones, "·")):
+        secciones = [("ERRORES (gate)", informe["errores"], "🔴"),
+                     ("AVISOS (revisar)", informe["avisos"], "🟡")]
+        if args.carta:   # los parecidos son del camino de la candidata
+            secciones.append(("PARECIDOS (R5 · frenan)", informe["similares"], "🟠"))
+        secciones.append(("OBSERVACIONES", informe["observaciones"], "·"))
+        for titulo, lista, marca in secciones:
             print(f"\n{titulo}: {len(lista)}")
             for item in lista:
                 print(f"  {marca} {item}")
@@ -102,7 +168,7 @@ def main() -> int:
                     print(f"          prompt: «{v['fix_sugerido']['prompt']}»")
 
     rechazadas = [v for v in veredictos if v["veredicto"] == "rechaza"]
-    return 1 if (inf.errores or rechazadas) else 0
+    return 1 if (informe["frena"] or rechazadas) else 0
 
 
 if __name__ == "__main__":

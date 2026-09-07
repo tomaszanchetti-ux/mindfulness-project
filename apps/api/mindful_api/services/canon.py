@@ -78,6 +78,10 @@ MAX_FRASE_COMUNIDAD = 60
 MIN_PROMPT_COMUNIDAD = 100
 MAX_PROMPT_COMUNIDAD = 220
 
+# R8.1 · el concepto es kebab-case y cabe en la columna (`cartas_comunidad.concepto`
+# es String(80)). El juez sugiere conceptos con un modelo: la forma se impone acá.
+MAX_CONCEPTO = 80
+
 # Matriz de afinidad (canon R8.1, WS22): pares pilar×acción inicial viables.
 # "escribir" ya no es acción inicial (cierre universal); slug `caminar` se muestra "pasear".
 MATRIZ_VIABLE = {
@@ -138,6 +142,21 @@ def _similitud(a: str, b: str) -> float:
     return SequenceMatcher(None, _norm(a), _norm(b)).ratio()
 
 
+def a_kebab(valor, maximo: int = MAX_CONCEPTO) -> Optional[str]:
+    """Un texto cualquiera → concepto kebab-case, o None si no queda nada.
+
+    Minúsculas, sin acentos, todo lo que no sea `[a-z0-9]` pasa a guion, sin
+    guiones en los bordes y recortado a `maximo` caracteres (la columna). Lo usa
+    el juez con lo que sugiere el modelo: «No Es Kebab Case» → `no-es-kebab-case`.
+    """
+    if not isinstance(valor, str):
+        return None
+    kebab = re.sub(r"[^a-z0-9]+", "-", _norm(valor)).strip("-")
+    if maximo:
+        kebab = kebab[:maximo].strip("-")
+    return kebab or None
+
+
 class Informe:
     """Informe del MAZO entero (lo que imprime el CLI). Listas de texto plano."""
 
@@ -196,8 +215,11 @@ def validar_deterministica(cartas: list, categorias: set, acciones: set) -> Info
             inf.errores.append(f"{cid}: categoría inexistente '{c.get('categoria')}'")
         if c.get("accion") not in acciones:
             inf.errores.append(f"{cid}: acción inexistente '{c.get('accion')}'")
+        # La matriz solo se consulta si los DOS slugs existen: si la acción no
+        # existe, el error es ese y ninguno más (no se inventa un par inviable).
         viables = MATRIZ_VIABLE.get(c.get("categoria"), set())
-        if c.get("accion") and viables and c["accion"] not in viables:
+        if (c.get("categoria") in categorias and c.get("accion") in acciones
+                and viables and c["accion"] not in viables):
             inf.errores.append(
                 f"{cid}: el par {c['categoria']}×{c['accion']} está marcado 'evitar' en la matriz"
             )
@@ -287,6 +309,10 @@ def validar_candidata(propuesta: dict, mazo: list, categorias: set,
 
     propuesta = {"categoria", "accion", "frase", "prompt"} (los slugs ya vienen
     del wizard, pero acá no se confía en nadie).
+
+    Errores duros: estructura y matriz (R8.1), los largos de la comunidad
+    (R8.3 · frase ≤60 · prompt 100-220) y el cierre en el diario (R3.1). El
+    `concepto` NO se pide: lo sugiere el juez, no lo escribe el autor.
     """
     inf = InformeCandidata()
     categoria = (propuesta.get("categoria") or "").strip()
@@ -313,12 +339,43 @@ def validar_candidata(propuesta: dict, mazo: list, categorias: set,
             "R8.1", f"acción inicial inexistente '{accion}'",
             "Esa acción inicial no existe en Dwellia",
         ))
+    # La matriz solo se consulta si los DOS slugs EXISTEN. Si la acción no existe,
+    # el error es ese y ninguno más: preguntarle a la matriz por un slug que no
+    # está en ella inventaba un segundo error ("el par X×Y está marcado evitar")
+    # que no dice la verdad y confunde al autor.
     viables = MATRIZ_VIABLE.get(categoria, set())
-    if categoria and accion and viables and accion not in viables:
+    if (categoria in categorias and accion in acciones
+            and viables and accion not in viables):
         inf.errores.append(_hallazgo(
             "R8.1",
             f"el par {categoria}×{accion} está marcado 'evitar' en la matriz de afinidad",
             "Ese pilar y esa acción inicial no combinan",
+        ))
+
+    # ── Errores duros (R8.3 · los largos de la COMUNIDAD) ────────────────────
+    # Los mide esta capa, no solo el router de B1.1: el juez le AFIRMA al modelo
+    # que los largos ya están verificados (ver `ALCANCE_RUNTIME`), así que
+    # cualquier llamador —el CLI, un reproceso, un test— tiene que quedar cubierto
+    # por el mismo código. Se miden sobre el texto sin espacios de los bordes; si
+    # el campo está vacío ya lo dijo R8.1 más arriba y acá no se repite.
+    frase_medida, prompt_medido = frase.strip(), prompt.strip()
+    if frase_medida and len(frase_medida) > MAX_FRASE_COMUNIDAD:
+        inf.errores.append(_hallazgo(
+            "R8.3",
+            f"frase de {len(frase_medida)} caracteres (máx {MAX_FRASE_COMUNIDAD})",
+            f"La frase no puede pasar de {MAX_FRASE_COMUNIDAD} caracteres",
+        ))
+    if prompt_medido and len(prompt_medido) < MIN_PROMPT_COMUNIDAD:
+        inf.errores.append(_hallazgo(
+            "R8.3",
+            f"prompt de {len(prompt_medido)} caracteres (mín {MIN_PROMPT_COMUNIDAD})",
+            f"El prompt tiene que medir al menos {MIN_PROMPT_COMUNIDAD} caracteres",
+        ))
+    if prompt_medido and len(prompt_medido) > MAX_PROMPT_COMUNIDAD:
+        inf.errores.append(_hallazgo(
+            "R8.3",
+            f"prompt de {len(prompt_medido)} caracteres (máx {MAX_PROMPT_COMUNIDAD})",
+            f"El prompt no puede pasar de {MAX_PROMPT_COMUNIDAD} caracteres",
         ))
 
     # ── Error duro (R3.1 · el cierre en el diario es universal) ──────────────

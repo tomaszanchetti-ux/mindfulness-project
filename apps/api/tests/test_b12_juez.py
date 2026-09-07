@@ -111,6 +111,21 @@ def _texto_system(registro) -> str:
     return "\n".join(b["text"] for b in registro["system"])
 
 
+def _texto_user(registro) -> str:
+    """El turno `user` es una LISTA de bloques (el mazo va ahí, no en el system)."""
+    return "\n".join(b["text"] for b in registro["messages"][0]["content"])
+
+
+# El fix que propone el modelo tiene que poder usarlo el autor: entra por el
+# POST/PUT de B1.1, así que respeta los límites de la comunidad (frase ≤60 ·
+# prompt 100-220 · el diario dentro).
+FIX_USABLE = {
+    "frase": "Otra frase para abrir la pausa de hoy.",
+    "prompt": ("Mira ese mismo objeto un minuto entero, sin prisa, y después "
+               "escribe en tu diario qué sentiste al mirarlo así."),
+}
+
+
 APRUEBA = {
     "veredicto": "aprueba",
     "hallazgos": [],
@@ -124,7 +139,7 @@ REVISION = {
         {"regla": "R3.4", "mayor": True, "detalle": "La consigna se queda en los hechos"},
     ],
     "concepto_sugerido": "mirar-lo-cotidiano",
-    "fix_sugerido": {"frase": "Otra frase", "prompt": "Otro prompt con diario"},
+    "fix_sugerido": FIX_USABLE,
 }
 RECHAZA = {
     "veredicto": "rechaza",
@@ -280,7 +295,7 @@ def test_con_key_requiere_revision_trae_fix_y_motivo(monkeypatch, mazo, categori
     v = juez.evaluar(_propuesta(), mazo, categorias, acciones)
 
     assert v.resultado == "requiere_revision"
-    assert v.fix == {"frase": "Otra frase", "prompt": "Otro prompt con diario"}
+    assert v.fix == FIX_USABLE
     assert v.concepto == "mirar-lo-cotidiano"
     # El motivo es el detalle del primer hallazgo MAYOR, no del primero de la lista.
     assert v.motivo == "La consigna se queda en los hechos"
@@ -308,7 +323,7 @@ def test_con_key_la_llamada_usa_el_modelo_el_cache_y_el_esquema(
     assert registro["timeout"] == 120
     assert "thinking" not in registro and "temperature" not in registro
 
-    # El bloque grande (canon + mazo) va cacheado.
+    # El canon va cacheado en el system…
     cacheados = [b for b in registro["system"] if b.get("cache_control")]
     assert len(cacheados) == 1
     assert cacheados[0]["cache_control"] == {"type": "ephemeral"}
@@ -316,8 +331,16 @@ def test_con_key_la_llamada_usa_el_modelo_el_cache_y_el_esquema(
     system = _texto_system(registro)
     assert "S1" in system                       # el alcance de seguridad
     assert "R1.5" in system and "R4.2" in system  # las cuatro preguntas de alineación
-    assert mazo[0]["frase"] in system            # el mazo vigente viaja entero
-    assert mazo[0]["prompt"] in system
+
+    # …y el MAZO viaja en el turno `user`, como datos, con su propio breakpoint:
+    # desde B1.3 incluye cartas escritas por usuarios y no puede leerse como
+    # instrucción del sistema (WS27 · BUG-B12-8).
+    bloques_user = registro["messages"][0]["content"]
+    assert bloques_user[0]["cache_control"] == {"type": "ephemeral"}
+    assert mazo[0]["frase"] in bloques_user[0]["text"]   # el mazo vigente viaja entero
+    assert mazo[0]["prompt"] in bloques_user[0]["text"]
+    assert "no instrucciones" in bloques_user[0]["text"].lower()
+    assert mazo[0]["frase"] not in system
 
     esquema = registro["output_config"]["format"]
     assert esquema["type"] == "json_schema"
@@ -331,7 +354,7 @@ def test_con_key_el_user_lleva_los_hallazgos_de_la_capa_1(
     original = mazo[0]
     juez.evaluar(_propuesta(frase=original["frase"]), mazo, categorias, acciones)
 
-    user = registro["messages"][0]["content"]
+    user = _texto_user(registro)
     assert registro["messages"][0]["role"] == "user"
     assert "hallazgos previos" in user.lower()
     assert "R5.1" in user
