@@ -183,8 +183,6 @@ export function Baul() {
 
       {invitar && (
         <SoloComunidad
-          titulo="Las recomendaciones son de quienes son parte"
-          cuerpo="Un libro, un video, un podcast que te hizo bien: dejarlo en tu Baúl y compartirlo con tu comunidad es de quienes sostienen este lugar sin anuncios."
           onClose={() => setInvitar(false)}
         />
       )}

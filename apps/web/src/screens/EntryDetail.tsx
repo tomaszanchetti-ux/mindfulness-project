@@ -355,8 +355,6 @@ export function EntryDetail() {
 
       {invitar && (
         <SoloComunidad
-          titulo="Hacer la Pausa de otra persona es de quienes son parte"
-          cuerpo="Vivir la Pausa que alguien compartió —ahora o como la próxima— es de quienes sostienen este lugar sin anuncios."
           onClose={() => setInvitar(false)}
         />
       )}

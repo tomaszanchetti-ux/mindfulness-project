@@ -6,6 +6,11 @@
 //
 // Tono de `Premium.tsx`: se INVITA, nunca se exige. Sin urgencia, sin precio en
 // el botón, sin "mejora ya". Y siempre con una salida tranquila ("Ahora no").
+//
+// WS30 · Q/A de Tomás: UN solo texto para todas las puertas (escribir cartas,
+// recomendaciones, hacer la Pausa de otra persona). Nombra a la Comunidad, no lo
+// que falta. Las pantallas ya no pasan el suyo; `titulo`/`cuerpo` quedan por si
+// alguna vez hace falta una excepción.
 
 import { useNavigate } from "react-router-dom";
 import { Button } from "./Button";
@@ -19,8 +24,8 @@ interface Props {
 }
 
 export function SoloComunidad({
-  titulo = "Escribir cartas es parte de la comunidad",
-  cuerpo = "Las cartas de Dwellia las escriben personas que sostienen este lugar sin anuncios. Si eres parte, tus palabras pueden ser la Pausa de alguien más.",
+  titulo = "Esta función es para miembros de la Comunidad Dwellia",
+  cuerpo = "Si quieres disfrutar todas las funciones de Dwellia, es tan simple como formar parte de su Comunidad.",
   onClose,
 }: Props) {
   const navigate = useNavigate();

@@ -235,8 +235,6 @@ export function FichaAjena() {
       {/* —— Free: hacer la Pausa de otra persona es de quienes son parte —— */}
       {verPremium && (
         <SoloComunidad
-          titulo="Hacer la Pausa de otra persona es de quienes son parte"
-          cuerpo="Vivir la carta que alguien compartió —ahora o como tu próxima Pausa— es de quienes sostienen Dwellia. Su Pausa la puedes leer siempre."
           onClose={() => setVerPremium(false)}
         />
       )}
