@@ -24,12 +24,17 @@ importan de acá.
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Optional
+from uuid import uuid4
 
-from sqlalchemy import or_, select
+from fastapi import HTTPException, status
+from sqlalchemy import func, or_, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..db.models import (
+    AVISO_SOLICITUD,
     VINCULO_ACEPTADA,
     VINCULO_PENDIENTE,
     VISIBILIDAD_COMPARTIDA,
@@ -38,6 +43,11 @@ from ..db.models import (
     Usuario,
     Vinculo,
 )
+from . import avisos, storage
+from .fotos import MAX_BYTES
+
+# A dónde lleva el aviso de una solicitud (la pestaña Comunidad, C2).
+URL_COMUNIDAD = "/comunidad"
 
 
 def foto_url_de(usuario: Usuario) -> Optional[str]:
@@ -161,3 +171,241 @@ def puede_ver_perfil(s: Session, quien: Usuario, duenio: Usuario) -> bool:
     if quien.id == duenio.id or duenio.perfil_publico:
         return True
     return son_comunidad(s, quien.id, duenio.id)
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WS29 · C1.1 · PERSONAS, SOLICITUDES Y FOTO DE PERFIL
+# (todo lo de acá abajo se apoya en C0 y no lo reescribe)
+# ═════════════════════════════════════════════════════════════════════════════
+
+BUSQUEDA_MINIMO = 2   # con una letra sola no se busca: devolvemos vacío, no todo
+BUSQUEDA_MAXIMO = 20  # la búsqueda es para encontrar a alguien, no para pasear el padrón
+
+MSG_YO_MISMO = "No puedes enviarte una solicitud a ti mismo."
+MSG_YA_HAY = "Ya hay una solicitud o un vínculo con esta persona."
+MSG_NO_EXISTE = "Persona no encontrada"
+MSG_SIN_SOLICITUD = "Solicitud no encontrada"
+MSG_SIN_VINCULO = "Vínculo no encontrado"
+MSG_SIN_FOTO = "Foto no encontrada"
+
+
+def _orden_por_apodo():
+    """El mismo criterio que `como_se_llama`, pero en SQL: así el orden de la
+    búsqueda (que se corta en 20 en la base) coincide con el que ve el usuario."""
+    return func.lower(func.coalesce(Usuario.apodo, Usuario.nombre, "Alguien"))
+
+
+def _escapar_like(q: str) -> str:
+    """`%`, `_` y `\\` son comodines de LIKE: quien busca "100_%" busca eso."""
+    return q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def buscar_personas(s: Session, yo: Usuario, q: Optional[str]) -> list:
+    """Encontrar a alguien para sumarlo a la comunidad: por su email EXACTO (el
+    que le pasó por otro lado) o por un pedazo de su apodo/nombre/apellido.
+
+    Nunca devuelve el email de nadie (`persona_de` no lo lleva): el email sirve
+    para BUSCAR, no para mostrarse. Tampoco me devuelve a mí."""
+    q = (q or "").strip()
+    if len(q) < BUSQUEDA_MINIMO:
+        return []
+    minus = q.lower()
+    patron = f"%{_escapar_like(minus)}%"
+    filas = s.scalars(
+        select(Usuario)
+        .where(
+            Usuario.id != yo.id,
+            or_(
+                func.lower(Usuario.email) == minus,
+                func.lower(Usuario.apodo).like(patron, escape="\\"),
+                func.lower(Usuario.nombre).like(patron, escape="\\"),
+                func.lower(Usuario.apellido).like(patron, escape="\\"),
+            ),
+        )
+        .order_by(_orden_por_apodo())
+        .limit(BUSQUEDA_MAXIMO)
+    ).all()
+    return [persona_de(s, yo, u) for u in filas]
+
+
+def _ordenadas(s: Session, yo: Usuario, usuarios: list) -> list:
+    return [
+        persona_de(s, yo, u)
+        for u in sorted(usuarios, key=lambda u: como_se_llama(u).lower())
+    ]
+
+
+def mi_comunidad(s: Session, yo: Usuario) -> dict:
+    """Las tres listas de la pestaña: mi gente, lo que me piden y lo que pedí."""
+    vinculos = s.scalars(
+        select(Vinculo).where(
+            or_(Vinculo.solicitante_id == yo.id, Vinculo.destinatario_id == yo.id)
+        )
+    ).all()
+
+    gente, recibidas, enviadas = [], [], []
+    for v in vinculos:
+        otro_id = v.destinatario_id if v.solicitante_id == yo.id else v.solicitante_id
+        otro = s.get(Usuario, otro_id)
+        if otro is None:  # no debería pasar (FK + cascada), pero no rompemos la lista
+            continue
+        if v.estado == VINCULO_ACEPTADA:
+            gente.append(otro)
+        elif v.destinatario_id == yo.id:
+            recibidas.append(otro)
+        else:
+            enviadas.append(otro)
+
+    return {
+        "gente": _ordenadas(s, yo, gente),
+        "recibidas": _ordenadas(s, yo, recibidas),
+        "enviadas": _ordenadas(s, yo, enviadas),
+    }
+
+
+def _otra_persona(s: Session, usuario_id: str) -> Usuario:
+    otro = s.get(Usuario, usuario_id)
+    if otro is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, MSG_NO_EXISTE)
+    return otro
+
+
+def crear_solicitud(s: Session, yo: Usuario, usuario_id: str) -> dict:
+    """Pedirle a alguien ser parte de su comunidad. Una sola fila por par: si ya
+    hay algo (pendiente en cualquier dirección o aceptada), es 409."""
+    if usuario_id == yo.id:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, MSG_YO_MISMO)
+    otro = _otra_persona(s, usuario_id)
+    if vinculo_entre(s, yo.id, otro.id) is not None:
+        raise HTTPException(status.HTTP_409_CONFLICT, MSG_YA_HAY)
+
+    s.add(Vinculo(solicitante_id=yo.id, destinatario_id=otro.id, estado=VINCULO_PENDIENTE))
+    avisos.crear_aviso(
+        s, otro, AVISO_SOLICITUD,
+        f"{como_se_llama(yo)} quiere ser parte de tu comunidad.",
+        referencia_id=yo.id, url=URL_COMUNIDAD,
+    )
+    try:
+        s.commit()
+    except IntegrityError:
+        # Dos pedidos a la vez (o el otro pidiendo al mismo tiempo): el único por
+        # par lo frena en la base y contestamos lo mismo que si lo hubiéramos visto.
+        s.rollback()
+        raise HTTPException(status.HTTP_409_CONFLICT, MSG_YA_HAY)
+    return persona_de(s, yo, otro)
+
+
+def aceptar_solicitud(s: Session, yo: Usuario, usuario_id: str) -> dict:
+    """Aceptar SOLO lo que me pidieron a mí. Si la solicitud la mandé yo, o no
+    existe, o ya está aceptada: 404 (no delatamos de quién es qué)."""
+    v = s.scalar(
+        select(Vinculo).where(
+            Vinculo.solicitante_id == usuario_id,
+            Vinculo.destinatario_id == yo.id,
+            Vinculo.estado == VINCULO_PENDIENTE,
+        )
+    )
+    if v is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, MSG_SIN_SOLICITUD)
+    otro = _otra_persona(s, usuario_id)
+
+    v.estado = VINCULO_ACEPTADA
+    v.aceptada_at = datetime.now(timezone.utc)
+    s.add(v)
+    avisos.crear_aviso(
+        s, otro, AVISO_SOLICITUD,
+        f"{como_se_llama(yo)} aceptó tu solicitud.",
+        referencia_id=yo.id, url=URL_COMUNIDAD,
+    )
+    s.commit()
+    return persona_de(s, yo, otro)
+
+
+def borrar_solicitud(s: Session, yo: Usuario, usuario_id: str) -> None:
+    """Rechazar (me la mandaron) o cancelar (la mandé yo): la misma puerta, porque
+    en los dos casos el resultado es el mismo — no queda fila. Sin aviso: nadie se
+    entera de que lo rechazaron."""
+    v = vinculo_entre(s, yo.id, usuario_id)
+    if v is None or v.estado != VINCULO_PENDIENTE:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, MSG_SIN_SOLICITUD)
+    s.delete(v)
+    s.commit()
+
+
+def quitar_de_comunidad(s: Session, yo: Usuario, usuario_id: str) -> None:
+    """Sacar a alguien de mi comunidad: se corta para los DOS (el vínculo es uno
+    solo) y con él se cierra lo que cada uno veía del otro. Sin aviso."""
+    v = vinculo_entre(s, yo.id, usuario_id)
+    if v is None or v.estado != VINCULO_ACEPTADA:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, MSG_SIN_VINCULO)
+    s.delete(v)
+    s.commit()
+
+
+# ── Foto de perfil ───────────────────────────────────────────────────────────
+# Mismas reglas que la foto de una pausa (formatos y 8 MB salen de services/fotos:
+# un solo número en el repo), pero la ruta es del USUARIO, no de una entrega, y la
+# lee cualquier logueado: una cara sin nombre no dice nada, y sin ella la comunidad
+# es una lista de textos.
+
+def _ruta_foto_perfil(usuario_id: str, ext: str) -> str:
+    return f"perfil/{usuario_id}/{uuid4()}.{ext}"
+
+
+def subir_foto_perfil(
+    s: Session, usuario: Usuario, contenido: bytes, content_type: Optional[str]
+) -> dict:
+    ext = storage.extension_para(content_type)
+    if ext is None:
+        raise HTTPException(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            "Formato no soportado: usa una imagen (JPG, PNG o WebP)",
+        )
+    if len(contenido) == 0:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "La foto llegó vacía")
+    if len(contenido) > MAX_BYTES:
+        raise HTTPException(
+            status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, "La foto supera los 8 MB"
+        )
+
+    anterior = usuario.foto_path
+    ruta = _ruta_foto_perfil(usuario.id, ext)
+    # Primero el archivo, después la fila (como en fotos.subir_foto): si la DB
+    # falla, limpiamos el archivo huérfano.
+    storage.guardar(ruta, contenido, content_type or "application/octet-stream")
+    try:
+        usuario.foto_path = ruta
+        s.add(usuario)
+        s.commit()
+    except Exception:
+        s.rollback()
+        storage.borrar([ruta])
+        raise
+    # La anterior se borra DESPUÉS del commit: si el borrado falla, queda un
+    # archivo de más, nunca un perfil apuntando a un archivo que ya no está.
+    if anterior and anterior != ruta:
+        storage.borrar([anterior])
+    return {"foto_url": foto_url_de(usuario)}
+
+
+def quitar_foto_perfil(s: Session, usuario: Usuario) -> None:
+    """Idempotente: quitar la foto que no está también es "quedó sin foto"."""
+    anterior = usuario.foto_path
+    if anterior is None:
+        return
+    usuario.foto_path = None
+    s.add(usuario)
+    s.commit()
+    storage.borrar([anterior])
+
+
+def leer_foto_perfil(s: Session, usuario_id: str) -> tuple:
+    """La foto de CUALQUIER usuario (con login). Un solo 404 para "no existe",
+    "no tiene foto" y "el archivo se perdió": nada se delata."""
+    otro = s.get(Usuario, usuario_id)
+    if otro is None or not otro.foto_path:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, MSG_SIN_FOTO)
+    contenido = storage.leer(otro.foto_path)
+    if contenido is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, MSG_SIN_FOTO)
+    return contenido, storage.mime_de(otro.foto_path)
