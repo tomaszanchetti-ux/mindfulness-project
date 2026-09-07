@@ -208,6 +208,10 @@ class CartaComunidadOut(BaseModel):
     carta_id: Optional[str] = None
     # B2.1 lo calcula; hasta entonces, 0.
     personas_acompanadas: int = 0
+    # B2.2 · el puntaje de la carta publicada: promedio a 1 decimal (None si
+    # nadie la puntuó todavía) y cuántas Pausas la puntuaron.
+    estrellas_promedio: Optional[float] = None
+    veces_puntuada: int = 0
     created_at: datetime
     updated_at: datetime
     carta: dict

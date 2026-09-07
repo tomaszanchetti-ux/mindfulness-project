@@ -173,6 +173,10 @@ export interface CartaPropuesta {
   concepto: string | null;
   carta_id: string | null;     // la carta publicada, si se aprobó
   personas_acompanadas: number;
+  // WS28 · B2.2 · cómo le fue: promedio de estrellas a 1 decimal (null si nadie
+  // la puntuó todavía) y cuántas Pausas la puntuaron.
+  estrellas_promedio: number | null;
+  veces_puntuada: number;
   created_at: string;
   updated_at: string;
   carta: Carta;                // ya enriquecida: se dibuja con <Card>

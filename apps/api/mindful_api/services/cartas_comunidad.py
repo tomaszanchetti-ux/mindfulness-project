@@ -284,8 +284,31 @@ def personas_acompanadas(s: Session, propuesta: CartaComunidad) -> int:
     return int(total or 0)
 
 
+def estrellas_de_la_carta(s: Session, propuesta: CartaComunidad) -> tuple:
+    """WS28 · B2.2 · cómo le fue a la carta: (promedio de estrellas, veces puntuada).
+
+    Decisión de Tomás (WS28): el autor premium ve cuánta gente recibió su carta
+    Y qué puntaje promedio le pusieron. Se miran solo las `entregas` de la carta
+    publicada que tienen estrellas (una Pausa sin puntuar no baja el promedio).
+    Sin carta publicada, o sin nadie que haya puntuado, el promedio es None: el
+    front dice "todavía nadie la puntuó", nunca dibuja un 0,0.
+    """
+    if not propuesta.carta_id:
+        return None, 0
+    fila = s.execute(
+        select(func.avg(Entrega.estrellas), func.count(Entrega.id))
+        .where(Entrega.carta_id == propuesta.carta_id)
+        .where(Entrega.estrellas.is_not(None))
+    ).one()
+    veces = int(fila[1] or 0)
+    if veces == 0:
+        return None, 0
+    return round(float(fila[0]), 1), veces
+
+
 def _salida(s: Session, propuesta: CartaComunidad, usuario: Usuario) -> dict:
     veredicto = propuesta.veredicto or {}
+    promedio, veces = estrellas_de_la_carta(s, propuesta)
     return {
         "id": propuesta.id,
         "estado": propuesta.estado,
@@ -300,6 +323,9 @@ def _salida(s: Session, propuesta: CartaComunidad, usuario: Usuario) -> dict:
         "carta_id": propuesta.carta_id,
         # B2.1 · cuánta gente recibió la carta (0 mientras no esté publicada).
         "personas_acompanadas": personas_acompanadas(s, propuesta),
+        # B2.2 · el puntaje: promedio (None si nadie puntuó) y cuántas veces.
+        "estrellas_promedio": promedio,
+        "veces_puntuada": veces,
         "created_at": propuesta.created_at,
         "updated_at": propuesta.updated_at,
         "carta": _carta_de_la_propuesta(s, propuesta, usuario),

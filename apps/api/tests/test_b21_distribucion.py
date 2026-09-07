@@ -266,6 +266,41 @@ def _entregar(usuario_id: str, carta_id: str, dias: int) -> None:
         s.commit()
 
 
+def _entregar_con_estrellas(usuario_id: str, carta_id: str, estrellas, dias: int) -> None:
+    with SessionLocal() as s:
+        s.add(Entrega(usuario_id=usuario_id, carta_id=carta_id, estrellas=estrellas,
+                      fecha=datetime.now(timezone.utc) - timedelta(days=dias)))
+        s.commit()
+
+
+def test_estrellas_promedio_de_la_carta_publicada():
+    """WS28 · B2.2: dos puntúan (5 y 4), una recibe sin puntuar → 4.5 sobre 2 votos."""
+    autor_id = _usuario(AUTOR, apodo="Ana")
+    com_id = _publicar(autor_id, firma_publica="Ana")
+    _propuesta_aprobada(autor_id, com_id)
+
+    _entregar_con_estrellas(_usuario(LECTOR), com_id, 5, dias=3)
+    _entregar_con_estrellas(_usuario(OTRO), com_id, 4, dias=2)
+    _entregar(autor_id, com_id, dias=1)                 # sin estrellas: no cuenta
+
+    mia = client.get("/api/cartas-comunidad/mias", headers=_headers(AUTOR)).json()[0]
+    assert mia["estrellas_promedio"] == 4.5
+    assert mia["veces_puntuada"] == 2
+    assert mia["personas_acompanadas"] == 3
+
+
+def test_sin_estrellas_el_promedio_es_none_no_cero():
+    """Publicada y recibida, pero nadie puntuó: None (el front no dibuja 0,0)."""
+    autor_id = _usuario(AUTOR, apodo="Ana")
+    com_id = _publicar(autor_id, firma_publica="Ana")
+    _propuesta_aprobada(autor_id, com_id)
+    _entregar(_usuario(LECTOR), com_id, dias=1)
+
+    mia = client.get("/api/cartas-comunidad/mias", headers=_headers(AUTOR)).json()[0]
+    assert mia["estrellas_promedio"] is None
+    assert mia["veces_puntuada"] == 0
+
+
 def _id_de(sub: str) -> str:
     with SessionLocal() as s:
         return s.scalar(select(Usuario.id).where(Usuario.firebase_uid == sub))
