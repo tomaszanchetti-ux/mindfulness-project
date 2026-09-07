@@ -396,7 +396,7 @@ export function Profile() {
 
       {verComoInstalar && <InstallIOSModal onClose={() => setVerComoInstalar(false)} />}
 
-      {/* —— 7 · Demo (solo dev) y cerrar sesión —— */}
+      {/* —— 8 · Demo (solo dev) y cerrar sesión —— */}
       {import.meta.env.DEV && (
         <div className="profile-section">
           <h3>Demo (solo dev)</h3>
@@ -423,6 +423,16 @@ export function Profile() {
           Cerrar sesión
         </Button>
       </div>
+
+      {/* —— Adminland (WS28 · Tomás): abajo de todo, solo si esta cuenta es admin.
+              No es una pestaña: la puerta está acá, y quien no es admin ni la ve. —— */}
+      {perfil.es_admin && (
+        <div className="actions-stack" style={{ marginTop: 18 }}>
+          <Button variant="secondary" full onClick={() => navigate("/admin")}>
+            Adminland
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

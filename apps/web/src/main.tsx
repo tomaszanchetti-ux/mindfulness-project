@@ -32,6 +32,11 @@ import { Metodo } from "./screens/Metodo";
 import { Terms } from "./screens/Terms";
 import { Premium } from "./screens/Premium";
 import { PremiumGracias } from "./screens/PremiumGracias";
+// WS27/28 · B2.2 · Crear (la pestaña), el wizard, los avisos y el adminland.
+import { Crear } from "./screens/Crear";
+import { CartaNueva } from "./screens/CartaNueva";
+import { Avisos } from "./screens/Avisos";
+import { Admin } from "./screens/Admin";
 
 // Guarda de sesión: sin usuario logueado, todo lo privado vuelve al login.
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -110,6 +115,17 @@ function RequireOnboarding({ children }: { children: JSX.Element }) {
   return children;
 }
 
+// WS28 · B2.2 · El escritorio de Dwellia no es una pestaña ni una URL secreta:
+// quien no es admin no lo ve. La verdad la tiene el backend (`perfil.es_admin`,
+// que sale de MINDFUL_ADMIN_UIDS y responde 403 igual); acá solo se cierra la
+// puerta para que nadie choque contra una pantalla vacía.
+function RequireAdmin({ children }: { children: JSX.Element }) {
+  const { perfil, loading } = useStore();
+  if (loading || !perfil) return <div className="center-note">…</div>;
+  if (!perfil.es_admin) return <Navigate to="/perfil" replace />;
+  return children;
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -134,6 +150,15 @@ function App() {
             {/* WS24 · premium (Stripe por web). /premium/gracias = vuelta del Checkout. */}
             <Route path="/premium" element={<RequireAuth><RequireOnboarding><Premium /></RequireOnboarding></RequireAuth>} />
             <Route path="/premium/gracias" element={<RequireAuth><RequireOnboarding><PremiumGracias /></RequireOnboarding></RequireAuth>} />
+
+            {/* WS27/28 · B2.2 · escribir cartas para la comunidad. El wizard sirve
+                a la carta nueva y al reenvío de la que necesita un retoque. */}
+            <Route path="/crear" element={<RequireAuth><RequireOnboarding><Crear /></RequireOnboarding></RequireAuth>} />
+            <Route path="/crear/nueva" element={<RequireAuth><RequireOnboarding><CartaNueva /></RequireOnboarding></RequireAuth>} />
+            <Route path="/crear/:id/editar" element={<RequireAuth><RequireOnboarding><CartaNueva /></RequireOnboarding></RequireAuth>} />
+            <Route path="/avisos" element={<RequireAuth><RequireOnboarding><Avisos /></RequireOnboarding></RequireAuth>} />
+            {/* El escritorio de Dwellia: solo `perfil.es_admin`. */}
+            <Route path="/admin" element={<RequireAuth><RequireOnboarding><RequireAdmin><Admin /></RequireAdmin></RequireOnboarding></RequireAuth>} />
 
             {/* WS25 · el regalo exige login, pero no onboarding completo. */}
             <Route path="/c/:token" element={<RequireAuthRegalo><PublicShare /></RequireAuthRegalo>} />

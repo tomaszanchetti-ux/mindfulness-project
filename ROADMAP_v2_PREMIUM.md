@@ -20,9 +20,9 @@
 | Login (WS25) | **Siempre logueado**, también para abrir el link recibido por WhatsApp. Login simple: Google o enlace por email. |
 | Estrellas | **Se mantienen** (alimentan la afinidad del motor). Debajo se pide un comentario opcional; con 1-2 estrellas la pregunta es "¿qué te hubiese gustado recibir?". Ese texto es feedback para Dwellia, no se publica. |
 | Rotación de cartas | **Sin agente**. Determinística (M2). La API de Anthropic se usa fuera de línea para lotes nuevos y, en runtime, SOLO para juzgar cartas de usuarios. |
-| Cartas de usuarios | Pestaña **Crear** (premium; free ve un pop-up + "Quiero ser parte"). Wizard: pilar → acción inicial → frase + prompt con la carta dibujándose en vivo → firma (anónima o apodo) + cesión → enviar. **Una carta en revisión a la vez**. **Frase ≤ 60** · **prompt 100-220**. |
+| Cartas de usuarios | Pestaña **Crear** (premium; free ve un pop-up + "Quiero ser parte"). Wizard: pilar → acción inicial → frase + prompt con la carta dibujándose en vivo → firma (anónima o apodo) + cesión → enviar. **Una carta en revisión a la vez**. **Frase ≤ 40** · **prompt 100-150** (Tomás, WS28; antes 60 / 220). |
 | Validación | Capa 1 determinística → capa 2 juez LLM **Sonnet 5** con el canon cacheado (≈1 céntimo) → **Tomás aprueba** desde `/admin`. **Aprobar = cargado** (WS25): estados visibles "En proceso de evaluación" (gris) → "Cargado a la comunidad", más "Necesita un retoque" y "No aprobada". Cada cambio avisa al autor. |
-| Distribución | Las aprobadas entran al mazo como **cartas de la comunidad**; el receptor hace opt-in en su Perfil y las recibe el día 7 (comodín). Dorso: "de <apodo>" o "de alguien de la comunidad". Impacto = mensaje privado al autor. |
+| Distribución (WS27) | **Las aprobadas entran al mazo como iguales**: la carta se suma a su pilar y el motor la reparte con las mismas reglas que las nuestras (rotación 6+1, ventanas de 7 días), a todo el mundo. Sin día especial, sin tope y **sin interruptor: todos reciben cartas de la comunidad** (la comunidad hace crecer el sistema; el juez + Tomás son la puerta de calidad). El autor también puede recibir su propia carta (reconocimiento; si no la quiere, la cambia). Dorso: "de <apodo>" o "de alguien de la comunidad". Impacto = cuántas personas la recibieron, visible para el autor. **Adminland (solo la cuenta de Tomás)**: aprobación con el funnel completo (v1 redacción del usuario → v2 comentarios y sugerencia del juez → vFinal aprobar / rechazar / modificar) + tablero (cartas por pilar y origen; propuestas pendientes, aprobadas, rechazadas, retocadas) + termómetro general de usuarios (totales, premium, gratis, cuántos crearon cartas). **Nada por usuario individual** (decisión de Tomás: simple y útil). |
 | Q/A visual (WS25) | El Q/A del backend de cada bloque **siembra datos reales** (`make demo-seed`: Pausas, reflexiones, fotos, fichas, estados, solicitudes) para que Tomás vea la app completa. Solo local. |
 
 ## 1. Modelo freemium (vista rápida)
@@ -36,7 +36,7 @@
 | Compartir la ficha (carta + reflexión + fotos), por link o a la comunidad | ✅ | ✅ |
 | Estrellas + comentario de la carta | ✅ | ✅ |
 | Escribir cartas para la comunidad | — | ✅ (1 en revisión a la vez) |
-| Recibir cartas de la comunidad (opt-in) | ✅ | ✅ |
+| Recibir cartas de la comunidad (todos, sin interruptor) | ✅ | ✅ |
 | Perfil público (opt-in) · comunidad con solicitudes · reenviar · guardar Pausas de otros | ✅ | ✅ |
 | Fichas de recomendación en el Baúl (libros, videos, podcasts) | — | ✅ |
 
@@ -56,6 +56,7 @@ paralelo; cada ola arranca cuando la anterior está commiteada.
 - Branch: `epic/v2-freemium`. Merge a `main` y deploy solo con OK explícito de Tomás.
 - Tests: cada card suma los suyos (suite hoy: 35 ✓). Front: `tsc` estricto + e2e en preview.
 - Bitácora por sesión en `WS/`. Este roadmap se actualiza al cierre de cada bloque.
+- **E2E (Tomás, WS28):** el Bloque B se validó con el contrato en navegador (Claude) + Q/A visual (Tomás) y se desplegó; el **E2E completísimo** se hace UNA vez, al cerrar el Bloque C (fin del desarrollo), antes del Bloque D. Regla original:  al terminar cada bloque, ANTES de mergear y desplegar, un recorrido completo en local con datos sembrados (`make demo-seed`, que crece con cada bloque: usuarios premium y free, cartas en todos los estados, avisos, comentarios; en C, vínculos y reenvíos) mirando el adminland con la cuenta admin local y la app con un usuario premium y uno free. Entra solo lo construido en ese bloque. Después del deploy, prueba real en producción con la cuenta de Tomás.
 - Antes de desplegar: `gcloud auth login` (la sesión está vencida desde junio).
 
 ## 3. Bloque A — Base freemium (≈2 sesiones) · 🟢 CONSTRUIDO WS24 (branch, sin deploy)
@@ -95,12 +96,14 @@ que Tomás active la cuenta real (lo único que hace él: crear cuenta Stripe + 
 
 ## 4. Bloque B — Crear: cartas de la comunidad (≈3 sesiones)
 
+> **Estado (WS28, 07/09): BLOQUE B EN PRODUCCIÓN** (API rev 00018, migraciones aplicadas, merge a `main`). Q/A visual de Tomás hecho (admin "perfecto"). Falta la prueba real de Tomás en prod con su cuenta (admin = premium). Sigue el Bloque C.
+
 Objetivo: la feature insignia del premium, con la pestaña **Crear** y el pipeline
 juez + Tomás. Al cerrar B la barra tiene 4 pestañas (Hoy · Baúl · Crear · Perfil).
 
 ### Ola B0 (orquestador) — el contrato
 - Tabla `cartas_comunidad` (Mundo 2): `usuario_id`, `categoria_slug`, `accion_slug`,
-  `frase` ≤60, `prompt` 100-220, `firma` (`anonima|apodo`), `estado`
+  `frase` ≤40, `prompt` 100-150 (WS28), `firma` (`anonima|apodo`), `estado`
   (`en_revision` juez corriendo → `revision_dwellia` | `a_revisar` (vuelve al autor con
   sugerencia) | `rechazada` → Tomás: `aprobada` (= cargada al mazo) | `rechazada`;
   `retirada` por el autor), `veredicto` (JSON del juez), `motivo`, `concepto`,
@@ -124,8 +127,8 @@ juez + Tomás. Al cerrar B la barra tiene 4 pestañas (Hoy · Baúl · Crear · 
 ### Ola B2 (2 agentes en paralelo)
 | Card | Qué | Territorio | Acepta cuando |
 |---|---|---|---|
-| **B2.1 Distribución + impacto** | El día comodín sirve una carta `comunidad` no vista si hay opt-in y disponible. Dorso con firma. `GET …/mias` devuelve `personas_acompanadas`. `GET /api/avisos` + marcar leído. | `services/seleccion.py`, `services/entrega.py`, `routers/perfil.py` (opt-in), `routers/avisos.py`, tests | opt-in recibe el día 7; sin opt-in nunca; conteo correcto |
-| **B2.2 Front: pestaña Crear + Admin** | `Frame.tsx` con 4 pestañas · `/crear`: free → pop-up "Escribir cartas es parte de la comunidad" + "Quiero ser parte"; premium → CTA "Escribir una carta" + lista **"Tus cartas"** prolija (miniatura de la carta, frase, estado con rótulo y color, sugerencia del juez, editar y reenviar, impacto) · wizard `/crear/nueva` 4 pasos con preview en vivo · Perfil › toggle "Recibir cartas de la comunidad" · campana de avisos · `/admin`. | `screens/Crear.tsx`, `screens/CartaNueva.tsx`, `screens/Admin.tsx`, `components/Frame.tsx`, `components/Card.tsx`, `lib/api.ts`, `app.css` | e2e en preview: proponer → juez simulado → admin aprueba → "Cargado" + aviso → llega el día 7 |
+| **B2.1 Distribución + impacto + tablero** | Las cartas `comunidad` ya están en el pool (B1.3 las publica en `cartas`): el motor las reparte como iguales a todos, **sin exclusiones** (el autor también puede recibir la suya). La columna `usuarios.recibe_comunidad` (B0) se elimina en la migración de B2.1: no hay interruptor. `GET …/mias` devuelve `personas_acompanadas` (entregas de esa carta). `GET /api/avisos` + `PUT …/{id}/leido` + no leídos. **Adminland (API):** `GET /api/admin/resumen` (por pilar: total / propias / comunidad · propuestas por estado · usuarios: totales, con onboarding, premium, free, crearon cartas · comentarios: total y últimos 7 días) · `cartas_comunidad.historial` (JSON, migración): cada redacción del usuario se guarda al enviar y al reenviar, así el funnel muestra v1 (lo que escribió), v2 (veredicto y sugerencia del juez o retoque de Dwellia) y vFinal (decisión). `GET /api/admin/cartas` devuelve `historial`. | `services/entrega.py`, `routers/avisos.py`, `services/avisos.py` (lectura), `services/admin.py` + `routers/admin.py` (resumen, historial), `services/cartas_comunidad.py` (historial al enviar/reenviar), `db/models.py`, migración (drop `recibe_comunidad`, add `historial`), tests | la carta se sirve a cualquiera; conteos y funnel correctos |
+| **B2.2 Front: pestaña Crear + Admin** · 🟢 CONSTRUIDA WS28 (commit `8a0362d`; el autor premium ve además el **puntaje** de su carta: ★ promedio y valoraciones) | `Frame.tsx` con 4 pestañas · `/crear`: free → pop-up "Escribir cartas es parte de la comunidad" + "Quiero ser parte"; premium → CTA "Escribir una carta" + lista **"Tus cartas"** prolija (miniatura de la carta, frase, estado con rótulo y color, sugerencia del juez, editar y reenviar, impacto) · wizard `/crear/nueva` 4 pasos con preview en vivo · campana de avisos · `/admin` = **adminland solo para la cuenta de Tomás**: (1) cola de aprobación con el funnel de cada carta — v1 redacción del usuario (con la carta dibujada) → v2 comentarios del juez y su sugerencia → vFinal: Aprobar / Rechazar (motivo) / Modificar (sugerir el cambio al usuario) · (2) tablero: cartas por pilar y origen; propuestas pendientes, aprobadas, rechazadas, retocadas · (3) comentarios de las cartas **agrupados por carta** (frase, pilar, veces puntuada, promedio de estrellas, cuántos comentarios; ordenado por las que peor van; filtro único "1-2 estrellas"; tocar una abre sus comentarios con estrellas, apodo y fecha). Solo lectura: las cartas se cambian en el repo y viajan con el deploy de contenido. | `screens/Crear.tsx`, `screens/CartaNueva.tsx`, `screens/Admin.tsx`, `components/Frame.tsx`, `components/Card.tsx`, `lib/api.ts`, `app.css` | e2e en preview: proponer → juez simulado → admin aprueba → "Cargado" + aviso → llega el día 7 |
 
 Seed B: `make demo-seed` suma 4 cartas del usuario demo, una por estado.
 
@@ -211,6 +214,10 @@ generan hojas con IA de imágenes (no mantiene el personaje). Se hace DESPUÉS d
 
 No se toca la infra. El costo real es el tiempo de moderación de Tomás, y por eso
 proponer cartas es premium: el que paga casi nunca hace spam.
+
+## 6b. Después del MVP
+Todo lo que queda para la v2 (reparto ponderado por puntaje, carta inactiva, dos
+rituales por día, deudas técnicas) vive en [`POST_MVP.md`](POST_MVP.md), una línea por idea.
 
 ## 7. Lo que sigue abierto de la v1
 - Tomás prueba el push en su iPhone (WS21).

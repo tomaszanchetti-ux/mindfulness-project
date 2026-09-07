@@ -1,0 +1,505 @@
+/* WS28 · B2.2a · La pestaña Crear, el wizard de una carta, la campana y la
+   pantalla de Avisos.
+
+   Vive aparte de app.css a propósito (territorio de la card, como premium.css y
+   profile.css). Solo tokens de theme.css: papel, sage y taupe. Nada de rojos de
+   alarma ni de verdes de "logro": una carta que vuelve para un retoque no es un
+   error del sistema, es una conversación.
+
+   Mobile-first: la pantalla de referencia es 375×812. Todo lo que ya existe en
+   app.css (.ob*, .opt*, .textarea, .counter, .helper, .terms-row, .empty*,
+   .confirm-inline*, .modal*, .lightbox*, .screen-head) se REUSA, no se redefine:
+   lo que hay acá es lo que falta. */
+
+/* ═══════════════════════════════════════════════ Cabecera con campana */
+/* La campana convive con el título sin empujarlo: el texto se encoge, ella no. */
+.crear-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.crear-head .screen-head {
+  flex: 1;
+  min-width: 0;
+}
+
+/* La misma fila, en la Home, alrededor del saludo (no toca `.home-greet`). */
+.campana-fila {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.campana-fila-txt {
+  min-width: 0;
+}
+
+.campana {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-top: 4px;
+  padding: 0;
+  border: 1px solid var(--sand-line);
+  border-radius: 50%;
+  background: var(--soft-ivory);
+  color: var(--warm-taupe);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.campana:hover {
+  color: var(--deep-umber);
+  border-color: var(--dust-taupe);
+}
+.campana:active {
+  transform: scale(0.96);
+}
+/* Con avisos sin leer la campana se enciende: el punto es el aviso, no una alarma. */
+.campana.tiene {
+  color: var(--sage-deep);
+}
+.campana-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--sage);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 19px;
+  text-align: center;
+  /* El borde del color del papel recorta la píldora contra el ícono. */
+  border: 2px solid var(--warm-cream);
+}
+
+/* ═══════════════════════════════════════════════ Crear · la pantalla */
+.crear {
+  display: flex;
+  flex-direction: column;
+}
+
+/* El porqué que ve quien todavía no es parte: papel, no cartel de venta. */
+.crear-porque {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 18px 20px;
+  margin: 2px 0 0;
+}
+.crear-porque p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--warm-taupe);
+  margin: 0;
+}
+
+/* "Tienes una carta en evaluación": explica el botón apagado, sin regañar. */
+.crear-nota {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dust-taupe);
+  text-align: center;
+  margin: 12px 4px 0;
+}
+
+/* El error del backend (llega en español): suave, nunca rojo de alarma. */
+.crear-aviso {
+  background: var(--oat-milk);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 0 0 14px;
+  overflow-wrap: anywhere;
+}
+
+/* ——————————————————————————————— Tus cartas */
+.crear-lista {
+  margin-top: 30px;
+}
+.crear-lista-titulo {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 19px;
+  color: var(--deep-umber);
+  margin: 0 0 12px;
+}
+
+.prop {
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 14px 16px;
+  box-shadow: 0 4px 14px var(--warm-shadow-soft);
+}
+.prop + .prop {
+  margin-top: 12px;
+}
+
+.prop-cabecera {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+.prop-datos {
+  min-width: 0;
+}
+.prop-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.prop-fecha {
+  flex: none;
+  font-size: 12px;
+  color: var(--dust-taupe);
+}
+.prop-frase {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--deep-umber);
+  margin: 9px 0 0;
+  overflow-wrap: anywhere;
+}
+.prop-cat {
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* La píldora de estado. Cuatro rótulos, cuatro tonos (lib/propuestas.ts).
+   Sin mayúsculas: "En proceso de evaluación" es una frase, no una etiqueta. */
+.pill-estado {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+.pill-estado.es-gris {
+  background: var(--oat-milk);
+  color: var(--warm-taupe);
+}
+.pill-estado.es-verde {
+  background: rgba(143, 165, 138, 0.22);
+  color: var(--sage-deep);
+}
+.pill-estado.es-ambar {
+  background: rgba(199, 160, 92, 0.2);
+  color: #866123;
+}
+.pill-estado.es-rojo {
+  background: rgba(185, 121, 95, 0.18);
+  color: #8f5138;
+}
+.pill-estado.es-tenue {
+  background: transparent;
+  border: 1px solid var(--sand-line);
+  color: var(--dust-taupe);
+}
+
+/* Lo que cada estado tiene para decir, debajo de una línea. */
+.prop-extra {
+  margin-top: 13px;
+  padding-top: 13px;
+  border-top: 1px solid var(--sand-line);
+}
+.prop-motivo {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--warm-taupe);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.prop-sugerencia {
+  background: var(--oat-milk);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-top: 12px;
+}
+.prop-lbl {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dust-taupe);
+  margin-bottom: 7px;
+}
+.prop-sug-frase {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--deep-umber);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.prop-sug-prompt {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--warm-taupe);
+  margin: 8px 0 0;
+  overflow-wrap: anywhere;
+}
+.prop-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* Cargada a la comunidad: a cuánta gente le llegó, cómo le fue y cómo firmó. */
+.prop-impacto {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--deep-umber);
+  margin: 0;
+}
+.prop-puntaje {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-taupe);
+  margin: 7px 0 0;
+}
+.prop-firma {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--dust-taupe);
+  margin: 8px 0 0;
+}
+.prop-retirar {
+  display: inline-block;
+}
+
+/* ——————————————————————————————— La carta en miniatura (64×88) */
+/* Mismo gesto que `.ficha-mini` del Baúl, en chico: la banda del pilar arriba y
+   su dibujo al centro. Al tocarla se abre el lightbox de siempre. */
+.carta-mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 64px;
+  height: 88px;
+  padding: 0 6px 8px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--card-body);
+  box-shadow: 0 6px 16px var(--warm-shadow-soft);
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.carta-mini:hover {
+  box-shadow: 0 8px 20px var(--warm-shadow);
+}
+.carta-mini:active {
+  transform: scale(0.97);
+}
+.carta-mini-band {
+  /* el padding lateral del botón no debe recortar la banda */
+  width: calc(100% + 12px);
+  height: 7px;
+  flex: none;
+}
+.carta-mini-dibujo {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  margin: auto 0;
+}
+
+/* ═══════════════════════════════════════════════ El wizard (4 pasos) */
+.crear-wizard {
+  min-height: 78vh;
+}
+
+/* —— 1 · El pilar: seis opciones en dos columnas —— */
+.pilar-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.pilar-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px 12px;
+  border: 1px solid var(--sand-line);
+  border-radius: 18px;
+  background: var(--soft-ivory);
+  overflow: hidden;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+.pilar-band {
+  width: calc(100% + 20px);
+  height: 6px;
+  flex: none;
+  margin-bottom: 10px;
+}
+.pilar-img {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+}
+.pilar-nombre {
+  font-size: 13.5px;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  text-align: center;
+  margin-top: 8px;
+}
+/* El borde y el halo del pilar elegido los pone su color (estilo inline). */
+.pilar-opt.on {
+  background: #fff;
+}
+
+/* —— 2 · La acción inicial: el glifo dibujado como máscara, igual que la carta —— */
+.accion-opt {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.accion-glifo {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  opacity: 0.92;
+}
+
+/* —— 3 · La carta dibujándose en vivo —— */
+.wizard-previa {
+  margin: 2px auto 22px;
+  width: 100%;
+  max-width: 236px;
+}
+.wizard-previa .card-scene {
+  max-width: 236px;
+}
+.wizard-previa-nota {
+  text-align: center;
+  font-size: 12px;
+  color: var(--dust-taupe);
+  margin: 12px 0 0;
+}
+
+/* —— 4 · Firma y cesión —— */
+/* La nota de cada opción de firma: cuenta qué va a leer la comunidad. */
+.opt-nota {
+  display: block;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--warm-taupe);
+  margin-top: 6px;
+}
+/* Sin apodo, la opción existe pero no se puede elegir: se ve apagada y se
+   explica por qué (scoped al wizard: `.opt` es de toda la app). */
+.crear-wizard .opt:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.cesion-row {
+  margin-top: 22px;
+}
+
+/* ═══════════════════════════════════════════════ Avisos (la campana) */
+.avisos {
+  display: flex;
+  flex-direction: column;
+}
+.avisos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.aviso {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+  border-radius: var(--radius-soft);
+  padding: 14px 16px;
+  color: var(--deep-umber);
+  font-family: inherit;
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.aviso:hover {
+  box-shadow: 0 4px 14px var(--warm-shadow-soft);
+}
+.aviso:active {
+  transform: scale(0.995);
+}
+/* Sin leer: papel más claro y un punto sage al costado del texto. */
+.aviso.es-no-leido {
+  background: #fff;
+  border-color: rgba(143, 165, 138, 0.5);
+}
+.aviso-texto {
+  display: block;
+  font-size: 14.5px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.aviso.es-no-leido .aviso-texto {
+  display: flex;
+  gap: 9px;
+}
+.aviso.es-no-leido .aviso-texto::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-top: 7px;
+  border-radius: 50%;
+  background: var(--sage);
+}
+.aviso-fecha {
+  display: block;
+  font-size: 12px;
+  color: var(--dust-taupe);
+  margin: 8px 0 0;
+}
+.aviso.es-no-leido .aviso-fecha {
+  margin-left: 16px;
+}
+.avisos-marcar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 14px;
+}
+.avisos-volver {
+  margin-top: 26px;
+}

@@ -43,7 +43,8 @@ const INCLUYE: { nombre: string; texto: string }[] = [
   },
   {
     nombre: "Escribir cartas para la comunidad",
-    texto: "Tus palabras pueden ser la Pausa de alguien más, con tu apodo o en anónimo.",
+    texto:
+      "Las cartas de Dwellia solo las escriben quienes son parte: tus palabras pueden ser la Pausa de alguien más, con tu apodo o en anónimo.",
   },
 ];
 

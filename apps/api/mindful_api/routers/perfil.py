@@ -14,6 +14,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from ..auth import get_current_user
+from ..config import settings
 from ..db.base import get_session
 from ..db.models import Usuario
 from ..schemas import LimitesOut, PerfilOut, PerfilUpdate
@@ -40,6 +41,7 @@ def _a_salida(s: Session, usuario: Usuario) -> PerfilOut:
         plan=lim.plan,
         plan_hasta=usuario.plan_hasta if lim.plan == "premium" else None,
         limites=LimitesOut(**lim.dict()),
+        es_admin=usuario.firebase_uid in settings.admin_uids_list,
     )
 
 

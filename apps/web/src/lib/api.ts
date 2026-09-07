@@ -7,14 +7,24 @@
 import { auth, cerrarSesion } from "./firebase";
 
 import type {
+  AccionContenido,
+  BandejaAvisos,
   CartaDelDia,
+  CartaPropuesta,
+  CartaPropuestaBody,
   CategoriaContenido,
+  ComentarioAdmin,
   Compartido,
   EstadoPagos,
+  FiltroAdmin,
   FotoSubida,
   ItemBaul,
+  MatrizViable,
   Perfil,
+  PropuestaAdmin,
   Regalo,
+  ResumenAdmin,
+  SugerenciaCarta,
   Visibilidad,
 } from "./types";
 
@@ -116,6 +126,10 @@ async function req<T>(path: string, init: RequestInit = {}): Promise<T> {
 export const api = {
   // —— Contenido global (Mundo 1) ——
   categorias: () => req<CategoriaContenido[]>("/api/contenido/categorias"),
+  // WS27 · B2.2 · las 4 acciones iniciales: el paso 2 del wizard de Crear.
+  acciones: () => req<AccionContenido[]>("/api/contenido/acciones"),
+  // WS28 · qué acciones combinan con cada pilar (canon R8.1): filtra el paso 2 del wizard.
+  matriz: () => req<MatrizViable>("/api/contenido/matriz"),
 
   // —— Perfil / onboarding (M1) ——
   perfil: () => req<Perfil>("/api/perfil"),
@@ -206,6 +220,59 @@ export const api = {
 
   // —— Regalo por enlace (WS25: también exige login) ——
   regalo: (token: string) => req<Regalo>(`/api/c/${token}`),
+
+  // ———————————————————————————————————————————————————————————————————————
+  // WS27 · B2.2 · Cartas de la comunidad (pestaña Crear)
+  // Los errores llegan en español desde el backend (422 contenido · 403 free ·
+  // 409 "ya tienes una en curso"): se muestran TAL CUAL, sin traducirlos acá.
+  // ———————————————————————————————————————————————————————————————————————
+  cartasMias: () => req<CartaPropuesta[]>("/api/cartas-comunidad/mias"),
+  proponerCarta: (body: CartaPropuestaBody) =>
+    req<CartaPropuesta>("/api/cartas-comunidad", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  // Reenviar una carta que necesita un retoque (solo desde `a_revisar`).
+  // La cesión NO se vuelve a pedir: se aceptó al proponerla.
+  reenviarCarta: (id: string, body: CartaPropuestaBody) =>
+    req<CartaPropuesta>(`/api/cartas-comunidad/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(body),
+    }),
+  retirarCarta: (id: string) =>
+    req<void>(`/api/cartas-comunidad/${id}`, { method: "DELETE" }),
+
+  // —— Avisos (la campana) ——
+  avisos: () => req<BandejaAvisos>("/api/avisos"),
+  avisoLeido: (id: string) =>
+    req<{ id: string; leido: boolean }>(`/api/avisos/${id}/leido`, { method: "PUT" }),
+  avisosLeidos: () =>
+    req<{ marcados: number; no_leidos: number }>("/api/avisos/leidos", { method: "PUT" }),
+
+  // ———————————————————————————————————————————————————————————————————————
+  // WS27 · B2.2 · Adminland (403 si el uid no está en MINDFUL_ADMIN_UIDS)
+  // ———————————————————————————————————————————————————————————————————————
+  adminResumen: () => req<ResumenAdmin>("/api/admin/resumen"),
+  adminCartas: (estado: FiltroAdmin) =>
+    req<PropuestaAdmin[]>(`/api/admin/cartas?estado=${estado}`),
+  adminAprobar: (id: string, concepto?: string) =>
+    req<PropuestaAdmin>(`/api/admin/cartas/${id}/aprobar`, {
+      method: "POST",
+      body: JSON.stringify({ concepto: concepto || null }),
+    }),
+  adminRechazar: (id: string, motivo: string) =>
+    req<PropuestaAdmin>(`/api/admin/cartas/${id}/rechazar`, {
+      method: "POST",
+      body: JSON.stringify({ motivo }),
+    }),
+  // `fix` es opcional: sin él se conserva la sugerencia que ya había escrito el juez.
+  adminARevisar: (id: string, sugerencia: string, fix?: SugerenciaCarta | null) =>
+    req<PropuestaAdmin>(`/api/admin/cartas/${id}/a-revisar`, {
+      method: "POST",
+      body: JSON.stringify({ sugerencia, fix: fix || null }),
+    }),
+  adminComentarios: (limit = 500) =>
+    req<ComentarioAdmin[]>(`/api/admin/comentarios?limit=${limit}`),
 };
 
 // Las imágenes/glifos viven en /public/assets (copiados de M0). La API guarda

@@ -49,6 +49,19 @@ class Settings(BaseSettings):
     stripe_webhook_secret: str = ""  # "whsec_…" — firma del webhook; vacío = webhook cerrado
     stripe_price_id: str = ""  # Price de la suscripción ANUAL de 8,99 € ("Dwellia premium")
 
+    # WS27 · Bloque B · el juez de cartas de la comunidad (Anthropic). Sin key el
+    # juez está APAGADO: toda propuesta pasa directo a `revision_dwellia` (Tomás).
+    # El modelo es una sola línea: cambiarlo no toca código.
+    anthropic_api_key: str = ""
+    juez_modelo: str = "claude-sonnet-5"
+    # WS27 · administración (/api/admin): firebase_uid de quienes aprueban, separados
+    # por coma. Vacío = nadie es admin (todo /api/admin devuelve 403).
+    admin_uids: str = ""
+
+    @property
+    def admin_uids_list(self) -> list[str]:
+        return [u.strip() for u in self.admin_uids.split(",") if u.strip()]
+
     # CORS para la PWA / app (Expo dev server).
     cors_origins: str = "http://localhost:8081,http://localhost:19006,http://127.0.0.1:8081"
 

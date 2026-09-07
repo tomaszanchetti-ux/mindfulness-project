@@ -6,7 +6,7 @@ VENV := $(API)/.venv
 PY := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 
-.PHONY: db-up db-down api-setup api-migrate api-seed api-dev api-test premium-demo free-demo demo-seed
+.PHONY: db-up db-down api-setup api-migrate api-seed api-dev api-dev-admin api-test premium-demo free-demo demo-seed
 
 db-up:                ## Levanta Postgres local
 	docker compose up -d postgres
@@ -28,11 +28,14 @@ api-seed:             ## Carga el contenido global de M0 (categorías/acciones/c
 api-dev:              ## Levanta la API en :8000 con reload
 	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/uvicorn mindful_api.main:app --port 8000 --reload
 
+api-dev-admin:        ## WS28 · como api-dev, pero dev|user y demo|a22 son admin (para ver /admin en local)
+	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) MINDFUL_ADMIN_UIDS='dev|user,demo|a22' .venv/bin/uvicorn mindful_api.main:app --port 8000 --reload
+
 api-test:             ## Corre los tests
 	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/pytest
 
-# ── WS24/WS25 · Q/A visual local (Tomás) ─────────────────────────────────────
-demo-seed:            ## Siembra 9 Pausas reales (reflexiones, estrellas, fotos, links) en cada usuario demo|
+# ── WS24/WS25/WS27 · Q/A visual local (Tomás) ────────────────────────────────
+demo-seed:            ## Siembra 9 Pausas + 4 cartas de comunidad (una por estado) + avisos y comentarios en cada usuario demo|
 	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/python -m mindful_api.demo_seed
 
 premium-demo:         ## Vuelve PREMIUM (1 año) a todos los usuarios demo| del navegador local
