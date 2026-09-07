@@ -148,8 +148,10 @@ class Usuario(Base):
     plan: Mapped[str] = mapped_column(String(10), nullable=False, default="free")
     plan_hasta: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     stripe_customer_id: Mapped[Optional[str]] = mapped_column(String(64), unique=True)
-    # WS27 · Bloque B: opt-in a recibir cartas de la comunidad el día comodín.
-    recibe_comunidad: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # WS27 · B2.1: NO hay interruptor de "cartas de la comunidad". Las aprobadas
+    # entran al mazo como iguales y el motor las reparte a todos con las mismas
+    # reglas que las de Dwellia (decisión de Tomás, WS27 §6): la columna
+    # `recibe_comunidad` que había creado B0 se eliminó en `l2a3b4c5d6e7`.
 
     push_suscripciones: Mapped[list["PushSuscripcion"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
@@ -271,6 +273,12 @@ class CartaComunidad(Base):
     )
     veredicto: Mapped[Optional[dict]] = mapped_column(JSON)   # lo que dijo el juez
     motivo: Mapped[Optional[str]] = mapped_column(Text)        # sugerencia / motivo visible al autor
+    # WS27 · B2.1 · las REDACCIONES del autor, una por vuelta: v1 al enviarla y
+    # v(n+1) en cada reenvío. Es la primera pata del funnel del adminland
+    # (v1 lo que escribió → v2 lo que dijo el juez, en `veredicto` → vFinal la
+    # decisión, en `estado`/`motivo`/`carta_id`). Lista de dicts; se REASIGNA
+    # entera en cada vuelta (columna JSON: mutarla en su lugar no se guarda).
+    historial: Mapped[Optional[list]] = mapped_column(JSON)
     concepto: Mapped[Optional[str]] = mapped_column(String(80))
     cesion_aceptada_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     carta_id: Mapped[Optional[str]] = mapped_column(ForeignKey("cartas.id", ondelete="SET NULL"))

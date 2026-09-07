@@ -25,11 +25,11 @@ dirá "de alguien de la comunidad".
 from __future__ import annotations
 
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..db.models import (
@@ -41,6 +41,7 @@ from ..db.models import (
     ESTADOS_CARTA_COMUNIDAD,
     FIRMA_APODO,
     ORIGEN_COMUNIDAD,
+    ORIGEN_DWELLIA,
     Accion,
     Carta,
     CartaComunidad,
@@ -49,14 +50,31 @@ from ..db.models import (
     Usuario,
 )
 from .avisos import avisar_estado_carta
-from .cartas_comunidad import FRASE_MAX, PROMPT_MAX, PROMPT_MIN, _fix_sugerido
+from .cartas_comunidad import FRASE_MAX, PROMPT_MAX, PROMPT_MIN, _fix_sugerido, _texto
 from .entrega import _carta_enriquecida
+from .plan import es_premium
 
 # El filtro por defecto de la bandeja: lo que espera decisión de Tomás.
 ESTADO_DEFAULT = ESTADO_REVISION_DWELLIA
 # Valor especial del filtro: "no filtres nada".
 ESTADO_TODAS = "todas"
-ESTADOS_FILTRO = tuple(ESTADOS_CARTA_COMUNIDAD) + (ESTADO_TODAS,)
+# Valor especial del filtro: TODO lo que espera una mirada. `revision_dwellia` es
+# lo que espera a Tomás y `en_revision` es lo que todavía tiene el juez; las dos
+# son "pendiente" desde el escritorio, y una carta clavada en `en_revision` (un
+# juez que se cayó) tiene que verse, no esconderse detrás del filtro por defecto.
+ESTADO_PENDIENTES = "pendientes"
+ESTADOS_PENDIENTES = (ESTADO_EN_REVISION, ESTADO_REVISION_DWELLIA)
+ESTADOS_FILTRO = tuple(ESTADOS_CARTA_COMUNIDAD) + (ESTADO_TODAS, ESTADO_PENDIENTES)
+
+# WS27 · B2.1 · el orden del RELOJ de los pilares (el mismo del hexágono de la
+# app). El tablero se lee de un vistazo solo si los seis salen siempre igual;
+# ordenarlos por nombre o por conteo haría que la columna baile en cada recarga.
+ORDEN_PILARES = (
+    "amor-propio", "gratitud", "vinculos", "sentido", "perspectiva", "resiliencia",
+)
+
+# Ventana del tablero de comentarios: "lo que llegó esta semana".
+DIAS_RECIENTES = 7
 
 # Desde dónde se puede tomar cada decisión. Cualquier otro estado ⇒ 409: la
 # propuesta ya se decidió (o el autor la retiró) y no se re-decide por encima.
@@ -120,9 +138,46 @@ def _carta_previa(s: Session, propuesta: CartaComunidad, autor: Optional[Usuario
     }
 
 
+def _veredicto_resumen(veredicto) -> Optional[dict]:
+    """WS27 · B2.1 · la v2 del funnel, masticada para el front.
+
+    El `veredicto` crudo se sigue mandando entero (Tomás tiene derecho a leer
+    literalmente lo que dijo el juez), pero para DIBUJAR la columna del medio el
+    front necesitaba entrar al JSON, adivinar qué claves existen y decidir qué es
+    un `fix` vacío. Eso es lógica de producto viviendo en una pantalla: acá se
+    resuelve una vez y viaja ya resuelto.
+
+    Devuelve None cuando no hay nada que mostrar (una propuesta que el juez
+    todavía no miró): así el front pregunta por un campo, no por cuatro.
+    """
+    if not isinstance(veredicto, dict) or not veredicto:
+        return None
+    resumen = {
+        "resultado": _texto(veredicto.get("resultado")),
+        "motivo": _texto(veredicto.get("motivo")),
+        # El MISMO canon que ve el autor (B1.1): un retoque vacío es None, no un
+        # objeto con las dos claves en null que el panel dibujaría en blanco.
+        "fix": _fix_sugerido(veredicto.get("fix_sugerido")),
+        # `juez` o `dwellia`: quién escribió la sugerencia que se está mirando.
+        "fuente": _texto(veredicto.get("fuente")),
+        # Cuántas reglas del canon marcó (el detalle está en el veredicto crudo).
+        "hallazgos": len(veredicto.get("hallazgos") or []),
+    }
+    if all(v in (None, 0) for v in resumen.values()):
+        return None
+    return resumen
+
+
 def _item(s: Session, propuesta: CartaComunidad) -> dict:
     """Una fila de la bandeja. Lleva el `veredicto` CRUDO a propósito: Tomás tiene
-    que poder leer literalmente lo que dijo el juez, no un resumen nuestro."""
+    que poder leer literalmente lo que dijo el juez, no un resumen nuestro.
+
+    WS27 · B2.1: y lleva el FUNNEL completo, que es lo que el panel dibuja en tres
+    columnas — `historial` (v1: cada redacción del autor, con su versión y su
+    fecha) · `veredicto`/`veredicto_resumen` (v2: lo que dijo el juez o Dwellia) ·
+    `estado` + `motivo` + `carta_id` (vFinal: la decisión y, si se aprobó, la
+    carta que salió al mazo).
+    """
     autor = s.get(Usuario, propuesta.usuario_id)
     return {
         "id": propuesta.id,
@@ -131,6 +186,10 @@ def _item(s: Session, propuesta: CartaComunidad) -> dict:
         "motivo": propuesta.motivo,
         "concepto": propuesta.concepto,
         "veredicto": propuesta.veredicto,
+        "veredicto_resumen": _veredicto_resumen(propuesta.veredicto),
+        # v1 del funnel. Lista vacía (no None) si la propuesta es anterior a la
+        # migración `l2a3b4c5d6e7`: el front itera, no pregunta si existe.
+        "historial": list(propuesta.historial or []),
         "carta_id": propuesta.carta_id,
         "created_at": propuesta.created_at,
         "updated_at": propuesta.updated_at,
@@ -152,12 +211,152 @@ def listar_cartas(s: Session, estado: str = ESTADO_DEFAULT) -> list:
             f"Estado desconocido: {estado}. Válidos: {', '.join(ESTADOS_FILTRO)}",
         )
     q = select(CartaComunidad)
-    if estado != ESTADO_TODAS:
+    if estado == ESTADO_PENDIENTES:
+        q = q.where(CartaComunidad.estado.in_(ESTADOS_PENDIENTES))
+    elif estado != ESTADO_TODAS:
         q = q.where(CartaComunidad.estado == estado)
     # `id` como desempate: dos propuestas del mismo instante salen siempre en el
     # mismo orden (una lista que baila entre recargas no se puede revisar).
     q = q.order_by(CartaComunidad.created_at.desc(), CartaComunidad.id.desc())
     return [_item(s, p) for p in s.scalars(q).all()]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WS27 · B2.1 · El TABLERO (`GET /api/admin/resumen`)
+#
+# Decisión de Tomás (WS27 §6): el adminland NO muestra nada por usuario
+# individual. Los números son del SISTEMA — cuántas cartas hay por pilar y de
+# dónde vienen, cuántas propuestas esperan, cuánta gente hay y cuánta escribe —
+# y sirven para una sola cosa: ver si un pilar quedó desparejo y escribir cartas
+# de Dwellia para emparejarlo.
+# ─────────────────────────────────────────────────────────────────────────────
+def _orden_pilar(slug: str) -> int:
+    """Índice en el reloj. Un pilar que no esté en la lista va al final, no revienta."""
+    try:
+        return ORDEN_PILARES.index(slug)
+    except ValueError:
+        return len(ORDEN_PILARES)
+
+
+def _cartas_por_pilar(s: Session) -> list:
+    """Los 6 pilares con su conteo, EN EL ORDEN DEL RELOJ y siempre los 6.
+
+    Un pilar sin cartas aparece en cero: el tablero existe justamente para ver
+    los huecos, y un pilar que desaparece de la lista es un hueco invisible.
+    """
+    filas = s.execute(
+        select(Carta.categoria_slug, Carta.origen, func.count())
+        .group_by(Carta.categoria_slug, Carta.origen)
+    ).all()
+    conteos: dict = {}
+    for slug, origen, cuantas in filas:
+        casilla = conteos.setdefault(slug, {ORIGEN_DWELLIA: 0, ORIGEN_COMUNIDAD: 0})
+        casilla[origen] = casilla.get(origen, 0) + int(cuantas)
+
+    pilares = s.scalars(select(Categoria)).all()
+    salida = []
+    for cat in sorted(pilares, key=lambda c: (_orden_pilar(c.slug), c.slug)):
+        casilla = conteos.get(cat.slug, {})
+        dwellia = int(casilla.get(ORIGEN_DWELLIA, 0))
+        comunidad = int(casilla.get(ORIGEN_COMUNIDAD, 0))
+        salida.append({
+            "slug": cat.slug,
+            "nombre": cat.nombre,
+            "total": dwellia + comunidad,
+            "dwellia": dwellia,
+            "comunidad": comunidad,
+        })
+    return salida
+
+
+def _resumen_cartas(s: Session) -> dict:
+    """El mazo servible: cuántas cartas hay, de dónde vienen y cómo se reparten.
+
+    Los totales se cuentan sobre TODA la tabla `cartas`, no sumando `por_pilar`:
+    si mañana una carta apunta a un pilar borrado, el total sigue diciendo la
+    verdad y el desajuste se ve, en vez de esconderse en una suma prolija.
+    """
+    total = int(s.scalar(select(func.count()).select_from(Carta)) or 0)
+    dwellia = int(s.scalar(
+        select(func.count()).select_from(Carta).where(Carta.origen == ORIGEN_DWELLIA)
+    ) or 0)
+    comunidad = int(s.scalar(
+        select(func.count()).select_from(Carta).where(Carta.origen == ORIGEN_COMUNIDAD)
+    ) or 0)
+    return {
+        "total": total,
+        "dwellia": dwellia,
+        "comunidad": comunidad,
+        "por_pilar": _cartas_por_pilar(s),
+    }
+
+
+def _resumen_propuestas(s: Session) -> dict:
+    """Las propuestas por estado. Los SEIS estados salen siempre, aunque sean 0."""
+    filas = s.execute(
+        select(CartaComunidad.estado, func.count()).group_by(CartaComunidad.estado)
+    ).all()
+    conteos = {estado: 0 for estado in ESTADOS_CARTA_COMUNIDAD}
+    for estado, cuantas in filas:
+        conteos[estado] = conteos.get(estado, 0) + int(cuantas)
+    # Lo que espera una mirada: el mismo conjunto que el filtro `pendientes`.
+    conteos[ESTADO_PENDIENTES] = sum(conteos.get(e, 0) for e in ESTADOS_PENDIENTES)
+    return conteos
+
+
+def _resumen_usuarios(s: Session) -> dict:
+    """Cuánta gente hay, cuánta terminó el onboarding, cuánta paga y cuánta escribe.
+
+    Premium se decide con `services/plan.es_premium` (plan == premium Y `plan_hasta`
+    en el futuro), no con `plan == 'premium'` a mano: un premium vencido es free
+    para la app y tiene que ser free también en el tablero. Por eso se recorren
+    las filas en Python en vez de contarlas en SQL — el tablero de una cuenta no
+    justifica duplicar la regla del plan en una consulta.
+    """
+    usuarios = s.scalars(select(Usuario)).all()
+    total = len(usuarios)
+    con_onboarding = sum(1 for u in usuarios if u.terminos_aceptados_at is not None)
+    premium = sum(1 for u in usuarios if es_premium(u))
+
+    autores = {
+        uid for (uid,) in s.execute(
+            select(CartaComunidad.usuario_id).distinct()
+        ).all()
+    }
+    # Solo los autores que siguen existiendo: borrar la cuenta se lleva sus
+    # propuestas en cascada, pero un id fantasma no puede inflar el conteo.
+    crearon = sum(1 for u in usuarios if u.id in autores)
+
+    return {
+        "total": total,
+        "con_onboarding": con_onboarding,
+        "premium": premium,
+        "free": total - premium,
+        "crearon_cartas": crearon,
+        "sin_cartas": total - crearon,
+    }
+
+
+def _resumen_comentarios(s: Session) -> dict:
+    """El feedback privado de las cartas: cuánto hay y cuánto llegó esta semana."""
+    base = select(func.count()).select_from(Entrega).where(
+        Entrega.comentario_carta.is_not(None)
+    )
+    desde = _now() - timedelta(days=DIAS_RECIENTES)
+    return {
+        "total": int(s.scalar(base) or 0),
+        "ultimos_7_dias": int(s.scalar(base.where(Entrega.fecha >= desde)) or 0),
+    }
+
+
+def resumen(s: Session) -> dict:
+    """`GET /api/admin/resumen` · el tablero entero, de una sola lectura."""
+    return {
+        "cartas": _resumen_cartas(s),
+        "propuestas": _resumen_propuestas(s),
+        "usuarios": _resumen_usuarios(s),
+        "comentarios": _resumen_comentarios(s),
+    }
 
 
 def listar_comentarios(s: Session, limit: int = COMENTARIOS_LIMIT_DEFAULT) -> list:

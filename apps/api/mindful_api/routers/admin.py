@@ -30,6 +30,7 @@ from ..services.admin import (
     listar_comentarios,
     marcar_a_revisar,
     rechazar as rechazar_carta,
+    resumen as resumen_admin,
 )
 from ..services.cartas_comunidad import FRASE_MAX, PROMPT_MAX, PROMPT_MIN
 
@@ -135,6 +136,25 @@ class ARevisarBody(BaseModel):
         return _limpio(v)
 
 
+@router.get("/resumen")
+def resumen(
+    s: Session = Depends(get_session),
+    admin: Usuario = Depends(get_admin),
+) -> dict:
+    """WS27 · B2.1 · El tablero del adminland, en una sola lectura.
+
+    Cuatro bloques: el mazo (total, propias, de la comunidad, y los 6 pilares en
+    el orden del reloj) · las propuestas por estado (+ `pendientes`) · la gente
+    (cuánta hay, cuánta terminó el onboarding, cuánta paga, cuánta escribe) · los
+    comentarios (todos y los de la última semana).
+
+    Decisión de Tomás (WS27 §6): NADA por usuario individual. El tablero es del
+    sistema; sirve para ver si un pilar quedó desparejo y escribir cartas de
+    Dwellia para emparejarlo.
+    """
+    return resumen_admin(s)
+
+
 @router.get("/cartas")
 def cartas(
     estado: str = Query(default=ESTADO_DEFAULT),
@@ -143,9 +163,12 @@ def cartas(
 ) -> list:
     """La bandeja de propuestas, más nueva primero.
 
-    Por defecto solo lo que espera decisión (`revision_dwellia`); `estado=todas`
-    muestra el recorrido completo. Cada ítem trae la carta ya armada con la misma
-    forma que sirve la app, para dibujarla con el componente de siempre.
+    Por defecto solo lo que espera decisión (`revision_dwellia`);
+    `estado=pendientes` suma lo que todavía tiene el juez (`en_revision`), y
+    `estado=todas` muestra el recorrido completo. Cada ítem trae la carta ya
+    armada con la misma forma que sirve la app, para dibujarla con el componente
+    de siempre, y el funnel entero: `historial` (v1) · `veredicto` +
+    `veredicto_resumen` (v2) · `estado`/`motivo`/`carta_id` (vFinal).
     """
     return listar_cartas(s, estado)
 

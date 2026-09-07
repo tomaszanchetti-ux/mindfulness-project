@@ -160,6 +160,19 @@ def _total_cartas() -> int:
     return client.get("/api/contenido/resumen").json()["cartas"]
 
 
+def _de_esta_card(items: list) -> list:
+    """Los ítems de la bandeja que son de ESTE módulo (autores `b13|…`).
+
+    WS27 · B2.1: la base es compartida y el `make demo-seed` del Q/A visual deja
+    las propuestas de los usuarios `demo|`, que el `conftest` preserva a propósito
+    (son la sesión de Tomás en el navegador). Un `== []` sobre la bandeja entera
+    ya no probaría la puerta ni el filtro: probaría que nadie más escribió nunca
+    una carta. Es la misma regla que sigue `_limpiar()` — este módulo mira solo lo
+    suyo.
+    """
+    return [i for i in items if (i["autor"]["email"] or "").startswith("b13|")]
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # 1. La puerta
 # ═══════════════════════════════════════════════════════════════════════════
@@ -195,7 +208,7 @@ def test_otro_uid_no_entra(admin):
 def test_el_admin_entra(admin):
     r = client.get("/api/admin/cartas", headers=admin)
     assert r.status_code == 200
-    assert r.json() == []
+    assert _de_esta_card(r.json()) == []
 
 
 def test_la_lista_se_lee_en_cada_request(monkeypatch, admin):
@@ -216,17 +229,24 @@ def test_listar_filtra_por_estado_y_ordena_por_mas_nueva(admin):
     rechazada = _sembrar(autor, estado=ESTADO_RECHAZADA, created_at=base - timedelta(hours=2))
     retirada = _sembrar(autor, estado=ESTADO_RETIRADA, created_at=base - timedelta(hours=4))
 
+    # Se miran SOLO las cuatro sembradas acá (la base es compartida), pero en el
+    # orden en que las devolvió la bandeja: lo que se prueba es el orden y el
+    # filtro, no que la tabla esté vacía.
+    def _ids(datos: list) -> list:
+        mias = {vieja, nueva, rechazada, retirada}
+        return [d["id"] for d in datos if d["id"] in mias]
+
     # Default = lo que espera decisión, más nueva primero.
     datos = client.get("/api/admin/cartas", headers=admin).json()
-    assert [d["id"] for d in datos] == [nueva, vieja]
+    assert _ids(datos) == [nueva, vieja]
 
     # Un estado puntual.
     datos = client.get("/api/admin/cartas?estado=rechazada", headers=admin).json()
-    assert [d["id"] for d in datos] == [rechazada]
+    assert _ids(datos) == [rechazada]
 
     # Todas = el recorrido completo, mismo orden.
     datos = client.get("/api/admin/cartas?estado=todas", headers=admin).json()
-    assert [d["id"] for d in datos] == [nueva, rechazada, vieja, retirada]
+    assert _ids(datos) == [nueva, rechazada, vieja, retirada]
 
 
 def test_estado_invalido_es_422(admin):

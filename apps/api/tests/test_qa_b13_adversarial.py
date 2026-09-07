@@ -862,6 +862,17 @@ def test_ok_el_filtro_de_estado_es_una_lista_positiva_cerrada(admin, valor, espe
         assert "Estado desconocido" in r.json()["detail"]
 
 
+def _de_este_qa(items: list) -> list:
+    """Los ítems de la bandeja que son de ESTE módulo (autores `qa13|…`).
+
+    WS27 · B2.1: la base es compartida y el `make demo-seed` del Q/A visual deja
+    las propuestas de los usuarios `demo|` (el `conftest` los preserva a
+    propósito). Contar la bandeja entera dejó de probar lo que este test quiere
+    probar; contar lo propio, sí.
+    """
+    return [i for i in items if (i["autor"]["email"] or "").startswith(MARCA)]
+
+
 def test_ok_un_autor_sin_apodo_ni_nombre_no_rompe_la_bandeja(admin):
     """Y el ítem NO lleva el `usuario_id` del autor (solo apodo/email/nombre).
 
@@ -870,7 +881,7 @@ def test_ok_un_autor_sin_apodo_ni_nombre_no_rompe_la_bandeja(admin):
     """
     autor = _usuario(AUTOR_SUB)
     _sembrar(autor)
-    items = client.get("/api/admin/cartas", headers=admin).json()
+    items = _de_este_qa(client.get("/api/admin/cartas", headers=admin).json())
     assert len(items) == 1
     assert items[0]["autor"] == {
         "apodo": None, "email": f"{AUTOR_SUB}@mindful.local", "nombre": None,
@@ -888,7 +899,7 @@ def test_ok_el_admin_no_es_superusuario_en_las_cartas_del_autor(admin):
     _usuario(ADMIN_SUB)
 
     assert client.get("/api/cartas-comunidad/mias", headers=admin).json() == []
-    assert len(client.get("/api/admin/cartas", headers=admin).json()) == 1
+    assert len(_de_este_qa(client.get("/api/admin/cartas", headers=admin).json())) == 1
 
 
 @pytest.mark.parametrize("valor", ["abc", "0", "-1", "501", "1.5", ""])
@@ -957,9 +968,11 @@ def test_ok_la_carta_aprobada_la_sirve_de_verdad_carta_del_dia(admin):
     de 7 días de "ya vistas" pero quedan fuera de la ventana de rotación de 6).
     Resultado: la única fresca del pilar es la carta de la comunidad.
 
-    De paso queda documentado que hoy la recibe un usuario con
-    `recibe_comunidad = False` y en un día que NO es comodín: eso lo filtra
-    B2.1 (Distribución), no B1.3. Es lo ESPERADO hasta esa card.
+    De paso queda documentado que la recibe un lector cualquiera, en un día que
+    NO es comodín. Cuando se escribió este test eso era "lo esperado hasta B2.1";
+    B2.1 lo volvió LA regla: las aprobadas se reparten como iguales, sin
+    interruptor y sin exclusiones (WS27 §6), y la columna `usuarios.recibe_comunidad`
+    dejó de existir.
     """
     autor = _usuario(AUTOR_SUB, apodo="Ana")
     pid = _sembrar(autor, firma=FIRMA_APODO, categoria="gratitud", accion="contemplar")
@@ -969,7 +982,6 @@ def test_ok_la_carta_aprobada_la_sirve_de_verdad_carta_del_dia(admin):
 
     lector = _usuario(LECTOR_SUB)
     with SessionLocal() as s:
-        assert s.get(Usuario, lector).recibe_comunidad is False
         dwellia_del_pilar = [
             c.id for c in s.scalars(
                 select(Carta).where(Carta.categoria_slug == "gratitud",
@@ -1041,4 +1053,12 @@ def test_ok_zz_la_base_queda_en_77_y_sin_usuarios_qa13():
             select(func.count()).select_from(Usuario)
             .where(Usuario.firebase_uid.in_(UIDS_DE_REBOTE))
         ) == 0
-        assert s.scalar(select(func.count()).select_from(CartaComunidad)) == 0
+        # Las propuestas de ESTE módulo. (Antes se contaba la tabla entera; desde
+        # B2.1 el `make demo-seed` deja las de los `demo|`, que el conftest
+        # preserva: lo que este test tiene que probar es que el Q/A no dejó
+        # rastro, no que nadie más escribió nunca una carta.)
+        assert s.scalar(
+            select(func.count()).select_from(CartaComunidad)
+            .join(Usuario, Usuario.id == CartaComunidad.usuario_id)
+            .where(Usuario.firebase_uid.like(MARCA + "%"))
+        ) == 0

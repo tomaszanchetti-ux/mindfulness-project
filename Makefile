@@ -31,8 +31,8 @@ api-dev:              ## Levanta la API en :8000 con reload
 api-test:             ## Corre los tests
 	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/pytest
 
-# ── WS24/WS25 · Q/A visual local (Tomás) ─────────────────────────────────────
-demo-seed:            ## Siembra 9 Pausas reales (reflexiones, estrellas, fotos, links) en cada usuario demo|
+# ── WS24/WS25/WS27 · Q/A visual local (Tomás) ────────────────────────────────
+demo-seed:            ## Siembra 9 Pausas + 4 cartas de comunidad (una por estado) + avisos y comentarios en cada usuario demo|
 	cd $(API) && MINDFUL_DATABASE_URL=$(DB_URL) .venv/bin/python -m mindful_api.demo_seed
 
 premium-demo:         ## Vuelve PREMIUM (1 año) a todos los usuarios demo| del navegador local

@@ -93,7 +93,11 @@ def test_defaults_del_contrato():
         s.add(u)
         s.commit()
         s.refresh(u)
-        assert u.recibe_comunidad is False
+        # Acá vivía `assert u.recibe_comunidad is False`. La columna la eliminó la
+        # migración `l2a3b4c5d6e7` (B2.1): Tomás decidió que las cartas aprobadas
+        # se reparten como iguales, a todos, SIN interruptor y sin exclusiones
+        # (WS27 §6). Un opt-in que nadie puede apagar no es un contrato: es una
+        # columna muerta, y el candado que la defendía se va con ella.
 
         cc = CartaComunidad(usuario_id=u.id, categoria_slug="vinculos", accion_slug="hacer",
                             frase="Frase", prompt="Prompt con diario.")

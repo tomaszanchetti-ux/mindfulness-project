@@ -762,9 +762,12 @@ def test_bug_un_retoque_vacio_de_dwellia_llega_como_sugerencia_fantasma(monkeypa
     assert mia["sugerencia"] is None
 
 
-def test_ok_personas_acompanadas_es_cero_aunque_la_carta_ya_acompane(monkeypatch):
-    """B2.1 lo va a calcular. Hoy es 0 SIEMPRE — también con la carta publicada y
-    entregada: es un placeholder, no una cuenta rota."""
+def test_ok_personas_acompanadas_cuenta_las_entregas_de_la_carta(monkeypatch):
+    """Cuando se escribió este Q/A (B1.1) el campo era un placeholder fijo en 0 y
+    el test afirmaba justamente eso. **B2.1 lo llenó**: es el conteo de `entregas`
+    de la carta publicada. El candado se da vuelta y ahora afirma la cuenta —
+    incluida la del propio autor, que también puede recibir su carta (no hay
+    exclusiones: WS27 §6)."""
     _juez_off(monkeypatch)
     h = _premium("qa11|impacto")
     propuesta_id = _proponer(h).json()["id"]
@@ -776,7 +779,7 @@ def test_ok_personas_acompanadas_es_cero_aunque_la_carta_ya_acompane(monkeypatch
         s.commit()
 
     mia = client.get("/api/cartas-comunidad/mias", headers=h).json()[0]
-    assert mia["personas_acompanadas"] == 0
+    assert mia["personas_acompanadas"] == 1
 
 
 # ─────────────────────────────────────────────────────────────────────────────

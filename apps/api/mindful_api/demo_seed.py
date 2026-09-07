@@ -1,10 +1,18 @@
-"""WS25 · Q/A visual — siembra Pausas de VERDAD para los usuarios `demo|` locales.
+"""WS25 + WS27 · Q/A visual — siembra Pausas y cartas de comunidad de VERDAD
+para los usuarios `demo|` locales.
 
 Tomás abre la app en su navegador y tiene que ver el Baúl lleno, con reflexiones de
 largos distintos, estrellas, fotos, fichas compartidas y links ya enviados. Este
 módulo crea exactamente eso, pasando por los mismos servicios que usa la API (fotos
 por `services/fotos`, links por `services/compartir`), para que lo sembrado sea
 indistinguible de lo vivido: mismo `storage_path` canónico, mismo cupo por plan.
+
+WS27 · B2.1 suma el Bloque B: por cada usuario demo, CUATRO cartas propuestas —
+una por estado visible (en evaluación · necesita un retoque · no aprobada ·
+cargada a la comunidad)—, cada una con su historial de redacciones para el funnel
+del adminland, la carta aprobada ya publicada en el mazo con su firma, los avisos
+de cada transición (uno sin leer, para que la campana muestre un 1) y tres
+comentarios privados de cartas para /admin › comentarios.
 
 Uso:  make demo-seed        (o: python -m mindful_api.demo_seed desde apps/api)
 
@@ -16,7 +24,11 @@ Tres candados:
    `conftest` de los tests y los targets `premium-demo` / `free-demo`.
 3. IDEMPOTENTE: cada Pausa sembrada queda marcada en `descartadas` con `MARCA`.
    Correrlo dos veces no duplica nada (y `descartadas` con un id inexistente lo
-   ignora el motor de selección, así que la marca no ensucia el historial).
+   ignora el motor de selección, así que la marca no ensucia el historial). Las
+   cartas de la comunidad tienen su propia marca (`MARCA_CC` en el `concepto`),
+   así que se siembran aunque las Pausas ya estuvieran — y si la suite de tests
+   borró del mazo la carta publicada (limpia todo `origen != dwellia` para volver
+   a 77), el seed la republica sin re-sembrar el resto.
 
 Las fotos son PNG generados acá con la biblioteca estándar (`zlib` + `struct`): un
 color plano por foto. Sin Pillow — no queremos una dependencia para el Q/A.
@@ -24,6 +36,7 @@ color plano por foto. Sin Pillow — no queremos una dependencia para el Q/A.
 
 from __future__ import annotations
 
+import secrets
 import struct
 import sys
 import zlib
@@ -34,7 +47,22 @@ from sqlalchemy.orm import Session
 
 from .config import settings
 from .db.base import SessionLocal
-from .db.models import Carta, Entrega, Usuario
+from .db.models import (
+    AVISO_CARTA_ESTADO,
+    ESTADO_A_REVISAR,
+    ESTADO_APROBADA,
+    ESTADO_RECHAZADA,
+    ESTADO_REVISION_DWELLIA,
+    FIRMA_ANONIMA,
+    FIRMA_APODO,
+    ORIGEN_COMUNIDAD,
+    Aviso,
+    Carta,
+    CartaComunidad,
+    Entrega,
+    Usuario,
+)
+from .services.avisos import TEXTOS_ESTADO
 from .services.compartir import crear_compartido
 from .services.fotos import subir_foto
 from .services.plan import limites
@@ -42,6 +70,12 @@ from .services.plan import limites
 # La huella que hace idempotente al seed. Va en `descartadas` (JSON): no es un id de
 # carta real, así que `historial_motor` la saltea sin enterarse.
 MARCA = "__demo_seed_ws25__"
+
+# WS27 · B2.1 · la huella de las cartas de comunidad sembradas. Va en el
+# `concepto` de la propuesta (una etiqueta, no un texto visible) y en el id de la
+# carta publicada: se ve de un vistazo en la base y no se pisa con nada real.
+MARCA_CC = "demo-seed-"
+PREFIJO_CARTA_DEMO = "com-demo-"
 
 # El usuario que se crea si el navegador local todavía no dejó ninguno: el seed
 # siempre tiene que dejar algo para mirar.
@@ -103,6 +137,114 @@ PAUSAS = [
     (14, None,            None, 0, "privada"),
     (16, REFLEXION_MEDIA_3, None, 0, "privada"),
     (18, None,            None, 0, "privada"),
+]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WS27 · B2.1 · Las cartas de la comunidad del Q/A visual.
+#
+# Tomás abre la pestaña Crear y tiene que ver LOS CUATRO estados visibles a la
+# vez, cada uno con lo que le corresponde (la sugerencia del juez, el motivo del
+# rechazo, la carta ya cargada al mazo con su firma), y en /admin el funnel de
+# cada una: v1 lo que escribió → v2 lo que dijo el juez → vFinal la decisión.
+#
+# Los textos respetan los límites REALES del contrato (frase ≤60, prompt 100-220)
+# porque el panel los vuelve a medir al aprobar: una carta sembrada fuera de
+# rango le daría un 422 a Tomás en pleno Q/A.
+#
+# Cada entrada: (clave, estado, categoría, acción, frase, prompt, motivo,
+#                veredicto, redacciones anteriores, días atrás).
+# `redacciones anteriores` son las vueltas VIEJAS (la actual se arma sola con el
+# texto de la fila): solo la de `a_revisar` tiene una, así que su funnel muestra
+# dos versiones.
+# ─────────────────────────────────────────────────────────────────────────────
+_PROMPT_REVISION = (
+    "Escribe en tu diario tres cosas que hoy te sostuvieron sin que las nombraras, "
+    "y qué cambiaría si mañana le dieras las gracias en voz alta a una de ellas."
+)
+_PROMPT_A_REVISAR_V1 = (
+    "Escribe en tu diario todo lo que no pudiste terminar hoy y proponte un plan "
+    "para recuperar el tiempo perdido durante el fin de semana que viene."
+)
+_PROMPT_A_REVISAR_V2 = (
+    "Escribe en tu diario lo que quedó sin terminar hoy y arma un plan corto para "
+    "recuperar el tiempo perdido antes de que arranque el fin de semana."
+)
+# Lo que el juez PROPONE en la segunda vuelta (la sugerencia que el autor ve).
+_PROMPT_FIX = (
+    "Escribe en tu diario una cosa que hoy te pesó y otra que igual pudiste "
+    "sostener. Léelas juntas antes de dormir y mira cuál ocupa más lugar."
+)
+_PROMPT_RECHAZADA = (
+    "Escribe en tu diario los tres objetivos que vas a cumplir sí o sí este mes y "
+    "el castigo que te vas a poner si llegas al domingo sin haberlos cumplido."
+)
+_PROMPT_APROBADA = (
+    "Escribe en tu diario el mensaje que hoy estuviste por mandar y no mandaste. "
+    "Léelo mañana y decide si sigue haciendo falta que llegue."
+)
+
+CARTAS_COMUNIDAD = [
+    (
+        "revision", ESTADO_REVISION_DWELLIA, "gratitud", "contemplar",
+        "Lo que sostiene tu día casi nunca hace ruido.",
+        _PROMPT_REVISION,
+        None,
+        {"resultado": "aprueba", "hallazgos": [], "concepto": "gratitud-callada",
+         "fix_sugerido": None, "motivo": None, "fuente": "juez"},
+        [], 3,
+    ),
+    (
+        "retoque", ESTADO_A_REVISAR, "resiliencia", "respirar",
+        "Planifica hoy para no llegar agotado al viernes.",
+        _PROMPT_A_REVISAR_V2,
+        "La carta sigue pidiendo un plan. Prueba con algo que se pueda mirar hoy, "
+        "sin tarea pendiente al final.",
+        {"resultado": "requiere_revision",
+         "hallazgos": [{"regla": "R1.3", "mayor": True,
+                        "detalle": "El prompt pide un plan, no una mirada."},
+                       {"regla": "R7", "mayor": False,
+                        "detalle": "«el tiempo perdido» es una muletilla."}],
+         "concepto": "peso-del-dia",
+         "fix_sugerido": {"frase": "Hoy no tienes que poder con todo.",
+                          "prompt": _PROMPT_FIX},
+         "motivo": "El prompt pide un plan, no una mirada.", "fuente": "juez"},
+        [("Organiza tu semana para no llegar agotado al viernes.",
+          _PROMPT_A_REVISAR_V1)], 9,
+    ),
+    (
+        "rechazada", ESTADO_RECHAZADA, "perspectiva", "caminar",
+        "Si no lo cumples este mes, no lo vas a cumplir nunca.",
+        _PROMPT_RECHAZADA,
+        "Dwellia no exige ni castiga: invita a mirar. Esta carta pone una condena "
+        "donde tendría que haber una pregunta.",
+        {"resultado": "rechaza",
+         "hallazgos": [{"regla": "S3", "mayor": True,
+                        "detalle": "Propone castigarse a uno mismo."},
+                       {"regla": "R2.1", "mayor": True,
+                        "detalle": "Da una orden en lugar de abrir una mirada."}],
+         "concepto": "meta-del-mes", "fix_sugerido": None,
+         "motivo": "Propone castigarse a uno mismo.", "fuente": "juez"},
+        [], 16,
+    ),
+    (
+        "aprobada", ESTADO_APROBADA, "vinculos", "hacer",
+        "Hay un mensaje que estás por no mandar.",
+        _PROMPT_APROBADA,
+        None,
+        {"resultado": "aprueba", "hallazgos": [], "concepto": "mensaje-sin-mandar",
+         "fix_sugerido": None, "motivo": None, "fuente": "juez"},
+        [], 24,
+    ),
+]
+
+# Los comentarios privados de las cartas (lo que se escribe debajo de las
+# estrellas). Van sobre Pausas YA sembradas, por posición en el Baúl ordenado de
+# la más nueva a la más vieja: la 1.ª (5 ⭐), la 5.ª (2 ⭐) y la 6.ª (1 ⭐), para
+# que /admin › comentarios muestre las dos puntas y no solo elogios.
+COMENTARIOS = [
+    (0, "Me llegó justo el día que la necesitaba. Gracias por esta."),
+    (4, "Me hubiese gustado algo para hacer con alguien, no a solas."),
+    (5, "Hoy no me representó. Prefiero cartas más cortas por la mañana."),
 ]
 
 # Un color plano distinto por foto, para distinguirlas de un vistazo en el Baúl.
@@ -266,6 +408,164 @@ def sembrar_usuario(s: Session, usuario: Usuario) -> dict:
     return resumen
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# WS27 · B2.1 · Las cartas de la comunidad, sus avisos y los comentarios
+# ─────────────────────────────────────────────────────────────────────────────
+def _redaccion(version: int, frase: str, prompt: str, categoria: str, accion: str,
+               firma: str, fecha: datetime) -> dict:
+    """Una vuelta del historial, con la MISMA forma que escribe B1.1 en runtime."""
+    return {
+        "version": version, "frase": frase, "prompt": prompt,
+        "categoria": categoria, "accion": accion, "firma": firma,
+        "fecha": fecha.isoformat(), "por": "usuario",
+    }
+
+
+def _propuestas_sembradas(s: Session, usuario: Usuario) -> list:
+    """Las propuestas que puso ESTE seed (por la marca en `concepto`)."""
+    return list(s.scalars(
+        select(CartaComunidad)
+        .where(CartaComunidad.usuario_id == usuario.id)
+        .where(CartaComunidad.concepto.like(MARCA_CC + "%"))
+    ).all())
+
+
+def _publicar_carta_demo(s: Session, usuario: Usuario, propuesta: CartaComunidad,
+                         firma: str) -> Carta:
+    """La carta de la propuesta aprobada, ya en el mazo (Mundo 1, origen comunidad).
+
+    Es lo que hace `services/admin.aprobar` cuando Tomás aprueba, con la misma
+    forma: id propio, `origen=comunidad`, autor y la firma CONGELADA (el apodo de
+    hoy, o None si el autor eligió anónima).
+    """
+    carta = Carta(
+        id=PREFIJO_CARTA_DEMO + secrets.token_hex(4),
+        categoria_slug=propuesta.categoria_slug,
+        accion_slug=propuesta.accion_slug,
+        concepto=propuesta.concepto,
+        frase=propuesta.frase,
+        prompt=propuesta.prompt,
+        origen=ORIGEN_COMUNIDAD,
+        autor_usuario_id=usuario.id,
+        firma_publica=(usuario.apodo if firma == FIRMA_APODO else None),
+    )
+    s.add(carta)
+    s.flush()                       # la FK `carta_id` necesita la fila escrita
+    return carta
+
+
+def sembrar_comunidad(s: Session, usuario: Usuario) -> dict:
+    """Las 4 propuestas (una por estado visible), sus avisos y 3 comentarios.
+
+    Idempotente por la marca `demo-seed-` en `concepto`. Y ADEMÁS se auto-repara:
+    la suite de tests limpia del mazo toda carta con `origen != dwellia` (para que
+    el mazo vuelva a 77), así que después de correr los tests la propuesta
+    aprobada se queda sin su carta publicada. En ese caso el seed no re-siembra
+    todo: republica solo la carta que falta y vuelve a apuntarla.
+    """
+    ya = _propuestas_sembradas(s, usuario)
+    resumen = {"propuestas": 0, "avisos": 0, "comentarios": 0,
+               "carta_publicada": None, "republicada": False, "saltado": False}
+
+    firma = FIRMA_APODO if (usuario.apodo or "").strip() else FIRMA_ANONIMA
+    ahora = datetime.now(timezone.utc)
+
+    if ya:
+        resumen["saltado"] = True
+        resumen["propuestas"] = len(ya)
+        # ¿Le falta la carta al aprobado? (los tests la borran)
+        for propuesta in ya:
+            if propuesta.estado != ESTADO_APROBADA:
+                continue
+            if propuesta.carta_id and s.get(Carta, propuesta.carta_id) is not None:
+                resumen["carta_publicada"] = propuesta.carta_id
+                continue
+            carta = _publicar_carta_demo(s, usuario, propuesta, propuesta.firma)
+            propuesta.carta_id = carta.id
+            s.add(propuesta)
+            s.commit()
+            resumen["carta_publicada"] = carta.id
+            resumen["republicada"] = True
+        return resumen
+
+    for (clave, estado, categoria, accion, frase, prompt, motivo, veredicto,
+         anteriores, dias) in CARTAS_COMUNIDAD:
+        creada = ahora - timedelta(days=dias)
+        propuesta = CartaComunidad(
+            usuario_id=usuario.id,
+            categoria_slug=categoria, accion_slug=accion,
+            frase=frase, prompt=prompt,
+            firma=firma, estado=estado,
+            veredicto=veredicto, motivo=motivo,
+            concepto=MARCA_CC + clave,
+            cesion_aceptada_at=creada,      # sin cesión, aprobar responde 409
+            created_at=creada,
+            updated_at=creada,
+        )
+        # El funnel: primero las vueltas viejas, después la redacción de AHORA.
+        historial = [
+            _redaccion(i + 1, f, p, categoria, accion, firma,
+                       creada - timedelta(days=len(anteriores) - i))
+            for i, (f, p) in enumerate(anteriores)
+        ]
+        historial.append(_redaccion(len(anteriores) + 1, frase, prompt,
+                                    categoria, accion, firma, creada))
+        propuesta.historial = historial
+        s.add(propuesta)
+        s.commit()
+        s.refresh(propuesta)
+        resumen["propuestas"] += 1
+
+        if estado == ESTADO_APROBADA:
+            carta = _publicar_carta_demo(s, usuario, propuesta, firma)
+            propuesta.carta_id = carta.id
+            s.add(propuesta)
+            s.commit()
+            resumen["carta_publicada"] = carta.id
+
+        # El aviso, con el MISMO texto canónico que escribe la app
+        # (`services/avisos.TEXTOS_ESTADO`). La fila se arma acá y no con
+        # `crear_aviso` por dos razones: el seed elige la fecha (para que la
+        # campana tenga un orden creíble) y no manda un push por algo que nunca
+        # pasó de verdad. `revision_dwellia` no avisa: para el autor sigue "en
+        # proceso de evaluación".
+        texto = TEXTOS_ESTADO.get(estado)
+        if texto:
+            s.add(Aviso(
+                usuario_id=usuario.id, tipo=AVISO_CARTA_ESTADO,
+                referencia_id=propuesta.id, texto=texto,
+                # Solo el último (la carta cargada) queda SIN LEER: la campana
+                # tiene que mostrar un 1, no una lista entera en negrita.
+                leido=(estado != ESTADO_APROBADA),
+                created_at=creada,
+            ))
+            s.commit()
+            resumen["avisos"] += 1
+
+    # Los comentarios privados de las cartas, sobre Pausas ya sembradas.
+    sembradas = [
+        e for e in s.scalars(
+            select(Entrega)
+            .where(Entrega.usuario_id == usuario.id)
+            .order_by(Entrega.fecha.desc())
+        ).all()
+        if e.descartadas and MARCA in e.descartadas
+    ]
+    for indice, texto in COMENTARIOS:
+        if indice >= len(sembradas):
+            continue
+        entrega = sembradas[indice]
+        if entrega.comentario_carta:            # ya tiene uno: no se pisa
+            continue
+        entrega.comentario_carta = texto
+        s.add(entrega)
+        resumen["comentarios"] += 1
+    if resumen["comentarios"]:
+        s.commit()
+
+    return resumen
+
+
 def sembrar() -> list:
     if settings.auth_mode == "firebase":
         raise SystemExit(
@@ -280,23 +580,41 @@ def sembrar() -> list:
             creado = _crear_usuario_demo(s)
             usuarios = [creado]
 
-        resumenes = [sembrar_usuario(s, u) for u in usuarios]
+        resumenes = []
+        for u in usuarios:
+            resumen = sembrar_usuario(s, u)
+            # WS27 · B2.1: las cartas de la comunidad tienen su PROPIA marca de
+            # idempotencia, así que se siembran aunque las Pausas ya estuvieran.
+            resumen["comunidad"] = sembrar_comunidad(s, u)
+            resumenes.append(resumen)
 
-    print("Seed de Q/A visual (WS25) — usuarios demo|:")
+    print("Seed de Q/A visual (WS25 + WS27) — usuarios demo|:")
     if creado is not None:
         print(f"  · no había ninguno: creé {creado.firebase_uid} "
               f"(apodo {DEMO_APODO}, términos aceptados)")
     for r in resumenes:
         if r["saltado"]:
             print(f"  · {r['uid']}: ya tenía {r['pausas']} Pausas sembradas — no toqué nada")
-            continue
-        print(
-            f"  · {r['uid']} ({r['plan']}): {r['pausas']} Pausas · "
-            f"{r['reflexiones']} con reflexión · {r['estrellas']} con estrellas · "
-            f"{r['fotos']} fotos en {r['pausas_con_fotos']} Pausas · "
-            f"{r['compartidas']} compartidas / {r['pausas'] - r['compartidas']} privadas · "
-            f"links: {', '.join(r['links'])}"
-        )
+        else:
+            print(
+                f"  · {r['uid']} ({r['plan']}): {r['pausas']} Pausas · "
+                f"{r['reflexiones']} con reflexión · {r['estrellas']} con estrellas · "
+                f"{r['fotos']} fotos en {r['pausas_con_fotos']} Pausas · "
+                f"{r['compartidas']} compartidas / {r['pausas'] - r['compartidas']} privadas · "
+                f"links: {', '.join(r['links'])}"
+            )
+        c = r["comunidad"]
+        if c["saltado"]:
+            extra = (f" — republiqué la carta del mazo ({c['carta_publicada']}), "
+                     "se la habían borrado" if c["republicada"] else " — no toqué nada")
+            print(f"      comunidad: ya tenía {c['propuestas']} cartas propuestas{extra}")
+        else:
+            print(
+                f"      comunidad: {c['propuestas']} cartas propuestas "
+                f"(en evaluación · necesita un retoque · no aprobada · cargada) · "
+                f"{c['avisos']} avisos (1 sin leer) · {c['comentarios']} comentarios · "
+                f"carta en el mazo: {c['carta_publicada']}"
+            )
     return resumenes
 
 

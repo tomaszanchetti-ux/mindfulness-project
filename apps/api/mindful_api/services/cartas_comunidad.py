@@ -29,7 +29,7 @@ from datetime import datetime, timezone
 from typing import Callable, Optional
 
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..db.base import SessionLocal
@@ -46,6 +46,7 @@ from ..db.models import (
     Carta,
     CartaComunidad,
     Categoria,
+    Entrega,
     Usuario,
 )
 from . import juez as juez_mod
@@ -84,8 +85,58 @@ MOTIVO_JUEZ_CAIDO = "El juez no pudo evaluar la carta."
 CONCEPTO_MAX = 80
 
 
+# WS27 · B2.1 · quién escribió esa vuelta del historial. Hoy solo hay una fuente
+# (el autor); la clave existe porque el funnel del adminland tiene tres columnas y
+# mañana Dwellia podría reescribir una carta a mano en la vFinal.
+HISTORIAL_AUTOR = "usuario"
+
+
 def _ahora() -> datetime:
     return datetime.now(timezone.utc)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# El historial de redacciones (WS27 · B2.1)
+#
+# `cartas_comunidad` guardaba la evaluación (`veredicto`, con una sola vuelta
+# `anterior`) y la decisión final (`estado`/`motivo`/`carta_id`), pero el TEXTO se
+# pisaba en cada reenvío: Tomás abría el panel y no podía saber de dónde venía la
+# carta que estaba mirando. `historial` conserva CADA redacción del autor — v1 al
+# enviarla, v(n+1) en cada reenvío — y es la primera columna del funnel.
+#
+# Se REASIGNA la lista entera, nunca se hace `.append()`: `historial` es una
+# columna JSON y SQLAlchemy no ve las mutaciones en su lugar (la fila se guardaría
+# sin el cambio, en silencio).
+# ─────────────────────────────────────────────────────────────────────────────
+def _redaccion(propuesta: CartaComunidad, version: int,
+               por: str = HISTORIAL_AUTOR) -> dict:
+    """La foto de la carta TAL COMO ESTÁ, con su número de vuelta y su fecha UTC."""
+    return {
+        "version": version,
+        "frase": propuesta.frase,
+        "prompt": propuesta.prompt,
+        "categoria": propuesta.categoria_slug,
+        "accion": propuesta.accion_slug,
+        "firma": propuesta.firma,
+        "fecha": _ahora().isoformat(),
+        "por": por,
+    }
+
+
+def _sumar_redaccion(propuesta: CartaComunidad, por: str = HISTORIAL_AUTOR) -> None:
+    """Agrega la redacción actual como la vuelta siguiente. NO hace commit.
+
+    El número de vuelta sale del MÁXIMO que ya haya guardado, no del largo de la
+    lista: si una fila vieja (o una sembrada a mano) trae el historial incompleto,
+    la v2 no vuelve a llamarse v1.
+    """
+    previas = list(propuesta.historial or [])
+    versiones = [
+        p.get("version") for p in previas
+        if isinstance(p, dict) and isinstance(p.get("version"), int)
+    ]
+    version = (max(versiones) if versiones else len(previas)) + 1
+    propuesta.historial = previas + [_redaccion(propuesta, version, por)]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -212,6 +263,27 @@ def _carta_de_la_propuesta(s: Session, propuesta: CartaComunidad, usuario: Usuar
     return _carta_enriquecida(s, carta)
 
 
+def personas_acompanadas(s: Session, propuesta: CartaComunidad) -> int:
+    """WS27 · B2.1 · el IMPACTO: a cuánta gente le llegó esta carta.
+
+    Es el conteo de `entregas` de la carta PUBLICADA — o sea, cuántas veces el
+    motor la eligió como carta del día de alguien. Mientras la propuesta no esté
+    aprobada no hay carta publicada y el impacto es 0, no "todavía no se sabe":
+    el autor ve un cero honesto.
+
+    Se cuentan las entregas, no los usuarios distintos: la misma persona no puede
+    recibir dos veces la misma carta (la ventana de 7 días del motor lo impide y,
+    aunque cambiara, cada entrega es un día en que alguien la vivió).
+    """
+    if not propuesta.carta_id:
+        return 0
+    total = s.scalar(
+        select(func.count()).select_from(Entrega)
+        .where(Entrega.carta_id == propuesta.carta_id)
+    )
+    return int(total or 0)
+
+
 def _salida(s: Session, propuesta: CartaComunidad, usuario: Usuario) -> dict:
     veredicto = propuesta.veredicto or {}
     return {
@@ -226,8 +298,8 @@ def _salida(s: Session, propuesta: CartaComunidad, usuario: Usuario) -> dict:
         "sugerencia": _fix_sugerido(veredicto.get("fix_sugerido")),
         "concepto": propuesta.concepto,
         "carta_id": propuesta.carta_id,
-        # B2.1 lo calcula (cuánta gente recibió la carta). Hasta entonces, 0.
-        "personas_acompanadas": 0,
+        # B2.1 · cuánta gente recibió la carta (0 mientras no esté publicada).
+        "personas_acompanadas": personas_acompanadas(s, propuesta),
         "created_at": propuesta.created_at,
         "updated_at": propuesta.updated_at,
         "carta": _carta_de_la_propuesta(s, propuesta, usuario),
@@ -519,6 +591,9 @@ def crear_propuesta(s: Session, usuario: Usuario, datos, tareas=None) -> dict:
         cesion_aceptada_at=_ahora(),
         **campos,
     )
+    # La v1 del funnel: lo que el autor escribió, guardado antes de que nadie
+    # (el juez, Dwellia) lo toque.
+    _sumar_redaccion(propuesta)
     s.add(propuesta)
     s.commit()
     s.refresh(propuesta)
@@ -580,6 +655,10 @@ def reenviar_propuesta(s: Session, usuario: Usuario, carta_comunidad_id: str,
 
     for campo, valor in campos.items():
         setattr(propuesta, campo, valor)
+    # La vuelta siguiente del funnel (v2, v3…): el texto nuevo se suma DESPUÉS de
+    # escribirlo en la fila, así la foto es la carta tal como se reenvía. La
+    # redacción anterior queda guardada, ya no se pisa.
+    _sumar_redaccion(propuesta)
     propuesta.estado = ESTADO_EN_REVISION
     propuesta.motivo = None                       # la sugerencia vieja ya no aplica
     # Se guarda SOLO la vuelta inmediatamente anterior, podada de su propio
