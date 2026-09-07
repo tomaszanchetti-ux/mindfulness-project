@@ -45,6 +45,7 @@ from mindful_api.db.models import (
 )
 from mindful_api.main import app
 from mindful_api.services import juez as juez_mod
+from mindful_api.services.cartas_comunidad import FRASE_MAX
 from mindful_api.services.juez import Veredicto
 
 client = TestClient(app)
@@ -53,15 +54,15 @@ MARCA = "b21h|"
 AUTOR = MARCA + "autor"
 ADMIN = MARCA + "admin"
 
-FRASE_V1 = "Hoy el aire alcanza para empezar de nuevo."
+FRASE_V1 = "El aire alcanza para empezar de nuevo."
 PROMPT_V1 = (
     "Elige un momento del día de hoy que te haya sostenido y escríbelo en tu diario "
     "con el detalle más pequeño que recuerdes de él."
 )
-FRASE_V2 = "Lo que sostiene tu día casi nunca hace ruido."
+FRASE_V2 = "Lo que sostiene casi nunca hace ruido."
 PROMPT_V2 = (
     "Escribe en tu diario tres cosas que hoy te sostuvieron sin que las nombraras, "
-    "y qué cambiaría si mañana le dieras las gracias en voz alta a una de ellas."
+    "y qué cambiaría si le dieras las gracias en voz alta."
 )
 FRASE_V3 = "Alguien te sostuvo hoy sin decírtelo."
 PROMPT_V3 = (
@@ -168,11 +169,11 @@ def test_la_version_1_guarda_el_texto_LIMPIO_no_el_crudo():
     espacios y saca los invisibles antes de guardar; la v1 se toma después de eso,
     o sea que el funnel muestra el mismo texto que la carta."""
     h = _premium(AUTOR)
-    sucia = "  Hoy   el aire\nalcanza para empezar de nuevo.  "
+    sucia = "  El   aire\nalcanza para empezar de nuevo.  "
     propuesta = _proponer(h, frase=sucia).json()["id"]
 
     v1 = _historial(propuesta)[0]
-    assert v1["frase"] == "Hoy el aire alcanza para empezar de nuevo."
+    assert v1["frase"] == FRASE_V1
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -249,7 +250,7 @@ def test_un_reenvio_rechazado_no_deja_rastro():
     _a_revisar(propuesta)
 
     r = client.put(f"/api/cartas-comunidad/{propuesta}", headers=h,
-                   json={"frase": "x" * 61, "prompt": PROMPT_V2})
+                   json={"frase": "x" * (FRASE_MAX + 1), "prompt": PROMPT_V2})
     assert r.status_code == 422
 
     historial = _historial(propuesta)

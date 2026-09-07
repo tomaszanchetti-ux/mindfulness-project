@@ -60,9 +60,9 @@ ADMIN = MARCA + "admin"
 
 PROMPT_OK = (
     "Escribe en tu diario tres cosas que hoy te sostuvieron sin que las nombraras, "
-    "y qué cambiaría si mañana le dieras las gracias en voz alta a una de ellas."
+    "y qué cambiaría si le dieras las gracias en voz alta."
 )
-FRASE_OK = "Lo que sostiene tu día casi nunca hace ruido."
+FRASE_OK = "Lo que sostiene casi nunca hace ruido."
 
 
 def _headers(sub: str) -> dict:

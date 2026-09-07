@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from .config import settings
 from .db.base import get_session
 from .db.models import Accion, Carta, Categoria
+from .services.canon import MATRIZ_VIABLE
 from .routers import (
     admin, avisos, baul, cambio, cartas_comunidad, compartir, entregas, fotos, interno,
     pagos, perfil, push,
@@ -75,6 +76,19 @@ def listar_acciones(s: Session = Depends(get_session)) -> list[dict]:
     orden = {"contemplar": 0, "respirar": 1, "caminar": 2, "hacer": 3}
     rows = sorted(rows, key=lambda a: orden.get(a.slug, 99))
     return [{"slug": a.slug, "nombre": a.nombre, "glifo": a.glifo} for a in rows]
+
+
+@app.get("/api/contenido/matriz")
+def matriz_viable() -> dict[str, list[str]]:
+    """WS28 · la matriz pilar × acción inicial del canon (R8.1), para que el paso 2
+    del wizard de Crear muestre SOLO las acciones que combinan con el pilar elegido
+    y nadie choque con el retoque "no combinan" de la capa 1. Misma fuente que el
+    juez: `services/canon.MATRIZ_VIABLE`. Orden fijo de las acciones."""
+    orden = {"contemplar": 0, "respirar": 1, "caminar": 2, "hacer": 3}
+    return {
+        pilar: sorted(acciones, key=lambda a: orden.get(a, 99))
+        for pilar, acciones in MATRIZ_VIABLE.items()
+    }
 
 
 @app.get("/api/contenido/resumen")

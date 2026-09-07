@@ -55,6 +55,7 @@ from mindful_api.db.models import (
 )
 from mindful_api.main import app
 from mindful_api.services import juez as juez_mod
+from mindful_api.services.cartas_comunidad import FRASE_MAX, PROMPT_MAX, PROMPT_MIN
 from mindful_api.services.juez import Veredicto
 from mindful_api.services.plan import activar_premium
 
@@ -74,15 +75,15 @@ ADMIN_SUB = MARCA + "admin"
 PILAR = "gratitud"
 ACCION = "contemplar"
 
-FRASE_V1 = "Hoy el aire alcanza para empezar de nuevo."
+FRASE_V1 = "El aire alcanza para empezar de nuevo."
 PROMPT_V1 = (
     "Elige un momento del día de hoy que te haya sostenido y escríbelo en tu diario "
     "con el detalle más pequeño que recuerdes de él."
 )
-FRASE_V2 = "Lo que sostiene tu día casi nunca hace ruido."
+FRASE_V2 = "Lo que sostiene casi nunca hace ruido."
 PROMPT_V2 = (
     "Escribe en tu diario tres cosas que hoy te sostuvieron sin que las nombraras, "
-    "y qué cambiaría si mañana le dieras las gracias en voz alta a una de ellas."
+    "y qué cambiaría si le dieras las gracias en voz alta."
 )
 FRASE_V3 = "Alguien te sostuvo hoy sin decírtelo."
 PROMPT_V3 = (
@@ -92,7 +93,7 @@ PROMPT_V3 = (
 FRASE_V4 = "Queda algo tuyo en lo que hoy diste."
 PROMPT_V4 = (
     "Escribe en tu diario una cosa que hoy hiciste por alguien sin esperar nada, y "
-    "qué se te movió por dentro mientras la hacías, aunque nadie lo haya notado."
+    "qué se te movió por dentro mientras la hacías."
 )
 
 
@@ -127,6 +128,11 @@ def _limpiar() -> None:
             )
         )
         s.flush()
+        # WS28: el demo-seed le cuelga a la carta cargada entregas de OTROS usuarios
+        # demo| (el impacto: "3 personas la recibieron"), que el conftest preserva.
+        # Se borran antes que las cartas o la FK frena el DELETE.
+        if ids:
+            s.execute(delete(Entrega).where(Entrega.carta_id.in_(ids)))
         if ids:
             s.execute(delete(Carta).where(Carta.id.in_(ids)))
         s.commit()
@@ -292,12 +298,13 @@ def test_ok_cuatro_vueltas_guardan_la_redaccion_de_ENTONCES():
 
 
 def test_ok_un_reenvio_rebotado_no_suma_version():
-    """Un 422 del contrato (frase de 61) no puede dejar una vuelta fantasma."""
+    """Un 422 del contrato (frase de FRASE_MAX+1) no puede dejar una vuelta
+    fantasma."""
     h = _premium(AUTOR)
     pid = _proponer(h).json()["id"]
     _a_revisar(pid)
 
-    r = _reenviar(h, pid, "x" * 61, PROMPT_V2)
+    r = _reenviar(h, pid, "x" * (FRASE_MAX + 1), PROMPT_V2)
     assert r.status_code == 422
     assert [v["version"] for v in _historial(pid)] == [1]
     # Y el texto de la fila tampoco se movió.
@@ -393,18 +400,18 @@ def test_ok_el_historial_no_viaja_en_mias_y_si_en_el_panel(admin):
     assert [v["version"] for v in mia["historial"]] == [1]
 
 
-def test_ok_los_bordes_60_y_220_se_guardan_YA_STRIPPEADOS_en_el_historial():
+def test_ok_los_bordes_maximos_se_guardan_YA_STRIPPEADOS_en_el_historial():
     """El historial es la evidencia: tiene que decir lo que se guardó, no lo crudo."""
     h = _premium(AUTOR)
-    frase = "a" * 60
-    prompt = "Escribe en tu diario " + "b" * (220 - len("Escribe en tu diario "))
-    assert len(prompt) == 220
+    frase = "a" * FRASE_MAX
+    prompt = "Escribe en tu diario " + "b" * (PROMPT_MAX - len("Escribe en tu diario "))
+    assert len(frase) == FRASE_MAX and len(prompt) == PROMPT_MAX
 
     r = _proponer(h, frase="   " + frase + "  ", prompt="\n" + prompt + "\t")
     assert r.status_code == 201, r.text
     v1 = _historial(r.json()["id"])[0]
-    assert v1["frase"] == frase and len(v1["frase"]) == 60
-    assert v1["prompt"] == prompt and len(v1["prompt"]) == 220
+    assert v1["frase"] == frase and len(v1["frase"]) == FRASE_MAX
+    assert v1["prompt"] == prompt and len(v1["prompt"]) == PROMPT_MAX
 
 
 def test_ok_el_reenvio_conserva_las_vueltas_aunque_el_juez_corra_despues():
@@ -1270,11 +1277,10 @@ def test_ok_sembrar_comunidad_dos_veces_no_duplica_nada():
 
 
 def test_ok_las_cartas_del_seed_cumplen_el_contrato_del_mazo():
-    """Frase ≤60, prompt 100-220 y la palabra "diario" (R3.1 del canon): el panel
-    los vuelve a medir al aprobar, así que una sembrada fuera de rango le daría
-    un 422 a Tomás en pleno Q/A."""
+    """Frase ≤ FRASE_MAX, prompt PROMPT_MIN-PROMPT_MAX y la palabra "diario" (R3.1
+    del canon): el panel los vuelve a medir al aprobar, así que una sembrada fuera
+    de rango le daría un 422 a Tomás en pleno Q/A."""
     from mindful_api.demo_seed import CARTAS_COMUNIDAD
-    from mindful_api.services.cartas_comunidad import FRASE_MAX, PROMPT_MAX, PROMPT_MIN
 
     assert len(CARTAS_COMUNIDAD) == 4
     for (clave, estado, categoria, accion, frase, prompt, _m, _v,

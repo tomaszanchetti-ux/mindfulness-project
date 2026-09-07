@@ -19,6 +19,7 @@ import type {
   FiltroAdmin,
   FotoSubida,
   ItemBaul,
+  MatrizViable,
   Perfil,
   PropuestaAdmin,
   Regalo,
@@ -127,6 +128,8 @@ export const api = {
   categorias: () => req<CategoriaContenido[]>("/api/contenido/categorias"),
   // WS27 · B2.2 · las 4 acciones iniciales: el paso 2 del wizard de Crear.
   acciones: () => req<AccionContenido[]>("/api/contenido/acciones"),
+  // WS28 · qué acciones combinan con cada pilar (canon R8.1): filtra el paso 2 del wizard.
+  matriz: () => req<MatrizViable>("/api/contenido/matriz"),
 
   // —— Perfil / onboarding (M1) ——
   perfil: () => req<Perfil>("/api/perfil"),

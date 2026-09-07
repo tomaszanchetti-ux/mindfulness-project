@@ -72,7 +72,7 @@ client = TestClient(app)
 # como lo vería el usuario (una respuesta 500), en vez de tumbar el test.
 client_crudo = TestClient(app, raise_server_exceptions=False)
 
-FRASE_OK = "Hoy el aire alcanza para empezar de nuevo."
+FRASE_OK = "El aire alcanza para empezar de nuevo."
 PROMPT_OK = (
     "Elige un momento del día de hoy que te haya sostenido y escríbelo en tu diario "
     "con el detalle más pequeño que recuerdes de él."
@@ -194,9 +194,11 @@ def _limpiar_qa11():
 # ─────────────────────────────────────────────────────────────────────────────
 # 1 · Bordes del contenido
 # ─────────────────────────────────────────────────────────────────────────────
-@pytest.mark.parametrize("largo", [PROMPT_MIN, PROMPT_MAX], ids=["100", "220"])
+@pytest.mark.parametrize("largo", [PROMPT_MIN, PROMPT_MAX],
+                         ids=[str(PROMPT_MIN), str(PROMPT_MAX)])
 def test_ok_el_prompt_en_los_extremos_exactos_entra(monkeypatch, largo):
-    """100 y 220 son INCLUSIVE (99 y 221 ya rebotan en la suite de la card)."""
+    """PROMPT_MIN y PROMPT_MAX son INCLUSIVE (mín-1 y máx+1 ya rebotan en la
+    suite de la card)."""
     _juez_off(monkeypatch)
     h = _premium(f"qa11|prompt-{largo}")
     r = _proponer(h, prompt="a" * largo)
@@ -205,8 +207,9 @@ def test_ok_el_prompt_en_los_extremos_exactos_entra(monkeypatch, largo):
 
 
 def test_ok_los_extremos_se_miden_despues_del_strip(monkeypatch):
-    """Un prompt de 220 con espacios alrededor entra; uno de 221 no se salva
-    metiéndole espacios (el strip se aplica antes de medir, en los dos sentidos)."""
+    """Un prompt de PROMPT_MAX con espacios alrededor entra; uno de PROMPT_MAX+1 no
+    se salva metiéndole espacios (el strip se aplica antes de medir, en los dos
+    sentidos)."""
     _juez_off(monkeypatch)
     h = _premium("qa11|strip-borde")
     assert _proponer(h, prompt="  " + "a" * PROMPT_MAX + "  ").status_code == 201
@@ -227,11 +230,13 @@ def test_ok_el_prompt_en_blanco_rebota_por_corto(monkeypatch):
 
 
 def test_ok_los_limites_cuentan_caracteres_no_bytes(monkeypatch):
-    """60 acentos/emoji entran (son 60 caracteres, ~240 bytes) y se guardan intactos."""
+    """FRASE_MAX acentos/emoji entran (son caracteres, no bytes: pesan bastante
+    más) y se guardan intactos."""
     _juez_off(monkeypatch)
     h = _premium("qa11|unicode")
-    frase = "áé🌱" * 20                       # 60 code points
+    frase = ("áé🌱" * 20)[:FRASE_MAX]         # FRASE_MAX code points
     assert len(frase) == FRASE_MAX
+    assert len(frase.encode("utf-8")) > FRASE_MAX   # y muchos más bytes
     r = _proponer(h, frase=frase)
     assert r.status_code == 201, r.text
     assert r.json()["carta"]["frase"] == frase

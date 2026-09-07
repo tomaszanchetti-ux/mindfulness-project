@@ -20,7 +20,7 @@
 | Login (WS25) | **Siempre logueado**, también para abrir el link recibido por WhatsApp. Login simple: Google o enlace por email. |
 | Estrellas | **Se mantienen** (alimentan la afinidad del motor). Debajo se pide un comentario opcional; con 1-2 estrellas la pregunta es "¿qué te hubiese gustado recibir?". Ese texto es feedback para Dwellia, no se publica. |
 | Rotación de cartas | **Sin agente**. Determinística (M2). La API de Anthropic se usa fuera de línea para lotes nuevos y, en runtime, SOLO para juzgar cartas de usuarios. |
-| Cartas de usuarios | Pestaña **Crear** (premium; free ve un pop-up + "Quiero ser parte"). Wizard: pilar → acción inicial → frase + prompt con la carta dibujándose en vivo → firma (anónima o apodo) + cesión → enviar. **Una carta en revisión a la vez**. **Frase ≤ 60** · **prompt 100-220**. |
+| Cartas de usuarios | Pestaña **Crear** (premium; free ve un pop-up + "Quiero ser parte"). Wizard: pilar → acción inicial → frase + prompt con la carta dibujándose en vivo → firma (anónima o apodo) + cesión → enviar. **Una carta en revisión a la vez**. **Frase ≤ 40** · **prompt 100-150** (Tomás, WS28; antes 60 / 220). |
 | Validación | Capa 1 determinística → capa 2 juez LLM **Sonnet 5** con el canon cacheado (≈1 céntimo) → **Tomás aprueba** desde `/admin`. **Aprobar = cargado** (WS25): estados visibles "En proceso de evaluación" (gris) → "Cargado a la comunidad", más "Necesita un retoque" y "No aprobada". Cada cambio avisa al autor. |
 | Distribución (WS27) | **Las aprobadas entran al mazo como iguales**: la carta se suma a su pilar y el motor la reparte con las mismas reglas que las nuestras (rotación 6+1, ventanas de 7 días), a todo el mundo. Sin día especial, sin tope y **sin interruptor: todos reciben cartas de la comunidad** (la comunidad hace crecer el sistema; el juez + Tomás son la puerta de calidad). El autor también puede recibir su propia carta (reconocimiento; si no la quiere, la cambia). Dorso: "de <apodo>" o "de alguien de la comunidad". Impacto = cuántas personas la recibieron, visible para el autor. **Adminland (solo la cuenta de Tomás)**: aprobación con el funnel completo (v1 redacción del usuario → v2 comentarios y sugerencia del juez → vFinal aprobar / rechazar / modificar) + tablero (cartas por pilar y origen; propuestas pendientes, aprobadas, rechazadas, retocadas) + termómetro general de usuarios (totales, premium, gratis, cuántos crearon cartas). **Nada por usuario individual** (decisión de Tomás: simple y útil). |
 | Q/A visual (WS25) | El Q/A del backend de cada bloque **siembra datos reales** (`make demo-seed`: Pausas, reflexiones, fotos, fichas, estados, solicitudes) para que Tomás vea la app completa. Solo local. |
@@ -103,7 +103,7 @@ juez + Tomás. Al cerrar B la barra tiene 4 pestañas (Hoy · Baúl · Crear · 
 
 ### Ola B0 (orquestador) — el contrato
 - Tabla `cartas_comunidad` (Mundo 2): `usuario_id`, `categoria_slug`, `accion_slug`,
-  `frase` ≤60, `prompt` 100-220, `firma` (`anonima|apodo`), `estado`
+  `frase` ≤40, `prompt` 100-150 (WS28), `firma` (`anonima|apodo`), `estado`
   (`en_revision` juez corriendo → `revision_dwellia` | `a_revisar` (vuelve al autor con
   sugerencia) | `rechazada` → Tomás: `aprobada` (= cargada al mazo) | `rechazada`;
   `retirada` por el autor), `veredicto` (JSON del juez), `motivo`, `concepto`,

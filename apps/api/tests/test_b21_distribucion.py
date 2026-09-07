@@ -65,10 +65,10 @@ OTRO = MARCA + "otro"
 
 PILAR = "gratitud"
 ACCION = "contemplar"
-FRASE = "Lo que sostiene tu día casi nunca hace ruido."
+FRASE = "Lo que sostiene casi nunca hace ruido."
 PROMPT = (
     "Escribe en tu diario tres cosas que hoy te sostuvieron sin que las nombraras, "
-    "y qué cambiaría si mañana le dieras las gracias en voz alta a una de ellas."
+    "y qué cambiaría si le dieras las gracias en voz alta."
 )
 
 

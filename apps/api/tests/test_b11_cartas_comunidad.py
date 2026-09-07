@@ -49,8 +49,8 @@ from tests.test_plan import _headers, hacer_premium
 
 client = TestClient(app)
 
-# Un prompt válido (dentro de 100-220) y una frase válida (≤60).
-FRASE_OK = "Hoy el aire alcanza para empezar de nuevo."
+# Un prompt válido (dentro de PROMPT_MIN-PROMPT_MAX) y una frase válida (≤ FRASE_MAX).
+FRASE_OK = "El aire alcanza para empezar de nuevo."
 PROMPT_OK = (
     "Elige un momento del día de hoy que te haya sostenido y escríbelo en tu diario "
     "con el detalle más pequeño que recuerdes de él."
@@ -225,7 +225,7 @@ def test_la_firma_anonima_no_revela_al_autor():
 
 
 def test_el_texto_se_mide_ya_strippeado():
-    """Una frase de 60 con espacios alrededor entra; el servicio guarda la limpia."""
+    """Una frase en el tope exacto con espacios alrededor entra; se guarda la limpia."""
     h = _premium("b11|strip")
     frase = "a" * FRASE_MAX
     r = _proponer(h, frase=f"   {frase}   ", prompt=f"  {PROMPT_OK}  ")
@@ -240,7 +240,7 @@ def test_segunda_carta_en_curso_rebota_con_409(monkeypatch):
     h = _premium("b11|dos")
     assert _proponer(h).status_code == 201
 
-    r = _proponer(h, frase="Otra frase distinta para probar el candado.")
+    r = _proponer(h, frase="Otra frase para probar el candado.")
     assert r.status_code == 409
     assert "en curso" in r.json()["detail"]
 

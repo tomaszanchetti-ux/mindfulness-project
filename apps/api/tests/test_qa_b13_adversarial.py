@@ -662,8 +662,9 @@ def test_bug_un_fix_vacio_no_se_normaliza_a_nada(admin):
 def test_bug_el_fix_admite_una_frase_que_el_autor_no_puede_reenviar(admin):
     """La sugerencia tiene que ser aplicable: si no, es una trampa para el autor.
 
-    Camino completo del daño: a-revisar con `fix.frase` de 61 → el autor lo lee
-    en Crear, lo copia, lo reenvía → 422 "La frase no puede pasar de 60".
+    Camino completo del daño: a-revisar con `fix.frase` de FRASE_MAX+1 → el autor
+    lo lee en Crear, lo copia, lo reenvía → 422 "La frase no puede pasar de
+    FRASE_MAX caracteres".
     """
     autor = _usuario(AUTOR_SUB)
     pid = _sembrar(autor)

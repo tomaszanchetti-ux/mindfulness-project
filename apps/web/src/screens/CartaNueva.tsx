@@ -19,7 +19,7 @@ import { Card } from "../components/Card";
 import { api, assetUrl } from "../lib/api";
 import { FRASE_MAX, PROMPT_MAX, PROMPT_MIN } from "../lib/propuestas";
 import { useStore } from "../store";
-import type { AccionContenido, Carta, FirmaCarta } from "../lib/types";
+import type { AccionContenido, Carta, FirmaCarta, MatrizViable } from "../lib/types";
 import "./crear.css";
 
 const PASOS = 4;
@@ -32,6 +32,10 @@ export function CartaNueva() {
   const editando = !!id;
 
   const [acciones, setAcciones] = useState<AccionContenido[]>([]);
+  // WS28 · la matriz del canon: con ella el paso 2 muestra SOLO las acciones que
+  // combinan con el pilar elegido (así nadie choca con el retoque "no combinan").
+  // Si no llega, se muestran todas: mejor una carta que vuelva que un paso vacío.
+  const [matriz, setMatriz] = useState<MatrizViable | null>(null);
   const [paso, setPaso] = useState(1);
   const [categoria, setCategoria] = useState<string>("");
   const [accion, setAccion] = useState<string>("");
@@ -57,6 +61,7 @@ export function CartaNueva() {
 
   useEffect(() => {
     api.acciones().then(setAcciones).catch(() => setAcciones([]));
+    api.matriz().then(setMatriz).catch(() => setMatriz(null));
   }, []);
 
   // —— Modo edición: se lee la propuesta y se precarga el formulario ——
@@ -99,6 +104,17 @@ export function CartaNueva() {
 
   const cat = categorias.find((c) => c.slug === categoria) || null;
   const acc = acciones.find((a) => a.slug === accion) || null;
+
+  // Las acciones que combinan con el pilar elegido (todas si no hay matriz).
+  const viables = matriz && categoria && matriz[categoria] ? matriz[categoria] : null;
+  const accionesDelPilar = viables
+    ? acciones.filter((a) => viables.includes(a.slug))
+    : acciones;
+
+  // Al cambiar de pilar, una acción que ya no combina se suelta sola.
+  useEffect(() => {
+    if (accion && viables && !viables.includes(accion)) setAccion("");
+  }, [accion, viables]);
 
   // La carta sintética de la vista previa. Nunca viaja a la API: es lo que el
   // autor mira mientras escribe.
@@ -197,9 +213,10 @@ export function CartaNueva() {
             <p className="ob-hint">
               El primer gesto, lejos del teléfono. Escribir en el diario es
               siempre el cierre, no el comienzo.
+              {viables && cat ? ` Estas son las que combinan con ${cat.nombre}.` : ""}
             </p>
             <div className="opt-list">
-              {acciones.map((a) => (
+              {accionesDelPilar.map((a) => (
                 <button
                   key={a.slug}
                   type="button"

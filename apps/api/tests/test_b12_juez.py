@@ -40,12 +40,11 @@ def acciones():
     return {a["slug"] for a in json.loads((DATA / "acciones.json").read_text(encoding="utf-8"))}
 
 
-# Una candidata escrita para no parecerse a ninguna del mazo (máx. 0,56 de
-# similitud) y para respetar los límites de la comunidad (frase 43 · prompt 195).
+# Una candidata escrita para no parecerse a ninguna del mazo (máx. 0,55 de
+# similitud) y para respetar los límites de la comunidad (frase 39 · prompt 131).
 PROMPT_OK = (
     "Elige un objeto que uses todos los días sin pensarlo y quédate un minuto "
-    "mirándolo despacio, como si fuera nuevo. Al terminar, escribe en tu diario "
-    "de dónde vino y qué te hizo sentir mirarlo así."
+    "mirándolo. Al terminar, escribe en tu diario qué sentiste."
 )
 PROMPT_SIN_DIARIO = PROMPT_OK.replace("escribe en tu diario", "anota en una hoja")
 
@@ -55,7 +54,7 @@ def _propuesta(**cambios):
     base = {
         "categoria": "gratitud",
         "accion": "contemplar",
-        "frase": "El vaso de cada mañana guarda una historia.",
+        "frase": "El vaso de cada mañana guarda historia.",
         "prompt": PROMPT_OK,
     }
     base.update(cambios)
@@ -117,8 +116,8 @@ def _texto_user(registro) -> str:
 
 
 # El fix que propone el modelo tiene que poder usarlo el autor: entra por el
-# POST/PUT de B1.1, así que respeta los límites de la comunidad (frase ≤60 ·
-# prompt 100-220 · el diario dentro).
+# POST/PUT de B1.1, así que respeta los límites de la comunidad (frase ≤ FRASE_MAX ·
+# prompt PROMPT_MIN-PROMPT_MAX · el diario dentro).
 FIX_USABLE = {
     "frase": "Otra frase para abrir la pausa de hoy.",
     "prompt": ("Mira ese mismo objeto un minuto entero, sin prisa, y después "
@@ -221,9 +220,8 @@ def test_capa1_muletilla_ya_cargada_en_el_pilar_es_aviso(mazo, categorias, accio
     # "qué te llevas" ya está en gratitud (grat-con-02) → R7.1.
     inf = canon.validar_candidata(
         _propuesta(prompt=(
-            "Elige un objeto que uses todos los días sin pensarlo y quédate un minuto "
-            "mirándolo despacio. Al terminar, escribe en tu diario qué te llevas de "
-            "mirarlo así y qué te hizo sentir."
+            "Elige un objeto que uses todos los días sin pensarlo y míralo despacio. "
+            "Al terminar, escribe en tu diario qué te llevas de mirarlo así."
         )),
         mazo, categorias, acciones,
     )

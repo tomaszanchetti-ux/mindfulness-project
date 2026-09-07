@@ -159,7 +159,7 @@ PAUSAS = [
 # ─────────────────────────────────────────────────────────────────────────────
 _PROMPT_REVISION = (
     "Escribe en tu diario tres cosas que hoy te sostuvieron sin que las nombraras, "
-    "y qué cambiaría si mañana le dieras las gracias en voz alta a una de ellas."
+    "y a cuál le darías las gracias mañana en voz alta."
 )
 _PROMPT_A_REVISAR_V1 = (
     "Escribe en tu diario todo lo que no pudiste terminar hoy y proponte un plan "
@@ -186,7 +186,7 @@ _PROMPT_APROBADA = (
 CARTAS_COMUNIDAD = [
     (
         "revision", ESTADO_REVISION_DWELLIA, "gratitud", "contemplar",
-        "Lo que sostiene tu día casi nunca hace ruido.",
+        "Lo que te sostiene no hace ruido.",
         _PROMPT_REVISION,
         None,
         {"resultado": "aprueba", "hallazgos": [], "concepto": "gratitud-callada",
@@ -195,7 +195,7 @@ CARTAS_COMUNIDAD = [
     ),
     (
         "retoque", ESTADO_A_REVISAR, "resiliencia", "respirar",
-        "Planifica hoy para no llegar agotado al viernes.",
+        "Planifica hoy para no agotarte.",
         _PROMPT_A_REVISAR_V2,
         "La carta sigue pidiendo un plan. Prueba con algo que se pueda mirar hoy, "
         "sin tarea pendiente al final.",
@@ -208,12 +208,12 @@ CARTAS_COMUNIDAD = [
          "fix_sugerido": {"frase": "Hoy no tienes que poder con todo.",
                           "prompt": _PROMPT_FIX},
          "motivo": "El prompt pide un plan, no una mirada.", "fuente": "juez"},
-        [("Organiza tu semana para no llegar agotado al viernes.",
+        [("Organiza tu semana para no agotarte.",
           _PROMPT_A_REVISAR_V1)], 9,
     ),
     (
         "rechazada", ESTADO_RECHAZADA, "perspectiva", "caminar",
-        "Si no lo cumples este mes, no lo vas a cumplir nunca.",
+        "Si no lo cumples hoy, no lo harás nunca.",
         _PROMPT_RECHAZADA,
         "Dwellia no exige ni castiga: invita a mirar. Esta carta pone una condena "
         "donde tendría que haber una pregunta.",

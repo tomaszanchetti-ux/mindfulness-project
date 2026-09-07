@@ -78,11 +78,10 @@ def acciones():
 
 
 # Candidata limpia: gratitud×contemplar es par viable, no se parece a nada del
-# mazo (máx. 0,56) y respeta los límites de la comunidad (frase 43 · prompt 195).
+# mazo (máx. 0,55) y respeta los límites de la comunidad (frase 39 · prompt 131).
 PROMPT_OK = (
     "Elige un objeto que uses todos los días sin pensarlo y quédate un minuto "
-    "mirándolo despacio, como si fuera nuevo. Al terminar, escribe en tu diario "
-    "de dónde vino y qué te hizo sentir mirarlo así."
+    "mirándolo. Al terminar, escribe en tu diario qué sentiste."
 )
 
 
@@ -90,7 +89,7 @@ def _propuesta(**cambios) -> dict:
     base = {
         "categoria": "gratitud",
         "accion": "contemplar",
-        "frase": "El vaso de cada mañana guarda una historia.",
+        "frase": "El vaso de cada mañana guarda historia.",
         "prompt": PROMPT_OK,
     }
     base.update(cambios)
@@ -273,7 +272,7 @@ def test_ok_capa1_copia_de_una_carta_de_la_comunidad_ya_publicada_dispara_r5(
     de_la_comunidad = {
         "id": "com-qa-01", "categoria": "gratitud", "accion": "contemplar",
         "concepto": "algo-cotidiano",
-        "frase": "La taza fría del desayuno también cuenta algo.",
+        "frase": "La taza fría también cuenta algo.",
         "prompt": PROMPT_OK,
     }
     inf = canon.validar_candidata(
@@ -532,10 +531,13 @@ def test_hallazgos_y_fix_con_tipos_raros_no_hacen_levantar_al_juez(
 # de salir. Si no entra por el POST/PUT de B1.1, se descarta y queda un hallazgo
 # menor: nunca un callejón sin salida en la pantalla Crear.
 @pytest.mark.parametrize("fix,caso", [
-    ({"frase": "x" * 80, "prompt": "Escribe en tu diario. " * 6}, "frase de 80 (máx 60)"),
-    ({"frase": "Una frase corta.", "prompt": "y" * 300 + " diario"}, "prompt de 307 (máx 220)"),
-    ({"frase": "Una frase corta.", "prompt": "Escribe en tu diario."}, "prompt de 21 (mín 100)"),
-    ({"frase": "Una frase corta.", "prompt": "z" * 150}, "prompt sin «diario»"),
+    ({"frase": "x" * (FRASE_MAX + 1), "prompt": "Escribe en tu diario. " * 6},
+     f"frase de {FRASE_MAX + 1} (máx {FRASE_MAX})"),
+    ({"frase": "Una frase corta.", "prompt": "y" * (PROMPT_MAX + 1) + " diario"},
+     f"prompt de {PROMPT_MAX + 8} (máx {PROMPT_MAX})"),
+    ({"frase": "Una frase corta.", "prompt": "Escribe en tu diario."},
+     f"prompt de 21 (mín {PROMPT_MIN})"),
+    ({"frase": "Una frase corta.", "prompt": "z" * PROMPT_MAX}, "prompt sin «diario»"),
 ])
 def test_el_fix_del_modelo_respeta_los_limites_de_la_comunidad(
     monkeypatch, mazo, categorias, acciones, fix, caso
@@ -742,7 +744,7 @@ def test_cli_carta_incompleta_falla_sin_traceback(
         # Todos los campos menos `concepto`, y con un prompt copiado del mazo:
         # así llega al f-string de la línea 264.
         datos = {"categoria": mazo[0]["categoria"], "accion": mazo[0]["accion"],
-                 "frase": "Una frase distinta de todas las demás hoy.",
+                 "frase": "Una frase distinta de todas las demás.",
                  "prompt": mazo[0]["prompt"]}
     r = _cli("--carta", candidata_json(datos))
     assert r.returncode != 0
@@ -754,7 +756,7 @@ def test_cli_carta_incompleta_falla_sin_traceback(
 # las mismas reglas que el runtime, sin exigir `concepto`. Una regla, un solo lugar.
 def test_cli_carta_usa_la_capa_1_del_runtime(candidata_json):
     valida = {"categoria": "gratitud", "accion": "contemplar",
-              "frase": "Una frase totalmente nueva para el día de hoy.",
+              "frase": "Una frase nueva para el día de hoy.",
               "prompt": PROMPT_OK}
     r = _cli("--carta", candidata_json(valida))
     assert r.returncode == 0, r.stdout[-800:] + r.stderr[-400:]
@@ -765,7 +767,7 @@ def test_ok_cli_carta_valida_con_concepto_pasa_el_gate(candidata_json):
     forma de una carta del mazo (lo que consume el CLI, no la comunidad)."""
     r = _cli("--carta", candidata_json({
         "categoria": "gratitud", "accion": "contemplar", "concepto": "mirar-lo-de-siempre",
-        "frase": "Una frase totalmente nueva para el día de hoy.",
+        "frase": "Una frase nueva para el día de hoy.",
         "prompt": PROMPT_OK,
     }))
     assert r.returncode == 0, r.stdout[-800:] + r.stderr[-400:]
@@ -777,7 +779,7 @@ def test_ok_cli_json_no_dispara_ninguna_llamada_al_modelo(candidata_json):
     """Sin `--judge` no se importa ni se usa el SDK: la salida JSON trae `judge: []`."""
     r = _cli("--carta", candidata_json({
         "categoria": "gratitud", "accion": "contemplar", "concepto": "mirar-lo-de-siempre",
-        "frase": "Una frase totalmente nueva para el día de hoy.",
+        "frase": "Una frase nueva para el día de hoy.",
         "prompt": PROMPT_OK,
     }), "--json")
     assert r.returncode == 0, r.stderr[-400:]
@@ -824,7 +826,8 @@ def _fila(propuesta_id: str) -> dict:
                 "veredicto": p.veredicto}
 
 
-# Un prompt dentro de 100-220 y una frase ≤60, como los exige B1.1.
+# Un prompt dentro de PROMPT_MIN-PROMPT_MAX y una frase ≤ FRASE_MAX, como los
+# exige B1.1.
 PROMPT_B11 = (
     "Elige un objeto que uses todos los días sin pensarlo y quédate un minuto "
     "mirándolo despacio. Al terminar, escríbelo en tu diario con calma."
@@ -834,7 +837,7 @@ assert PROMPT_MIN <= len(PROMPT_B11) <= PROMPT_MAX
 
 def test_ok_b11_propuesta_valida_sin_key_va_a_la_mesa_de_tomas(monkeypatch, autor):
     monkeypatch.setattr(settings, "anthropic_api_key", "")
-    pid = _sembrar(autor, "El vaso de cada mañana guarda una historia.", PROMPT_B11)
+    pid = _sembrar(autor, "El vaso de cada mañana guarda historia.", PROMPT_B11)
     procesar_juez(pid)
     fila = _fila(pid)
     assert fila["estado"] == ESTADO_REVISION_DWELLIA

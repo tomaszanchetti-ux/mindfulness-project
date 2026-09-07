@@ -22,6 +22,10 @@ export interface AccionCarta {
   glifo: string; // ruta a un .svg (assets/acciones/...)
 }
 
+// WS28 · la matriz pilar × acción inicial del canon: slug del pilar → acciones que
+// combinan. El wizard de Crear filtra el paso 2 con esto.
+export type MatrizViable = Record<string, string[]>;
+
 // Catálogo de actividades global (Mundo 1), para elegir en onboarding/perfil.
 export interface AccionContenido {
   slug: string;

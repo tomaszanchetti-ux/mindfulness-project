@@ -33,6 +33,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..db.base import SessionLocal
+from .canon import MAX_FRASE_COMUNIDAD, MAX_PROMPT_COMUNIDAD, MIN_PROMPT_COMUNIDAD
 from ..db.models import (
     ESTADO_A_REVISAR,
     ESTADO_EN_REVISION,
@@ -55,9 +56,10 @@ from .entrega import _carta_enriquecida
 from .plan import limites
 
 # ── Los límites del contenido · UN SOLO LUGAR (Roadmap v2 §0) ────────────────
-FRASE_MAX = 60          # la frase del frente
-PROMPT_MIN = 100        # el prompt del dorso: ni telegrama…
-PROMPT_MAX = 220        # …ni ensayo
+# WS28 · los límites viven en el canon (única fuente); acá solo cambian de nombre.
+FRASE_MAX = MAX_FRASE_COMUNIDAD      # la frase del frente
+PROMPT_MIN = MIN_PROMPT_COMUNIDAD    # el prompt del dorso: ni telegrama…
+PROMPT_MAX = MAX_PROMPT_COMUNIDAD    # …ni ensayo
 
 # Lo que el juez puede decir (contrato de `services/juez.py`).
 RESULTADO_APRUEBA = "aprueba"
