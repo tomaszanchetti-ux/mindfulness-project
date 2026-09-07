@@ -22,6 +22,11 @@ import { api } from "../lib/api";
 import type { Persona } from "../lib/types";
 import "../screens/comunidad.css";
 
+// WS30 · C2b · el comentario opcional que viaja con la Pausa. El tope es el del
+// backend (`COMENTARIO_REENVIO_MAX`): acá se frena antes de llegar, y si igual
+// rebota, el 422 viene en español y se muestra tal cual.
+const COMENTARIO_MAX = 200;
+
 export interface ReenviarSheetProps {
   entregaId: string;
   abierto: boolean;
@@ -34,6 +39,7 @@ export function ReenviarSheet({ entregaId, abierto, onClose, linkWhatsApp }: Ree
   const [enviando, setEnviando] = useState<string | null>(null);
   const [enviada, setEnviada] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [comentario, setComentario] = useState("");
 
   useEffect(() => {
     if (!abierto) return;
@@ -41,6 +47,7 @@ export function ReenviarSheet({ entregaId, abierto, onClose, linkWhatsApp }: Ree
     // Cada apertura arranca limpia: nadie quiere ver el error de la vez pasada.
     setEnviada(null);
     setError(null);
+    setComentario("");
     api
       .miComunidad()
       .then((c) => {
@@ -63,7 +70,7 @@ export function ReenviarSheet({ entregaId, abierto, onClose, linkWhatsApp }: Ree
     setEnviando(p.usuario_id);
     setError(null);
     try {
-      await api.reenviar(entregaId, p.usuario_id);
+      await api.reenviar(entregaId, p.usuario_id, comentario);
       setEnviada(p.apodo);
       // Un momento para leer "Enviada a …" y el panel se va solo.
       setTimeout(onClose, 1100);
@@ -101,6 +108,23 @@ export function ReenviarSheet({ entregaId, abierto, onClose, linkWhatsApp }: Ree
         ) : (
           <>
             {error && <p className="com-aviso">{error}</p>}
+
+            {/* Una línea tuya antes de la Pausa: opcional, y va con las dos
+                salidas (dentro de Dwellia y por WhatsApp no: ahí viaja el link). */}
+            <label className="sheet-lbl" htmlFor="reenvio-comentario">
+              Un comentario para quien la recibe (opcional)
+            </label>
+            <textarea
+              id="reenvio-comentario"
+              className="textarea sheet-comentario"
+              maxLength={COMENTARIO_MAX}
+              placeholder="Por qué se la mandas."
+              value={comentario}
+              onChange={(e) => setComentario(e.target.value)}
+            />
+            <p className={`counter ${comentario.length > COMENTARIO_MAX - 20 ? "near" : ""}`}>
+              {comentario.length}/{COMENTARIO_MAX}
+            </p>
 
             <span className="sheet-lbl">A alguien de tu comunidad</span>
             {gente === null ? (

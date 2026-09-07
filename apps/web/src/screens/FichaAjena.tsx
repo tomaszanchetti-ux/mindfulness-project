@@ -52,6 +52,10 @@ export function FichaAjena() {
 
   const [ficha, setFicha] = useState<FichaAjenaTipo | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // WS30 · C2b · si llegué acá por un reenvío, lo que me escribió quien la mandó.
+  // No hay endpoint de "el reenvío de esta ficha": se buscan los recibidos y se
+  // toma el más nuevo de esta misma Pausa que traiga comentario.
+  const [nota, setNota] = useState<{ apodo: string; comentario: string } | null>(null);
 
   const [guardada, setGuardada] = useState(false);
   const [guardando, setGuardando] = useState(false);
@@ -73,6 +77,18 @@ export function FichaAjena() {
         setGuardada(f.guardada);
       })
       .catch((e) => vivo && setError((e as Error).message));
+    api
+      .reenviosRecibidos()
+      .then((r) => {
+        if (!vivo) return;
+        const mios = r.reenvios
+          .filter((x) => x.ficha.id === entregaId && !!x.comentario)
+          .sort((a, z) => z.created_at.localeCompare(a.created_at));
+        const ultimo = mios[0];
+        setNota(ultimo ? { apodo: ultimo.de.apodo, comentario: ultimo.comentario! } : null);
+      })
+      // Que no haya nota nunca es un error de pantalla: la ficha se lee igual.
+      .catch(() => vivo && setNota(null));
     return () => {
       vivo = false;
     };
@@ -157,8 +173,21 @@ export function FichaAjena() {
         de={ficha.de.apodo}
         acciones={
           <div className="com-acciones">
+            {/* Lo que me escribió quien me la envió, arriba de todo lo que se
+                puede hacer con ella: es lo primero que se lee. */}
+            {nota && (
+              <p className="com-nota-reenvio">
+                <span className="com-nota-quien">{nota.apodo} te la envió:</span>
+                <span className="com-nota-texto">«{nota.comentario}»</span>
+              </p>
+            )}
             {!esMia && (
-              <Button variant="secondary" full disabled={guardando} onClick={alternarGuardada}>
+              <Button
+                variant={guardada ? "danger" : "secondary"}
+                full
+                disabled={guardando}
+                onClick={alternarGuardada}
+              >
                 {guardando
                   ? "Un momento…"
                   : guardada

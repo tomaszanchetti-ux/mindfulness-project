@@ -13,16 +13,18 @@
 //   · Recomendación    — un libro, un video, un podcast… que dejé para el resto.
 // El orden "Mejor valoradas" sigue siendo cosa de mis Pausas: las otras dos no
 // tienen estrellas mías y la API ya las manda al fondo.
+//
+// WS30 · C2b · el Baúl vuelve a ser SOLO la lista: el CTA "Agregar recomendación"
+// se fue a Crear, que queda como la única puerta para hacer algo nuevo (una carta
+// o una recomendación). El chip "Recomendaciones" sigue acá: leerlas es del Baúl.
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "../components/Avatar";
 import { Button } from "../components/Button";
-import { SoloComunidad } from "../components/SoloComunidad";
 import { Stars } from "../components/Stars";
 import { api } from "../lib/api";
 import { fechaCorta } from "../lib/format";
-import { useStore } from "../store";
 import { TIPOS_RECOMENDACION } from "../lib/types";
 import type { ItemBaul, ItemFicha, ItemRecomendacion } from "../lib/types";
 import "./baul.css";
@@ -53,11 +55,9 @@ export function nombreTipo(tipo: string): string {
 
 export function Baul() {
   const navigate = useNavigate();
-  const { perfil } = useStore();
   const [items, setItems] = useState<ItemFicha[] | null>(null);
   const [orden, setOrden] = useState<Orden>("reciente");
   const [filtro, setFiltro] = useState<Filtro>("todo");
-  const [invitar, setInvitar] = useState(false);
 
   useEffect(() => {
     setItems(null);
@@ -79,14 +79,6 @@ export function Baul() {
   });
 
   const vacioPorFiltro = items !== null && items.length > 0 && visibles.length === 0;
-  // Escribir una recomendación es de quien es parte; leer las suyas, no (por eso
-  // el candado está en el CTA y no en la lista).
-  const puedeRecomendar = perfil?.limites.recomendaciones === true;
-
-  const agregarRecomendacion = () => {
-    if (puedeRecomendar) navigate("/baul/recomendacion/nueva");
-    else setInvitar(true);
-  };
 
   return (
     <div>
@@ -141,13 +133,6 @@ export function Baul() {
         </div>
       </div>
 
-      {/* WS30 · C2.2 · dejar algo que te hizo bien, al lado de lo que viviste. */}
-      <div className="baul-cta actions-stack">
-        <Button variant="secondary" full onClick={agregarRecomendacion}>
-          Agregar recomendación
-        </Button>
-      </div>
-
       {items === null && <div className="center-note">…</div>}
 
       {vacioPorFiltro && (
@@ -179,12 +164,6 @@ export function Baul() {
         ) : (
           <FilaPausa key={it.id} item={it} onOpen={() => navigate(`/baul/${it.id}`)} />
         ),
-      )}
-
-      {invitar && (
-        <SoloComunidad
-          onClose={() => setInvitar(false)}
-        />
       )}
     </div>
   );

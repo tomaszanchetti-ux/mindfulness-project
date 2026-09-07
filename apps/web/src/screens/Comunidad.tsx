@@ -175,6 +175,11 @@ export function Comunidad() {
                     <Miniatura ficha={r.ficha} />
                     <span className="com-reenvio-txt">
                       <span className="com-reenvio-quien">{r.de.apodo} te envió una Pausa</span>
+                      {/* WS30 · C2b · lo que escribió al mandarla, entre comillas
+                          y en su voz: va antes que la frase de la carta. */}
+                      {r.comentario && (
+                        <span className="com-reenvio-com">«{r.comentario}»</span>
+                      )}
                       <span className="com-reenvio-frase">{r.ficha.carta.frase}</span>
                     </span>
                     {!r.leido && <span className="com-punto" aria-label="Sin leer" />}
@@ -372,14 +377,22 @@ function FilaPersona({
 // —— El botón del vínculo ———————————————————————————————————————————————————
 // Un solo lugar decide qué se puede hacer con una persona según en qué punto
 // está el vínculo. Lo usan la búsqueda, las solicitudes y el perfil ajeno.
+//
+// WS30 · C2b · `onQuitar` es opcional y solo lo pasa el perfil ajeno: cuando
+// está, al lado de "En tu comunidad" aparece la salida discreta para quitar a
+// esa persona. La pregunta y la llamada las hace quien pasa el callback (el
+// perfil sabe el apodo y tiene que volver a pedir la vitrina); acá solo se
+// dibuja el enlace, para no duplicar el componente.
 export function CtaVinculo({
   persona,
   onVinculo,
   onError,
+  onQuitar,
 }: {
   persona: Persona;
   onVinculo: (usuarioId: string, vinculo: EstadoVinculo) => void;
   onError: (msg: string) => void;
+  onQuitar?: () => void;
 }) {
   const [ocupado, setOcupado] = useState(false);
   const vinculo = persona.vinculo ?? "ninguno";
@@ -399,7 +412,17 @@ export function CtaVinculo({
     }
   };
 
-  if (vinculo === "aceptada") return <span className="com-estado">En tu comunidad</span>;
+  if (vinculo === "aceptada")
+    return (
+      <span className="com-vinculo-ok">
+        <span className="com-estado">En tu comunidad</span>
+        {onQuitar && (
+          <button type="button" className="com-quitar" onClick={onQuitar}>
+            Quitar de mi comunidad
+          </button>
+        )}
+      </span>
+    );
 
   if (vinculo === "pendiente_recibida")
     return (
@@ -412,9 +435,10 @@ export function CtaVinculo({
         >
           Aceptar
         </button>
+        {/* Rechazar borra el vínculo ahí mismo: es la acción definitiva, va en rojo. */}
         <button
           type="button"
-          className="com-btn"
+          className="com-btn es-no"
           disabled={ocupado}
           onClick={() => correr(() => api.descartarSolicitud(persona.usuario_id), "ninguno")}
         >
@@ -427,7 +451,7 @@ export function CtaVinculo({
     return (
       <button
         type="button"
-        className="com-btn"
+        className="com-btn es-no"
         disabled={ocupado}
         onClick={() => correr(() => api.descartarSolicitud(persona.usuario_id), "ninguno")}
       >

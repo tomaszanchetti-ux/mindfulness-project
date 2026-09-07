@@ -279,9 +279,11 @@ export function EntryDetail() {
                         <Button variant="secondary" full onClick={() => reenviarAjena(it)}>
                           Reenviar
                         </Button>
-                        <button className="link" onClick={() => quitarGuardada(it)}>
+                        {/* WS30 · C2b · quitarla del Baúl es definitivo (no abre
+                            una pregunta): va en rojo, como todo lo que borra. */}
+                        <Button variant="danger" full onClick={() => quitarGuardada(it)}>
                           Quitar de mi Baúl
-                        </button>
+                        </Button>
                         {avisoPausa?.id === it.id && (
                           <p className="pausa-aviso">{avisoPausa.texto}</p>
                         )}
@@ -334,7 +336,7 @@ export function EntryDetail() {
               deshacer.
             </p>
             <div className="modal-actions">
-              <Button variant="primary" className="btn-danger" full disabled={borrando} onClick={eliminar}>
+              <Button variant="danger" full disabled={borrando} onClick={eliminar}>
                 {borrando ? "Eliminando…" : "Sí, eliminar"}
               </Button>
               <Button variant="tertiary" onClick={() => setABorrar(null)}>
@@ -459,13 +461,7 @@ function DetalleRecomendacion({
               Se borra para siempre y deja de verla quien la tenía a la vista.
             </p>
             <div className="actions-stack">
-              <Button
-                variant="primary"
-                className="btn-danger"
-                full
-                disabled={borrando}
-                onClick={borrar}
-              >
+              <Button variant="danger" full disabled={borrando} onClick={borrar}>
                 {borrando ? "Borrando…" : "Sí, borrar"}
               </Button>
               <Button variant="tertiary" onClick={() => setConfirmando(false)}>

@@ -88,11 +88,8 @@
   color: var(--dust-taupe);
 }
 
-/* El CTA "Agregar recomendación": una invitación de papel arriba de la lista,
-   no un botón primario (el primario del Baúl es abrir una ficha). */
-.baul-cta {
-  margin: 0 0 18px;
-}
+/* WS30 · C2b · el CTA "Agregar recomendación" se fue del Baúl a Crear (la única
+   puerta para hacer algo nuevo): acá ya no queda nada que colgarle. */
 
 /* ═══════════════════════════════════════════ Detalle · la ficha propia */
 /* "Reenviar" no entra dentro de <Ficha modo="propia"> (no acepta acciones en ese

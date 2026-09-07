@@ -9,10 +9,18 @@
 // vínculo. Se dice con todas las letras y se ofrece la solicitud, que es la
 // salida. Aceptar o que te acepten cambia lo que se ve, así que al cambiar el
 // vínculo la vitrina se vuelve a pedir.
+//
+// WS30 · C2b · dos cosas más, del Q/A de Tomás:
+//   · Sus Pausas y sus recomendaciones dejan de ir mezcladas: cada una en su
+//     pestaña, con su conteo y su vacío amable. Arranca en Pausas.
+//   · Si ya está en mi comunidad, hay una salida: "Quitar de mi comunidad", con
+//     su pregunta antes (nunca de un toque). Al quitarla, la vitrina se vuelve
+//     a pedir: si su perfil es privado, deja de verse (`fichas: null`).
 
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Avatar } from "../components/Avatar";
+import { Button } from "../components/Button";
 import { CtaVinculo } from "./Comunidad";
 import { api, assetUrl } from "../lib/api";
 import { fechaCorta } from "../lib/format";
@@ -20,11 +28,17 @@ import { TIPOS_RECOMENDACION } from "../lib/types";
 import type { BaulAjeno, FichaAjena, ItemRecomendacion } from "../lib/types";
 import "./comunidad.css";
 
+type Pestana = "pausas" | "recomendaciones";
+
 export function PerfilAjeno() {
   const { usuarioId = "" } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState<BaulAjeno | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [pestana, setPestana] = useState<Pestana>("pausas");
+  // La pregunta de "quitar de mi comunidad" y el momento en que se está yendo.
+  const [confirmarQuitar, setConfirmarQuitar] = useState(false);
+  const [quitando, setQuitando] = useState(false);
 
   const cargar = useCallback(() => {
     api
@@ -37,6 +51,23 @@ export function PerfilAjeno() {
   }, [usuarioId]);
 
   useEffect(cargar, [cargar]);
+
+  const quitar = async () => {
+    if (quitando) return;
+    setQuitando(true);
+    try {
+      await api.quitarDeMiComunidad(usuarioId);
+      setConfirmarQuitar(false);
+      // La vitrina cambia con el vínculo: si su perfil es privado, lo que sigue
+      // es el mensaje de perfil privado, no una lista vieja.
+      cargar();
+    } catch (e) {
+      setConfirmarQuitar(false);
+      setError((e as Error).message);
+    } finally {
+      setQuitando(false);
+    }
+  };
 
   if (error)
     return (
@@ -51,6 +82,14 @@ export function PerfilAjeno() {
 
   const { persona, fichas } = data;
   const nombre = [persona.nombre, persona.apellido].filter(Boolean).join(" ");
+  const enMiComunidad = (persona.vinculo ?? "ninguno") === "aceptada";
+
+  // Cada pestaña tiene su lista: el backend las manda mezcladas por fecha y acá
+  // se separan por su `tipo`, sin reordenar nada.
+  const pausas = (fichas || []).filter((f): f is FichaAjena => f.tipo !== "recomendacion");
+  const recos = (fichas || []).filter(
+    (f): f is ItemRecomendacion => f.tipo === "recomendacion",
+  );
 
   return (
     <div className="comunidad">
@@ -63,7 +102,12 @@ export function PerfilAjeno() {
         <h1 className="com-perfil-apodo">{persona.apodo}</h1>
         {nombre && <p className="com-perfil-nombre">{nombre}</p>}
         <div className="com-perfil-cta">
-          <CtaVinculo persona={persona} onVinculo={cargar} onError={setError} />
+          <CtaVinculo
+            persona={persona}
+            onVinculo={cargar}
+            onError={setError}
+            onQuitar={enMiComunidad ? () => setConfirmarQuitar(true) : undefined}
+          />
         </div>
       </div>
 
@@ -71,26 +115,92 @@ export function PerfilAjeno() {
         <p className="com-perfil-privado">
           Perfil privado. Envíale una solicitud para ver sus Pausas.
         </p>
-      ) : fichas.length === 0 ? (
-        <div className="empty">
-          <p className="empty-title">Todavía no compartió nada.</p>
-          <p className="empty-body">
-            Cuando abra una Pausa a su comunidad, la vas a encontrar aquí.
-          </p>
-        </div>
       ) : (
-        <div className="com-fichas">
-          {fichas.map((f) =>
-            f.tipo === "recomendacion" ? (
-              <Recomendacion key={f.id} item={f} />
+        <>
+          {/* Dos pestañas, el mismo control de dos posiciones que el orden del Baúl. */}
+          <div className="com-tabs">
+            <div className="segmented" role="radiogroup" aria-label="Qué ver de esta persona">
+              <button
+                type="button"
+                role="radio"
+                aria-checked={pestana === "pausas"}
+                className={pestana === "pausas" ? "is-on" : ""}
+                onClick={() => setPestana("pausas")}
+              >
+                Pausas{pausas.length > 0 ? ` (${pausas.length})` : ""}
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={pestana === "recomendaciones"}
+                className={pestana === "recomendaciones" ? "is-on" : ""}
+                onClick={() => setPestana("recomendaciones")}
+              >
+                Recomendaciones{recos.length > 0 ? ` (${recos.length})` : ""}
+              </button>
+            </div>
+          </div>
+
+          {pestana === "pausas" ? (
+            pausas.length === 0 ? (
+              <p className="com-vacio">Todavía no compartió Pausas.</p>
             ) : (
-              <PausaCompartida
-                key={f.id}
-                ficha={f}
-                onAbrir={() => navigate(`/comunidad/ficha/${f.id}`)}
-              />
-            ),
+              <div className="com-fichas">
+                {pausas.map((f) => (
+                  <PausaCompartida
+                    key={f.id}
+                    ficha={f}
+                    onAbrir={() => navigate(`/comunidad/ficha/${f.id}`)}
+                  />
+                ))}
+              </div>
+            )
+          ) : recos.length === 0 ? (
+            <p className="com-vacio">Todavía no compartió recomendaciones.</p>
+          ) : (
+            <div className="com-fichas">
+              {recos.map((r) => (
+                <FilaRecomendacion
+                  key={r.id}
+                  item={r}
+                  onAbrir={() =>
+                    navigate(`/comunidad/${usuarioId}/recomendacion/${r.id}`)
+                  }
+                />
+              ))}
+            </div>
           )}
+        </>
+      )}
+
+      {/* —— Quitar de mi comunidad: la pregunta antes, y el rojo en el sí —— */}
+      {confirmarQuitar && (
+        <div className="modal-backdrop" onClick={() => setConfirmarQuitar(false)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Quitar a ${persona.apodo} de tu comunidad`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>¿Quitar a {persona.apodo} de tu comunidad?</h3>
+            <p>
+              Dejarán de ver las Pausas que compartes, y tú las suyas. Pueden volver a
+              enviarse una solicitud.
+            </p>
+            <div className="modal-actions">
+              <Button variant="danger" full disabled={quitando} onClick={quitar}>
+                {quitando ? "Un momento…" : "Sí, quitar"}
+              </Button>
+              <Button
+                variant="tertiary"
+                disabled={quitando}
+                onClick={() => setConfirmarQuitar(false)}
+              >
+                Conservar
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -120,26 +230,27 @@ function PausaCompartida({ ficha, onAbrir }: { ficha: FichaAjena; onAbrir: () =>
   );
 }
 
-// —— Una recomendación suya: se lee entera acá, no tiene detrás ————————————
-function Recomendacion({ item }: { item: ItemRecomendacion }) {
+// —— Una recomendación suya: acá solo el resumen; se lee en su pantalla ————
+function FilaRecomendacion({
+  item,
+  onAbrir,
+}: {
+  item: ItemRecomendacion;
+  onAbrir: () => void;
+}) {
   const etiqueta =
     TIPOS_RECOMENDACION.find((t) => t.id === item.tipo_recomendacion)?.label ?? "Otro";
   return (
-    <article className="com-reco">
-      <div className="com-reco-top">
+    <button type="button" className="com-reco-fila" onClick={onAbrir}>
+      <span className="com-reco-top">
         <span className="com-pill">Recomendación</span>
         <span className="com-ficha-cat">{etiqueta}</span>
         <span className="com-ficha-fecha" style={{ marginLeft: "auto" }}>
           {fechaCorta(item.fecha)}
         </span>
-      </div>
-      <h3 className="com-reco-titulo">{item.titulo}</h3>
-      <p className="com-reco-texto">{item.texto}</p>
-      {item.url && (
-        <a className="com-reco-url" href={item.url} target="_blank" rel="noreferrer noopener">
-          Ver más
-        </a>
-      )}
-    </article>
+      </span>
+      <span className="com-reco-titulo">{item.titulo}</span>
+      <span className="com-reco-resumen">{item.texto}</span>
+    </button>
   );
 }

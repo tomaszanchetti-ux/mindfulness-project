@@ -14,6 +14,11 @@
 // Una carta en curso a la vez: con una en el recorrido el CTA se apaga y se
 // explica por qué. El 409 del backend diría lo mismo, pero llegar hasta ahí para
 // enterarse no es una invitación, es un portazo.
+//
+// WS30 · C2b · Crear es la ÚNICA puerta para hacer algo nuevo: arriba de "Tus
+// cartas" van los dos accesos —escribir una carta y recomendar algo— y el Baúl
+// (que perdió su CTA) vuelve a ser solo la lista. Las dos son de quien es parte:
+// el free ve la misma invitación de siempre, sin formulario.
 
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +36,7 @@ export function Crear() {
   const navigate = useNavigate();
   const { perfil } = useStore();
   const puedeEscribir = perfil?.limites.propone_cartas === true;
+  const puedeRecomendar = perfil?.limites.recomendaciones === true;
 
   const [cartas, setCartas] = useState<CartaPropuesta[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +87,7 @@ export function Crear() {
       <div className="crear">
         <div className="screen-head">
           <h1 className="screen-title">Crear</h1>
-          <p className="screen-sub">Escribe una carta para la comunidad</p>
+          <p className="screen-sub">Deja algo para la comunidad</p>
         </div>
 
         <div className="crear-porque">
@@ -89,15 +95,14 @@ export function Crear() {
             Las cartas de Dwellia las escriben personas. Eliges un pilar y una
             acción inicial, escribes la frase y la Pausa que propones, y si entra
             al mazo le llega a alguien un día cualquiera, con tu apodo o en
-            anónimo.
+            anónimo. También puedes dejar algo que te hizo bien, para que lo
+            encuentre tu comunidad.
           </p>
         </div>
 
-        <div className="actions-stack" style={{ marginTop: 26 }}>
-          <Button variant="primary" full onClick={() => setVerPopup(true)}>
-            Escribir una carta
-          </Button>
-        </div>
+        {/* Las dos puertas también acá: el free ve QUÉ hay, y al tocar cualquiera
+            recibe la misma invitación. Nunca un formulario apagado. */}
+        <Puertas onCarta={() => setVerPopup(true)} onRecomendacion={() => setVerPopup(true)} />
 
         {verPopup && <SoloComunidad onClose={() => setVerPopup(false)} />}
       </div>
@@ -113,26 +118,26 @@ export function Crear() {
     <div className="crear">
       <div className="screen-head">
         <h1 className="screen-title">Crear</h1>
-        <p className="screen-sub">Tus cartas para la comunidad</p>
+        <p className="screen-sub">Deja algo para la comunidad</p>
       </div>
 
       {error && <p className="crear-aviso">{error}</p>}
 
-      <div className="actions-stack">
-        <Button
-          variant="primary"
-          full
-          disabled={!!abierta}
-          onClick={() => navigate("/crear/nueva")}
-        >
-          Escribir una carta
-        </Button>
-      </div>
+      {/* Las dos cosas que puedes dejar, antes de la lista de tus cartas. */}
+      <Puertas
+        cartaApagada={!!abierta}
+        onCarta={() => navigate("/crear/nueva")}
+        onRecomendacion={() =>
+          puedeRecomendar ? navigate("/baul/recomendacion/nueva") : setVerPopup(true)
+        }
+      />
       {abierta && (
         <p className="crear-nota">
           Tienes una carta en evaluación. Cuando termine, puedes escribir otra.
         </p>
       )}
+
+      {verPopup && <SoloComunidad onClose={() => setVerPopup(false)} />}
 
       {cartas.length === 0 ? (
         <div className="empty">
@@ -163,6 +168,42 @@ export function Crear() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// —— Las dos puertas ————————————————————————————————————————————————————————
+// Dos tarjetas grandes, no dos botones: cada una dice qué es lo que vas a dejar,
+// con una línea abajo. Es la única entrada a escribir una carta y a recomendar
+// algo (el Baúl ya no tiene la suya).
+function Puertas({
+  cartaApagada,
+  onCarta,
+  onRecomendacion,
+}: {
+  cartaApagada?: boolean;
+  onCarta: () => void;
+  onRecomendacion: () => void;
+}) {
+  return (
+    <div className="crear-puertas">
+      <button
+        type="button"
+        className="crear-puerta es-carta"
+        disabled={cartaApagada}
+        onClick={onCarta}
+      >
+        <span className="crear-puerta-tit">Escribir una carta</span>
+        <span className="crear-puerta-nota">
+          Una carta que puede ser la Pausa de alguien más.
+        </span>
+      </button>
+      <button type="button" className="crear-puerta" onClick={onRecomendacion}>
+        <span className="crear-puerta-tit">Recomendar algo</span>
+        <span className="crear-puerta-nota">
+          Un libro, un video, un podcast que te hizo bien.
+        </span>
+      </button>
     </div>
   );
 }
@@ -270,13 +311,7 @@ function PropuestaItem({
                 puedes escribir otra.
               </p>
               <div className="actions-stack">
-                <Button
-                  variant="primary"
-                  className="btn-danger"
-                  full
-                  disabled={retirando}
-                  onClick={onConfirmarRetiro}
-                >
+                <Button variant="danger" full disabled={retirando} onClick={onConfirmarRetiro}>
                   {retirando ? "Retirando…" : "Sí, retirarla"}
                 </Button>
                 <Button variant="tertiary" disabled={retirando} onClick={onCancelarRetiro}>
