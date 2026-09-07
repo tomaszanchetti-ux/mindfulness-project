@@ -54,6 +54,7 @@ from .db.models import (
     VINCULO_PENDIENTE,
     Guardada,
     PausaProgramada,
+    Recomendacion,
     Reenvio,
     Vinculo,
     ESTADO_A_REVISAR,
@@ -73,6 +74,7 @@ from .services.avisos import TEXTOS_ESTADO
 from .services.compartir import crear_compartido
 from .services.fotos import subir_foto
 from .services.plan import activar_premium, limites
+from .services.recomendaciones import crear as crear_recomendacion
 
 # La huella que hace idempotente al seed. Va en `descartadas` (JSON): no es un id de
 # carta real, así que `historial_motor` la saltea sin enterarse.
@@ -612,6 +614,33 @@ PERSONAS_DEMO = (
 UIDS_PERSONAS = {p[0] for p in PERSONAS_DEMO}
 TEXTO_REENVIO = "Lu te envió una Pausa."
 
+# WS29 · C1.3 · las recomendaciones de Lu (2 compartidas, 1 privada) y una del
+# usuario demo si es premium. Marca de idempotencia: el título.
+RECOMENDACIONES_LU = (
+    ("libro", "El poder del ahora", "Lo leí despacio, un capítulo por semana. Me ayudó a "
+     "notar cuándo me voy al futuro sin darme cuenta.", "https://www.google.com/search?q=el+poder+del+ahora",
+     "compartida"),
+    ("podcast", "Nada que hacer", "Episodios cortos para caminar sin auriculares… y después "
+     "escucharlos en casa. Suena raro, funciona.", None, "compartida"),
+    ("documental", "My Octopus Teacher", "Para ver un domingo sin teléfono cerca.", None, "privada"),
+)
+RECOMENDACION_DEMO = ("video", "Respirar antes de contestar", "Tres minutos que uso antes de "
+                      "abrir el correo. Me cambió las mañanas.", None, "compartida")
+
+
+def _sembrar_recomendaciones(s: Session, usuario: Usuario, lote) -> int:
+    if not limites(usuario).recomendaciones:
+        return 0
+    creadas = 0
+    for tipo, titulo, texto, url, visibilidad in lote:
+        ya = s.scalar(select(Recomendacion).where(
+            Recomendacion.usuario_id == usuario.id, Recomendacion.titulo == titulo))
+        if ya is not None:
+            continue
+        crear_recomendacion(s, usuario, titulo, tipo, texto, url=url, visibilidad=visibilidad)
+        creadas += 1
+    return creadas
+
 
 def _personas_demo(s: Session) -> list:
     """Lu (pública, premium) y Mar (privado, free): existen siempre, con sus datos
@@ -662,9 +691,11 @@ def sembrar_vinculos(s: Session, usuario: Usuario, lu: Usuario, mar: Usuario) ->
     Pausa de Lu guardada y una programada de Lu como próxima carta. Idempotente:
     cada pieza se crea solo si falta."""
     r = {"vinculo": False, "solicitud": False, "reenvio": False, "guardada": False,
-         "programada": False}
+         "programada": False, "recomendaciones": False}
     if usuario.firebase_uid in UIDS_PERSONAS:
         return r
+    _sembrar_recomendaciones(s, lu, RECOMENDACIONES_LU)
+    r["recomendaciones"] = bool(_sembrar_recomendaciones(s, usuario, (RECOMENDACION_DEMO,)))
     r["vinculo"] = _vinculo(s, usuario, lu, VINCULO_ACEPTADA)
     r["solicitud"] = _vinculo(s, mar, usuario, VINCULO_PENDIENTE)
 
@@ -759,7 +790,8 @@ def sembrar() -> list:
             piezas = [k for k, ok in v.items() if ok]
             print(f"      comunidad C: creé {', '.join(piezas)} (Lu pública+premium · Mar privado)")
         elif r["uid"] not in UIDS_PERSONAS:
-            print("      comunidad C: ya tenía vínculo, solicitud, reenvío, guardada y programada")
+            print("      comunidad C: ya tenía vínculo, solicitud, reenvío, guardada, programada"
+                  " y recomendaciones")
     return resumenes
 
 
