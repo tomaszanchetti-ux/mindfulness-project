@@ -74,6 +74,7 @@ export function textoFirma(firma: string, apodo: string | null): string {
 
 // —— Los límites del contenido (Roadmap v2 §0). El backend los aplica igual: acá
 // solo se usan para el contador y para no dejar mandar algo que va a rebotar. ——
-export const FRASE_MAX = 40;   // WS28 · Tomás: más de 50 ya es mucho
-export const PROMPT_MIN = 100;
+export const FRASE_MIN = 20;   // WS28 · Tomás: frase 20-40
+export const FRASE_MAX = 40;
+export const PROMPT_MIN = 80;  // WS28 · Tomás: prompt 80-150
 export const PROMPT_MAX = 150; // WS28 · Tomás

@@ -73,10 +73,10 @@ MAX_PROMPT = 300    # R8.3 · el mazo propio
 
 # Límites de las cartas de la COMUNIDAD (Roadmap v2 §0, más estrictos que R8.3).
 # ÚNICA FUENTE (WS28): `services/cartas_comunidad.py` los importa de acá, y de ahí
-# el router, el admin y el juez. Tomás (WS28): frase ≤40 (más de 50 ya es mucho),
-# prompt ≤150. El mínimo de 100 queda como estaba.
+# el router, el admin y el juez. Tomás (WS28): frase 20-40 · prompt 80-150.
+MIN_FRASE_COMUNIDAD = 20
 MAX_FRASE_COMUNIDAD = 40
-MIN_PROMPT_COMUNIDAD = 100
+MIN_PROMPT_COMUNIDAD = 80
 MAX_PROMPT_COMUNIDAD = 150
 
 # R8.1 · el concepto es kebab-case y cabe en la columna (`cartas_comunidad.concepto`
@@ -312,7 +312,7 @@ def validar_candidata(propuesta: dict, mazo: list, categorias: set,
     del wizard, pero acá no se confía en nadie).
 
     Errores duros: estructura y matriz (R8.1), los largos de la comunidad
-    (R8.3 · frase ≤40 · prompt 100-150) y el cierre en el diario (R3.1). El
+    (R8.3 · frase 20-40 · prompt 80-150) y el cierre en el diario (R3.1). El
     `concepto` NO se pide: lo sugiere el juez, no lo escribe el autor.
     """
     inf = InformeCandidata()
@@ -360,6 +360,12 @@ def validar_candidata(propuesta: dict, mazo: list, categorias: set,
     # por el mismo código. Se miden sobre el texto sin espacios de los bordes; si
     # el campo está vacío ya lo dijo R8.1 más arriba y acá no se repite.
     frase_medida, prompt_medido = frase.strip(), prompt.strip()
+    if frase_medida and len(frase_medida) < MIN_FRASE_COMUNIDAD:
+        inf.errores.append(_hallazgo(
+            "R8.3",
+            f"frase de {len(frase_medida)} caracteres (mín {MIN_FRASE_COMUNIDAD})",
+            f"La frase tiene que medir al menos {MIN_FRASE_COMUNIDAD} caracteres",
+        ))
     if frase_medida and len(frase_medida) > MAX_FRASE_COMUNIDAD:
         inf.errores.append(_hallazgo(
             "R8.3",

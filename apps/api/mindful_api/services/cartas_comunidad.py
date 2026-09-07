@@ -33,7 +33,12 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..db.base import SessionLocal
-from .canon import MAX_FRASE_COMUNIDAD, MAX_PROMPT_COMUNIDAD, MIN_PROMPT_COMUNIDAD
+from .canon import (
+    MAX_FRASE_COMUNIDAD,
+    MAX_PROMPT_COMUNIDAD,
+    MIN_FRASE_COMUNIDAD,
+    MIN_PROMPT_COMUNIDAD,
+)
 from ..db.models import (
     ESTADO_A_REVISAR,
     ESTADO_EN_REVISION,
@@ -57,7 +62,8 @@ from .plan import limites
 
 # ── Los límites del contenido · UN SOLO LUGAR (Roadmap v2 §0) ────────────────
 # WS28 · los límites viven en el canon (única fuente); acá solo cambian de nombre.
-FRASE_MAX = MAX_FRASE_COMUNIDAD      # la frase del frente
+FRASE_MIN = MIN_FRASE_COMUNIDAD      # la frase del frente: ni una palabra suelta…
+FRASE_MAX = MAX_FRASE_COMUNIDAD      # …ni un párrafo
 PROMPT_MIN = MIN_PROMPT_COMUNIDAD    # el prompt del dorso: ni telegrama…
 PROMPT_MAX = MAX_PROMPT_COMUNIDAD    # …ni ensayo
 
@@ -206,6 +212,8 @@ def _validar_contenido(
 
     if not frase:
         raise _error("La frase no puede quedar vacía.")
+    if len(frase) < FRASE_MIN:
+        raise _error(f"La frase tiene que medir al menos {FRASE_MIN} caracteres.")
     if len(frase) > FRASE_MAX:
         raise _error(f"La frase no puede pasar de {FRASE_MAX} caracteres.")
 

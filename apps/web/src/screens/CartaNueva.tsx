@@ -17,7 +17,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { api, assetUrl } from "../lib/api";
-import { FRASE_MAX, PROMPT_MAX, PROMPT_MIN } from "../lib/propuestas";
+import { FRASE_MAX, FRASE_MIN, PROMPT_MAX, PROMPT_MIN } from "../lib/propuestas";
 import { useStore } from "../store";
 import type { AccionContenido, Carta, FirmaCarta, MatrizViable } from "../lib/types";
 import "./crear.css";
@@ -131,7 +131,8 @@ export function CartaNueva() {
     };
   }, [cat, acc, frase, prompt, firma, apodo]);
 
-  const fraseOk = frase.trim().length > 0 && frase.trim().length <= FRASE_MAX;
+  const fraseLargo = frase.trim().length;
+  const fraseOk = fraseLargo >= FRASE_MIN && fraseLargo <= FRASE_MAX;
   const promptLargo = prompt.trim().length;
   const promptOk = promptLargo >= PROMPT_MIN && promptLargo <= PROMPT_MAX;
 
@@ -263,8 +264,9 @@ export function CartaNueva() {
               value={frase}
               onChange={(e) => setFrase(e.target.value)}
             />
-            <p className={`counter ${frase.length > FRASE_MAX - 10 ? "near" : ""}`}>
+            <p className={`counter ${fraseOk || fraseLargo === 0 ? "" : "near"}`}>
               {frase.length}/{FRASE_MAX}
+              {fraseLargo > 0 && fraseLargo < FRASE_MIN ? ` · faltan ${FRASE_MIN - fraseLargo}` : ""}
             </p>
 
             <label className="ob-field-label" htmlFor="carta-prompt">

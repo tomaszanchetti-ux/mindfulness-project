@@ -32,7 +32,7 @@ from ..services.admin import (
     rechazar as rechazar_carta,
     resumen as resumen_admin,
 )
-from ..services.cartas_comunidad import FRASE_MAX, PROMPT_MAX, PROMPT_MIN
+from ..services.cartas_comunidad import FRASE_MAX, FRASE_MIN, PROMPT_MAX, PROMPT_MIN
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -109,6 +109,8 @@ class FixSugerido(BaseModel):
     @classmethod
     def _v_frase(cls, v):
         v = _limpio(v)
+        if isinstance(v, str) and len(v) < FRASE_MIN:
+            raise ValueError(f"La frase tiene que medir al menos {FRASE_MIN} caracteres.")
         if isinstance(v, str) and len(v) > FRASE_MAX:
             raise ValueError(f"La frase no puede pasar de {FRASE_MAX} caracteres.")
         return v

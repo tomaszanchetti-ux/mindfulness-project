@@ -13,6 +13,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from typing import Optional
 
+from ..config import settings
 from ..db.models import Usuario
 
 PLAN_FREE = "free"
@@ -56,6 +57,11 @@ def _ahora() -> datetime:
 
 
 def es_premium(usuario: Usuario, ahora: Optional[datetime] = None) -> bool:
+    # WS28 (Tomás): la cuenta admin (`MINDFUL_ADMIN_UIDS`) es premium SIEMPRE, sin
+    # pasar por Stripe: ve y usa todo lo de la comunidad. Se lee por request, como
+    # en `auth.get_admin`, así cambiar la lista en Cloud Run alcanza.
+    if usuario.firebase_uid in settings.admin_uids_list:
+        return True
     if usuario.plan != PLAN_PREMIUM or usuario.plan_hasta is None:
         return False
     hasta = usuario.plan_hasta

@@ -394,23 +394,6 @@ export function Profile() {
         </button>
       </div>
 
-      {/* —— 7 · El escritorio de Dwellia (WS28 · solo si esta cuenta es admin).
-              No es una pestaña: la puerta está acá, y quien no es admin ni la ve. —— */}
-      {perfil.es_admin && (
-        <div className="profile-section">
-          <h3>Escritorio de Dwellia</h3>
-          <p className="meta">
-            La cola de cartas de la comunidad, el termómetro y lo que la gente
-            deja escrito.
-          </p>
-          <div className="actions-stack" style={{ marginTop: 10 }}>
-            <Button variant="secondary" full onClick={() => navigate("/admin")}>
-              Abrir el escritorio
-            </Button>
-          </div>
-        </div>
-      )}
-
       {verComoInstalar && <InstallIOSModal onClose={() => setVerComoInstalar(false)} />}
 
       {/* —— 8 · Demo (solo dev) y cerrar sesión —— */}
@@ -440,6 +423,16 @@ export function Profile() {
           Cerrar sesión
         </Button>
       </div>
+
+      {/* —— Adminland (WS28 · Tomás): abajo de todo, solo si esta cuenta es admin.
+              No es una pestaña: la puerta está acá, y quien no es admin ni la ve. —— */}
+      {perfil.es_admin && (
+        <div className="actions-stack" style={{ marginTop: 18 }}>
+          <Button variant="secondary" full onClick={() => navigate("/admin")}>
+            Adminland
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

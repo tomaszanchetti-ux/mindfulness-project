@@ -51,6 +51,7 @@ from ..config import settings
 from .canon import (
     MAX_FRASE_COMUNIDAD,
     MAX_PROMPT_COMUNIDAD,
+    MIN_FRASE_COMUNIDAD,
     MIN_PROMPT_COMUNIDAD,
     InformeCandidata,
     a_kebab,
@@ -430,7 +431,7 @@ def _fix_del_modelo(valor, resultado: str) -> tuple:
     prompt = valor.get("prompt") if isinstance(valor, dict) else None
     if isinstance(frase, str) and isinstance(prompt, str):
         frase, prompt = frase.strip(), prompt.strip()
-        if (1 <= len(frase) <= MAX_FRASE_COMUNIDAD
+        if (MIN_FRASE_COMUNIDAD <= len(frase) <= MAX_FRASE_COMUNIDAD
                 and MIN_PROMPT_COMUNIDAD <= len(prompt) <= MAX_PROMPT_COMUNIDAD
                 and "diario" in prompt.lower()):
             return {"frase": frase, "prompt": prompt}, None

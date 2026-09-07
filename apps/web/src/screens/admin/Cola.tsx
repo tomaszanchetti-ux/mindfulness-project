@@ -13,7 +13,7 @@ import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { api } from "../../lib/api";
 import { fechaCorta, fechaRelativa } from "../../lib/format";
-import { FRASE_MAX, PROMPT_MAX, PROMPT_MIN, rotulo } from "../../lib/propuestas";
+import { FRASE_MAX, FRASE_MIN, PROMPT_MAX, PROMPT_MIN, rotulo } from "../../lib/propuestas";
 import type {
   Carta,
   CategoriaContenido,
@@ -453,6 +453,7 @@ function Decision({
 
   const frase = fixFrase.trim();
   const prompt = fixPrompt.trim();
+  const fraseMal = frase.length > 0 && (frase.length < FRASE_MIN || frase.length > FRASE_MAX);
   const promptMal = prompt.length > 0 && (prompt.length < PROMPT_MIN || prompt.length > PROMPT_MAX);
   const fix: SugerenciaCarta | null =
     frase || prompt ? { frase: frase || null, prompt: prompt || null } : null;
@@ -593,8 +594,9 @@ function Decision({
               maxLength={FRASE_MAX}
               onChange={(e) => setFixFrase(e.target.value)}
             />
-            <span className="adm-contador">
+            <span className={`adm-contador ${fraseMal ? "is-mal" : ""}`}>
               {frase.length}/{FRASE_MAX}
+              {fraseMal && ` · tiene que medir entre ${FRASE_MIN} y ${FRASE_MAX}`}
             </span>
           </div>
 
@@ -618,7 +620,7 @@ function Decision({
           <div className="actions-stack">
             <Button
               full
-              disabled={enviando || sugerencia.trim().length === 0 || promptMal}
+              disabled={enviando || sugerencia.trim().length === 0 || fraseMal || promptMal}
               onClick={() =>
                 correr(
                   () => api.adminARevisar(p.id, sugerencia.trim(), fix),
