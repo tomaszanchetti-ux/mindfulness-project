@@ -57,7 +57,7 @@ en personaje y al escribir un guion.
 - **Cierre, siempre el mismo:** Pipo a cámara con alegría sarcástica → **el iris se cierra**
   sobre su cara al estilo Looney Tunes (~1,5 s) → la tapa se cierra (1 s) → **contratapa** 3 s:
   hoja salvia, "Dwellia", "una Pausa al día, fuera del teléfono", "Teo y Pipo volverán
-  próximamente", "link en la bio". Dwellia **solo** aparece aquí. Se construye una vez (D1b).
+  próximamente", "link en la bio". Dwellia **solo** aparece aquí. Se construye una vez (D1.2).
 - TikTok repite en bucle: el libro cerrado vuelve solo al cartel. El cierre pide la apertura.
 
 ## 4. Los personajes
