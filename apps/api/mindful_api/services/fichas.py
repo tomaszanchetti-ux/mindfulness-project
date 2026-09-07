@@ -84,13 +84,14 @@ def ids_de_mi_comunidad(s: Session, yo_id: str) -> list:
 
 
 def _publicables():
-    """Lo que puede aparecer en una vitrina ajena: Pausas vividas y compartidas
-    que NO son extra (una Pausa que hice de la ficha de otro no se re-publica:
-    la reflexión es mía, pero la vitrina se llenaría de ecos)."""
+    """Lo que puede aparecer en una vitrina ajena: Pausas vividas y compartidas.
+    Las EXTRA (hechas desde la ficha de otro) entran igual (decisión WS29, tras el
+    Q/A de C1.2): la carta es del mazo y la de todos, pero la reflexión y las
+    fotos son de quien la vivió. Así la regla es UNA en todas las puertas
+    (`puede_ver` tampoco distingue extra)."""
     return (
         Entrega.completada.is_(True),
         Entrega.visibilidad == VISIBILIDAD_COMPARTIDA,
-        Entrega.extra.is_(False),
     )
 
 

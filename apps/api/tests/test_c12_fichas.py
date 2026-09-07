@@ -159,7 +159,8 @@ def test_descubrir_muestra_publicas_y_de_mi_comunidad_y_nada_mas():
     assert r.status_code == 200
     ids = [f["id"] for f in r.json()]
     assert del_publico in ids and del_amigo in ids
-    for oculta in (del_extranio, privada, sin_vivir, extra, mia):
+    assert extra in ids  # WS29: una extra vivida y compartida es una Pausa más
+    for oculta in (del_extranio, privada, sin_vivir, mia):
         assert oculta not in ids
 
     # La forma: lo del dueño y nada de lo que es solo suyo.
@@ -214,8 +215,8 @@ def test_vitrina_publica_privada_y_con_vinculo():
     cuerpo = r.json()
     assert cuerpo["persona"]["nombre"] == "Ana" and cuerpo["persona"]["vinculo"] == "ninguno"
     assert "email" not in cuerpo["persona"]
-    # Solo la compartida y vivida: ni la privada ni la extra.
-    assert len(cuerpo["fichas"]) == 1
+    # Solo lo compartido y vivido (la extra compartida cuenta): la privada no.
+    assert len(cuerpo["fichas"]) == 2
     assert all("estrellas" not in f for f in cuerpo["fichas"])
 
     # Privado sin vínculo: la persona sí (para poder pedirle vínculo), las fichas no.

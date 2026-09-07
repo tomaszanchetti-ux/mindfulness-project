@@ -352,11 +352,16 @@ def _ruta_foto_perfil(usuario_id: str, ext: str) -> str:
     return f"perfil/{usuario_id}/{uuid4()}.{ext}"
 
 
+FORMATOS_AVATAR = ("image/jpeg", "image/jpg", "image/png", "image/webp")
+
+
 def subir_foto_perfil(
     s: Session, usuario: Usuario, contenido: bytes, content_type: Optional[str]
 ) -> dict:
+    # Q/A C1.1: `storage.extension_para` también admite GIF/HEIC (fotos de una
+    # Pausa); el avatar es solo JPG, PNG o WebP, como dice el contrato.
     ext = storage.extension_para(content_type)
-    if ext is None:
+    if ext is None or (content_type or "").lower() not in FORMATOS_AVATAR:
         raise HTTPException(
             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             "Formato no soportado: usa una imagen (JPG, PNG o WebP)",
