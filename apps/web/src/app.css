@@ -2512,3 +2512,27 @@
 .lightbox-carta .card-scene {
   max-width: none;
 }
+
+/* ——————————————————————————————————————————————— WS29 · Avatar (C0) */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--soft-ivory);
+  border: 1px solid var(--sand-line);
+}
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.avatar-inicial {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: var(--sage-deep);
+  background: rgba(143, 168, 140, 0.18);
+  border-color: transparent;
+}
