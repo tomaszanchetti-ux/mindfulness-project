@@ -27,6 +27,7 @@
 | T5 | **Zona horaria hacia el este duplica la carta del día** (caso borde del cambio de TZ). | Anotado en WS24 como deuda. | WS24 | Reproducir y decidir (probablemente comparar por fecha local guardada). |
 | T6 | **Una suscripción de Stripe por usuario**: la baja de una vieja apaga la nueva. | Aceptable en v1. | WS24 | Guardar `subscription_id` y comparar en el webhook. |
 | T7 | **Limpieza de fotos huérfanas** en Storage (entregas nunca completadas). | Costo y prolijidad. | WS16 | Job periódico (está en la ola C3 del roadmap). |
+| T9 | **`GET /api/fichas/descubrir` hace ~6 queries por ficha** (183 para 30: persona, fotos, guardada, carta enriquecida por ítem). | Con cientos de usuarios no se nota; con miles, sí. | Q/A C1.2, WS29 | Cargar personas/fotos/guardadas en 3 queries por lote (`IN`) y `_carta_enriquecida` con las categorías/acciones cacheadas. |
 | T8 | **Esfuerzo del juez** (`output_config.effort`) si el costo por carta molesta: hoy ≈ 4-6 ¢ porque Sonnet 5 piensa 3-6k tokens por veredicto. | Volumen premium lo hace irrelevante por ahora. | WS27 | Medir calidad con `medium`/`low` sobre cartas reales antes de bajarlo. |
 
 ## 3. Bloque D (promoción) — vive en `Flipbook/` y en el roadmap §5b
