@@ -25,6 +25,7 @@ import { Reflect } from "./screens/Reflect";
 import { Completion } from "./screens/Completion";
 import { Baul } from "./screens/Baul";
 import { EntryDetail } from "./screens/EntryDetail";
+import { Recomendacion } from "./screens/Recomendacion";
 import { Share } from "./screens/Share";
 import { PublicShare } from "./screens/PublicShare";
 import { Profile } from "./screens/Profile";
@@ -149,6 +150,8 @@ function App() {
             <Route path="/cierre/:id" element={<RequireAuth><RequireOnboarding><Completion /></RequireOnboarding></RequireAuth>} />
             <Route path="/baul" element={<RequireAuth><RequireOnboarding><Baul /></RequireOnboarding></RequireAuth>} />
             <Route path="/baul/:id" element={<RequireAuth><RequireOnboarding><EntryDetail /></RequireOnboarding></RequireAuth>} />
+            <Route path="/baul/recomendacion/nueva" element={<RequireAuth><RequireOnboarding><Recomendacion /></RequireOnboarding></RequireAuth>} />
+            <Route path="/baul/recomendacion/:id/editar" element={<RequireAuth><RequireOnboarding><Recomendacion /></RequireOnboarding></RequireAuth>} />
             <Route path="/compartir/:id" element={<RequireAuth><RequireOnboarding><Share /></RequireOnboarding></RequireAuth>} />
             <Route path="/perfil" element={<RequireAuth><RequireOnboarding><Profile /></RequireOnboarding></RequireAuth>} />
             <Route path="/metodo" element={<RequireAuth><RequireOnboarding><Metodo /></RequireOnboarding></RequireAuth>} />
