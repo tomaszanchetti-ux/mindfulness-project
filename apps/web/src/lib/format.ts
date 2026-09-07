@@ -52,3 +52,25 @@ export function cuentaRegresiva(objetivo: Date, ahora: Date): string {
   if (m === 0) return `Faltan ${h} h`;
   return `Faltan ${h} h ${m} min`;
 }
+
+/**
+ * WS27 · B2.2 · "hace 2 h" / "ayer" / "hace 3 días" / "12 ago" — la antigüedad
+ * de un aviso o de una carta propuesta.
+ *
+ * Pasada una semana se deja de contar y se muestra la fecha corta: "hace 23
+ * días" no le dice nada a nadie, y una campana no es un cronómetro.
+ */
+export function fechaRelativa(iso: string, ahora: Date = new Date()): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const min = Math.floor((ahora.getTime() - d.getTime()) / 60000);
+  // Un reloj adelantado (o una fecha del futuro) nunca dice "hace -3 min".
+  if (min < 1) return "recién";
+  if (min < 60) return `hace ${min} min`;
+  const horas = Math.floor(min / 60);
+  if (horas < 24) return `hace ${horas} h`;
+  const dias = Math.floor(horas / 24);
+  if (dias === 1) return "ayer";
+  if (dias < 7) return `hace ${dias} días`;
+  return fechaCorta(iso);
+}
