@@ -92,6 +92,23 @@
    "lienzo": 400,
    "escala_png": 2
   },
+  "cuerpo_buda": {
+   "cabeza": [
+    200,
+    146
+   ],
+   "escala": 1.0,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "pecho": [
+    200,
+    240
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_buda.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
   "cuerpo_camina": {
    "cabeza": [
     268,

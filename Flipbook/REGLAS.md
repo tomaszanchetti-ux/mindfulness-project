@@ -142,6 +142,7 @@ titulo: LA PRUEBA               # el título satírico, va en el cartel
 cartel:
   tinta: ocre                   # ocre | ladrillo | azul_cartel (la cuarta tinta, §3)
   formas: diagonales            # diagonales | rayos | circulo | franja | marco
+  vineta: iluminado             # la imagen fija: iluminado (la de la serie) | tintin
 escenas:
   - tipo: problema              # problema | espejo | magia
     fondo: rincon

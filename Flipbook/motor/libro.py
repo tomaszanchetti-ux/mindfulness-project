@@ -811,8 +811,41 @@ def _remolino(d, x, y, rng, s=1.0, vueltas=1.6, color=None):
     R.stroke(d, pts, rng, width=6, color=color or R.UMBER, amp=1.4)
 
 
-def imagen_cartel(im, m, rng, cx, cy, r):
-    """B1 (WS34): la viñeta fija del cartel a lo Tintín. Teo corre inclinado con los brazos
+def imagen_cartel_iluminado(im, m, rng, cx, cy, r):
+    """B1 (WS34, versión de Tomás): Pipo ILUMINADO, en flor de loto (cuerpo `buda`, cara
+    alegría sarcástica), flotando arriba a la derecha con un halo crema; Teo hecho un
+    desastre abajo a la izquierda (encorvado, mirando hacia arriba con la boca abierta) con
+    la nube de garabatos sobre la cabeza. La premisa de la serie en un vistazo. El círculo,
+    el centro y el radio no cambian. La versión a lo Tintín (cuerpos `corre`) queda en el motor."""
+    d = ImageDraw.Draw(im)
+    R.circle(d, cx, cy, r, rng, width=9, color=R.UMBER, fill=R.CREAM)
+    # Pipo flota arriba a la derecha: el halo del iluminado (dos aros de línea) y rayitos
+    px, py = cx + 105, cy - 40
+    for rr, w in ((138, 5), (172, 3)):
+        R.circle(d, px, py, rr, rng, width=w, color=R.SAND, amp=2.5)
+    for k in range(9):
+        a = -math.pi / 2 + (k - 4) * 0.33
+        x0, y0 = px + 188 * math.cos(a), py + 188 * math.sin(a)
+        x1, y1 = px + 222 * math.cos(a), py + 222 * math.sin(a)
+        R.stroke(d, [(x0, y0), (x1, y1)], rng, width=5, color=R.TAUPE, amp=1.0)
+    m.pegar(im, "pipo", "buda", CARA_CARTEL_PIPO, px, py + 70, escala=0.74, rng=rng)
+    # Teo, el desastre: abajo a la izquierda, encorvado, mirando hacia arriba a Pipo, con el
+    # ruido mental encima y unas gotitas de sudor
+    d = ImageDraw.Draw(im)
+    tx, ty = cx - 150, cy + 132
+    # espejado: su tres cuartos mira a la derecha, hacia Pipo; rot positiva = se echa atrás
+    m.pegar(im, "teo", "encorvado", CARA_CARTEL_TEO, tx, ty, escala=0.8, rng=rng, rot=6, espejo=True)
+    d = ImageDraw.Draw(im)
+    R.scribble(d, tx - 10, ty - 335, rng, r=80, color=R.TAUPE, width=4)
+    for dx, dy in ((96, -232), (114, -200), (86, -186)):
+        d.ellipse((tx + dx - 6, ty + dy - 11, tx + dx + 6, ty + dy + 7), fill=R.SAND, outline=R.UMBER, width=3)
+
+
+CARA_CARTEL_PIPO, CARA_CARTEL_TEO = "cara_alegria_sarcastica", "cara_arriba_fruncida"   # el "¿eh?"
+
+
+def imagen_cartel_tintin(im, m, rng, cx, cy, r):
+    """La alternativa a lo Tintín (B1, primera versión; `cartel: {vineta: tintin}`). Teo corre inclinado con los brazos
     bombeando (cuerpo `corre`, cara costado_sonrisa) y Pipo galopa ADELANTE (cuerpo `corre`,
     alegría sarcástica), los dos rompiendo apenas el borde del círculo; atrás, los remolinos de
     velocidad y unas líneas de polvo. El círculo, el centro y el radio no cambian."""
@@ -825,6 +858,18 @@ def imagen_cartel(im, m, rng, cx, cy, r):
         R.stroke(d, [(cx + dx - largo, cy + dy), (cx + dx, cy + dy)], rng, width=5, color=R.TAUPE, amp=1.0)
     m.pegar(im, "teo", "corre", "cara_costado_sonrisa", cx - 70, cy - 10, escala=1.18, rng=rng)
     m.pegar(im, "pipo", "corre", "cara_alegria_sarcastica", cx + 165, cy + 200, escala=0.74, rng=rng, rot=-6)
+
+
+VINETAS = {"iluminado": imagen_cartel_iluminado, "tintin": imagen_cartel_tintin}
+
+
+def imagen_cartel(im, m, rng, cx, cy, r, vineta="iluminado"):
+    """La viñeta fija del cartel. `iluminado` (Tomás, WS34) es la de la serie; `tintin` queda
+    como alternativa (`cartel: {vineta: tintin}` en el guion)."""
+    fn = VINETAS.get(vineta)
+    if not fn:
+        raise SystemExit("viñeta desconocida: %s (hay: %s)" % (vineta, ", ".join(VINETAS)))
+    fn(im, m, rng, cx, cy, r)
 
 
 def _formas(d, rng, tinta, forma, claro, oscuro):
@@ -858,7 +903,7 @@ def cartel(g, m, i, n, rng):
     f = font_que_entra(d, "TEO Y PIPO", 900, 210)
     d.text((R.W / 2, 400), "TEO Y PIPO", fill=R.IVORY, font=f, anchor="mm")
     R.stroke(d, [(240, 520), (840, 520)], rng, width=6, color=R.IVORY, amp=1.5)
-    imagen_cartel(im, m, rng, R.W / 2, 1030, 340)
+    imagen_cartel(im, m, rng, R.W / 2, 1030, 340, vineta=c.get("vineta", "iluminado"))
     d = ImageDraw.Draw(im)
     titulo = str(g.get("titulo", "SIN TÍTULO")).upper()
     d.text((R.W / 2, 1480), "en", fill=R.IVORY, font=R.font(52), anchor="mm")

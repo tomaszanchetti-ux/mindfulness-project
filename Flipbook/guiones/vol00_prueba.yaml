@@ -17,6 +17,7 @@ nombre: vol00_prueba
 cartel:
   tinta: ocre            # ocre | ladrillo | azul_cartel
   formas: diagonales     # diagonales | rayos | circulo | franja | marco
+  vineta: iluminado      # iluminado (Pipo en flor de loto, Teo el desastre) | tintin
   duracion: 2.0
 
 escenas:

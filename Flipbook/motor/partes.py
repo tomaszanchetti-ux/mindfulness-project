@@ -351,9 +351,35 @@ def pipo_cuerpo_corre():
     p.append(pipo_collar(276, 176, 36, ry=10))
     return svg(p), {"cabeza": [286, 172], "escala": 0.88, "rot": -6, "z_cabeza": "delante"}
 
+def pipo_cuerpo_buda():
+    """Pipo iluminado (B1, WS34): sentado a cámara en flor de loto, la panza redonda y clara,
+    las patas traseras cruzadas adelante como un almohadón bajo con las almohadillas hacia
+    arriba, las delanteras rectas apoyadas en las rodillas. La cabeza va derecha, arriba."""
+    p = []
+    p.append(pipo_cola(288, 240, s=0.9, rot=30))
+    # torso pera, más ancho y bajo que el sentado (está apoyado en el piso)
+    p.append(path("M 200 126 C 266 126, 314 186, 312 258 C 310 306, 268 330, 200 330 "
+                  "C 132 330, 90 306, 88 258 C 86 186, 134 126, 200 126 Z", fill=FAWN))
+    p.append(path("M 200 176 C 246 176, 270 216, 266 262 C 262 296, 236 312, 200 312 "
+                  "C 164 312, 138 296, 134 262 C 130 216, 154 176, 200 176 Z", fill=IVORY, stroke="none", w=0))
+    # las patas traseras cruzadas: un almohadón bajo y ancho con el pliegue del cruce
+    p.append(path("M 96 328 C 100 300, 150 292, 200 296 C 250 292, 300 300, 304 328 "
+                  "C 308 350, 276 362, 200 362 C 124 362, 92 350, 96 328 Z", fill=FAWN))
+    p.append(path("M 150 300 C 178 318, 222 334, 262 344", stroke=UMBER, w=W_SEC))
+    # almohadillas hacia arriba en las dos puntas
+    for cx in (118, 282):
+        p.append(ell(cx, 330, 20, 13, FAWN_SOMBRA, UMBER, W_SEC))
+        p.append(circ(cx - 8, 326, 3.5, UMBER)); p.append(circ(cx, 323, 3.5, UMBER)); p.append(circ(cx + 8, 326, 3.5, UMBER))
+    # patas delanteras rectas, apoyadas sobre las rodillas (el gesto de meditar)
+    p.append(pipo_pata_frente(154, 236, largo=64))
+    p.append(pipo_pata_frente(246, 236, largo=64))
+    p.append(pipo_collar(200, 146, 52))
+    return svg(p), {"cabeza": [200, 146], "escala": 1.0, "rot": 0, "z_cabeza": "delante", "pecho": [200, 240]}
+
 CUERPOS_PIPO = {
     "sentado": pipo_cuerpo_sentado,
     "corre": pipo_cuerpo_corre,
+    "buda": pipo_cuerpo_buda,
     "camina": pipo_cuerpo_camina,
     "panza_arriba": pipo_cuerpo_panza_arriba,
     "plantado": pipo_cuerpo_plantado,
