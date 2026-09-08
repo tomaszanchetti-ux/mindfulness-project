@@ -392,8 +392,8 @@ def globo(d, texto, ancla, rng, evitar=(), forzar=None, flota=0.0, modo=None, an
         f, lineas, tam = _texto_globo(d, texto)
     tw = max(ancho(d, s, f)[0] for s in lineas)
     th = len(lineas) * int(tam * 1.28)
-    if modo == "abajo":                              # caja redondeada: contiene el texto con poco margen
-        rx, ry = tw / 2 + 44, th / 2 + 34
+    if modo == "abajo":                              # caja redondeada apaisada, con aire alrededor del texto
+        rx, ry = tw / 2 + 60, th / 2 + 44
     else:                                            # óvalo de historieta
         rx, ry = tw * 0.70 + 40, th * 0.86 + 38
 
@@ -408,8 +408,10 @@ def globo(d, texto, ancla, rng, evitar=(), forzar=None, flota=0.0, modo=None, an
                   (ax - rx - 90, ay - ry - 130), (ax + rx + 90, ay - ry - 130),
                   (ax, ay - ry - 330), (ax - 320, ay - ry - 380), (ax + 320, ay - ry - 380),
                   (R.W / 2, 340), (rx + 60, 340), (R.W - rx - 60, 340)]
-        yb = min(PISO - int(SUBE_ESCENA[0]) + ry + 40, R.H - ry - 180)
         mx, my = ancla_abajo or ancla
+        # 130 px de colita entre el piso y la caja; si Pipo cuelga por debajo del piso (panza
+        # arriba), la caja baja para que la colita mida al menos 110 px
+        yb = min(max(PISO - int(SUBE_ESCENA[0]) + ry + 130, my + ry + 110), R.H - ry - 180)
         abajo = [(mx, yb, (mx, my)), (R.W / 2, yb, (mx, my)), (rx + 70, yb, (mx, my)), (R.W - rx - 110, yb, (mx, my)),
                  (mx - 260, yb, (mx, my)), (mx + 260, yb, (mx, my))]
         arriba = [(px, py, (ax, ay)) for px, py in arriba]
@@ -419,7 +421,10 @@ def globo(d, texto, ancla, rng, evitar=(), forzar=None, flota=0.0, modo=None, an
             px = entre(px, rx + 55, R.W - rx - 55)
             py = entre(py, ry + 150, R.H - ry - 180)
             caja = (px - rx, py - ry, px + rx, py + ry)
-            b1, b2, base, punta = _colita(px, py, rx, ry, ax, ay)
+            if py > ay:
+                b1, b2, base, punta = _colita_caja(px, py, rx, ry, ax, ay)[:4]
+            else:
+                b1, b2, base, punta = _colita(px, py, rx, ry, ax, ay)
             puntaje = 4.0 * sum(_solape(caja, c) for c in evitar)
             puntaje += 9.0 * sum(1 for c in esquivar_colita
                                  if _cruza(base, punta, c) or _cruza(b1, punta, c) or _cruza(b2, punta, c))
@@ -433,30 +438,62 @@ def globo(d, texto, ancla, rng, evitar=(), forzar=None, flota=0.0, modo=None, an
         cx, cy, ax, ay = mejor
     cy += flota
 
-    if modo == "abajo":
-        _caja_globo(d, cx, cy, rx, ry, rng)
+    if modo == "abajo" and cy > ay:
+        _caja_globo(d, cx, cy, rx, ry, rng, ax, ay)          # caja + colita integradas
     else:
         R.circle(d, cx, cy, rx, rng, width=6, fill=R.IVORY, ry=ry, amp=2.5)
-    b1, b2, _, punta = _colita(cx, cy, rx, ry, ax, ay)
-    d.polygon([b1, punta, b2, (cx, cy)], fill=R.IVORY)      # el relleno tapa el borde del óvalo
-    R.stroke(d, [b1, punta], rng, width=6, amp=1.2)
-    R.stroke(d, [b2, punta], rng, width=6, amp=1.2)
+        b1, b2, _, punta = _colita(cx, cy, rx, ry, ax, ay)
+        d.polygon([b1, punta, b2, (cx, cy)], fill=R.IVORY)  # el relleno tapa el borde del óvalo
+        R.stroke(d, [b1, punta], rng, width=6, amp=1.2)
+        R.stroke(d, [b2, punta], rng, width=6, amp=1.2)
     for k, s in enumerate(lineas):
         d.text((cx, cy - th / 2 + int(tam * 1.28) * (k + 0.5)), s, fill=R.UMBER, font=f, anchor="mm")
 
 
-def _caja_globo(d, cx, cy, rx, ry, rng, radio=48):
-    """El globo apaisado de abajo: un rectángulo redondeado de línea temblorosa."""
-    pts = []
+RADIO_CAJA = 56
+BASE_COLITA = 34             # media base de la colita de la caja (68 px de ancho en el borde)
+
+
+def _bezier(p0, p1, p2, n=14):
+    return [((1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t ** 2 * p2[0],
+             (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t ** 2 * p2[1]) for t in (k / n for k in range(n + 1))]
+
+
+def _colita_caja(cx, cy, rx, ry, ax, ay):
+    """La colita del globo de abajo: nace en el BORDE SUPERIOR de la caja, con una base
+    angosta, y sube al mentón de Pipo en dos curvas que primero suben derechas y después se
+    cierran en la punta (colita de historieta). Devuelve (b1, b2, base, punta, curva1, curva2)."""
+    bx = entre(ax, cx - rx + RADIO_CAJA + BASE_COLITA, cx + rx - RADIO_CAJA - BASE_COLITA)
+    by = cy - ry
+    b1, b2 = (bx - BASE_COLITA, by), (bx + BASE_COLITA, by)
+    punta = (ax, ay)
+    alto = max(40.0, by - ay)
+    c1 = (b1[0] + (ax - b1[0]) * 0.18, by - alto * 0.62)
+    c2 = (b2[0] + (ax - b2[0]) * 0.18, by - alto * 0.62)
+    return b1, b2, (bx, by), punta, _bezier(b1, c1, punta), _bezier(b2, c2, punta)
+
+
+def _caja_globo(d, cx, cy, rx, ry, rng, ax, ay, radio=RADIO_CAJA):
+    """El globo apaisado de abajo: un rectángulo redondeado de línea temblorosa, con la
+    colita integrada al borde (el contorno se abre en la base de la colita)."""
+    b1, b2, base, punta, curva1, curva2 = _colita_caja(cx, cy, rx, ry, ax, ay)
+    # el contorno arranca en b2 (derecha de la base), da la vuelta y termina en b1
+    pts = [b2]
     esquinas = [(cx + rx - radio, cy - ry + radio, -0.5), (cx + rx - radio, cy + ry - radio, 0.0),
                 (cx - rx + radio, cy + ry - radio, 0.5), (cx - rx + radio, cy - ry + radio, 1.0)]
     for ex, ey, a0 in esquinas:
         for k in range(7):
             a = (a0 + 0.5 * k / 6) * math.pi
             pts.append((ex + radio * math.cos(a), ey + radio * math.sin(a)))
-    pts = R.wobble(pts, rng, 2.0)
+    pts.append(b1)
+    pts = R.wobble(pts, rng, 1.8)
+    # relleno: la caja y la colita, como una sola forma marfil
     d.polygon(pts, fill=R.IVORY)
-    d.line(pts + [pts[0]], fill=R.UMBER, width=6, joint="curve")
+    d.polygon(curva1 + curva2[::-1], fill=R.IVORY)
+    # contorno de la caja (abierto en la base) y las dos curvas de la colita, más finas
+    d.line(pts, fill=R.UMBER, width=6, joint="curve")
+    d.line(R.wobble(curva1, rng, 1.0), fill=R.UMBER, width=5, joint="curve")
+    d.line(R.wobble(curva2, rng, 1.0), fill=R.UMBER, width=5, joint="curve")
 
 
 def _solape(a, b):
@@ -641,7 +678,12 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
             if quien == "pipo":
                 caja = cajas[-1]                       # la última es la cabeza
                 ancla_pipo = ((caja[0] + caja[2]) / 2, caja[1] + 0.25 * (caja[3] - caja[1]))
-                ancla_menton = ((caja[0] + caja[2]) / 2, caja[1] + 0.92 * (caja[3] - caja[1]))
+                # la colita de abajo apunta a Pipo desde DEBAJO de su silueta entera (cabeza o
+                # cuerpo, lo que llegue más abajo), sin tocarlo
+                px_, py_ = _posicion(spec, anclas_fondo, t)
+                cb = caja_pieza(m, "pipo", "cuerpo_" + _cuerpo_de(spec, i))
+                fondo_cuerpo = py_ + cb[3] * float(spec.get("escala", 1.0))
+                ancla_menton = ((caja[0] + caja[2]) / 2, max(caja[3], fondo_cuerpo) + 14)
         caras += _props_sueltos(d, cuadro, anclas_fondo, t, rng, delante=True)
 
     if cuadro.get("anillos"):                        # la respiración de la escena de la magia
@@ -1104,7 +1146,7 @@ def render(ruta_guion, solo_cuadros=False):
     g = cargar(ruta_guion)
     nombre = g.get("nombre") or os.path.splitext(os.path.basename(ruta_guion))[0]
     MODO_GLOBO[0] = g.get("globos", "abajo")
-    SUBE_ESCENA[0] = int(g.get("subir_escena", 170 if MODO_GLOBO[0] == "abajo" else 0))
+    SUBE_ESCENA[0] = int(g.get("subir_escena", 220 if MODO_GLOBO[0] == "abajo" else 0))
     m = Marioneta()
     cuadros = aplanar(g)
     total_hojas = sum(c["hojas"] for c in cuadros) + HOJAS_CIERRE
