@@ -833,7 +833,7 @@ CARA_CARTEL_PIPO, CARA_CARTEL_TEO = "cara_alegria_sarcastica", "cara_costado_son
 
 
 def imagen_cartel_tintin(im, m, rng, cx, cy, r):
-    """La alternativa a lo Tintín (B1, primera versión; `cartel: {vineta: tintin}`). Teo corre inclinado con los brazos
+    """B1 (WS34): LA viñeta de la serie, a lo Tintín (elegida por Tomás sobre dos alternativas). Teo corre inclinado con los brazos
     bombeando (cuerpo `corre`, cara costado_sonrisa) y Pipo galopa ADELANTE (cuerpo `corre`,
     alegría sarcástica), los dos rompiendo apenas el borde del círculo; atrás, los remolinos de
     velocidad y unas líneas de polvo. El círculo, el centro y el radio no cambian."""
@@ -848,12 +848,12 @@ def imagen_cartel_tintin(im, m, rng, cx, cy, r):
     m.pegar(im, "pipo", "corre", "cara_alegria_sarcastica", cx + 165, cy + 200, escala=0.74, rng=rng, rot=-6)
 
 
-VINETAS = {"iluminado": imagen_cartel_iluminado, "tintin": imagen_cartel_tintin}
+VINETAS = {"tintin": imagen_cartel_tintin, "iluminado": imagen_cartel_iluminado}
 
 
-def imagen_cartel(im, m, rng, cx, cy, r, vineta="iluminado"):
-    """La viñeta fija del cartel. `iluminado` (Tomás, WS34) es la de la serie; `tintin` queda
-    como alternativa (`cartel: {vineta: tintin}` en el guion)."""
+def imagen_cartel(im, m, rng, cx, cy, r, vineta="tintin"):
+    """La viñeta fija del cartel. `tintin` (los dos corriendo, elegida por Tomás en la WS34) es
+    la de la serie; `iluminado` queda como alternativa (`cartel: {vineta: iluminado}`)."""
     fn = VINETAS.get(vineta)
     if not fn:
         raise SystemExit("viñeta desconocida: %s (hay: %s)" % (vineta, ", ".join(VINETAS)))
@@ -891,7 +891,7 @@ def cartel(g, m, i, n, rng):
     f = font_que_entra(d, "TEO Y PIPO", 900, 210)
     d.text((R.W / 2, 400), "TEO Y PIPO", fill=R.IVORY, font=f, anchor="mm")
     R.stroke(d, [(240, 520), (840, 520)], rng, width=6, color=R.IVORY, amp=1.5)
-    imagen_cartel(im, m, rng, R.W / 2, 1030, 340, vineta=c.get("vineta", "iluminado"))
+    imagen_cartel(im, m, rng, R.W / 2, 1030, 340, vineta=c.get("vineta", "tintin"))
     d = ImageDraw.Draw(im)
     titulo = str(g.get("titulo", "SIN TÍTULO")).upper()
     d.text((R.W / 2, 1480), "en", fill=R.IVORY, font=R.font(52), anchor="mm")
