@@ -175,9 +175,10 @@ el motor: no se declaran.
 | Clave | Qué es |
 |---|---|
 | `hojas` / `duracion` | cuántas hojas dura el cuadro (10 hojas por segundo). |
-| `fondo` | `habitacion` · `rincon` · `banco_plaza` · `mesa_familiar` · `sofa` · `espejo_bano` · `calle` · `ninguno`. Cada uno declara anclas (`ventana`, `banquito`, `banco`, `mesa`, `sofa`, `espejo`, `repisa`…). |
+| `fondo` | `habitacion` · `rincon` · `banco_plaza` · `mesa_familiar` · `sofa` · `living` (el sofá corrido a la derecha y el rincón con banquito y lámpara a la izquierda, vol. 1) · `espejo_bano` · `calle` · `ninguno`. Cada uno declara anclas (`ventana`, `banquito`, `banco`, `mesa`, `sofa`, `espejo`, `repisa`…). |
 | `teo` / `pipo` | `cuerpo`, `cara`, `x`, `y`, `escala`, `rot`, `espejo`, `aura` (0..1 o `sube`), `pulso`, `ciclo: true` (usa `cuerpo_0..3`, una fase por hoja), `prop` (una pieza o una lista; `ancla`, `dx`, `dy`, `rot`, `ciclo`), `hacia: {x, y}` (se interpola dentro del cuadro), `en: <ancla del fondo>`. |
 | `props` | props simples: `nube_garabatos` (con `disolucion` 0..1), `burbuja_pensamiento` (con `dibujo` y `punta`), `correa`, `plato_croquetas`, `globo`. Cualquier opción admite `hacia_<opcion>` para interpolarla dentro del cuadro. `delante: true` los pone adelante del personaje. |
+| `piezas` | piezas ilustradas compuestas (WS35): `pieza` (`familia/familia_living`, `familia/familia_mesa`, `extras/chicas_pasan`), `x`, `y`, `escala`, `rot`, `espejo`. Se pegan por su ancla `centro`, entre los secundarios y la capa delantera del fondo (la mesa tapa a la familia de la cintura para abajo); el globo las esquiva. |
 | `secundarios` | gente de línea simple: `tipo` (`abuela`, `abuelo`, `chica`, `senor`), `x`, `y`, `escala`. |
 | `zoom` | la hoja "acerca": `pieza` (`teo/cara_…`, `pipo/…`, `props/…`) o `prop`, con `escala`, `rot`, `ciclo`, `manos: true`. |
 | `pipo_dice` | el texto del globo (≤12 palabras, 3-4 líneas), o una **lista** de textos = varios globos seguidos sobre la misma imagen. |

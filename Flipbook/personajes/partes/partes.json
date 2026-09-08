@@ -596,6 +596,23 @@
    "lienzo": 400,
    "escala_png": 2
   },
+  "cuerpo_spiderman": {
+   "cabeza": [
+    186,
+    110
+   ],
+   "escala": 0.72,
+   "rot": -12,
+   "z_cabeza": "delante",
+   "mano": [
+    332,
+    128
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_spiderman.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
   "cuerpo_camina_0": {
    "cabeza": [
     204,
@@ -661,6 +678,26 @@
    ],
    "tipo": "cuerpo",
    "png": "personajes/partes/teo/cuerpo_camina_3.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_costado_sonrisa_caido": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_costado_sonrisa_caido.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_frente_sonrisa_caido": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_frente_sonrisa_caido.png",
    "lienzo": 400,
    "escala_png": 2
   }
@@ -751,6 +788,52 @@
    "escala_rel": 0.36,
    "tipo": "prop",
    "png": "personajes/partes/props/cuadernito_3.png",
+   "lienzo": 400,
+   "escala_png": 2
+  }
+ },
+ "familia": {
+  "familia_living": {
+   "centro": [
+    400,
+    250
+   ],
+   "mano_nena": [
+    264,
+    360
+   ],
+   "tipo": "grupo",
+   "lienzo_w": 800,
+   "lienzo_h": 560,
+   "png": "personajes/partes/familia/familia_living.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "familia_mesa": {
+   "centro": [
+    400,
+    250
+   ],
+   "mano_nena": [
+    400,
+    254
+   ],
+   "tipo": "grupo",
+   "lienzo_w": 800,
+   "lienzo_h": 560,
+   "png": "personajes/partes/familia/familia_mesa.png",
+   "lienzo": 400,
+   "escala_png": 2
+  }
+ },
+ "extras": {
+  "chicas_pasan": {
+   "centro": [
+    200,
+    200
+   ],
+   "tipo": "grupo",
+   "png": "personajes/partes/extras/chicas_pasan.png",
    "lienzo": 400,
    "escala_png": 2
   }

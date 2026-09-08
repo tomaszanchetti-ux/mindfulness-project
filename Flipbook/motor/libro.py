@@ -152,21 +152,40 @@ def fondo_mesa_familiar(d, rng, desp=0.0, capa="atras"):
     return {"mesa": (730, 1130), "silla": (335, 1170)}
 
 
+def _sofa(d, rng, dx=0):
+    """Un sofá de línea, de frente: respaldo, asiento y dos brazos, corrido dx píxeles."""
+    R.stroke(d, [(250 + dx, 1170), (250 + dx, 940), (880 + dx, 940), (880 + dx, 1170)], rng, width=7, color=R.TAUPE)
+    R.stroke(d, [(250 + dx, 1170), (880 + dx, 1170)], rng, width=8, color=R.TAUPE)
+    R.stroke(d, [(190 + dx, 1330), (190 + dx, 1030)], rng, width=8, color=R.TAUPE)
+    R.stroke(d, [(940 + dx, 1330), (940 + dx, 1030)], rng, width=8, color=R.TAUPE)
+    R.stroke(d, [(190 + dx, 1030), (250 + dx, 1000)], rng, width=7, color=R.TAUPE)
+    R.stroke(d, [(940 + dx, 1030), (880 + dx, 1000)], rng, width=7, color=R.TAUPE)
+    R.stroke(d, [(190 + dx, 1330), (940 + dx, 1330)], rng, width=8, color=R.TAUPE)
+    R.stroke(d, [(565 + dx, 940), (565 + dx, 1170)], rng, width=4, color=R.LINE)
+    for x in (230 + dx, 960 + dx):
+        R.stroke(d, [(x, 1330), (x, PISO)], rng, width=6, color=R.TAUPE)
+
+
 def fondo_sofa(d, rng, desp=0.0, capa="atras"):
     """Un sofá de línea, de frente: respaldo, asiento y dos brazos."""
     if capa == "atras":
         _piso(d, rng)
-        R.stroke(d, [(250, 1170), (250, 940), (880, 940), (880, 1170)], rng, width=7, color=R.TAUPE)
-        R.stroke(d, [(250, 1170), (880, 1170)], rng, width=8, color=R.TAUPE)
-        R.stroke(d, [(190, 1330), (190, 1030)], rng, width=8, color=R.TAUPE)
-        R.stroke(d, [(940, 1330), (940, 1030)], rng, width=8, color=R.TAUPE)
-        R.stroke(d, [(190, 1030), (250, 1000)], rng, width=7, color=R.TAUPE)
-        R.stroke(d, [(940, 1030), (880, 1000)], rng, width=7, color=R.TAUPE)
-        R.stroke(d, [(190, 1330), (940, 1330)], rng, width=8, color=R.TAUPE)
-        R.stroke(d, [(565, 940), (565, 1170)], rng, width=4, color=R.LINE)
-        for x in (230, 960):
-            R.stroke(d, [(x, 1330), (x, PISO)], rng, width=6, color=R.TAUPE)
+        _sofa(d, rng)
     return {"sofa": (565, 1170)}
+
+
+def fondo_living(d, rng, desp=0.0, capa="atras"):
+    """El living de la familia (vol. 1): el sofá corrido a la derecha y, a la izquierda, el
+    rincón con el banquito y una lámpara de pie. Es el lugar de la escena 2 y del espejo."""
+    if capa == "atras":
+        R.stroke(d, [(40, 560), (40, PISO)], rng, width=5, color=R.LINE)              # el ángulo de la pared
+        _piso(d, rng, x0=40)
+        R.stroke(d, [(150, 700), (150, PISO)], rng, width=5, color=R.LINE)            # la lámpara de pie
+        R.stroke(d, [(96, 700), (204, 700), (186, 600), (114, 600), (96, 700)], rng, width=5, color=R.LINE)
+        R.stroke(d, [(70, 1180), (210, 1180), (210, PISO)], rng, width=6, color=R.TAUPE)   # el banquito
+        R.stroke(d, [(90, 1180), (90, PISO)], rng, width=6, color=R.TAUPE)
+        _sofa(d, rng, dx=110)
+    return {"banquito": (140, 1180), "sofa": (675, 1170)}
 
 
 def fondo_espejo_bano(d, rng, desp=0.0, capa="atras"):
@@ -192,7 +211,7 @@ def fondo_calle(d, rng, desp=0.0, capa="atras"):
 
 
 FONDOS = {"habitacion": fondo_habitacion, "rincon": fondo_rincon, "banco_plaza": fondo_banco_plaza,
-          "mesa_familiar": fondo_mesa_familiar, "sofa": fondo_sofa, "espejo_bano": fondo_espejo_bano,
+          "mesa_familiar": fondo_mesa_familiar, "sofa": fondo_sofa, "living": fondo_living, "espejo_bano": fondo_espejo_bano,
           "calle": fondo_calle, "ninguno": lambda d, rng, desp=0.0, capa="atras": {}}
 
 
@@ -561,6 +580,8 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
             se = float(sec.get("escala", 1.9))
             secundario(d, sx, sy, rng, tipo=sec.get("tipo", "abuela"), escala=se)
             caras.append((sx - 48 * se, sy - 58 * se, sx + 48 * se, sy + 56 * se))
+        for pz in _lista(cuadro.get("piezas")):
+            caras.append(_pieza_suelta(m, im, pz, anclas_fondo, t, rng))
         fn(d, rng, desp, "delante")
         caras += _props_sueltos(d, cuadro, anclas_fondo, t, rng, delante=False)
         for quien in ("teo", "pipo"):
@@ -603,6 +624,30 @@ def globo_en(cuadro, i, n):
         return None
     tramo = max(1.0, (n - desde) / len(textos))
     return textos[min(len(textos) - 1, int((i - desde) / tramo))]
+
+
+def _pieza_suelta(m, im, spec, anclas_fondo, t, rng):
+    """Una pieza ilustrada compuesta (la familia del vol. 1) pegada por su ancla `centro`:
+    `pieza: familia/familia_living`, `x`, `y`, `escala`, `rot`, `espejo`. Devuelve la caja
+    real (del alfa) para que el globo no la tape."""
+    personaje, nombre = spec["pieza"].split("/")
+    x, y = _posicion(spec, anclas_fondo, t)
+    escala = float(spec.get("escala", 1.0))
+    a = m.anclas(personaje, nombre)
+    pivote = tuple(a.get("centro", [200, 200]))
+    if spec.get("espejo"):
+        capa = Image.new("RGBA", im.size, (0, 0, 0, 0))
+        m.solo(capa, personaje, nombre, x, y, escala=escala, rng=rng, rot=float(spec.get("rot", 0)), pivote=pivote)
+        caja = capa.getbbox()
+        capa = capa.transpose(Image.FLIP_LEFT_RIGHT)
+        im.paste(capa, (0, 0), capa)
+        return (im.width - caja[2], caja[1], im.width - caja[0], caja[3]) if caja else (x, y, x, y)
+    m.solo(im, personaje, nombre, x, y, escala=escala, rng=rng, rot=float(spec.get("rot", 0)), pivote=pivote)
+    png = m._png(personaje, nombre)
+    b = png.getbbox() or (0, 0, png.width, png.height)
+    k = escala / a["escala_png"]
+    return (x + (b[0] * k - pivote[0] * escala), y + (b[1] * k - pivote[1] * escala),
+            x + (b[2] * k - pivote[0] * escala), y + (b[3] * k - pivote[1] * escala))
 
 
 def _props_sueltos(d, cuadro, anclas_fondo, t, rng, delante):

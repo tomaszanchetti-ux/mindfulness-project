@@ -403,7 +403,8 @@ CUERPOS_PIPO = {
 # TEO · la cabeza (3/4, nunca a cámara) con miradas y bocas; el pelo despeinado
 # =====================================================================================
 
-def teo_cabeza(mirada="frente", boca="plana"):
+def teo_cabeza(mirada="frente", boca="plana", pelo="normal"):
+    """pelo: normal (despeinado) · caido (el mechón sobre la frente, Bully Maguire · vol. 1)."""
     p = []
     # cuello
     p.append(path("M 176 318 L 172 366 L 230 366 L 226 318 Z", fill=PIEL))
@@ -424,12 +425,12 @@ def teo_cabeza(mirada="frente", boca="plana"):
     # pelo: masa ondulada con volumen hacia la derecha, DESPEINADO (mechones sueltos)
     # silueta de mechones desparejos: chico a la izquierda, grande arriba, el más grande a la
     # derecha (el volumen), con muescas entre ondas para que se lean como pelo y no como gorro
-    pelo = ("M 112 178 C 104 150, 108 118, 128 100 C 122 84, 138 68, 156 76 "
+    pelo_d = ("M 112 178 C 104 150, 108 118, 128 100 C 122 84, 138 68, 156 76 "
             "C 158 50, 190 38, 210 56 C 220 34, 256 30, 270 52 C 286 30, 322 40, 322 70 "
             "C 348 74, 358 110, 340 132 C 356 150, 344 178, 322 172 C 330 190, 314 202, 300 188 "
             "C 292 160, 278 140, 260 132 C 236 122, 214 130, 196 136 C 176 128, 148 134, 134 158 "
             "C 128 168, 122 178, 112 178 Z")
-    p.append(path(pelo, fill=SAND))
+    p.append(path(pelo_d, fill=SAND))
     for d in ("M 156 76 C 164 90, 176 100, 190 104", "M 210 56 C 216 74, 216 92, 208 108",
               "M 270 52 C 268 72, 262 92, 250 108", "M 322 70 C 310 86, 296 100, 280 112",
               "M 340 132 C 326 136, 312 146, 302 160"):
@@ -457,6 +458,15 @@ def teo_cabeza(mirada="frente", boca="plana"):
              "fruncida": "M 194 276 C 200 270, 212 270, 216 278 C 212 288, 198 288, 194 276 Z",
              "triste": "M 178 288 C 192 276, 216 276, 228 290"}
     p.append(path(bocas[boca], fill=(UMBER if boca in ("abierta",) else "none"), w=W_SEC))
+    if pelo == "caido":
+        # el mechón caído (Bully Maguire): un mechón grande que cae desde la coronilla y tapa
+        # la frente y medio ojo derecho, y uno chico a la izquierda. Van al final: tapan.
+        p.append(path("M 176 96 C 232 92, 272 130, 266 214 C 262 232, 238 232, 238 212 "
+                      "C 240 176, 222 140, 176 128 Z", fill=SAND))
+        p.append(path("M 214 112 C 246 136, 256 172, 252 208", w=W_SEC - 1))
+        p.append(path("M 196 104 C 224 128, 236 160, 236 196", w=W_SEC - 1))
+        p.append(path("M 150 98 C 166 118, 172 150, 160 182 C 154 192, 142 188, 144 176 "
+                      "C 150 148, 146 122, 136 106 Z", fill=SAND))
     return svg(p), {"cuello": [200, 350]}
 
 MIRADAS_TEO = ["abajo", "frente", "arriba", "costado", "cerrada"]
@@ -599,6 +609,217 @@ def teo_cuerpo_corre():
                     "mano": [366, 110]}
 
 # =====================================================================================
+# TEO · vol. 1 (Vínculos, WS35): el paso de Spiderman
+# =====================================================================================
+
+def _pistolita(x, y, ang=0, s=1.0):
+    """La mano haciendo pistolita: puño, el índice estirado hacia la derecha, el pulgar arriba."""
+    piezas = [miembro([(x, y), (x + 46 * s, y - 2 * s)], grosor=12 * s),      # el índice
+              miembro([(x + 2 * s, y - 4 * s), (x + 8 * s, y - 34 * s)], grosor=11 * s),  # el pulgar
+              ell(x, y + 2 * s, 17 * s, 15 * s, PIEL, UMBER, W_SEC),      # el puño
+              path(f"M {x + 4 * s} {y + 4 * s} C {x + 12 * s} {y + 2 * s}, {x + 12 * s} {y + 12 * s}, {x + 4 * s} {y + 12 * s}", w=W_SEC - 1)]   # los dedos doblados
+    return grupo(piezas, f"rotate({ang} {x} {y})")
+
+def teo_cuerpo_spiderman():
+    """El paso de Bully Maguire (vol. 1, la calle): la cadera echada hacia atrás y el torso
+    hacia atrás también (chulo), un pie adelante con la punta hacia abajo como si fuera
+    bailando, los dos brazos hacia adelante haciendo pistolitas con los dedos. La cabeza va
+    apenas echada hacia atrás (rot negativa), con el pelo caído."""
+    p = []
+    def zapatilla(fx, fy, ang=0):
+        d = (f"M {fx - 20} {fy} C {fx - 26} {fy + 8}, {fx - 18} {fy + 16}, {fx - 6} {fy + 16} L {fx + 26} {fy + 16} "
+             f"C {fx + 34} {fy + 12}, {fx + 32} {fy + 6}, {fx + 22} {fy} Z")
+        return grupo([path(d, fill=IVORY, w=W_SEC + 1)], f"rotate({ang} {fx} {fy})")
+    # pierna de atrás, plantada (más oscura) · pierna de adelante estirada con la punta abajo
+    p.append(miembro([(166, 244), (152, 318), (150, 384)], grosor=30, color="#6f665b"))
+    p.append(zapatilla(154, 388, ang=0))
+    p.append(miembro([(200, 246), (256, 300), (306, 370)], grosor=30, color=PANTALON))
+    p.append(zapatilla(318, 380, ang=-18))                     # el talón adelante, la punta arriba: el paso
+    # brazo de atrás (más claro), ANTES del torso: el codo hacia atrás, la pistola adelante y abajo
+    p.append(miembro([(160, 128), (146, 204), (232, 222)], grosor=20, color="#e4d8c4"))
+    # torso echado hacia atrás: los hombros ATRÁS de la cadera, la cadera hacia adelante
+    p.append(path("M 148 106 C 126 150, 136 202, 154 250 L 240 250 C 250 202, 240 150, 222 106 Z", fill=REMERA))
+    p.append(path("M 164 106 C 172 118, 200 118, 208 106", w=W_SEC))
+    p.append(_pistolita(242, 224, ang=12, s=1.4))
+    # brazo de adelante: el codo afuera y adelante, la pistola alta apuntando a las chicas
+    p.append(miembro([(224, 124), (270, 192), (322, 150)], grosor=22))
+    p.append(_pistolita(332, 146, ang=-26, s=1.5))
+    return svg(p), {"cabeza": [186, 110], "escala": 0.72, "rot": -12, "z_cabeza": "delante",
+                    "mano": [332, 128]}
+
+# =====================================================================================
+# LA FAMILIA · vol. 1 (Vínculos, WS35): papá, mamá y la hermanita, riéndose
+# Una sola pieza compuesta (lienzo apaisado 800×560) con dos estados: `living` (en el sofá,
+# la hermanita acaricia a Pipo) y `mesa` (atrás de la mesa, solo torsos). Capa ilustrada:
+# son los que cargan la emoción del volumen (REGLAS §1).
+# =====================================================================================
+
+PELO_PAPA = "#6f665b"; PELO_MAMA = "#463f38"; VESTIDO = "#c9b99b"; CAMISA = "#e6dccb"; REMERA_NENA = "#b9cbb3"
+
+def _regazo(cx, y0, medio, y1, color):
+    """El regazo de alguien sentado a cámara: un bloque redondeado, más ancho abajo (las
+    rodillas), del que cuelgan las canillas. Es lo que hace que se lea SENTADO."""
+    return path(f"M {cx - medio * 0.8} {y0} L {cx + medio * 0.8} {y0} C {cx + medio * 0.95} {y0 + 40}, {cx + medio * 1.05} {y1 - 30}, {cx + medio} {y1 - 12} "
+                f"C {cx + medio * 0.9} {y1 + 4}, {cx + medio * 0.55} {y1 + 6}, {cx + medio * 0.45} {y1 - 8} "
+                f"L {cx - medio * 0.45} {y1 - 8} C {cx - medio * 0.55} {y1 + 6}, {cx - medio * 0.9} {y1 + 4}, {cx - medio} {y1 - 12} "
+                f"C {cx - medio * 1.05} {y1 - 30}, {cx - medio * 0.95} {y0 + 40}, {cx - medio * 0.8} {y0} Z", fill=color)
+
+def _cara_riendo(cx, cy, r, tilt=0, boca=1.0):
+    """Cabeza a cámara riéndose: ojos cerrados de alegría (dos arcos), boca abierta, rubor."""
+    p = [circ(cx, cy, r, PIEL, UMBER, W_MAIN - 2)]
+    for lado in (-1, 1):
+        ex = cx + lado * r * 0.42
+        ey = cy - r * 0.12
+        p.append(path(f"M {ex - r * 0.2} {ey + 2} C {ex - r * 0.1} {ey - r * 0.18}, {ex + r * 0.1} {ey - r * 0.18}, {ex + r * 0.2} {ey + 2}", w=W_SEC))
+        p.append(circ(cx + lado * r * 0.62, cy + r * 0.28, r * 0.13, "#e6c7b2"))
+    m = r * 0.42 * boca
+    p.append(path(f"M {cx - m} {cy + r * 0.3} C {cx - m * 0.6} {cy + r * 0.3 + m * 1.6}, {cx + m * 0.6} {cy + r * 0.3 + m * 1.6}, {cx + m} {cy + r * 0.3} Z",
+                  fill=UMBER, w=W_SEC))
+    p.append(path(f"M {cx - m * 0.55} {cy + r * 0.3 + m * 0.9} C {cx - m * 0.25} {cy + r * 0.3 + m * 1.35}, {cx + m * 0.25} {cy + r * 0.3 + m * 1.35}, {cx + m * 0.55} {cy + r * 0.3 + m * 0.9}",
+                  fill=TONGUE, stroke="none", w=0))
+    p.append(path(f"M {cx - r * 0.05} {cy + r * 0.02} C {cx + r * 0.08} {cy + r * 0.1}, {cx + r * 0.06} {cy + r * 0.18}, {cx - r * 0.02} {cy + r * 0.2}", w=W_SEC - 1))
+    return grupo(p, f"rotate({tilt} {cx} {cy})")
+
+def _pelo_papa(cx, cy, r):
+    """Pelo corto con entradas, y un bigote."""
+    return grupo([path(f"M {cx - r * 0.95} {cy - r * 0.1} C {cx - r * 0.9} {cy - r * 0.9}, {cx - r * 0.3} {cy - r * 1.12}, {cx + r * 0.1} {cy - r * 1.02} "
+                       f"C {cx + r * 0.5} {cy - r * 1.14}, {cx + r * 0.98} {cy - r * 0.8}, {cx + r * 0.96} {cy - r * 0.1} "
+                       f"C {cx + r * 0.7} {cy - r * 0.55}, {cx + r * 0.2} {cy - r * 0.72}, {cx - r * 0.2} {cy - r * 0.62} "
+                       f"C {cx - r * 0.6} {cy - r * 0.62}, {cx - r * 0.85} {cy - r * 0.4}, {cx - r * 0.95} {cy - r * 0.1} Z", fill=PELO_PAPA),
+                  path(f"M {cx - r * 0.34} {cy + r * 0.24} C {cx - r * 0.2} {cy + r * 0.1}, {cx - r * 0.04} {cy + r * 0.12}, {cx} {cy + r * 0.24} "
+                       f"C {cx + r * 0.04} {cy + r * 0.12}, {cx + r * 0.2} {cy + r * 0.1}, {cx + r * 0.34} {cy + r * 0.24} "
+                       f"C {cx + r * 0.2} {cy + r * 0.34}, {cx - r * 0.2} {cy + r * 0.34}, {cx - r * 0.34} {cy + r * 0.24} Z", fill=PELO_PAPA, w=W_SEC - 1)])
+
+def _pelo_mama(cx, cy, r):
+    """Pelo largo oscuro que cae a los lados, con raya al medio y un rodete arriba."""
+    return grupo([path(f"M {cx - r * 1.08} {cy + r * 0.9} C {cx - r * 1.2} {cy}, {cx - r * 0.9} {cy - r * 1.1}, {cx} {cy - r * 1.08} "
+                       f"C {cx + r * 0.9} {cy - r * 1.1}, {cx + r * 1.2} {cy}, {cx + r * 1.08} {cy + r * 0.9} "
+                       f"L {cx + r * 0.78} {cy + r * 0.86} C {cx + r * 0.86} {cy + r * 0.1}, {cx + r * 0.6} {cy - r * 0.62}, {cx} {cy - r * 0.7} "
+                       f"C {cx - r * 0.6} {cy - r * 0.62}, {cx - r * 0.86} {cy + r * 0.1}, {cx - r * 0.78} {cy + r * 0.86} Z", fill=PELO_MAMA),
+                  circ(cx + r * 0.12, cy - r * 1.14, r * 0.3, PELO_MAMA, UMBER, W_SEC)])
+
+def _pelo_nena(cx, cy, r):
+    """Flequillo y dos colitas que saltan (se ríe), del color del pelo de Teo (la familia)."""
+    p = [path(f"M {cx - r * 0.98} {cy + r * 0.05} C {cx - r * 0.9} {cy - r * 0.9}, {cx - r * 0.3} {cy - r * 1.15}, {cx + r * 0.05} {cy - r * 1.05} "
+              f"C {cx + r * 0.5} {cy - r * 1.15}, {cx + r * 1.0} {cy - r * 0.8}, {cx + r * 0.98} {cy + r * 0.05} "
+              f"C {cx + r * 0.72} {cy - r * 0.34}, {cx + r * 0.3} {cy - r * 0.5}, {cx} {cy - r * 0.4} "
+              f"C {cx - r * 0.3} {cy - r * 0.5}, {cx - r * 0.72} {cy - r * 0.34}, {cx - r * 0.98} {cy + r * 0.05} Z", fill=SAND)]
+    for lado in (-1, 1):
+        bx = cx + lado * r * 1.02
+        by = cy - r * 0.2
+        p.append(path(f"M {bx} {by} C {bx + lado * r * 0.5} {by - r * 0.5}, {bx + lado * r * 0.95} {by - r * 0.1}, {bx + lado * r * 0.8} {by + r * 0.55} "
+                      f"C {bx + lado * r * 0.7} {by + r * 0.85}, {bx + lado * r * 0.2} {by + r * 0.6}, {bx} {by} Z", fill=SAND))
+        p.append(circ(bx, by, r * 0.14, SAGE, UMBER, W_SEC - 1))     # la gomita salvia (el único acento)
+    return grupo(p)
+
+def familia(estado="living"):
+    """Los tres riéndose. living: sentados en el sofá (cadera en y=250, pies en y≈520), la
+    hermanita adelante en el medio con el brazo estirado hacia abajo a la izquierda (ancla
+    `mano_nena`, donde va Pipo panza arriba). mesa: solo torsos, brazos sobre la mesa; la
+    mesa del fondo tapa de la cintura para abajo."""
+    p = []
+    living = estado == "living"
+    # ---- papá (grande, a la izquierda), el brazo por atrás de mamá
+    px, py, pr = 200, 108, 56
+    if living:
+        for dx in (-30, 30):                          # canillas que cuelgan del regazo
+            p.append(miembro([(px + dx * 1.7, 326), (px + dx * 1.7, 500)], grosor=34, color=PANTALON))
+            p.append(path(f"M {px + dx * 1.7 - 26} 500 C {px + dx * 1.7 - 32} 512, {px + dx * 1.7 - 22} 522, {px + dx * 1.7 - 6} 522 "
+                          f"L {px + dx * 1.7 + 30} 522 C {px + dx * 1.7 + 38} 516, {px + dx * 1.7 + 34} 506, {px + dx * 1.7 + 24} 500 Z", fill=IVORY, w=W_SEC + 1))
+        p.append(_regazo(px, 246, 104, 336, PANTALON))
+    p.append(path(f"M {px - 92} 176 C {px - 96} 230, {px - 90} 250, {px - 86} 262 L {px + 90} 262 C {px + 94} 250, {px + 96} 230, {px + 88} 176 "
+                  f"C {px + 60} 160, {px - 60} 160, {px - 92} 176 Z", fill=CAMISA))
+    p.append(path(f"M {px - 18} 170 L {px} 190 L {px + 18} 170", w=W_SEC))
+    p.append(miembro([(px + 84, 190), (px + 112, 250), (px + 72, 262 if living else 250)], grosor=26))
+    p.append(circ(px + 70, 262 if living else 250, 16, PIEL, UMBER, W_SEC))
+    p.append(miembro([(px - 84, 190), (px - 110, 250), (px - 70, 262 if living else 250)], grosor=26))
+    p.append(circ(px - 68, 262 if living else 250, 16, PIEL, UMBER, W_SEC))
+    p.append(_cara_riendo(px, py, pr, tilt=-8))
+    p.append(_pelo_papa(px, py, pr))
+    # ---- mamá (a la derecha), la mano en el pecho de la risa
+    mx, my, mr = 600, 118, 50
+    if living:
+        for dx in (-26, 26):
+            p.append(miembro([(mx + dx * 1.5, 326), (mx + dx * 1.5, 500)], grosor=28, color=PIEL))
+            p.append(path(f"M {mx + dx * 1.5 - 24} 500 C {mx + dx * 1.5 - 30} 512, {mx + dx * 1.5 - 20} 522, {mx + dx * 1.5 - 4} 522 "
+                          f"L {mx + dx * 1.5 + 26} 522 C {mx + dx * 1.5 + 34} 516, {mx + dx * 1.5 + 30} 506, {mx + dx * 1.5 + 20} 500 Z", fill=UMBER, w=W_SEC + 1))
+        p.append(_regazo(mx, 246, 92, 336, VESTIDO))
+    p.append(path(f"M {mx - 80} 184 C {mx - 86} 230, {mx - 80} 250, {mx - 76} 262 L {mx + 80} 262 C {mx + 84} 250, {mx + 88} 230, {mx + 78} 184 "
+                  f"C {mx + 50} 168, {mx - 50} 168, {mx - 80} 184 Z", fill=VESTIDO))
+    p.append(miembro([(mx + 74, 196), (mx + 96, 250), (mx + 56, 262 if living else 250)], grosor=22))
+    p.append(circ(mx + 54, 262 if living else 250, 15, PIEL, UMBER, W_SEC))
+    p.append(miembro([(mx - 72, 196), (mx - 90, 240), (mx - 30, 214)], grosor=22))              # la mano al pecho
+    p.append(circ(mx - 26, 212, 15, PIEL, UMBER, W_SEC))
+    p.append(_cara_riendo(mx, my, mr, tilt=10))
+    p.append(_pelo_mama(mx, my, mr))
+    # ---- la hermanita (chica, adelante en el medio)
+    nx, ny, nr = 400, 196 if living else 140, 40
+    if living:
+        for dx in (-18, 18):
+            p.append(miembro([(nx + dx * 1.4, 356), (nx + dx * 1.4, 470)], grosor=20, color=PIEL))
+            p.append(path(f"M {nx + dx * 1.4 - 20} 470 C {nx + dx * 1.4 - 26} 480, {nx + dx * 1.4 - 16} 490, {nx + dx * 1.4 - 2} 490 "
+                          f"L {nx + dx * 1.4 + 22} 490 C {nx + dx * 1.4 + 28} 484, {nx + dx * 1.4 + 26} 476, {nx + dx * 1.4 + 16} 470 Z", fill=SAGE, w=W_SEC + 1))
+        p.append(_regazo(nx, 300, 66, 364, PANTALON))
+        p.append(path(f"M {nx - 58} 250 C {nx - 64} 280, {nx - 58} 300, {nx - 54} 312 L {nx + 54} 312 C {nx + 58} 300, {nx + 64} 280, {nx + 56} 250 "
+                      f"C {nx + 30} 236, {nx - 30} 236, {nx - 58} 250 Z", fill=REMERA_NENA))
+        # el brazo estirado hacia abajo a la izquierda: acaricia a Pipo
+        p.append(miembro([(nx - 50, 258), (nx - 110, 292), (nx - 134, 356)], grosor=18))
+        p.append(circ(nx - 136, 360, 13, PIEL, UMBER, W_SEC))
+        p.append(miembro([(nx + 50, 258), (nx + 78, 296), (nx + 62, 318)], grosor=18))
+        p.append(circ(nx + 60, 320, 13, PIEL, UMBER, W_SEC))
+        mano_nena = [nx - 136, 360]
+    else:
+        p.append(path(f"M {nx - 58} 194 C {nx - 64} 224, {nx - 58} 244, {nx - 54} 256 L {nx + 54} 256 C {nx + 58} 244, {nx + 64} 224, {nx + 56} 194 "
+                      f"C {nx + 30} 180, {nx - 30} 180, {nx - 58} 194 Z", fill=REMERA_NENA))
+        for lado in (-1, 1):
+            p.append(miembro([(nx + lado * 50, 202), (nx + lado * 74, 240), (nx + lado * 40, 254)], grosor=18))
+            p.append(circ(nx + lado * 38, 254, 13, PIEL, UMBER, W_SEC))
+        mano_nena = [nx, 254]
+    p.append(_cara_riendo(nx, ny, nr, tilt=-14, boca=0.9))
+    p.append(_pelo_nena(nx, ny, nr))
+    anclas = {"centro": [400, 250], "mano_nena": mano_nena, "tipo": "grupo", "lienzo_w": 800, "lienzo_h": 560}
+    return svg(p, w=800, h=560), anclas
+
+# =====================================================================================
+# EXTRAS · vol. 1: las chicas que pasan de largo, DE ESPALDAS (lo que se lee: no le dan bola)
+# =====================================================================================
+
+PELO_CHICA_1 = "#463f38"; PELO_CHICA_2 = "#b39a72"; VESTIDO_1 = "#e6dccb"; VESTIDO_2 = "#c9b99b"
+
+def _chica_espaldas(cx, top, pelo, vestido, telefono=False, paso=1.0, largo_pelo=1.0):
+    """Una chica de espaldas caminando hacia la derecha: la melena tapa la cabeza, vestido
+    corto, piernas en zancada. Si `telefono`, el brazo derecho sube con el teléfono."""
+    p = []
+    r = 40
+    cy = top + r
+    # piernas en zancada
+    p.append(miembro([(cx - 6, cy + 150), (cx - 30 * paso, cy + 236), (cx - 40 * paso, cy + 300)], grosor=18, color=PIEL))
+    p.append(miembro([(cx + 8, cy + 150), (cx + 34 * paso, cy + 230), (cx + 46 * paso, cy + 300)], grosor=18, color=PIEL))
+    for fx in (cx - 40 * paso, cx + 46 * paso):
+        p.append(path(f"M {fx - 16} {cy + 300} L {fx + 14} {cy + 300} C {fx + 20} {cy + 306}, {fx + 18} {cy + 314}, {fx + 10} {cy + 314} L {fx - 14} {cy + 314} Z", fill=UMBER, w=W_SEC))
+    # vestido (trapecio) y brazos
+    p.append(path(f"M {cx - 36} {cy + 46} L {cx + 36} {cy + 46} L {cx + 56} {cy + 160} L {cx - 56} {cy + 160} Z", fill=vestido))
+    p.append(miembro([(cx - 34, cy + 56), (cx - 50, cy + 110), (cx - 42, cy + 150)], grosor=16))
+    if telefono:
+        p.append(miembro([(cx + 34, cy + 56), (cx + 62, cy + 90), (cx + 50, cy + 40)], grosor=16))
+        p.append(f'<rect x="{cx + 40}" y="{cy + 8}" width="24" height="40" rx="5" fill="{UMBER}" stroke="{UMBER}" stroke-width="{W_SEC}"/>')
+    else:
+        p.append(miembro([(cx + 34, cy + 56), (cx + 52, cy + 110), (cx + 44, cy + 150)], grosor=16))
+    # el cuello y la melena, vista desde atrás: solo pelo
+    p.append(path(f"M {cx - 10} {cy + 30} L {cx + 10} {cy + 30} L {cx + 10} {cy + 50} L {cx - 10} {cy + 50} Z", fill=PIEL, w=W_SEC))
+    p.append(path(f"M {cx - r} {cy} C {cx - r} {cy - r * 1.3}, {cx + r} {cy - r * 1.3}, {cx + r} {cy} "
+                  f"C {cx + r * 1.05} {cy + 30 * largo_pelo}, {cx + r * 0.9} {cy + 70 * largo_pelo}, {cx + r * 0.7} {cy + 90 * largo_pelo} "
+                  f"L {cx - r * 0.7} {cy + 90 * largo_pelo} C {cx - r * 0.9} {cy + 70 * largo_pelo}, {cx - r * 1.05} {cy + 30 * largo_pelo}, {cx - r} {cy} Z", fill=pelo))
+    p.append(path(f"M {cx} {cy - r * 0.95} C {cx + 4} {cy - 20}, {cx + 2} {cy + 20}, {cx} {cy + 60 * largo_pelo}", stroke=UMBER, w=W_SEC - 2))
+    return grupo(p)
+
+def chicas_pasan():
+    """Dos chicas de espaldas yéndose hacia la derecha; la de adelante mira su teléfono."""
+    p = [_chica_espaldas(150, 30, PELO_CHICA_2, VESTIDO_2, telefono=False, paso=1.0, largo_pelo=0.7),
+         _chica_espaldas(262, 46, PELO_CHICA_1, VESTIDO_1, telefono=True, paso=-0.8, largo_pelo=1.0)]
+    return svg(p), {"centro": [200, 200], "tipo": "grupo"}
+
+# =====================================================================================
 # PROPS · la escena de la magia (D1.2 · F): el teléfono que se pone verde · el cuadernito
 # Piezas grandes en su lienzo; se pegan con `escala_rel` × la escala del personaje.
 # =====================================================================================
@@ -665,7 +886,8 @@ def escribir(personaje, nombre, contenido, anclas, indice):
     ruta_png = os.path.join(carpeta, nombre + ".png")
     with open(ruta_svg, "w") as f:
         f.write(contenido)
-    subprocess.run(["rsvg-convert", "-w", str(LIENZO * ESCALA_PNG), "-h", str(LIENZO * ESCALA_PNG),
+    lw, lh = anclas.get("lienzo_w", LIENZO), anclas.get("lienzo_h", LIENZO)     # piezas apaisadas (la familia)
+    subprocess.run(["rsvg-convert", "-w", str(lw * ESCALA_PNG), "-h", str(lh * ESCALA_PNG),
                     "-o", ruta_png, ruta_svg], check=True)
     indice.setdefault(personaje, {})[nombre] = dict(anclas, png=os.path.relpath(ruta_png, RAIZ), lienzo=LIENZO, escala_png=ESCALA_PNG)
 
@@ -684,10 +906,17 @@ def generar(solo=None):
                 s, a = teo_cabeza(m, b); escribir("teo", f"cara_{m}_{b}", s, dict(a, tipo="cabeza"), indice)
         for nombre, fn, kw in (("parado", teo_cuerpo_parado, dict(postura=1.0)), ("encorvado", teo_cuerpo_parado, dict(postura=0.0)),
                                ("sentado", teo_cuerpo_sentado, dict(encorvado=1.0)), ("sentado_erguido", teo_cuerpo_sentado, dict(encorvado=0.2)),
-                               ("medita", teo_cuerpo_medita, {}), ("corre", teo_cuerpo_corre, {})):
+                               ("medita", teo_cuerpo_medita, {}), ("corre", teo_cuerpo_corre, {}),
+                               ("spiderman", teo_cuerpo_spiderman, {})):
             s, a = fn(**kw); escribir("teo", "cuerpo_" + nombre, s, dict(a, tipo="cuerpo"), indice)
         for k in range(4):   # el paseo erguido en 4 fases
             s, a = teo_cuerpo_camina(k / 4); escribir("teo", "cuerpo_camina_%d" % k, s, dict(a, tipo="cuerpo"), indice)
+        for m in ("costado", "frente"):   # vol. 1: la cara con el pelo caído (Bully Maguire)
+            s, a = teo_cabeza(m, "sonrisa", pelo="caido"); escribir("teo", f"cara_{m}_sonrisa_caido", s, dict(a, tipo="cabeza"), indice)
+    if solo in (None, "familia"):
+        for estado in ("living", "mesa"):
+            s, a = familia(estado); escribir("familia", "familia_" + estado, s, a, indice)
+        s, a = chicas_pasan(); escribir("extras", "chicas_pasan", s, a, indice)
     if solo in (None, "props"):
         for k in range(4):
             s, a = prop_telefono(k); escribir("props", "telefono_%d" % k, s, a, indice)
