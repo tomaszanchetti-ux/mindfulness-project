@@ -328,6 +328,9 @@ def secundario(d, x, y, rng, tipo="abuela", escala=1.9):
 ANCHO_GLOBO = 330            # ancho máximo de una línea adentro del globo, en píxeles
 MAX_LINEAS_GLOBO = 4         # hasta 12 palabras en 3-4 líneas cortas (WS34, el tempo)
 GLOBO_DESDE = 5              # hojas que la imagen está SOLA antes de que aparezca el globo (0,5 s)
+MODO_GLOBO = ["abajo"]       # abajo (WS35, Tomás: el globo vive en el tercio vacío de abajo y no tapa la escena) | arriba
+SUBE_ESCENA = [0]            # píxeles que la escena entera sube (WS35): TikTok tapa la franja de abajo con la
+                             # descripción y el usuario; con la escena más arriba, el globo de abajo queda en zona segura
 # La vida del cuadro (WS34): cabeceo automático de la cabeza, (grados, radianes por hoja).
 # Pipo cabecea rápido y visible; Teo apenas, lento. `vida: false` en el personaje lo apaga.
 VIDA = {"pipo": (4.0, 0.62), "teo": (1.5, 0.27)}
@@ -347,12 +350,19 @@ def _envolver(d, texto, f, ancho_max):
     return lineas
 
 
-def _texto_globo(d, texto, tam=52, minimo=38):
-    """Georgia, minúsculas, hasta 4 líneas cortas: un globo alto lee mejor que uno ancho."""
+ANCHO_GLOBO_ABAJO = 600      # el globo de abajo va APAISADO (2-3 líneas): en la franja de abajo hay ancho, no alto
+MAX_LINEAS_ABAJO = 3
+
+
+def _texto_globo(d, texto, tam=52, minimo=38, ancho=None, max_lineas=None):
+    """Georgia, minúsculas. Arriba: hasta 4 líneas cortas (un globo alto). Abajo: hasta 3
+    líneas anchas (un globo apaisado que no sube hasta la escena)."""
+    ancho = ancho or ANCHO_GLOBO
+    max_lineas = max_lineas or MAX_LINEAS_GLOBO
     while True:
         f = R.font(tam)
-        lineas = _envolver(d, texto, f, ANCHO_GLOBO)
-        if len(lineas) <= MAX_LINEAS_GLOBO or tam <= minimo:
+        lineas = _envolver(d, texto, f, ancho)
+        if len(lineas) <= max_lineas or tam <= minimo:
             return f, lineas, tam
         tam -= 4
 
@@ -367,7 +377,7 @@ def _colita(cx, cy, rx, ry, ax, ay):
     return b1, b2, base, punta
 
 
-def globo(d, texto, ancla, rng, evitar=(), forzar=None, flota=0.0):
+def globo(d, texto, ancla, rng, evitar=(), forzar=None, flota=0.0, modo=None, ancla_abajo=None):
     """Dibuja el globo de Pipo. `ancla` = (x, y) de su cabeza: de ahí sale la colita.
     `evitar` = cajas (x0, y0, x1, y1) que ni el globo ni la colita pueden tapar (las caras
     y la burbuja de pensamiento). Se prueban posiciones cerca de Pipo y se elige la primera
@@ -375,45 +385,78 @@ def globo(d, texto, ancla, rng, evitar=(), forzar=None, flota=0.0):
     baja en esta hoja (la vida del cuadro)."""
     if not texto:
         return
-    f, lineas, tam = _texto_globo(d, texto)
+    modo = modo or MODO_GLOBO[0]
+    if modo == "abajo":
+        f, lineas, tam = _texto_globo(d, texto, ancho=ANCHO_GLOBO_ABAJO, max_lineas=MAX_LINEAS_ABAJO)
+    else:
+        f, lineas, tam = _texto_globo(d, texto)
     tw = max(ancho(d, s, f)[0] for s in lineas)
     th = len(lineas) * int(tam * 1.28)
-    rx, ry = tw * 0.70 + 40, th * 0.86 + 38
+    if modo == "abajo":                              # caja redondeada: contiene el texto con poco margen
+        rx, ry = tw / 2 + 44, th / 2 + 34
+    else:                                            # óvalo de historieta
+        rx, ry = tw * 0.70 + 40, th * 0.86 + 38
 
     ax, ay = ancla
     # la cabeza de la que sale la colita no cuenta como obstáculo de la colita
-    esquivar_colita = [c for c in evitar
-                       if not (c[0] - 30 < ax < c[2] + 30 and c[1] - 30 < ay < c[3] + 30)]
+    cabeza = [c for c in evitar if (c[0] - 30 < ax < c[2] + 30 and c[1] - 30 < ay < c[3] + 30)]
+    esquivar_colita = [c for c in evitar if c not in cabeza]
     if forzar:
         cx, cy = forzar
     else:
-        candidatos = [(ax, ay - ry - 80), (ax - rx - 130, ay - 30), (ax + rx + 130, ay - 30),
-                      (ax - rx - 90, ay - ry - 130), (ax + rx + 90, ay - ry - 130),
-                      (ax, ay - ry - 330), (ax - 320, ay - ry - 380), (ax + 320, ay - ry - 380),
-                      (R.W / 2, 340), (rx + 60, 340), (R.W - rx - 60, 340)]
+        arriba = [(ax, ay - ry - 80), (ax - rx - 130, ay - 30), (ax + rx + 130, ay - 30),
+                  (ax - rx - 90, ay - ry - 130), (ax + rx + 90, ay - ry - 130),
+                  (ax, ay - ry - 330), (ax - 320, ay - ry - 380), (ax + 320, ay - ry - 380),
+                  (R.W / 2, 340), (rx + 60, 340), (R.W - rx - 60, 340)]
+        yb = min(PISO - int(SUBE_ESCENA[0]) + ry + 40, R.H - ry - 180)
+        mx, my = ancla_abajo or ancla
+        abajo = [(mx, yb, (mx, my)), (R.W / 2, yb, (mx, my)), (rx + 70, yb, (mx, my)), (R.W - rx - 110, yb, (mx, my)),
+                 (mx - 260, yb, (mx, my)), (mx + 260, yb, (mx, my))]
+        arriba = [(px, py, (ax, ay)) for px, py in arriba]
+        candidatos = (abajo + arriba) if modo == "abajo" else (arriba + abajo)
         mejor, puntaje_mejor = None, None
-        for k, (px, py) in enumerate(candidatos):
+        for k, (px, py, (ax, ay)) in enumerate(candidatos):
             px = entre(px, rx + 55, R.W - rx - 55)
-            py = entre(py, ry + 150, R.H - ry - 290)
+            py = entre(py, ry + 150, R.H - ry - 180)
             caja = (px - rx, py - ry, px + rx, py + ry)
             b1, b2, base, punta = _colita(px, py, rx, ry, ax, ay)
             puntaje = 4.0 * sum(_solape(caja, c) for c in evitar)
             puntaje += 9.0 * sum(1 for c in esquivar_colita
                                  if _cruza(base, punta, c) or _cruza(b1, punta, c) or _cruza(b2, punta, c))
             puntaje += math.hypot(px - ax, py - ay) / 340.0 + k * 0.05
-            puntaje += max(0.0, py - 650) / 250.0     # los globos viven arriba, como en la historieta
+            if modo == "abajo":                       # los globos viven abajo: no tapan la escena
+                puntaje += max(0.0, yb - py) / 250.0
+            else:                                     # los globos viven arriba, como en la historieta
+                puntaje += max(0.0, py - 650) / 250.0
             if puntaje_mejor is None or puntaje < puntaje_mejor:
-                mejor, puntaje_mejor = (px, py), puntaje
-        cx, cy = mejor
+                mejor, puntaje_mejor = (px, py, ax, ay), puntaje
+        cx, cy, ax, ay = mejor
     cy += flota
 
-    R.circle(d, cx, cy, rx, rng, width=6, fill=R.IVORY, ry=ry, amp=2.5)
+    if modo == "abajo":
+        _caja_globo(d, cx, cy, rx, ry, rng)
+    else:
+        R.circle(d, cx, cy, rx, rng, width=6, fill=R.IVORY, ry=ry, amp=2.5)
     b1, b2, _, punta = _colita(cx, cy, rx, ry, ax, ay)
     d.polygon([b1, punta, b2, (cx, cy)], fill=R.IVORY)      # el relleno tapa el borde del óvalo
     R.stroke(d, [b1, punta], rng, width=6, amp=1.2)
     R.stroke(d, [b2, punta], rng, width=6, amp=1.2)
     for k, s in enumerate(lineas):
         d.text((cx, cy - th / 2 + int(tam * 1.28) * (k + 0.5)), s, fill=R.UMBER, font=f, anchor="mm")
+
+
+def _caja_globo(d, cx, cy, rx, ry, rng, radio=48):
+    """El globo apaisado de abajo: un rectángulo redondeado de línea temblorosa."""
+    pts = []
+    esquinas = [(cx + rx - radio, cy - ry + radio, -0.5), (cx + rx - radio, cy + ry - radio, 0.0),
+                (cx - rx + radio, cy + ry - radio, 0.5), (cx - rx + radio, cy - ry + radio, 1.0)]
+    for ex, ey, a0 in esquinas:
+        for k in range(7):
+            a = (a0 + 0.5 * k / 6) * math.pi
+            pts.append((ex + radio * math.cos(a), ey + radio * math.sin(a)))
+    pts = R.wobble(pts, rng, 2.0)
+    d.polygon(pts, fill=R.IVORY)
+    d.line(pts + [pts[0]], fill=R.UMBER, width=6, joint="curve")
 
 
 def _solape(a, b):
@@ -564,14 +607,19 @@ CARAS_ASOMA = {"problema": "fastidio", "espejo": "orgullo", "magia": "orgullo", 
 def hoja_de(m, cuadro, i, n, rng, desp=0.0):
     """Dibuja UNA hoja del cuadro (beat) `cuadro`, hoja número `i` de `n`."""
     im = R.paper(rng)
-    d = ImageDraw.Draw(im)
+    sube = int(SUBE_ESCENA[0])
+    # la escena se dibuja sobre un papel OPACO (no una capa transparente: el aura y los bordes
+    # antialiasados se oscurecen al componer sobre alfa cero) y se pega corrida hacia arriba
+    lienzo = R.paper(random.Random(rng.randint(0, 10 ** 6))) if sube else im
+    d = ImageDraw.Draw(lienzo)
     t = i / max(1, n - 1)
     caras = []
     anclas_fondo = {}
     ancla_pipo = None
+    ancla_menton = None
 
     if cuadro.get("zoom"):
-        caras += _zoom(m, im, d, cuadro["zoom"], i, n, t, rng)
+        caras += _zoom(m, lienzo, d, cuadro["zoom"], i, n, t, rng)
     else:
         fn = FONDOS.get(cuadro.get("fondo", "ninguno"), FONDOS["ninguno"])
         anclas_fondo = fn(d, rng, desp, "atras") or {}
@@ -581,29 +629,39 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
             secundario(d, sx, sy, rng, tipo=sec.get("tipo", "abuela"), escala=se)
             caras.append((sx - 48 * se, sy - 58 * se, sx + 48 * se, sy + 56 * se))
         for pz in _lista(cuadro.get("piezas")):
-            caras.append(_pieza_suelta(m, im, pz, anclas_fondo, t, rng))
+            caras.append(_pieza_suelta(m, lienzo, pz, anclas_fondo, t, rng))
         fn(d, rng, desp, "delante")
         caras += _props_sueltos(d, cuadro, anclas_fondo, t, rng, delante=False)
         for quien in ("teo", "pipo"):
             spec = cuadro.get(quien)
             if not spec:
                 continue
-            punto, cajas = pegar_personaje(m, im, d, quien, spec, i, n, t, rng, anclas_fondo)
+            punto, cajas = pegar_personaje(m, lienzo, d, quien, spec, i, n, t, rng, anclas_fondo)
             caras += cajas
             if quien == "pipo":
                 caja = cajas[-1]                       # la última es la cabeza
                 ancla_pipo = ((caja[0] + caja[2]) / 2, caja[1] + 0.25 * (caja[3] - caja[1]))
+                ancla_menton = ((caja[0] + caja[2]) / 2, caja[1] + 0.92 * (caja[3] - caja[1]))
         caras += _props_sueltos(d, cuadro, anclas_fondo, t, rng, delante=True)
 
     if cuadro.get("anillos"):                        # la respiración de la escena de la magia
         _anillos(d, m, cuadro, i, rng)
+
+    if sube:                                         # la escena entera sube; las cajas y anclas también
+        im.paste(lienzo, (0, -sube))
+        d = ImageDraw.Draw(im)
+        caras = [(c[0], c[1] - sube, c[2], c[3] - sube) for c in caras]
+        if ancla_pipo:
+            ancla_pipo = (ancla_pipo[0], ancla_pipo[1] - sube)
+            ancla_menton = (ancla_menton[0], ancla_menton[1] - sube)
 
     texto = globo_en(cuadro, i, n)
     if texto:
         if ancla_pipo is None:                       # Pipo no está en el cuadro: asoma por un borde
             ancla_pipo, caja = _pipo_asoma(m, im, cuadro, rng)
             caras.append(caja)
-        globo(d, texto, ancla_pipo, rng, evitar=caras, flota=5.0 * math.sin(i * 0.5))
+        globo(d, texto, ancla_pipo, rng, evitar=caras, flota=5.0 * math.sin(i * 0.5),
+              modo=cuadro.get("globo_lado"), ancla_abajo=ancla_menton)
     return im
 
 
@@ -1045,6 +1103,8 @@ def contratapa(rng):
 def render(ruta_guion, solo_cuadros=False):
     g = cargar(ruta_guion)
     nombre = g.get("nombre") or os.path.splitext(os.path.basename(ruta_guion))[0]
+    MODO_GLOBO[0] = g.get("globos", "abajo")
+    SUBE_ESCENA[0] = int(g.get("subir_escena", 170 if MODO_GLOBO[0] == "abajo" else 0))
     m = Marioneta()
     cuadros = aplanar(g)
     total_hojas = sum(c["hojas"] for c in cuadros) + HOJAS_CIERRE

@@ -111,6 +111,13 @@ en personaje y al escribir un guion.
 - **Si Pipo no está en el cuadro, Pipo ASOMA:** se pega su cabeza sola por un borde lateral
   o inferior de la hoja para que el globo tenga de dónde salir. El motor lo hace solo
   (derecha abajo, con la cara de la escena) o el guion lo dice con `pipo_asoma`.
+- **El globo vive ABAJO de la escena (Tomás, WS35):** en vertical, la escena ocupa la franja
+  del medio y el globo va debajo, como una caja redondeada apaisada (2-3 líneas anchas) con
+  la colita subiendo al mentón de Pipo; así nunca tapa la imagen. Para que quede en la zona
+  segura de TikTok (la app tapa la franja de abajo con la descripción y el usuario, y la
+  columna derecha con los íconos), **la escena entera sube 170 px** (`subir_escena`). El
+  modo viejo (óvalo arriba, como en la historieta) sigue con `globos: arriba` en el guion o
+  `globo_lado: arriba` en un cuadro.
 - El globo **nunca tapa una cara** ni el objeto que el personaje sostiene: el motor mide las
   cajas reales y elige dónde ponerlo (ver §7).
 - Tono: sátira con ternura (Mafalda, Macanudo, Snoopy), humor de gesto, nunca sermón. Lo gracioso engancha; lo emocional hace volver.
@@ -183,6 +190,7 @@ el motor: no se declaran.
 | `zoom` | la hoja "acerca": `pieza` (`teo/cara_…`, `pipo/…`, `props/…`) o `prop`, con `escala`, `rot`, `ciclo`, `manos: true`. |
 | `pipo_dice` | el texto del globo (≤12 palabras, 3-4 líneas), o una **lista** de textos = varios globos seguidos sobre la misma imagen. |
 | `globo_desde` | hojas que la imagen está sola antes del primer globo (5 por defecto = 0,5 s). |
+| `globo_lado` | `abajo` (por defecto desde la WS35) o `arriba`, por cuadro. A nivel guion: `globos: abajo \| arriba` y `subir_escena: 170` (píxeles que sube la escena entera; 170 con globos abajo, 0 con arriba). |
 | `pipo_asoma` | `lado` (`izquierda`, `derecha`, `abajo`) y `cara`, para cuando Pipo no está en el cuadro. |
 | `parallax` | píxeles que corre el fondo por hoja (árboles de `calle` y `banco_plaza`). |
 

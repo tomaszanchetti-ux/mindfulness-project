@@ -635,12 +635,9 @@ def teo_cuerpo_spiderman():
     p.append(zapatilla(154, 388, ang=0))
     p.append(miembro([(200, 246), (256, 300), (306, 370)], grosor=30, color=PANTALON))
     p.append(zapatilla(318, 380, ang=-18))                     # el talón adelante, la punta arriba: el paso
-    # brazo de atrás (más claro), ANTES del torso: el codo hacia atrás, la pistola adelante y abajo
-    p.append(miembro([(160, 128), (146, 204), (232, 222)], grosor=20, color="#e4d8c4"))
     # torso echado hacia atrás: los hombros ATRÁS de la cadera, la cadera hacia adelante
     p.append(path("M 148 106 C 126 150, 136 202, 154 250 L 240 250 C 250 202, 240 150, 222 106 Z", fill=REMERA))
     p.append(path("M 164 106 C 172 118, 200 118, 208 106", w=W_SEC))
-    p.append(_pistolita(242, 224, ang=12, s=1.4))
     # brazo de adelante: el codo afuera y adelante, la pistola alta apuntando a las chicas
     p.append(miembro([(224, 124), (270, 192), (322, 150)], grosor=22))
     p.append(_pistolita(332, 146, ang=-26, s=1.5))
@@ -786,9 +783,29 @@ def familia(estado="living"):
 
 PELO_CHICA_1 = "#463f38"; PELO_CHICA_2 = "#b39a72"; VESTIDO_1 = "#e6dccb"; VESTIDO_2 = "#c9b99b"
 
-def _chica_espaldas(cx, top, pelo, vestido, telefono=False, paso=1.0, largo_pelo=1.0):
+def _perfil_riendo(cx, cy, r, lado):
+    """La cara de perfil asomando de la melena hacia `lado` (+1 derecha · −1 izquierda):
+    frente, nariz, labios y mentón; el ojo cerrado de risa, la ceja alta y la boca abierta.
+    Es lo que hace que se lea "se ríen de él" (Tomás, WS35)."""
+    L = lado
+    cara = (f"M {cx + L * r * 0.45} {cy - r * 0.9} C {cx + L * r * 0.95} {cy - r * 0.85}, {cx + L * r * 1.1} {cy - r * 0.5}, {cx + L * r * 1.0} {cy - r * 0.25} "
+            f"C {cx + L * r * 1.02} {cy - r * 0.12}, {cx + L * r * 1.3} {cy - r * 0.02}, {cx + L * r * 1.28} {cy + r * 0.1} "
+            f"C {cx + L * r * 1.22} {cy + r * 0.18}, {cx + L * r * 1.04} {cy + r * 0.2}, {cx + L * r * 1.06} {cy + r * 0.28} "
+            f"C {cx + L * r * 1.14} {cy + r * 0.38}, {cx + L * r * 1.1} {cy + r * 0.5}, {cx + L * r * 0.98} {cy + r * 0.6} "
+            f"C {cx + L * r * 0.9} {cy + r * 0.72}, {cx + L * r * 0.6} {cy + r * 0.8}, {cx + L * r * 0.3} {cy + r * 0.72} Z")
+    p = [path(cara, fill=PIEL, w=W_SEC + 1)]
+    ex, ey = cx + L * r * 0.82, cy - r * 0.22
+    p.append(path(f"M {ex - L * r * 0.16} {ey + r * 0.04} C {ex - L * r * 0.06} {ey - r * 0.14}, {ex + L * r * 0.1} {ey - r * 0.14}, {ex + L * r * 0.18} {ey + r * 0.04}", w=W_SEC))
+    p.append(path(f"M {ex - L * r * 0.2} {ey - r * 0.26} C {ex - L * r * 0.05} {ey - r * 0.4}, {ex + L * r * 0.15} {ey - r * 0.38}, {ex + L * r * 0.24} {ey - r * 0.26}", w=W_SEC - 1))
+    mx, my = cx + L * r * 1.0, cy + r * 0.4
+    p.append(path(f"M {mx - L * r * 0.02} {my - r * 0.06} C {mx + L * r * 0.14} {my - r * 0.02}, {mx + L * r * 0.12} {my + r * 0.16}, {mx - L * r * 0.06} {my + r * 0.16} Z", fill=UMBER, w=W_SEC - 1))
+    p.append(circ(cx + L * r * 0.98, cy + r * 0.12, r * 0.09, "#e6c7b2"))
+    return grupo(p)
+
+def _chica_espaldas(cx, top, pelo, vestido, telefono=False, paso=1.0, largo_pelo=1.0, mira=0):
     """Una chica de espaldas caminando hacia la derecha: la melena tapa la cabeza, vestido
-    corto, piernas en zancada. Si `telefono`, el brazo derecho sube con el teléfono."""
+    corto, piernas en zancada. Si `telefono`, el brazo derecho sube con el teléfono. Si
+    `mira` es ±1, gira la cabeza hacia ese lado y asoma la cara de perfil riéndose."""
     p = []
     r = 40
     cy = top + r
@@ -811,12 +828,15 @@ def _chica_espaldas(cx, top, pelo, vestido, telefono=False, paso=1.0, largo_pelo
                   f"C {cx + r * 1.05} {cy + 30 * largo_pelo}, {cx + r * 0.9} {cy + 70 * largo_pelo}, {cx + r * 0.7} {cy + 90 * largo_pelo} "
                   f"L {cx - r * 0.7} {cy + 90 * largo_pelo} C {cx - r * 0.9} {cy + 70 * largo_pelo}, {cx - r * 1.05} {cy + 30 * largo_pelo}, {cx - r} {cy} Z", fill=pelo))
     p.append(path(f"M {cx} {cy - r * 0.95} C {cx + 4} {cy - 20}, {cx + 2} {cy + 20}, {cx} {cy + 60 * largo_pelo}", stroke=UMBER, w=W_SEC - 2))
+    if mira:
+        p.append(_perfil_riendo(cx, cy, r, mira))
     return grupo(p)
 
 def chicas_pasan():
     """Dos chicas de espaldas yéndose hacia la derecha; la de adelante mira su teléfono."""
-    p = [_chica_espaldas(150, 30, PELO_CHICA_2, VESTIDO_2, telefono=False, paso=1.0, largo_pelo=0.7),
-         _chica_espaldas(262, 46, PELO_CHICA_1, VESTIDO_1, telefono=True, paso=-0.8, largo_pelo=1.0)]
+    # se miran entre ellas riéndose: la de la izquierda gira a la derecha y la de la derecha, a la izquierda
+    p = [_chica_espaldas(140, 30, PELO_CHICA_2, VESTIDO_2, telefono=False, paso=1.0, largo_pelo=0.7, mira=1),
+         _chica_espaldas(282, 46, PELO_CHICA_1, VESTIDO_1, telefono=True, paso=-0.8, largo_pelo=1.0, mira=-1)]
     return svg(p), {"centro": [200, 200], "tipo": "grupo"}
 
 # =====================================================================================
