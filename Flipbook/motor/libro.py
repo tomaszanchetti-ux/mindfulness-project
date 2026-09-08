@@ -867,30 +867,54 @@ def frames_iris(base, cx, cy, cuantos):
     return fuera
 
 
-def aro_dwellia(im, cx, cy, r, rng):
-    """El símbolo de Dwellia (WS34): un aro salvia claro con un halo suave alrededor, el mismo
-    lenguaje que el aura de Teo y la calma-como-halo del onboarding. Reemplaza al rombo provisorio."""
-    halo = Image.new("RGBA", im.size, (0, 0, 0, 0))
-    hd = ImageDraw.Draw(halo)
-    for k, (dr, a) in enumerate(((r * 0.95, 70), (r * 0.65, 55), (r * 0.35, 40))):
-        hd.ellipse((cx - r - dr, cy - r - dr, cx + r + dr, cy + r + dr), fill=R.SAGE_LIGHT + (a,))
-    halo = halo.filter(ImageFilter.GaussianBlur(r * 0.45))
-    im.paste(halo, (0, 0), halo)
+FUENTE_FRAUNCES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fuentes", "Fraunces-Italic.ttf")
+
+
+def font_fraunces(tam):
+    """La serif itálica de la marca (la del ícono de la app). Georgia Italic de respaldo."""
+    for p in [FUENTE_FRAUNCES, "/System/Library/Fonts/Supplemental/Georgia Italic.ttf"]:
+        if os.path.exists(p):
+            return ImageFont.truetype(p, tam)
+    return R.font(tam)
+
+
+def icono_dwellia(im, cx, cy, lado):
+    """El símbolo de Dwellia, literal al ícono de la app (`apps/web/public/icon.svg`, WS34):
+    cuadrado redondeado con el degradado radial salvia (claro arriba, profundo en los bordes)
+    y la D itálica en marfil (Fraunces)."""
+    n = 256
+    tile = Image.new("RGB", (n, n))
+    px = tile.load()
+    paradas = [(0.0, (168, 187, 160)), (0.6, (143, 165, 138)), (1.0, (111, 138, 105))]
+    fx, fy, fr = n * 0.5, n * 0.36, n * 0.75
+    for y in range(n):
+        for x in range(n):
+            t = min(1.0, math.hypot(x - fx, y - fy) / fr)
+            for (t0, c0), (t1, c1) in zip(paradas, paradas[1:]):
+                if t <= t1:
+                    px[x, y] = mezcla(c0, c1, (t - t0) / (t1 - t0))
+                    break
+    tile = tile.resize((lado, lado), Image.LANCZOS)
+    mask = Image.new("L", (lado, lado), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, lado - 1, lado - 1), int(lado * 112 / 512), fill=255)
+    im.paste(tile, (int(cx - lado / 2), int(cy - lado / 2)), mask)
     d = ImageDraw.Draw(im)
-    R.circle(d, cx, cy, r, rng, width=max(6, int(r * 0.16)), color=R.IVORY, amp=1.2)
-    R.circle(d, cx, cy, r * 0.62, rng, width=max(3, int(r * 0.06)), color=mezcla(R.SAGE_DEEP, R.IVORY, 0.55), amp=1.0)
+    # sobre la hoja salvia el borde del degradado se funde con el fondo: un filete marfil fino
+    d.rounded_rectangle((cx - lado / 2, cy - lado / 2, cx + lado / 2, cy + lado / 2), int(lado * 112 / 512),
+                        outline=mezcla(R.SAGE_DEEP, R.IVORY, 0.6), width=4)
+    d.text((cx, cy - lado * 0.02), "D", fill=(251, 245, 232), font=font_fraunces(int(lado * 340 / 512)), anchor="mm")
 
 
 def contratapa(rng):
     """C3: hoja salvia. Primero y GRANDE "Teo y Pipo volverán próximamente"; abajo y más chico el
-    bloque de Dwellia con el aro (WS34, orden invertido por Tomás). Fija para todos los volúmenes."""
+    bloque de Dwellia con el ícono de la app (WS34, orden invertido por Tomás). Fija para todos los volúmenes."""
     im = R.paper(rng, base=R.SAGE_DEEP)
     d = ImageDraw.Draw(im)
     d.rounded_rectangle((80, 120, R.W - 80, R.H - 120), 30, outline=mezcla(R.SAGE_DEEP, R.CREAM, 0.45), width=5)
     d.text((R.W / 2, 560), TEXTOS_CONTRATAPA[0], fill=R.IVORY, font=font_que_entra(d, TEXTOS_CONTRATAPA[0], 880, 108, condensada=False), anchor="mm")
     d.text((R.W / 2, 690), TEXTOS_CONTRATAPA[1], fill=R.IVORY, font=font_que_entra(d, TEXTOS_CONTRATAPA[1], 880, 108, condensada=False), anchor="mm")
     R.stroke(d, [(400, 840), (680, 840)], rng, width=4, color=mezcla(R.SAGE_DEEP, R.CREAM, 0.5), amp=1.2)
-    aro_dwellia(im, R.W / 2, 1120, 78, rng)
+    icono_dwellia(im, R.W / 2, 1110, 200)
     d = ImageDraw.Draw(im)
     d.text((R.W / 2, 1300), TEXTOS_CONTRATAPA[2], fill=R.IVORY, font=R.font(84, bold=True), anchor="mm")
     d.text((R.W / 2, 1385), TEXTOS_CONTRATAPA[3], fill=R.CREAM, font=R.font(40), anchor="mm")
