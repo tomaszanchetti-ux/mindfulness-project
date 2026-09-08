@@ -59,8 +59,8 @@ def pipo_ojo(cx, cy, r, mirada=(0, 0), parpado=0.0, parpado_abajo=0.0, brillo=1.
            circ(cx, cy, r, IVORY),
            f'<g clip-path="url(#ojo{cx}{cy})">',
            circ(px, py, r * 0.74, UMBER),
-           circ(px - r * 0.28, py - r * 0.3, r * 0.2 * brillo, IVORY),
-           circ(px + r * 0.18, py + r * 0.22, r * 0.08 * brillo, IVORY)]
+           circ(px - r * 0.26, py - r * 0.28, r * 0.26 * brillo, IVORY),
+           circ(px + r * 0.2, py + r * 0.24, r * 0.1 * brillo, IVORY)]
     if parpado > 0:       # párpado de arriba: un rectángulo del color del pelaje con borde
         top = cy - r + parpado * 2 * r
         out.append(f'<rect x="{cx - r - 4}" y="{cy - r - 6}" width="{2 * r + 8}" height="{top - (cy - r - 6)}" fill="{FAWN}"/>')
@@ -82,7 +82,7 @@ def pipo_oreja(lado, caida=0.0, atras=0.0):
     caida 0..1 = la punta cuelga más; atras 0..1 = la oreja se aplasta hacia atrás (sospecha)."""
     s = lado
     ax, ay = 200 + s * 108, 110                  # inserción en la esquina alta del cráneo
-    ang = s * (-6 + 10 * caida - 38 * atras)
+    ang = s * (-26 + 14 * caida - 30 * atras)
     d = (f"M {ax} {ay} C {ax + s * 36} {ay + 4}, {ax + s * 58} {ay + 44}, {ax + s * 46} {ay + 94} "
          f"C {ax + s * 40} {ay + 118}, {ax + s * 8} {ay + 116}, {ax - s * 4} {ay + 86} "
          f"C {ax - s * 10} {ay + 56}, {ax - s * 8} {ay + 24}, {ax} {ay} Z")
@@ -116,6 +116,12 @@ def pipo_cabeza(cara):
     partes.append(path(craneo, fill=FAWN))
     partes.append(pipo_oreja(-1, c["orejas"][0], c["atras"]))
     partes.append(pipo_oreja(1, c["orejas"][1], c["atras"]))
+    # rubor en los cachetes (en tono, sin color nuevo)
+    partes.append(ell(96, 280, 26, 16, FAWN_SOMBRA))
+    partes.append(ell(304, 280, 26, 16, FAWN_SOMBRA))
+    # mechón de pelo arriba de la cabeza (el detalle achuchable)
+    partes.append(path("M 186 82 C 190 64, 204 56, 214 62 C 208 66, 204 74, 206 82", fill=FAWN, w=W_SEC))
+    partes.append(path("M 214 62 C 224 52, 238 58, 236 70", w=W_SEC))
     # máscara negra del hocico: más chica que en la v2, deja aire para la sonrisa
     mascara = ("M 200 184 C 178 194, 132 220, 126 266 C 122 314, 156 344, 200 344 "
                "C 244 344, 278 314, 274 266 C 268 220, 222 194, 200 184 Z")
