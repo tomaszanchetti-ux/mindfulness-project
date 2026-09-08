@@ -137,14 +137,26 @@ Se reutiliza todo lo demás: `calle`, `sofa`, `mesa_familiar`, `rincon`, `banco_
 `chica` de línea, `correa`, `telefono_0..3`, `cuadernito`, Teo `sentado` / `sentado_erguido` /
 `medita`, Pipo `sentado` / `panza_arriba`, el cartel y el cierre.
 
-## 7. Dwellia en TikTok (borrador, se cierra en la card 5)
+## 7. Dwellia en TikTok (cerrado, listo para publicar)
 
-- **Descripción:** *Todo el día pendiente de la mirada de cualquiera, y los que importan
-  esperando en casa. Teo y Pipo, vol. 1: La mirada de los otros.*
-  `#dwellia #teoypipo #vinculos #humor #mindfulness`
-- **Comentario fijado:** *La Pausa de hoy: en la próxima cena, deja el teléfono en otro
-  cuarto y mira a los ojos a quien tienes enfrente. Link en la bio.*
-- **Lista de reproducción:** El diario de Pipo.
+**Descripción del video** (el mensaje lindo que no entra en las hojas + hashtags):
+
+> Todo el día pendiente de la mirada de cualquiera, y los que importan esperando en casa.
+> Teo y Pipo, vol. 1: La mirada de los otros. 🐶
+>
+> `#teoypipo #eldiariodepipo #vinculos #humor #mindfulness #dwellia`
+
+**Comentario propio fijado** (arriba de todos, con la Pausa del volumen):
+
+> La Pausa de hoy: en la próxima cena, deja el teléfono en otro cuarto y mira a los ojos a
+> quien tienes enfrente. Nada más. 🌿
+
+**Lista de reproducción:** El diario de Pipo (todos los volúmenes, para que se miren de
+corrido).
+
+**Al subir:** la música se elige en TikTok (el flipbook no lleva audio propio); conviene algo
+liviano y sin letra que no pelee con los globos. El link a Dwellia va en la bio, no en la
+descripción (ver `00_FORMATO_Y_OPUESTOS.md` §8).
 
 ## 8. Historial de decisiones
 

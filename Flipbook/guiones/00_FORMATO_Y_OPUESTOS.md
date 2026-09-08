@@ -42,14 +42,16 @@ chiste se ríe de Teo y no de la situación, está mal.
 | 1 | **El cartel** (apertura) | "TEO Y PIPO en [TÍTULO SATÍRICO] · Vol. N". Cartel retro de historieta (ver §3). **Es el gancho del feed:** el título ya cuenta el chiste. | En la viñeta fija, mirando a cámara | 2 s |
 | 2 | **El problema** | La situación grotesca de la vida moderna en **2 imágenes**: la escena y la hoja de zoom al detalle que delata. Es el corazón cómico. | Cara de **sospecha** que sube a **fastidio** | 6-7 s |
 | 3 | **El espejo** | La MISMA escena vivida por Pipo, al revés: Teo en el rincón, Pipo en el centro, feliz. **1 imagen** que dura, con uno o dos globos. El aprendizaje sin explicarlo. | "la vida pasa por otro lado, teito querido." + cara de **orgullo** | 4-5 s |
-| 4 | **La magia** | **3 imágenes fijas + el resultado:** el teléfono se enciende de verde (zoom) · Teo carga el aura con una pequeña acción · escribe con la **burbuja de pensamiento** de lo que importa (los abuelos, la familia) · **el resultado**: el acto que lo demuestra, con aura. Es el corazón emocional. | "por suerte, Teo descubrió la Pausa." + **duda** al encenderse, después **orgullo** | 13 s |
+| 4 | **La magia** | **3 imágenes fijas + el resultado:** el teléfono se enciende de verde (con zoom, o **en la mano sobre la misma imagen anterior**, vol. 1) · Teo carga el aura con una pequeña acción · escribe con la **burbuja de pensamiento** de lo que importa (los abuelos, la familia) · **el resultado**: el acto que lo demuestra, con aura. Es el corazón emocional. | "por suerte, Teo descubrió la Pausa." + **duda** al encenderse, después **orgullo** | 13 s |
 | 5 | **El cierre** (fijo) | Pipo a cámara con cara de "te lo dije"; **el iris se cierra** sobre su cara (ver §4). Contratapa: **Teo y Pipo volverán próximamente** · la D · Dwellia · una Pausa al día, fuera del teléfono · link en la bio. | **Alegría sarcástica** (solo aquí) | 5,5 s |
 
 Reglas del formato:
 - **El chiste está en la escena 2 y en las caras de Pipo; el mensaje está en los textos y
   en la escena 4.** Lo gracioso engancha, lo emocional hace volver.
 - Escenas 2 y 3 son **la misma escena vista por los dos** (mismo lugar, mismo objeto,
-  reacción opuesta) siempre que se pueda.
+  reacción opuesta) siempre que se pueda. **Se pueden fundir en UNA imagen** cuando esa
+  imagen cuenta las dos cosas a la vez (vol. 1: la familia riéndose con Pipo en el centro
+  y Teo en el rincón con el teléfono). Es más corto y se lee de un golpe.
 - Dwellia aparece **solo** en la contratapa. Sin cartas, sin pantallas, sin logo adentro.
 - TikTok repite el video en bucle: el libro cerrado del final vuelve solo al cartel del
   principio. El cierre tiene que "pedir" la apertura.
@@ -92,13 +94,14 @@ un muñeco de línea puede hacer el paso de Spiderman; no puede ser Tobey Maguir
 |---|---|---|---|---|---|
 | 1 | 🌸 **Amor propio** · el juez interno (hablarse como no le hablaríamos a nadie; compararse con el feed) | **MIL SELFIES** · *EL ESPEJO QUE NO PERDONA* | Dos horas de fotos con poses. Meme: la cara de Zoolander (labios fruncidos, mejillas chupadas) y el flex frente al espejo del gimnasio. Zoom: las fotitos pasando una atrás de otra, sin app. Al final, cara triste en el espejo. | Pipo frente al mismo espejo: cara aplastada, un ojo para cada lado, **y se enamora de sí mismo**. | Teo pasa frente al espejo, se sonríe y sigue. |
 | 2 | 🌅 **Gratitud** · darlo por sentado (la queja automática con todo lo bueno en la mano) | **OTRA VEZ LUNES** · *EL CAFÉ DE SIEMPRE* | Café caliente, sol por la ventana, el perro, y Teo mirando el feed de vacaciones ajenas con cara de piedra. Meme: el perro del "this is fine" al revés: todo perfecto alrededor y Teo en llamas por dentro. | El mismo plato de croquetas de todos los días, recibido como **la mejor fiesta de su vida**. Meme: el perro que espera en la puerta y explota de alegría. | Teo le dice gracias al del bar mirándolo a los ojos. |
-| 3 | 🕊 **Vínculos** · **la mirada de los otros** (pendiente de lo que opina cualquiera y sin mirar a los que importan; estar sin estar) | **LA MIRADA DE LOS OTROS** · *¿QUIÉN ME MIRA?* | **La escena de Tomás:** el paso de Spiderman de Tobey Maguire (caderas, pistolitas con los dedos, pelo caído) frente a chicas que ni lo registran, pasan de largo. Después, en la cena familiar, Teo en el rincón con el teléfono, medio avergonzado de los suyos. | Pipo **entrega el cuerpo entero** a la familia de Teo: panza arriba, todos jugando con él. | Burbuja con los abuelos mientras escribe → todos juntos en la mesa, contentos, Pipo en el medio. |
+| 3 | 🕊 **Vínculos** · **la mirada de los otros** ✅ **HECHO: vol. 1, WS35** (`vol01_vinculos.md` / `.yaml`) | **LA MIRADA DE LOS OTROS** (ladrillo + rayos) | **La escena de Tomás:** el paso de Spiderman de Tobey Maguire (caderas, pistolitas con los dedos, pelo caído) frente a chicas que ni lo registran, pasan de largo. Después, en la cena familiar, Teo en el rincón con el teléfono, medio avergonzado de los suyos. | Pipo **entrega el cuerpo entero** a la familia de Teo: panza arriba, todos jugando con él. | Burbuja con los abuelos mientras escribe → todos juntos en la mesa, contentos, Pipo en el medio. |
 | 4 | 🌙 **Sentido** · el piloto automático (agenda llena, vida vacía) | **LA AGENDA LLENA** · *CORRIENDO A NINGÚN LADO* | Teo corre con la agenda que se desenrolla por el piso como un rollo de papel. Meme: correr en el lugar mientras pasa **el mismo árbol cinco veces** (la rueda de hámster). Llega tarde y no sabe a dónde. | En el paseo, Pipo se planta a **oler una flor cuatro minutos**. Correa tensa, Teo tirando, Pipo inmóvil. | Teo tacha algo de la agenda y escribe "flor" (o "mamá"). |
 | 5 | 🏔 **Perspectiva** · la catástrofe en primer plano (un email convertido en tormenta) | **EL EMAIL** · *EL FIN DEL MUNDO (ERA UN MAIL)* | Un mail sin responder crece hasta tapar la ventana. Meme: el perro del "this is fine" en la habitación en llamas (acá en su versión original) y el "pánico / calma" en dos hojas. Zoom: Teo leyéndolo por duodécima vez. | Pipo pierde la pelota bajo el sofá: **tragedia de tres segundos** (sorpresa máxima). Se duerme. | Teo responde en una línea, cierra, sale. Desde la calle, la casa es chiquita. |
 | 6 | 🌿 **Resiliencia** · el derrumbe (un mal día tratado como una condena) | **TODO ME PASA A MÍ** · *LA MANCHA EN LA CAMISA* | Cadena de desastres: lluvia, el bus que se va, café en la camisa, el jefe. Meme: Ben Affleck fumando agotado, o Keanu triste en el banco (Pipo al lado). Cortina cerrada. | Pipo **se cae del sofá**, se levanta y sigue como si nada. Tres veces. | Teo abre la cortina y vuelve a intentar lo que salió mal. |
 
-Orden de producción en D2: **por el chiste más claro, no por el número.** Hoy el más
-claro es el 3 (Vínculos, Spiderman). Los títulos se validan con cada guion.
+Orden de producción en D2: **por el chiste más claro, no por el número.** El primero que se
+hizo fue Vínculos (WS35), publicado como **Vol. 1**: el número del cartel es el orden de
+publicación, no el del pilar. Los títulos se validan con cada guion.
 
 ## 6. Pipo: la voz y la cara
 

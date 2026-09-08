@@ -5,13 +5,15 @@ Pipo"**. Pipo (el pug) narra con humor cómo Teo (el héroe) se pierde en la vid
 crece con cada Pausa; Dwellia es la magia que lo impulsa y solo se nombra en la contratapa. El concepto completo está en [`CONCEPTO.md`](CONCEPTO.md); las
 reglas de dibujo y animación, en [`REGLAS.md`](REGLAS.md).
 
-Estado (WS34 · 08/09/2026): **D1 CERRADA, la fábrica funciona.** D0 = el formato v2 (5
+Estado (WS35 · 08/09/2026): **D2 EN CURSO — el vol. 1 está hecho.** D0 = el formato v2 (5
 escenas, 6-8 imágenes, cartel variable, cierre fijo con iris) en
 `guiones/00_FORMATO_Y_OPUESTOS.md`. D1.1 = Teo y Pipo como piezas ilustradas, aprobadas.
 D1.2 = **un guion YAML se convierte en el mp4 completo sin tocar código** (`vol00_prueba.yaml`
 → 31,9 s), con el cartel a lo Tintín, la escena de la magia como paquete fijo, el cierre con
-iris y contratapa, y el tempo validado en video por Tomás. **Sigue D2: una WS por volumen,
-empezando por Vínculos.** El detalle de cómo se llegó está en `WS/WS31` a `WS/WS34`.
+iris y contratapa, y el tempo validado en video por Tomás. **D2 = una WS por volumen:** el
+primero es **Vínculos, "LA MIRADA DE LOS OTROS" (Vol. 1)**, guion en papel en
+`guiones/vol01_vinculos.md`, guion del motor en `vol01_vinculos.yaml`, video de 30,7 s.
+El detalle de cómo se llegó está en `WS/WS31` a `WS/WS35`.
 
 ## Cómo se hace un volumen nuevo (D2, una WS por historieta)
 
@@ -78,13 +80,17 @@ línea, temblor, taco de hojas, cuadro en vuelo); sus escenas y personajes ya no
 ## Lo que el motor sabe hacer hoy (D1.2 · WS33-34)
 
 - **Piezas:** Pipo = 6 caras + 12 cuerpos (sentado · camina ×4 · panza arriba · plantado ·
-  cae · corre · buda · buda con la V) · Teo = 25 caras (5 miradas × 5 bocas) + 10 cuerpos
-  (parado · encorvado · sentado · sentado erguido · medita · camina ×4 · corre) · props
-  ilustrados: el teléfono en 4 niveles (se pone verde a nivel pantalla) y el cuadernito.
+  cae · corre · buda · buda con la V) · Teo = 25 caras + 2 con el pelo caído + 11 cuerpos
+  (parado · encorvado · sentado · sentado erguido · medita · camina ×4 · corre · **spiderman**)
+  · props ilustrados: el teléfono en 4 niveles (se pone verde a nivel pantalla) y el
+  cuadernito · **grupos** (piezas compuestas que se pegan con `piezas:`): la familia del
+  vol. 1 en dos estados (living y mesa) y las chicas que pasan de largo.
 - **La escena de la magia** como paquete fijo de 4 imágenes con 3 huecos (`accion` ·
-  `burbuja` · `resultado`). El aura sale de la silueta, sirve en cualquier pose.
-- **Los globos de Pipo:** hasta 12 palabras en 4 líneas, uno o varios sobre la misma imagen,
-  entran 0,5 s después de la imagen, el motor los ubica sin tapar caras.
+  `burbuja` · `resultado`). El aura sale de la silueta, sirve en cualquier pose. El teléfono
+  se enciende con zoom o **en la mano, sobre la misma imagen** (con resplandor salvia).
+- **Los globos de Pipo:** hasta 12 palabras, uno o varios sobre la misma imagen, entran 0,5 s
+  después de la imagen. **Van ABAJO de la escena** (caja apaisada con la colita subiendo a
+  Pipo), y la escena sube 220 px para quedar en la zona segura de TikTok.
 - **La vida del cuadro:** cabeceo automático, el globo flota, temblor de línea, props con ciclo.
 - **Cartel** (cuarta tinta + formas + título, viñeta fija a lo Tintín) y **cierre fijo** (Pipo
   pícaro · iris · tapa · contratapa con la D de la app).
