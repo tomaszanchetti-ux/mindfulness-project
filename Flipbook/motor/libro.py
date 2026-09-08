@@ -801,14 +801,30 @@ def aplanar(g):
 
 # ---------------------------------------------------------------- B2 · el cartel de apertura
 
+def _remolino(d, x, y, rng, s=1.0, vueltas=1.6, color=None):
+    """El remolino de velocidad de la tapa de Tintín: una espiral de línea que se abre."""
+    pts = []
+    for k in range(int(vueltas * 24)):
+        a = k / 24 * 2 * math.pi
+        r = 6 * s + 9 * s * a
+        pts.append((x + r * math.cos(a), y + r * math.sin(a) * 0.8))
+    R.stroke(d, pts, rng, width=6, color=color or R.UMBER, amp=1.4)
+
+
 def imagen_cartel(im, m, rng, cx, cy, r):
-    """Provisorio: Teo y Pipo trotando dentro de un círculo crema, con las piezas que hay.
-    B1 (capa de detalle) va a reemplazar el cuerpo de esta función por un PNG ilustrado
-    a lo Tintín; el círculo, el tamaño y el centro se quedan como están."""
+    """B1 (WS34): la viñeta fija del cartel a lo Tintín. Teo corre inclinado con los brazos
+    bombeando (cuerpo `corre`, cara costado_sonrisa) y Pipo galopa ADELANTE (cuerpo `corre`,
+    alegría sarcástica), los dos rompiendo apenas el borde del círculo; atrás, los remolinos de
+    velocidad y unas líneas de polvo. El círculo, el centro y el radio no cambian."""
     d = ImageDraw.Draw(im)
     R.circle(d, cx, cy, r, rng, width=9, color=R.UMBER, fill=R.CREAM)
-    m.pegar(im, "teo", "camina_1", "cara_costado_sonrisa", cx - 85, cy + 40, escala=1.12, rng=rng)
-    m.pegar(im, "pipo", "camina_2", "cara_alegria_sarcastica", cx + 140, cy + 175, escala=0.62, rng=rng)
+    # los remolinos, atrás de Teo, y las líneas de velocidad atrás de Pipo
+    _remolino(d, cx - 222, cy + 168, rng, s=0.9)
+    _remolino(d, cx - 272, cy + 96, rng, s=0.55, vueltas=1.3)
+    for k, (dx, dy, largo) in enumerate(((-20, 150, 110), (-32, 184, 80), (-10, 216, 100))):
+        R.stroke(d, [(cx + dx - largo, cy + dy), (cx + dx, cy + dy)], rng, width=5, color=R.TAUPE, amp=1.0)
+    m.pegar(im, "teo", "corre", "cara_costado_sonrisa", cx - 70, cy - 10, escala=1.18, rng=rng)
+    m.pegar(im, "pipo", "corre", "cara_alegria_sarcastica", cx + 165, cy + 200, escala=0.74, rng=rng, rot=-6)
 
 
 def _formas(d, rng, tinta, forma, claro, oscuro):

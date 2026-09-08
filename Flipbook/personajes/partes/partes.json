@@ -79,6 +79,19 @@
    "lienzo": 400,
    "escala_png": 2
   },
+  "cuerpo_corre": {
+   "cabeza": [
+    286,
+    172
+   ],
+   "escala": 0.88,
+   "rot": -6,
+   "z_cabeza": "delante",
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_corre.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
   "cuerpo_camina": {
    "cabeza": [
     268,
@@ -529,6 +542,23 @@
    ],
    "tipo": "cuerpo",
    "png": "personajes/partes/teo/cuerpo_medita.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_corre": {
+   "cabeza": [
+    268,
+    106
+   ],
+   "escala": 0.72,
+   "rot": 14,
+   "z_cabeza": "delante",
+   "mano": [
+    366,
+    110
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_corre.png",
    "lienzo": 400,
    "escala_png": 2
   },

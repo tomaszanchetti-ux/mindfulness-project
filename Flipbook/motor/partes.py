@@ -328,8 +328,32 @@ def pipo_cuerpo_cae():
     p.append(pipo_collar(204, 262, 40, ry=-10))
     return svg(p), {"cabeza": [204, 276], "escala": 0.92, "rot": 170, "z_cabeza": "delante"}
 
+def pipo_cuerpo_corre():
+    """Corre de perfil hacia la derecha, a lo Milú en la tapa de Tintín (B1, WS34): el cuerpo
+    estirado y en el aire, las patas delanteras lanzadas adelante, las traseras atrás, la cola
+    enrulada volando. La cabeza (a cámara) va adelante y arriba, mirando hacia donde corre."""
+    p = []
+    p.append(pipo_cola(104, 196, s=1.0, rot=-40))
+    def pata(x, y, dx, dy, atras=False):
+        col = FAWN_SOMBRA if atras else FAWN
+        return path(f"M {x - 22} {y} C {x - 28} {y + dy * 0.4}, {x - 24 + dx * 0.8} {y + dy * 0.75}, {x - 22 + dx} {y + dy} "
+                    f"C {x - 24 + dx} {y + dy + 16}, {x + 24 + dx} {y + dy + 16}, {x + 22 + dx} {y + dy} "
+                    f"C {x + 22 + dx * 0.8} {y + dy * 0.75}, {x + 26} {y + dy * 0.4}, {x + 22} {y} Z", fill=col)
+    # traseras (atrás, estiradas hacia atrás) y delanteras (lanzadas adelante), en dos planos
+    p.append(pata(154, 244, -52, 50, atras=True))
+    p.append(pata(254, 238, 46, 56, atras=True))
+    # cuerpo estirado, barril largo, un poco alzado adelante
+    p.append(path("M 106 232 C 100 190, 140 160, 200 154 C 268 148, 316 168, 318 218 "
+                  "C 320 266, 276 292, 206 294 C 140 296, 112 274, 106 232 Z", fill=FAWN))
+    p.append(path("M 262 286 C 294 276, 316 254, 316 226 C 312 208, 288 208, 278 232 C 272 254, 266 272, 262 286 Z", fill=IVORY, stroke="none", w=0))
+    p.append(pata(140, 250, -58, 44))
+    p.append(pata(266, 244, 54, 50))
+    p.append(pipo_collar(276, 176, 36, ry=10))
+    return svg(p), {"cabeza": [286, 172], "escala": 0.88, "rot": -6, "z_cabeza": "delante"}
+
 CUERPOS_PIPO = {
     "sentado": pipo_cuerpo_sentado,
+    "corre": pipo_cuerpo_corre,
     "camina": pipo_cuerpo_camina,
     "panza_arriba": pipo_cuerpo_panza_arriba,
     "plantado": pipo_cuerpo_plantado,
@@ -508,6 +532,33 @@ def teo_cuerpo_camina(fase=0.0):
     return svg([grupo(p, f"translate(0 {-salto:.1f})")]), {"cabeza": [204, 100 - salto], "escala": 0.72, "rot": 0,
                                                            "z_cabeza": "delante", "mano": [236 + 44 * sw, 226 - salto]}
 
+def teo_cuerpo_corre():
+    """Corre de perfil hacia la derecha, a lo Tintín en la tapa (B1, WS34): el torso bien
+    inclinado hacia adelante (los hombros adelante de la cadera), los brazos bombeando en
+    ángulo recto con los puños cerrados, la pierna de adelante con la rodilla alta y la de
+    atrás con el talón levantado. Es la pose memorable del cartel."""
+    p = []
+    def zapatilla(fx, fy, ang=0):
+        d = (f"M {fx - 20} {fy} C {fx - 26} {fy + 8}, {fx - 18} {fy + 16}, {fx - 6} {fy + 16} L {fx + 26} {fy + 16} "
+             f"C {fx + 34} {fy + 12}, {fx + 32} {fy + 6}, {fx + 22} {fy} Z")
+        return grupo([path(d, fill=IVORY, w=W_SEC + 1)], f"rotate({ang} {fx} {fy})")
+    # pierna y brazo de atrás (más oscuros): el talón levantado atrás, el puño atrás y arriba
+    p.append(miembro([(172, 236), (128, 300), (98, 262)], grosor=30, color="#6f665b"))
+    p.append(zapatilla(94, 254, ang=-70))
+    p.append(miembro([(236, 116), (184, 156), (166, 108)], grosor=20, color="#e4d8c4"))
+    p.append(circ(164, 102, 13, "#e4d8c4", UMBER, W_SEC))
+    # torso inclinado hacia adelante: la cadera atrás, los hombros bien adelante
+    p.append(path("M 140 242 C 132 200, 176 140, 228 100 L 306 112 C 296 156, 264 206, 232 246 Z", fill=REMERA))
+    p.append(path("M 248 104 C 254 116, 280 120, 290 110", w=W_SEC))
+    # pierna de adelante: rodilla alta, pie adelante y abajo
+    p.append(miembro([(196, 240), (272, 262), (296, 338)], grosor=30, color=PANTALON))
+    p.append(zapatilla(298, 340, ang=22))
+    # brazo de adelante: codo adelante, puño arriba a la altura del pecho
+    p.append(miembro([(286, 122), (336, 158), (364, 116)], grosor=22))
+    p.append(circ(366, 110, 13, PIEL, UMBER, W_SEC))
+    return svg(p), {"cabeza": [268, 106], "escala": 0.72, "rot": 14, "z_cabeza": "delante",
+                    "mano": [366, 110]}
+
 # =====================================================================================
 # PROPS · la escena de la magia (D1.2 · F): el teléfono que se pone verde · el cuadernito
 # Piezas grandes en su lienzo; se pegan con `escala_rel` × la escala del personaje.
@@ -594,7 +645,7 @@ def generar(solo=None):
                 s, a = teo_cabeza(m, b); escribir("teo", f"cara_{m}_{b}", s, dict(a, tipo="cabeza"), indice)
         for nombre, fn, kw in (("parado", teo_cuerpo_parado, dict(postura=1.0)), ("encorvado", teo_cuerpo_parado, dict(postura=0.0)),
                                ("sentado", teo_cuerpo_sentado, dict(encorvado=1.0)), ("sentado_erguido", teo_cuerpo_sentado, dict(encorvado=0.2)),
-                               ("medita", teo_cuerpo_medita, {})):
+                               ("medita", teo_cuerpo_medita, {}), ("corre", teo_cuerpo_corre, {})):
             s, a = fn(**kw); escribir("teo", "cuerpo_" + nombre, s, dict(a, tipo="cuerpo"), indice)
         for k in range(4):   # el paseo erguido en 4 fases
             s, a = teo_cuerpo_camina(k / 4); escribir("teo", "cuerpo_camina_%d" % k, s, dict(a, tipo="cuerpo"), indice)
