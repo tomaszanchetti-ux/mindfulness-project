@@ -95,10 +95,18 @@ en personaje y al escribir un guion.
 - **Una temporada = 6 volúmenes**, uno por pilar en el orden del reloj del onboarding: amor
   propio · gratitud · vínculos · sentido · perspectiva · resiliencia. Cada volumen presenta un
   secundario ligado al pilar.
-- Texto en pantalla = **la voz de Pipo** (el libro es su diario): primera persona,
-  minúsculas, **hasta 6 palabras por hoja**, con punto si es una frase ("lunes. otra vez el
-  espejo." · "yo me veo perfecto."). Una idea larga se reparte en 2-3 hojas. **Español
-  neutro** en pantalla. Sin voz grabada. Georgia o serif parecida.
+- Texto en pantalla = **la voz de Pipo, y va en un GLOBO DE DIÁLOGO a la audiencia**
+  (Tomás, WS33: Pipo rompe la cuarta pared, formato Deadpool). Nunca suelto sobre la hoja:
+  globo de historieta con relleno marfil, borde tierra, temblor, y la **colita apuntando a
+  la cabeza de Pipo**. Georgia, minúsculas, primera persona, **hasta 6 palabras por hoja**,
+  hasta 3 líneas cortas adentro del globo, con punto si es una frase ("otra vez el rincón." ·
+  "yo me veo perfecto."). Una idea larga se reparte en 2-3 hojas. **Español neutro** en
+  pantalla (nunca voseo). Sin voz grabada.
+- **Si Pipo no está en el cuadro, Pipo ASOMA:** se pega su cabeza sola por un borde lateral
+  o inferior de la hoja para que el globo tenga de dónde salir. El motor lo hace solo
+  (derecha abajo, con la cara de la escena) o el guion lo dice con `pipo_asoma`.
+- El globo **nunca tapa una cara** ni el objeto que el personaje sostiene: el motor mide las
+  cajas reales y elige dónde ponerlo (ver §7).
 - Tono: sátira con ternura (Mafalda, Macanudo, Snoopy), humor de gesto, nunca sermón. Lo gracioso engancha; lo emocional hace volver.
 
 ## 6. Lo que no se hace
@@ -106,3 +114,76 @@ en personaje y al escribir un guion.
 - Más de un color de acento, negro puro, fondos blancos, sombras realistas.
 - Nombrar Dwellia dentro de la historia. Mostrar pantallas de la app.
 - Personas reales reconocibles, fotos, voces.
+
+## 7. El guion (v2 · WS33)
+
+Un volumen se escribe en **un archivo YAML** en `guiones/` y se renderiza sin tocar código:
+
+```bash
+python3 Flipbook/motor/libro.py Flipbook/guiones/vol00_prueba.yaml
+python3 Flipbook/motor/libro.py Flipbook/guiones/vol00_prueba.yaml --solo-cuadros
+```
+
+Salen `pruebas/<nombre>.mp4` (1080×1920, 30 fps) y `pruebas/<nombre>_cuadros.png`, la hoja
+fija con un cuadro clave de cada cuadro **para revisar la lectura sin abrir el video**. El
+motor imprime hojas, cuadros de video y segundos.
+
+### La estructura
+
+```yaml
+volumen: 0
+titulo: LA PRUEBA               # el título satírico, va en el cartel
+cartel:
+  tinta: ocre                   # ocre | ladrillo | azul_cartel (la cuarta tinta, §3)
+  formas: diagonales            # diagonales | rayos | circulo | franja | marco
+escenas:
+  - tipo: problema              # problema | espejo | magia
+    fondo: rincon
+    cuadros:
+      - hojas: 16               # o `duracion: 1.6` (10 hojas = 1 s)
+        teo:  {cuerpo: sentado, cara: abajo_plana, x: 430, y: 1100, escala: 1.6,
+               prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
+        pipo: {cuerpo: sentado, cara: fastidio, x: 890, y: 1300, escala: 0.6}
+        props: [{nombre: nube_garabatos, x: 610, y: 545, escala: 2.0, hacia_disolucion: 1.0}]
+        pipo_dice: otra vez el rincón.
+      - hojas: 10               # la hoja "acerca"
+        zoom: {pieza: props/telefono_0, escala: 2.7, rot: -12, manos: true}
+        pipo_asoma: {lado: izquierda, cara: en_serio}
+        pipo_dice: y el pulgar no para.
+  - tipo: magia                 # bloque fijo de 4 momentos, tres huecos
+    accion: medita              # medita | pasea
+    burbuja: abuelos            # el descubrimiento del volumen
+    final:
+      fondo: mesa_familiar
+      teo: {cuerpo: sentado_erguido, cara: costado_sonrisa}
+      secundarios: [{tipo: abuela, x: 720, y: 900}, {tipo: abuelo, x: 930, y: 890}]
+      pipo_dice: y se le nota.
+```
+
+El **cartel** (2 s) y el **cierre fijo** (Pipo · iris · tapa · contratapa, 5,5 s) los pone
+el motor: no se declaran.
+
+### Qué puede llevar un cuadro
+
+| Clave | Qué es |
+|---|---|
+| `hojas` / `duracion` | cuántas hojas dura el cuadro (10 hojas por segundo). |
+| `fondo` | `habitacion` · `rincon` · `banco_plaza` · `mesa_familiar` · `sofa` · `espejo_bano` · `calle` · `ninguno`. Cada uno declara anclas (`ventana`, `banquito`, `banco`, `mesa`, `sofa`, `espejo`, `repisa`…). |
+| `teo` / `pipo` | `cuerpo`, `cara`, `x`, `y`, `escala`, `rot`, `espejo`, `aura` (0..1 o `sube`), `pulso`, `ciclo: true` (usa `cuerpo_0..3`, una fase por hoja), `prop` (una pieza o una lista; `ancla`, `dx`, `dy`, `rot`, `ciclo`), `hacia: {x, y}` (se interpola dentro del cuadro), `en: <ancla del fondo>`. |
+| `props` | props simples: `nube_garabatos` (con `disolucion` 0..1), `burbuja_pensamiento` (con `dibujo` y `punta`), `correa`, `plato_croquetas`, `globo`. Cualquier opción admite `hacia_<opcion>` para interpolarla dentro del cuadro. `delante: true` los pone adelante del personaje. |
+| `secundarios` | gente de línea simple: `tipo` (`abuela`, `abuelo`, `chica`, `senor`), `x`, `y`, `escala`. |
+| `zoom` | la hoja "acerca": `pieza` (`teo/cara_…`, `pipo/…`, `props/…`) o `prop`, con `escala`, `rot`, `ciclo`, `manos: true`. |
+| `pipo_dice` | el texto del globo (≤6 palabras). |
+| `pipo_asoma` | `lado` (`izquierda`, `derecha`, `abajo`) y `cara`, para cuando Pipo no está en el cuadro. |
+| `parallax` | píxeles que corre el fondo por hoja (árboles de `calle` y `banco_plaza`). |
+
+**Regla del guion:** si algo tiene que moverse mucho, se mueve el fondo (§2). Un cuadro con
+un texto dura 12-16 hojas; uno de zoom, 7-10.
+
+### La escena de la magia
+
+Es un **paquete fijo** (WS33): (1) el teléfono se enciende, con la hoja "acerca" · (2) Teo
+carga el aura con la acción del menú · (3) Teo escribe y la burbuja muestra el descubrimiento
+del volumen · (4) Teo con el aura desplegada haciendo la acción que muestra el cambio. Solo
+se declaran los tres huecos: `accion`, `burbuja` y `final`. Un dibujo nuevo para la burbuja
+se agrega como función en `motor/libro.py` y se registra en `DIBUJOS`.

@@ -1,0 +1,82 @@
+# Volumen de prueba de la fábrica (D1.2 · E). No es un volumen de la serie: es el guion que
+# demuestra que un archivo YAML se convierte en un mp4 completo sin tocar código.
+#
+#   python3 Flipbook/motor/libro.py Flipbook/guiones/vol00_prueba.yaml
+#
+# El vocabulario está explicado en REGLAS.md §7.
+
+volumen: 0
+titulo: LA PRUEBA
+nombre: vol00_prueba
+
+cartel:
+  tinta: ocre            # ocre | ladrillo | azul_cartel
+  formas: diagonales     # diagonales | rayos | circulo | franja | marco
+  duracion: 2.0
+
+escenas:
+
+  # ---------------------------------------------------------------- 2 · el problema
+  - tipo: problema
+    fondo: rincon
+    cuadros:
+      - hojas: 16
+        teo: {cuerpo: sentado, cara: abajo_plana, x: 430, y: 1100, escala: 1.6,
+              prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
+        pipo: {cuerpo: sentado, cara: fastidio, x: 890, y: 1300, escala: 0.6}
+        pipo_dice: otra vez el rincón.
+
+      - hojas: 14
+        teo: {cuerpo: sentado, cara: abajo_plana, x: 430, y: 1100, escala: 1.6,
+              prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
+        pipo: {cuerpo: sentado, cara: resignacion, x: 890, y: 1300, escala: 0.6}
+        props:
+          - {nombre: nube_garabatos, x: 610, y: 545, escala: 2.0, disolucion: 0.0, hacia_disolucion: 0.0}
+        pipo_dice: dos horas mirando nada.
+
+      # la hoja "acerca": el libro se acerca al detalle que delata
+      - hojas: 10
+        zoom: {pieza: props/telefono_0, escala: 2.7, rot: -12, manos: true}
+        pipo_asoma: {lado: izquierda, cara: en_serio}
+        pipo_dice: y el pulgar no para.
+
+      - hojas: 16
+        teo: {cuerpo: sentado, cara: abajo_triste, x: 430, y: 1100, escala: 1.6,
+              prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
+        pipo: {cuerpo: sentado, cara: en_serio, x: 890, y: 1300, escala: 0.6}
+        pipo_dice: teito, mira para arriba.
+
+  # ---------------------------------------------------------------- 3 · el espejo de Pipo
+  - tipo: espejo
+    fondo: sofa
+    cuadros:
+      - hojas: 16
+        pipo: {cuerpo: panza_arriba, cara: orgullo, x: 610, y: 1120, escala: 1.0}
+        teo: {cuerpo: sentado, cara: abajo_plana, x: 175, y: 1330, escala: 0.9,
+              prop: {nombre: telefono_0, dx: 8, dy: -22, rot: -24}}
+        pipo_dice: la vida pasa por otro lado.
+
+      - hojas: 14
+        pipo: {cuerpo: panza_arriba, cara: alegria_sarcastica, x: 610, y: 1120, escala: 1.0}
+        teo: {cuerpo: sentado, cara: abajo_plana, x: 175, y: 1330, escala: 0.9,
+              prop: {nombre: telefono_0, dx: 8, dy: -22, rot: -24}}
+        pipo_dice: teito querido.
+
+      - hojas: 12
+        pipo: {cuerpo: panza_arriba, cara: en_serio, x: 610, y: 1120, escala: 1.0}
+        teo: {cuerpo: sentado, cara: abajo_plana, x: 175, y: 1330, escala: 0.9,
+              prop: {nombre: telefono_0, dx: 8, dy: -22, rot: -24}}
+        pipo_dice: yo ya lo entendí.
+
+  # ---------------------------------------------------------------- 4 · la magia
+  # Bloque fijo de 4 momentos con tres huecos: la acción, la burbuja y el final.
+  - tipo: magia
+    accion: medita
+    burbuja: abuelos
+    final:
+      fondo: mesa_familiar
+      teo: {cuerpo: sentado_erguido, cara: costado_sonrisa}
+      secundarios:
+        - {tipo: abuela, x: 720, y: 900}
+        - {tipo: abuelo, x: 930, y: 890}
+      pipo_dice: y se le nota.

@@ -19,8 +19,8 @@ la escena de la magia y los gestos de Teo). Listado de assets en `WS/WS32_08-09-
 | `CONCEPTO.md` | El concepto (estructura del volumen, arco por pilares, decisiones). |
 | `REGLAS.md` | La gramática visual: cómo se dibuja y se anima para que se lea como flipbook Dwellia. |
 | `personajes/` | Una **ficha** por personaje (`teo.md`, `pipo.md`) + la hoja de personajes dibujada (`hoja_de_personajes_v2.png`). **`partes/`** = las piezas ilustradas (SVG + PNG transparente + `partes.json` con las anclas), generadas por `motor/partes.py`. La plantilla para un personaje nuevo es `_plantilla.md`. |
-| `guiones/` | **`00_FORMATO_Y_OPUESTOS.md` = el componente central (v2)**: las 5 escenas, el cartel y el cierre, los 6 pilares con su banco de ideas y memes replicables, las caras de Pipo, la biblioteca de gestos de Teo y dónde va Dwellia en TikTok. Después, un archivo por volumen (`vol01_lunes.md` es solo el boceto de mecánica de la WS26). |
-| `motor/` | `partes.py` dibuja las piezas ilustradas (capa de detalle) · `marioneta.py` las compone en una hoja · `hoja.py` arma la hoja de personajes y el video de prueba · `render.py` renderiza un volumen (hojas → ffmpeg → mp4; hasta D1.2 sigue con los palitos de la v1) · `inventario.py` lista qué personajes tienen fotos y ficha. |
+| `guiones/` | **`volNN.yaml` = el guion de cada volumen, lo que lee `motor/libro.py`** (`vol00_prueba.yaml` es el de prueba de la fábrica). **`00_FORMATO_Y_OPUESTOS.md` = el componente central (v2)**: las 5 escenas, el cartel y el cierre, los 6 pilares con su banco de ideas y memes replicables, las caras de Pipo, la biblioteca de gestos de Teo y dónde va Dwellia en TikTok. Después, un archivo por volumen (`vol01_lunes.md` es solo el boceto de mecánica de la WS26). |
+| `motor/` | **`libro.py` = la fábrica: lee un guion YAML y escribe el mp4 completo** (cartel · hojas · cierre) · `partes.py` dibuja las piezas ilustradas (capa de detalle) · `marioneta.py` las compone en una hoja · `hoja.py` arma la hoja de personajes y el video de prueba · `magia.py` = guion de prueba de la escena de la magia (referencia de dibujo) · `render.py` = los helpers de papel, línea y libro de la v1 · `inventario.py` lista qué personajes tienen fotos y ficha. |
 | `pruebas/` | Las pruebas de la WS26 (mp4 fuera del repo, hojas de contacto dentro). |
 | `../Tiktok/` | **La bandeja de entrada de Tomás** (fuera del repo): una subcarpeta por personaje (`teo/`, `pipo/`) y `Ideas/` para material general de estilo (portadas, auras, viñetas que gusten). |
 
@@ -44,12 +44,21 @@ dibujada la marioneta, cada volumen nuevo se renderiza en minutos.
 
 ## Cómo se renderiza un volumen
 
+Un volumen se escribe en un **guion YAML** (`guiones/volNN.yaml`) y se renderiza sin tocar
+código. El vocabulario del guion está en [`REGLAS.md`](REGLAS.md) §7.
+
 ```bash
-python3 Flipbook/motor/render.py Flipbook/salida/vol01.mp4 Flipbook/personajes/hoja_de_personajes.png
+python3 Flipbook/motor/libro.py Flipbook/guiones/vol00_prueba.yaml
+python3 Flipbook/motor/libro.py Flipbook/guiones/vol00_prueba.yaml --solo-cuadros
 ```
 
-Sale un mp4 1080×1920 a 30 fps (10 hojas por segundo, cada hoja con su cuadro en vuelo) más
-la hoja de personajes actualizada. La música se elige al subir a TikTok.
+Salen `pruebas/<nombre>.mp4` (1080×1920 a 30 fps, 10 hojas por segundo, cada hoja con su
+cuadro en vuelo, cartel de apertura y cierre fijo) y `pruebas/<nombre>_cuadros.png`, la hoja
+fija con un cuadro clave de cada cuadro para revisar la lectura sin abrir el video. La música
+se elige al subir a TikTok.
+
+El motor v1 de palitos (`motor/render.py`) queda solo como biblioteca de helpers (papel,
+línea, temblor, taco de hojas, cuadro en vuelo); sus escenas y personajes ya no se usan.
 
 ## Cómo se ve el inventario
 
