@@ -351,7 +351,7 @@ def pipo_cuerpo_corre():
     p.append(pipo_collar(276, 176, 36, ry=10))
     return svg(p), {"cabeza": [286, 172], "escala": 0.88, "rot": -6, "z_cabeza": "delante"}
 
-def pipo_cuerpo_buda():
+def pipo_cuerpo_buda(gesto="rodillas"):
     """Pipo iluminado (B1, WS34): sentado a cámara en flor de loto, la panza redonda y clara,
     las patas traseras cruzadas adelante como un almohadón bajo con las almohadillas hacia
     arriba, las delanteras rectas apoyadas en las rodillas. La cabeza va derecha, arriba."""
@@ -370,16 +370,29 @@ def pipo_cuerpo_buda():
     for cx in (118, 282):
         p.append(ell(cx, 330, 20, 13, FAWN_SOMBRA, UMBER, W_SEC))
         p.append(circ(cx - 8, 326, 3.5, UMBER)); p.append(circ(cx, 323, 3.5, UMBER)); p.append(circ(cx + 8, 326, 3.5, UMBER))
-    # patas delanteras rectas, apoyadas sobre las rodillas (el gesto de meditar)
-    p.append(pipo_pata_frente(154, 236, largo=64))
-    p.append(pipo_pata_frente(246, 236, largo=64))
+    if gesto == "victoria":
+        # las delanteras en Y, bien abiertas hacia arriba, y en cada punta dos "dedos" en V
+        for s_ in (-1, 1):
+            x0, y0 = 200 + s_ * 74, 232          # el hombro
+            x1, y1 = 200 + s_ * 158, 78          # la punta de la pata, al lado de la cara
+            p.append(path(f"M {x0 - 16} {y0 + 8} C {x0 - 20 + s_ * 20} {y0 - 40}, {x1 - 20} {y1 + 40}, {x1 - 18} {y1} "
+                          f"C {x1 - 18} {y1 - 18}, {x1 + 18} {y1 - 18}, {x1 + 18} {y1} "
+                          f"C {x1 + 20} {y1 + 40}, {x0 + 20 + s_ * 20} {y0 - 40}, {x0 + 16} {y0 + 8} Z", fill=FAWN))
+            for k in (-1, 1):            # los dos "dedos" en V, bien abiertos
+                p.append(ell(x1 + k * 17 + s_ * 6, y1 - 34, 9, 27, FAWN, UMBER, W_SEC, rot=k * 28 + s_ * 8))
+    else:
+        # patas delanteras rectas, apoyadas sobre las rodillas (el gesto de meditar)
+        p.append(pipo_pata_frente(154, 236, largo=64))
+        p.append(pipo_pata_frente(246, 236, largo=64))
     p.append(pipo_collar(200, 146, 52))
-    return svg(p), {"cabeza": [200, 146], "escala": 1.0, "rot": 0, "z_cabeza": "delante", "pecho": [200, 240]}
+    return svg(p), {"cabeza": [200, 146], "escala": 1.0, "rot": 0, "pecho": [200, 240],
+                    "z_cabeza": "detras" if gesto == "victoria" else "delante"}
 
 CUERPOS_PIPO = {
     "sentado": pipo_cuerpo_sentado,
     "corre": pipo_cuerpo_corre,
     "buda": pipo_cuerpo_buda,
+    "buda_victoria": lambda: pipo_cuerpo_buda("victoria"),
     "camina": pipo_cuerpo_camina,
     "panza_arriba": pipo_cuerpo_panza_arriba,
     "plantado": pipo_cuerpo_plantado,

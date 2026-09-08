@@ -99,13 +99,30 @@
    ],
    "escala": 1.0,
    "rot": 0,
-   "z_cabeza": "delante",
    "pecho": [
     200,
     240
    ],
+   "z_cabeza": "delante",
    "tipo": "cuerpo",
    "png": "personajes/partes/pipo/cuerpo_buda.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_buda_victoria": {
+   "cabeza": [
+    200,
+    146
+   ],
+   "escala": 1.0,
+   "rot": 0,
+   "pecho": [
+    200,
+    240
+   ],
+   "z_cabeza": "detras",
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_buda_victoria.png",
    "lienzo": 400,
    "escala_png": 2
   },

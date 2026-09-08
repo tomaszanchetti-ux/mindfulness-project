@@ -812,36 +812,24 @@ def _remolino(d, x, y, rng, s=1.0, vueltas=1.6, color=None):
 
 
 def imagen_cartel_iluminado(im, m, rng, cx, cy, r):
-    """B1 (WS34, versión de Tomás): Pipo ILUMINADO, en flor de loto (cuerpo `buda`, cara
-    alegría sarcástica), flotando arriba a la derecha con un halo crema; Teo hecho un
-    desastre abajo a la izquierda (encorvado, mirando hacia arriba con la boca abierta) con
-    la nube de garabatos sobre la cabeza. La premisa de la serie en un vistazo. El círculo,
-    el centro y el radio no cambian. La versión a lo Tintín (cuerpos `corre`) queda en el motor."""
+    """B1 (WS34, tercera vuelta de Tomás): Teo corre grande y limpio (cuerpo `corre`, sonrisa
+    de costado) y Pipo, chico abajo a la derecha, está sentado en flor de loto haciendo la Y
+    con las patas y la V de la victoria (cuerpo `buda_victoria`, alegría sarcástica), con unos
+    rayitos de iluminado. Sin remolinos ni ruido mental. El círculo, el centro y el radio no
+    cambian."""
     d = ImageDraw.Draw(im)
     R.circle(d, cx, cy, r, rng, width=9, color=R.UMBER, fill=R.CREAM)
-    # Pipo flota arriba a la derecha: el halo del iluminado (dos aros de línea) y rayitos
-    px, py = cx + 105, cy - 40
-    for rr, w in ((138, 5), (172, 3)):
-        R.circle(d, px, py, rr, rng, width=w, color=R.SAND, amp=2.5)
-    for k in range(9):
-        a = -math.pi / 2 + (k - 4) * 0.33
-        x0, y0 = px + 188 * math.cos(a), py + 188 * math.sin(a)
-        x1, y1 = px + 222 * math.cos(a), py + 222 * math.sin(a)
-        R.stroke(d, [(x0, y0), (x1, y1)], rng, width=5, color=R.TAUPE, amp=1.0)
-    m.pegar(im, "pipo", "buda", CARA_CARTEL_PIPO, px, py + 70, escala=0.74, rng=rng)
-    # Teo, el desastre: abajo a la izquierda, encorvado, mirando hacia arriba a Pipo, con el
-    # ruido mental encima y unas gotitas de sudor
+    m.pegar(im, "teo", "corre", CARA_CARTEL_TEO, cx - 90, cy + 40, escala=1.16, rng=rng)
+    px, py = cx + 190, cy + 172
     d = ImageDraw.Draw(im)
-    tx, ty = cx - 150, cy + 132
-    # espejado: su tres cuartos mira a la derecha, hacia Pipo; rot positiva = se echa atrás
-    m.pegar(im, "teo", "encorvado", CARA_CARTEL_TEO, tx, ty, escala=0.8, rng=rng, rot=6, espejo=True)
-    d = ImageDraw.Draw(im)
-    R.scribble(d, tx - 10, ty - 335, rng, r=80, color=R.TAUPE, width=4)
-    for dx, dy in ((96, -232), (114, -200), (86, -186)):
-        d.ellipse((tx + dx - 6, ty + dy - 11, tx + dx + 6, ty + dy + 7), fill=R.SAND, outline=R.UMBER, width=3)
+    for k in range(7):                              # rayitos cortos sobre Pipo
+        a = -math.pi / 2 + (k - 3) * 0.34
+        R.stroke(d, [(px + 128 * math.cos(a), py - 40 + 128 * math.sin(a)),
+                     (px + 152 * math.cos(a), py - 40 + 152 * math.sin(a))], rng, width=4, color=R.TAUPE, amp=1.0)
+    m.pegar(im, "pipo", "buda_victoria", CARA_CARTEL_PIPO, px, py, escala=0.54, rng=rng)
 
 
-CARA_CARTEL_PIPO, CARA_CARTEL_TEO = "cara_alegria_sarcastica", "cara_arriba_fruncida"   # el "¿eh?"
+CARA_CARTEL_PIPO, CARA_CARTEL_TEO = "cara_alegria_sarcastica", "cara_costado_sonrisa"
 
 
 def imagen_cartel_tintin(im, m, rng, cx, cy, r):

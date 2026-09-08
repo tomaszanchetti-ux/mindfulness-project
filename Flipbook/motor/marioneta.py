@@ -70,7 +70,7 @@ class Marioneta:
         big, (cx, cy) = self._pieza(personaje, cuerpo, escala, rot, (200, 200), rng, temblor)
         if espejo:
             big = big.transpose(Image.FLIP_LEFT_RIGHT)
-        hoja.paste(big, (int(x - cx + jx), int(y - cy + jy)), big)
+        cuerpo_img, cuerpo_pos = big, (int(x - cx + jx), int(y - cy + jy))
         # cabeza: su cuello cae en el ancla "cabeza" del cuerpo (rotada junto con el cuerpo)
         hx, hy = ac["cabeza"]
         dx, dy = (hx - 200) * escala, (hy - 200) * escala
@@ -84,7 +84,13 @@ class Marioneta:
         big, (cx, cy) = self._pieza(personaje, cara, escala * ac["escala"], rot_cab, acab["cuello"], rng, temblor)
         if espejo:
             big = big.transpose(Image.FLIP_LEFT_RIGHT)
-        hoja.paste(big, (int(ax - cx + jx), int(ay - cy + jy)), big)
+        cabeza_img, cabeza_pos = big, (int(ax - cx + jx), int(ay - cy + jy))
+        # z_cabeza "detras" (WS34): el cuerpo tapa a la cabeza (las patas en Y delante de la cara)
+        orden = [(cuerpo_img, cuerpo_pos), (cabeza_img, cabeza_pos)]
+        if ac.get("z_cabeza") == "detras":
+            orden.reverse()
+        for img, pos in orden:
+            hoja.paste(img, pos, img)
         return (ax, ay)
 
     def halo(self, hoja, capa, fuerza=1.0, pulso=0.0):
