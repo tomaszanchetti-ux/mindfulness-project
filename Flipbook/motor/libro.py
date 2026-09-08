@@ -11,7 +11,7 @@ Qué hace este archivo, en orden:
   1. lee el guion (`cargar`) y lo aplana en una lista de CUADROS (beats) de N hojas cada uno;
   2. dibuja cada hoja (`hoja_de`): papel → fondo → secundarios → props → personajes → globo;
   3. le pone el libro encima (`R.chrome`, `R.page_turn`) y emite los frames;
-  4. el cartel de apertura y el cierre fijo se suman en los pasos B2 y C.
+  4. antes va el CARTEL (B2) y después el CIERRE fijo (C: Pipo, iris, tapa, contratapa).
 
 La capa de detalle (Teo, Pipo, teléfono, cuadernito) entra SIEMPRE por `Marioneta`; los
 fondos, los props sueltos, los secundarios y el globo son capa simple, programados acá.
@@ -826,6 +826,58 @@ def cartel(g, m, i, n, rng):
     return im
 
 
+# ---------------------------------------------------------------- C · el cierre fijo
+
+TEXTOS_CONTRATAPA = ["Dwellia", "una Pausa al día, fuera del teléfono",
+                     "Teo y Pipo volverán próximamente", "link en la bio"]
+
+
+CARA_CIERRE, ESC_CIERRE, POS_CIERRE, PIVOTE_CIERRE = "cara_alegria_sarcastica", 2.15, (R.W / 2, 1010), (200, 210)
+
+
+def hoja_pipo_camara(m, i, n, rng):
+    """C1: Pipo a cámara, cabeza grande, alegría sarcástica."""
+    im = R.paper(rng)
+    m.solo(im, "pipo", CARA_CIERRE, POS_CIERRE[0], POS_CIERRE[1], escala=ESC_CIERRE, rng=rng, pivote=PIVOTE_CIERRE)
+    return im
+
+
+def centro_cierre(m):
+    """El centro exacto de la cara de Pipo en la hoja del cierre: ahí se cierra el iris."""
+    x0, y0, x1, y1 = caja_pieza(m, "pipo", CARA_CIERRE)     # relativo al cuello (200, 350)
+    dy = m.anclas("pipo", CARA_CIERRE)["cuello"][1] - PIVOTE_CIERRE[1]
+    return (POS_CIERRE[0] + (x0 + x1) / 2 * ESC_CIERRE,
+            POS_CIERRE[1] + ((y0 + y1) / 2 + dy) * ESC_CIERRE)
+
+
+def frames_iris(base, cx, cy, cuantos):
+    """C2: el iris Looney Tunes. El círculo se achica sobre la cara; afuera, tinta tierra."""
+    fuera = []
+    for k in range(cuantos):
+        e = (k + 1) / cuantos
+        r = int(1500 * (1 - e) ** 1.7)
+        im = Image.new("RGB", (R.W, R.H), R.UMBER)
+        if r > 0:
+            mask = Image.new("L", (R.W, R.H), 0)
+            ImageDraw.Draw(mask).ellipse((cx - r, cy - r, cx + r, cy + r), fill=255)
+            im.paste(base, (0, 0), mask)
+        fuera.append(im)
+    return fuera
+
+
+def contratapa(rng):
+    """C3: hoja salvia con los cuatro textos en crema/marfil. Fija para todos los volúmenes."""
+    im = R.paper(rng, base=R.SAGE_DEEP)
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle((80, 120, R.W - 80, R.H - 120), 30, outline=mezcla(R.SAGE_DEEP, R.CREAM, 0.45), width=5)
+    R.leaf(d, R.W / 2, 760, rng, s=1.5)
+    d.text((R.W / 2, 990), TEXTOS_CONTRATAPA[0], fill=R.IVORY, font=R.font(112, bold=True), anchor="mm")
+    d.text((R.W / 2, 1092), TEXTOS_CONTRATAPA[1], fill=R.CREAM, font=R.font(44), anchor="mm")
+    d.text((R.W / 2, 1300), TEXTOS_CONTRATAPA[2], fill=R.IVORY, font=R.font(50), anchor="mm")
+    d.text((R.W / 2, 1660), TEXTOS_CONTRATAPA[3], fill=mezcla(R.SAGE_DEEP, R.CREAM, 0.78), font=R.font(40), anchor="mm")
+    return im
+
+
 # ---------------------------------------------------------------- el render
 
 def render(ruta_guion, solo_cuadros=False):
@@ -833,7 +885,7 @@ def render(ruta_guion, solo_cuadros=False):
     nombre = g.get("nombre") or os.path.splitext(os.path.basename(ruta_guion))[0]
     m = Marioneta()
     cuadros = aplanar(g)
-    total_hojas = sum(c["hojas"] for c in cuadros)
+    total_hojas = sum(c["hojas"] for c in cuadros) + HOJAS_CIERRE
 
     pruebas = os.path.join(RAIZ, "pruebas")
     os.makedirs(pruebas, exist_ok=True)
@@ -876,13 +928,33 @@ def render(ruta_guion, solo_cuadros=False):
             previo = im
             desp += float(c.get("parallax", 0) or 0)
 
-    emitir(previo, R.FPS)                       # la última hoja se queda un segundo
+    # el cierre fijo
+    for i in range(N_PIPO):
+        pagina += 1
+        rng = random.Random(pagina)
+        im = R.chrome(hoja_pipo_camara(m, i, N_PIPO, rng), pagina, total_hojas, rng)
+        emitir(R.page_turn(previo, im, 0.5), 1)
+        emitir(im, R.HOLD - 1)
+        previo = im
+    cx, cy = centro_cierre(m)
+    for im in frames_iris(previo, cx, cy, int(1.5 * R.FPS)):
+        emitir(im, 1)
+    tapa = contratapa(random.Random(77))
+    cerrado = Image.new("RGB", (R.W, R.H), R.UMBER)          # el iris terminó en tinta tierra
+    for i in range(R.FPS):
+        emitir(R.close_book(cerrado, tapa, (i + 1) / R.FPS), 1)
+    for i in range(int(3.0 * HOJAS_POR_SEG)):
+        emitir(contratapa(random.Random(7000 + i)), R.HOLD)
 
     salida = os.path.join(pruebas, "%s.mp4" % nombre)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(R.FPS),
                     "-i", os.path.join(frames, "f%05d.png"), "-c:v", "libx264", "-pix_fmt", "yuv420p",
                     "-crf", "20", "-movflags", "+faststart", salida], check=True)
     print("hojas:", total_hojas, "cuadros de video:", k[0], "seg:", round(k[0] / R.FPS, 1), "->", salida)
+
+
+N_PIPO = 6                                   # hojas del Pipo a cámara del cierre (0,6 s)
+HOJAS_CIERRE = N_PIPO
 
 
 def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30):
@@ -896,6 +968,8 @@ def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30):
         pagina += n
         rng = random.Random(pagina)
         piezas.append(("%d · %s" % (k + 1, c["escena"]), R.chrome(hoja_de(m, c, i, n, rng, 0.0), pagina, total_hojas, rng)))
+    piezas.append(("cierre", R.chrome(hoja_pipo_camara(m, 0, N_PIPO, random.Random(5)), total_hojas, total_hojas, random.Random(5))))
+    piezas.append(("contratapa", contratapa(random.Random(77))))
 
     w, h = int(R.W * escala), int(R.H * escala)
     filas = (len(piezas) + columnas - 1) // columnas
