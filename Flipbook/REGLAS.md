@@ -207,4 +207,16 @@ la acción del menú · (3) Teo escribe y la burbuja muestra el descubrimiento d
 Cuatro imágenes, 13,2 s. Solo se declaran los tres huecos: `accion`, `burbuja` y
 `resultado` (antes `final`, sigue aceptado). `textos:` y `hojas:` (claves `enciende`,
 `accion`, `escribe`, `resultado`) permiten ajustar los globos y las duraciones fijas. Un dibujo
-nuevo para la burbuja se agrega como función en `motor/libro.py` y se registra en `DIBUJOS`.
+nuevo para la burbuja se agrega como función en `motor/libro.py` y se registra en `DIBUJOS`
+(hay: `abuelos`, `familia_riendo`, `corazon`).
+
+**El momento 1, dos modos (WS35):** `enciende: zoom` (por defecto, la hoja "acerca" del
+teléfono grande) o **`enciende: en_mano`**, que clona el cuadro ANTERIOR y le pone verde el
+teléfono que el personaje ya tiene en la mano (el prop `telefono_*` pasa a `telefono_2/3`,
+1,45× más grande y con **resplandor salvia + rayitos**: a la escala de la mano el verde solo
+no se lee). No corta la escena: es la misma imagen, y es lo que pidió Tomás para el vol. 1.
+
+**El momento 2 puede llevar SU burbuja** (`burbuja_accion`, `burbuja_accion_pos`) y su cara
+de Pipo (`cara_accion`): en el vol. 1, meditando ve a la familia riéndose y Pipo se
+sorprende. El hueco `resultado` hereda `teo`, `pipo`, `props`, `piezas`, `secundarios`,
+`hojas` y `globo_desde`.

@@ -5,6 +5,12 @@
 > estar). Formato v2 (`00_FORMATO_Y_OPUESTOS.md`), tempo de la WS34: imágenes que duran,
 > globos de hasta 12 palabras, español neutro.
 >
+> **v3 = lo que está en el YAML (`vol01_vinculos.yaml`), renderizado y revisado.** Cambios
+> de la v2 al construirlo: la magia lleva DOS burbujas (meditando ve a la familia riéndose,
+> escribiendo ve el corazón) y Pipo se sorprende en la primera; el teléfono que se enciende
+> va 1,45× más grande con resplandor salvia, porque a la escala de la mano el verde no se
+> leía. Duración real: **6 cuadros · 232 hojas · 23,2 s de historia · ≈30,7 s de video**.
+>
 > **v2 con los cambios de Tomás (08/09):** el espejo se funde en la imagen del living; la
 > familia es papá, mamá y hermanita; el teléfono se enciende EN LA MISMA IMAGEN, sin zoom;
 > la magia lleva dos burbujas (la familia riendo, el amor). Pendiente: **"perf" de Tomás**
@@ -110,11 +116,12 @@ Pipo a cámara con alegría sarcástica · iris · tapa · contratapa. No se dec
 |---|---|---|
 | Cartel | — | 2,0 |
 | Calle + living (34 + 50) | 84 | 8,4 |
-| Magia (26 + 34 + 34 + 44) | 138 | 13,8 |
+| Magia (30 + 34 + 34 + 44) | 142 | 14,2 |
 | Cierre | — | 5,5 |
-| **Total** | **222 de historia** | **≈ 29,7** |
+| **Total** | **232 de historia** | **≈ 30,7** |
 
-Entra en los 25-32 s del formato. **6 imágenes** (la magia arranca sobre la del living).
+Entra en los 25-32 s del formato. **6 cuadros** (la magia arranca sobre la imagen del living:
+son 5 imágenes distintas más el resultado).
 
 ## 6. Las piezas que este volumen agrega (regla: ≤2-3 nuevas)
 

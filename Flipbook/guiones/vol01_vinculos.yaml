@@ -1,0 +1,89 @@
+# Teo y Pipo en LA MIRADA DE LOS OTROS · Vol. 1 — Vínculos (D2 · WS35)
+#
+#   python3 Flipbook/motor/libro.py Flipbook/guiones/vol01_vinculos.yaml
+#   python3 Flipbook/motor/libro.py Flipbook/guiones/vol01_vinculos.yaml --solo-cuadros
+#
+# El guion en papel (la idea, los globos y las decisiones) está en `vol01_vinculos.md`; el
+# vocabulario de este archivo, en `REGLAS.md` §7.
+#
+# El pilar: Vínculos. El opuesto moderno: la mirada de los otros. Teo se produce para que lo
+# mire cualquiera (el paso de Spiderman que a nadie le importa) y no mira a los que sí lo
+# miran (el living, con la familia riéndose y él en el rincón con el teléfono).
+#
+# El tempo (WS34): 6 imágenes que duran, globos de hasta 12 palabras, español neutro.
+# Los globos van ABAJO de la escena (WS35), que sube 220 px por la zona segura de TikTok.
+
+volumen: 1
+titulo: LA MIRADA DE LOS OTROS
+nombre: vol01_vinculos
+
+cartel:
+  tinta: ladrillo        # la cuarta tinta de este volumen
+  formas: rayos          # el foco de atención: "todos mirando"
+  vineta: tintin
+  duracion: 2.0
+
+escenas:
+
+  # ------------------------------------------------- 2 · el problema · imagen 1: la calle
+  - tipo: problema
+    fondo: calle
+    cuadros:
+      - hojas: 34
+        teo: {cuerpo: spiderman, cara: costado_sonrisa_caido, x: 330, y: 1150, escala: 1.35}
+        piezas:
+          - {pieza: extras/chicas_pasan, x: 740, y: 1180, escala: 1.5}   # de espaldas, riéndose entre ellas
+        pipo: {cuerpo: sentado, cara: sospecha, x: 110, y: 1340, escala: 0.55}
+        pipo_dice: Teo estrenó su paso de conquista... a nadie le importó.
+
+  # ------------------------- 2+3 · el problema y el espejo, juntos · imagen 2: el living
+  # La misma imagen cuenta las dos cosas: Pipo entregado en el centro de la familia y Teo
+  # en el rincón. Por eso este volumen no tiene una escena `espejo` aparte.
+  - tipo: espejo
+    fondo: living
+    cuadros:
+      - hojas: 50
+        piezas:
+          - {pieza: familia/familia_living, x: 675, y: 1170, escala: 0.92}
+        pipo: {cuerpo: panza_arriba, cara: orgullo, x: 585, y: 1345, escala: 0.62}
+        teo: {cuerpo: sentado, cara: abajo_plana, x: 140, y: 1090, escala: 0.95,
+              prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
+        pipo_dice:
+          - todo el día pendiente de otros...
+          - y los que importan, pa fuera.
+
+  # ------------------------------------------------------------------- 4 · la magia
+  # Bloque fijo de 4 momentos. Acá el primero es `en_mano`: el teléfono que Teo ya tiene en
+  # la mano se pone verde SOBRE LA MISMA IMAGEN del living (Tomás, WS35), sin zoom.
+  - tipo: magia
+    enciende: en_mano
+    accion: medita
+    fondo_accion: rincon
+    burbuja_accion: familia_riendo   # meditando ve a los tres riéndose
+    burbuja_accion_pos: {x: 700, y: 400, escala: 1.1}
+    cara_accion: en_serio            # Pipo, sorprendido: "¿en serio?"
+    burbuja: corazon                 # y escribe lo que de verdad importa
+    burbuja_pos: {x: 730, y: 400, escala: 1.0}
+    textos:
+      escribe: y escribió lo que de verdad importa.
+    hojas: {enciende: 30, accion: 34, escribe: 34, resultado: 44}
+    resultado:
+      fondo: mesa_familiar
+      teo: {x: 930, y: 1100, escala: 1.25, espejo: true}
+      piezas:
+        - {pieza: familia/familia_mesa, x: 450, y: 1080, escala: 0.95}
+      pipo: {cuerpo: sentado, cara: orgullo, x: 640, y: 1360, escala: 0.6}
+      secundarios: []
+      pipo_dice:
+        - ahora se sienta con nosotros.
+        - aprendió a valorar lo que es importante.
+
+# El cartel (2 s) y el cierre fijo (Pipo · iris · tapa · contratapa, 5,5 s) los pone el motor.
+#
+# Para TikTok (D3, cuando Tomás abra la cuenta):
+#   Descripción: Todo el día pendiente de la mirada de cualquiera, y los que importan
+#   esperando en casa. Teo y Pipo, vol. 1: La mirada de los otros.
+#   #dwellia #teoypipo #vinculos #humor #mindfulness
+#   Comentario fijado: La Pausa de hoy: en la próxima cena, deja el teléfono en otro cuarto
+#   y mira a los ojos a quien tienes enfrente. Link en la bio.
+#   Lista de reproducción: El diario de Pipo.

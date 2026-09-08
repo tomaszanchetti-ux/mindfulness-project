@@ -18,6 +18,7 @@ fondos, los props sueltos, los secundarios y el globo son capa simple, programad
 El vocabulario del guion está documentado en `REGLAS.md` §7.
 """
 import argparse
+import copy
 import math
 import os
 import random
@@ -236,7 +237,52 @@ def dibujo_abuelos(d, x, y, rng, s=1.0):
                fill=R.UMBER, width=4, joint="curve")
 
 
-DIBUJOS = {"abuelos": dibujo_abuelos}
+def dibujo_familia_riendo(d, x, y, rng, s=1.0):
+    """Los tres de la familia riéndose (lo que Teo piensa en la Pausa, vol. 1): papá, la
+    hermanita en el medio (más chica) y mamá, de línea simple, con la boca abierta."""
+    for cx, cy, r, pelo in ((x - 108 * s, y - 4 * s, 50 * s, "corto"),
+                            (x, y + 40 * s, 38 * s, "colitas"),
+                            (x + 108 * s, y - 4 * s, 50 * s, "largo")):
+        R.circle(d, cx, cy, r, rng, width=5, fill=R.CREAM, ry=r * 1.12)
+        if pelo == "corto":
+            d.line(R.wobble(R.arc_pts(cx, cy - r * 0.5, r * 1.02, r * 0.72, math.pi, 2 * math.pi, 8), rng, 1.5),
+                   fill=R.TAUPE, width=8, joint="curve")
+        elif pelo == "largo":
+            for lado in (-1, 1):
+                d.line(R.wobble(R.arc_pts(cx + lado * r * 0.94, cy + r * 0.22, r * 0.32, r * 0.9,
+                                          -0.5 * math.pi, 0.5 * math.pi, 8), rng, 1.2),
+                       fill=R.TAUPE, width=9, joint="curve")
+            d.line(R.wobble(R.arc_pts(cx, cy - r * 0.5, r * 1.02, r * 0.72, math.pi, 2 * math.pi, 8), rng, 1.5),
+                   fill=R.TAUPE, width=8, joint="curve")
+            R.circle(d, cx + r * 0.36, cy - r * 0.98, r * 0.24, rng, width=4, color=R.TAUPE, fill=R.SAND)
+        else:
+            for lado in (-1, 1):
+                R.circle(d, cx + lado * r * 1.02, cy - r * 0.24, r * 0.32, rng, width=4, color=R.TAUPE, fill=R.SAND)
+            d.line(R.wobble(R.arc_pts(cx, cy - r * 0.46, r * 0.96, r * 0.6, math.pi, 2 * math.pi, 8), rng, 1.5),
+                   fill=R.TAUPE, width=7, joint="curve")
+        # ojos cerrados de risa (dos arcos) y la boca abierta
+        for dx in (-r * 0.38, r * 0.38):
+            d.line(R.wobble(R.arc_pts(cx + dx, cy - r * 0.02, r * 0.2, r * 0.16, math.pi, 2 * math.pi, 6), rng, 1),
+                   fill=R.UMBER, width=4, joint="curve")
+        R.circle(d, cx, cy + r * 0.44, r * 0.34, rng, width=4, color=R.UMBER, fill=R.UMBER, ry=r * 0.26)
+
+
+def dibujo_corazon(d, x, y, rng, s=1.0):
+    """Un corazón de línea: lo que Teo escribe cuando ya entendió (vol. 1)."""
+    a, b = 92 * s, 84 * s
+    pts = []
+    for k in range(65):
+        u = math.pi * (1 - 2 * k / 64)
+        pts.append((x + a * (16 * math.sin(u) ** 3) / 17.0,
+                    y - b * (13 * math.cos(u) - 5 * math.cos(2 * u) - 2 * math.cos(3 * u) - math.cos(4 * u)) / 16.0))
+    pts = R.wobble(pts, rng, 2.0)
+    d.polygon(pts, fill=R.SAGE_LIGHT)
+    d.line(pts + [pts[0]], fill=R.UMBER, width=6, joint="curve")
+    d.line(R.wobble(R.arc_pts(x - a * 0.34, y - b * 0.42, a * 0.2, b * 0.16, 0.9 * math.pi, 1.7 * math.pi, 6), rng, 1),
+           fill=R.IVORY, width=6, joint="curve")     # el brillito
+
+
+DIBUJOS = {"abuelos": dibujo_abuelos, "familia_riendo": dibujo_familia_riendo, "corazon": dibujo_corazon}
 
 
 # ---------------------------------------------------------------- props simples (programados)
@@ -591,8 +637,29 @@ def pegar_personaje(m, im, d, personaje, spec, i, n, t, rng, anclas_fondo):
     return punto, cajas
 
 
+def _resplandor(im, cx, cy, r, fuerza=1.0, rng=None):
+    """El resplandor salvia detrás de una pieza chica (el teléfono que se enciende en la
+    mano, WS35): un halo difuminado + rayitos de línea. Sin esto, a la escala de la mano el
+    verde no se lee."""
+    capa = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    dd = ImageDraw.Draw(capa)
+    for k, (rr, op) in enumerate(((r * 2.1, 46), (r * 1.55, 70), (r * 1.1, 98))):
+        col = R.SAGE_LIGHT if k == 0 else R.SAGE
+        dd.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), fill=col + (int(op * fuerza),))
+    capa = capa.filter(ImageFilter.GaussianBlur(r * 0.5))
+    im.paste(capa, (0, 0), capa)
+    if rng is not None:                     # los rayitos: ocho trazos cortos alrededor
+        d2 = ImageDraw.Draw(im)
+        for k in range(6):
+            a = k * math.pi / 3 + 0.35
+            p0 = (cx + math.cos(a) * r * 1.15, cy + math.sin(a) * r * 1.15)
+            p1 = (cx + math.cos(a) * r * 1.5, cy + math.sin(a) * r * 1.5)
+            R.stroke(d2, [p0, p1], rng, width=max(3, int(r * 0.06)), color=R.SAGE_DEEP, amp=0.8)
+
+
 def _prop_en_mano(m, im, personaje, cuerpo, spec, x, y, escala, rng, i):
-    """Una pieza ilustrada de utilería, colgada de un ancla del cuerpo, con su escala_rel."""
+    """Una pieza ilustrada de utilería, colgada de un ancla del cuerpo, con su escala_rel.
+    `brillo: 0..1` le pone detrás el resplandor salvia (el teléfono que se enciende)."""
     if isinstance(spec, str):
         spec = {"nombre": spec}
     nombre = spec["nombre"]
@@ -608,6 +675,10 @@ def _prop_en_mano(m, im, personaje, cuerpo, spec, x, y, escala, rng, i):
     rel = m.anclas("props", nombre)["escala_rel"]
     esc = escala * rel * float(spec.get("escala", 1.0))
     px, py = ax + float(spec.get("dx", 0)), ay + float(spec.get("dy", 0))
+    brillo = float(spec.get("brillo", 0) or 0)
+    if brillo:                       # el resplandor va DEBAJO de la pieza
+        pulso = 0.72 + 0.28 * math.sin(i * 0.5)
+        _resplandor(im, px, py, 200 * esc, brillo * pulso, rng=rng)
     m.solo(im, "props", nombre, px, py, escala=esc, rng=rng, rot=float(spec.get("rot", 0)))
     x0, y0, x1, y1 = caja_pieza(m, "props", nombre)                 # el objeto que sostiene
     return (px + x0 * esc, py + y0 * esc, px + x1 * esc, py + y1 * esc)   # tampoco se tapa
@@ -846,7 +917,30 @@ HOJAS_MAGIA = {"enciende": 26, "accion": 34, "escribe": 34, "resultado": 38}   #
 TEO_MAGIA = 1.6
 
 
-def cuadros_magia(esc):
+def _en_mano(previo, hojas, texto, cara="en_serio"):
+    """El teléfono se enciende EN LA MISMA IMAGEN del cuadro anterior (Tomás, WS35): se clona
+    el cuadro, el prop `telefono_*` de Teo pasa a ciclar 1→3 (la pantalla se pone salvia y
+    respira) y Pipo cambia la cara. Sin zoom: no se corta la escena."""
+    if not previo:
+        raise SystemExit("la magia con `enciende: en_mano` necesita un cuadro antes (el de la escena previa)")
+    c = copy.deepcopy(previo)
+    c["hojas"] = hojas
+    c["pipo_dice"] = texto
+    c.pop("globo_desde", None)
+    if c.get("pipo"):
+        c["pipo"] = dict(c["pipo"], cara=cara)
+    props = _lista((c.get("teo") or {}).get("prop"))
+    tel = [pz for pz in props if str(pz.get("nombre", "")).startswith("telefono")]
+    if not tel:
+        raise SystemExit("`enciende: en_mano`: en el cuadro anterior Teo no tiene un prop telefono_*")
+    tel[0].update({"nombre": "telefono_2", "brillo": 1.0,
+                   "escala": float(tel[0].get("escala", 1.0)) * 1.45,     # a la escala de la mano, el verde no se lee
+                   "ciclo": ["telefono_2", "telefono_3", "telefono_2", "telefono_3"]})
+    c["teo"] = dict(c["teo"], prop=props)
+    return c
+
+
+def cuadros_magia(esc, previo=None):
     """Expande la escena `magia` en sus cuadros. Los tres huecos: accion, burbuja, final."""
     accion = esc.get("accion", "medita")
     if accion not in ("medita", "pasea"):
@@ -860,20 +954,32 @@ def cuadros_magia(esc):
     teo = {"x": 420, "y": 1100, "escala": TEO_MAGIA}
     pipo = {"cuerpo": "sentado", "x": 890, "y": 1300, "escala": 0.58}
 
-    # momento 1 · el teléfono se enciende: SOLO la hoja "acerca" (WS34: Tomás sacó el rincón
-    # previo y el "se endereza"; la imagen buena es el teléfono grande poniéndose verde)
-    c = [{"hojas": hojas["enciende"],
-          "zoom": {"pieza": "props/telefono_1", "escala": 2.7, "rot": -12, "manos": True,
-                   "ciclo": ["telefono_1", "telefono_2", "telefono_3", "telefono_2"]},
-          "pipo_dice": txt["enciende"], "pipo_asoma": {"lado": "izquierda", "cara": "en_serio"}}]
+    # momento 1 · el teléfono se enciende. Dos modos: `zoom` (WS34, la hoja "acerca" del
+    # teléfono grande) o `en_mano` (WS35, Tomás: la misma imagen anterior, el teléfono que Teo
+    # ya tiene en la mano se pone verde).
+    if esc.get("enciende", "zoom") == "en_mano":
+        c = [_en_mano(previo, hojas["enciende"], txt["enciende"])]
+    else:
+        c = [{"hojas": hojas["enciende"],
+              "zoom": {"pieza": "props/telefono_1", "escala": 2.7, "rot": -12, "manos": True,
+                       "ciclo": ["telefono_1", "telefono_2", "telefono_3", "telefono_2"]},
+              "pipo_dice": txt["enciende"], "pipo_asoma": {"lado": "izquierda", "cara": "en_serio"}}]
 
     # momento 2 · la pequeña acción, cargando el aura (hueco 1: medita | pasea)
+    burbuja_accion = esc.get("burbuja_accion")
+    if burbuja_accion and burbuja_accion not in DIBUJOS:
+        raise SystemExit("dibujo de burbuja desconocido: %s (hay: %s)" % (burbuja_accion, ", ".join(DIBUJOS)))
     if accion == "medita":
-        c.append({"hojas": hojas["accion"], "fondo": esc.get("fondo_accion", "rincon"), "anillos": True,
+        cuadro = {"hojas": hojas["accion"], "fondo": esc.get("fondo_accion", "rincon"), "anillos": True,
                   "teo": dict(teo, cuerpo="medita", x=430, y=1180, aura="sube", pulso=True,
                               cara="cerrada_sonrisa"),
-                  "pipo": dict(pipo, cara="orgullo"),
-                  "pipo_dice": txt["medita"]})
+                  "pipo": dict(pipo, cara=esc.get("cara_accion", "orgullo")),
+                  "pipo_dice": txt["medita"]}
+        if burbuja_accion:      # lo que ve en la Pausa (vol. 1: la familia riéndose)
+            cuadro["props"] = [dict({"nombre": "burbuja_pensamiento", "x": 700, "y": 430, "escala": 1.0,
+                                     "dibujo": burbuja_accion, "punta": (430, 830), "delante": True},
+                                    **(esc.get("burbuja_accion_pos") or {}))]
+        c.append(cuadro)
     else:
         c.append({"hojas": hojas["accion"], "fondo": esc.get("fondo_accion", "calle"), "parallax": 26,
                   "teo": dict(teo, cuerpo="camina", ciclo=True, cara="costado_sonrisa", x=400, y=1120,
@@ -888,8 +994,9 @@ def cuadros_magia(esc):
                           prop={"nombre": "cuadernito_0", "ciclo": ["cuadernito_0", "cuadernito_1", "cuadernito_2", "cuadernito_3"],
                                 "dx": 30, "dy": -10, "rot": -10}),
               "pipo": dict(pipo, cara="orgullo"),
-              "props": [{"nombre": "burbuja_pensamiento", "x": 740, "y": 430, "escala": 0.9,
-                         "dibujo": burbuja, "punta": (370, 610), "delante": True}],
+              "props": [dict({"nombre": "burbuja_pensamiento", "x": 740, "y": 430, "escala": 0.9,
+                              "dibujo": burbuja, "punta": (370, 610), "delante": True},
+                             **(esc.get("burbuja_pos") or {}))],
               "pipo_dice": txt["escribe"]})
 
     # momento 4 · el RESULTADO (Tomás, WS34): la acción con el aura desplegada (hueco 3)
@@ -899,7 +1006,7 @@ def cuadros_magia(esc):
               "secundarios": fin.get("secundarios", [{"tipo": "abuela", "x": 720, "y": 900},
                                                      {"tipo": "abuelo", "x": 920, "y": 890}]),
               "pipo_dice": fin.get("pipo_dice", txt["final"])}
-    for clave in ("teo", "pipo", "props", "hojas"):
+    for clave in ("teo", "pipo", "props", "piezas", "secundarios", "hojas", "globo_desde"):
         if clave in fin:
             if clave in ("teo", "pipo"):
                 ultimo[clave] = dict(ultimo[clave], **fin[clave])
@@ -925,7 +1032,7 @@ def aplanar(g):
     for esc in g["escenas"]:
         tipo = esc.get("tipo", "problema")
         if tipo == "magia":
-            cuadros = cuadros_magia(esc)
+            cuadros = cuadros_magia(esc, fuera[-1] if fuera else None)
         else:
             cuadros = list(esc.get("cuadros") or [])
             if not cuadros:
