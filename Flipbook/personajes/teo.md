@@ -21,3 +21,12 @@
   remera, pantalón y zapatillas. Los gestos de cada volumen (Spiderman, selfie, escribir con
   burbuja…) se construyen en el acto, en la WS de cada historieta (Tomás, WS32: "con Teo
   alcanza con tener un boceto claro de su cara y cuerpo"). La marioneta v1 de palitos queda en `render.py` hasta entonces.
+- **La escena de la magia (WS33 · D1.2 · F):** piezas nuevas que se repiten en todos los
+  volúmenes: la mirada `cerrada` (ojos cerrados, la cara de calma; × las 5 bocas), el cuerpo
+  `medita` (piernas cruzadas de frente, manos en las rodillas, ancla `pecho` para la
+  respiración) y `camina_0..3` (el paseo erguido de perfil en 4 fases, ancla `mano`). Los
+  props de la escena viven en `personajes/partes/props/`: `telefono_0..3` (apagado · se
+  enciende · pantalla entera salvia · salvia respirando) y `cuadernito_0..3` (el lápiz
+  avanza). El **aura** no es una pieza: `Marioneta.pegar(..., aura=1, pulso=p)` la saca de
+  la silueta del personaje ya compuesto, así sirve para cualquier pose. Guion de prueba en
+  `motor/magia.py` (hoja fija `personajes/hoja_magia.png` + `pruebas/magia.mp4`).

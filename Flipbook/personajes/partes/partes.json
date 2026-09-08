@@ -389,6 +389,56 @@
    "lienzo": 400,
    "escala_png": 2
   },
+  "cara_cerrada_plana": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_cerrada_plana.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_cerrada_sonrisa": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_cerrada_sonrisa.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_cerrada_abierta": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_cerrada_abierta.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_cerrada_fruncida": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_cerrada_fruncida.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_cerrada_triste": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_cerrada_triste.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
   "cuerpo_parado": {
    "cabeza": [
     201.0,
@@ -462,6 +512,181 @@
    ],
    "tipo": "cuerpo",
    "png": "personajes/partes/teo/cuerpo_sentado_erguido.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_medita": {
+   "cabeza": [
+    200,
+    108
+   ],
+   "escala": 0.72,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "pecho": [
+    200,
+    170
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_medita.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_camina_0": {
+   "cabeza": [
+    204,
+    95.0
+   ],
+   "escala": 0.72,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "mano": [
+    236.0,
+    221.0
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_camina_0.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_camina_1": {
+   "cabeza": [
+    204,
+    100.0
+   ],
+   "escala": 0.72,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "mano": [
+    280.0,
+    226.0
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_camina_1.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_camina_2": {
+   "cabeza": [
+    204,
+    95.0
+   ],
+   "escala": 0.72,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "mano": [
+    236.0,
+    221.0
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_camina_2.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_camina_3": {
+   "cabeza": [
+    204,
+    100.0
+   ],
+   "escala": 0.72,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "mano": [
+    192.0,
+    226.0
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_camina_3.png",
+   "lienzo": 400,
+   "escala_png": 2
+  }
+ },
+ "props": {
+  "telefono_0": {
+   "centro": [
+    200,
+    200
+   ],
+   "escala_rel": 0.32,
+   "tipo": "prop",
+   "png": "personajes/partes/props/telefono_0.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuadernito_0": {
+   "centro": [
+    200,
+    200
+   ],
+   "escala_rel": 0.36,
+   "tipo": "prop",
+   "png": "personajes/partes/props/cuadernito_0.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "telefono_1": {
+   "centro": [
+    200,
+    200
+   ],
+   "escala_rel": 0.32,
+   "tipo": "prop",
+   "png": "personajes/partes/props/telefono_1.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuadernito_1": {
+   "centro": [
+    200,
+    200
+   ],
+   "escala_rel": 0.36,
+   "tipo": "prop",
+   "png": "personajes/partes/props/cuadernito_1.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "telefono_2": {
+   "centro": [
+    200,
+    200
+   ],
+   "escala_rel": 0.32,
+   "tipo": "prop",
+   "png": "personajes/partes/props/telefono_2.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuadernito_2": {
+   "centro": [
+    200,
+    200
+   ],
+   "escala_rel": 0.36,
+   "tipo": "prop",
+   "png": "personajes/partes/props/cuadernito_2.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "telefono_3": {
+   "centro": [
+    200,
+    200
+   ],
+   "escala_rel": 0.32,
+   "tipo": "prop",
+   "png": "personajes/partes/props/telefono_3.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuadernito_3": {
+   "centro": [
+    200,
+    200
+   ],
+   "escala_rel": 0.36,
+   "tipo": "prop",
+   "png": "personajes/partes/props/cuadernito_3.png",
    "lienzo": 400,
    "escala_png": 2
   }

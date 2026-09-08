@@ -375,10 +375,16 @@ def teo_cabeza(mirada="frente", boca="plana"):
     p.append(path("M 148 176 C 160 168, 178 168, 190 174", stroke=TAUPE, w=W_SEC - 1))
     p.append(path("M 218 174 C 232 166, 250 166, 262 176", stroke=TAUPE, w=W_SEC - 1))
     # ojos según la mirada (pequeños, de línea; Teo no mira a cámara)
-    ex, ey = {"abajo": (2, 10), "frente": (6, 0), "arriba": (4, -8), "costado": (14, 0)}[mirada]
-    for cx in (166, 240):
-        p.append(path(f"M {cx - 14} 196 C {cx - 6} 188, {cx + 6} 188, {cx + 14} 196", w=W_SEC))
-        p.append(circ(cx + ex, 197 + ey, 5.5, UMBER))
+    if mirada == "cerrada":
+        # ojos cerrados: la cara de calma de la escena de la magia (D1.2 · F2). Dos párpados
+        # que caen en curva suave, sin pupila.
+        for cx in (166, 240):
+            p.append(path(f"M {cx - 14} 194 C {cx - 6} 204, {cx + 6} 204, {cx + 14} 194", w=W_SEC))
+    else:
+        ex, ey = {"abajo": (2, 10), "frente": (6, 0), "arriba": (4, -8), "costado": (14, 0)}[mirada]
+        for cx in (166, 240):
+            p.append(path(f"M {cx - 14} 196 C {cx - 6} 188, {cx + 6} 188, {cx + 14} 196", w=W_SEC))
+            p.append(circ(cx + ex, 197 + ey, 5.5, UMBER))
     # nariz
     p.append(path("M 206 208 C 212 226, 216 238, 206 244 C 200 246, 194 244, 192 240", w=W_SEC))
     # boca
@@ -390,7 +396,7 @@ def teo_cabeza(mirada="frente", boca="plana"):
     p.append(path(bocas[boca], fill=(UMBER if boca in ("abierta",) else "none"), w=W_SEC))
     return svg(p), {"cuello": [200, 350]}
 
-MIRADAS_TEO = ["abajo", "frente", "arriba", "costado"]
+MIRADAS_TEO = ["abajo", "frente", "arriba", "costado", "cerrada"]
 BOCAS_TEO = ["plana", "sonrisa", "abierta", "fruncida", "triste"]
 
 # =====================================================================================
@@ -452,6 +458,113 @@ def teo_cuerpo_sentado(encorvado=1.0):
                     "manos": [246, 214]}
 
 # =====================================================================================
+# TEO · la escena de la magia (D1.2 · F, WS33): medita · camina erguido
+# =====================================================================================
+
+def teo_cuerpo_medita():
+    """Sentado de frente con las piernas cruzadas, la espalda derecha y las manos apoyadas
+    en las rodillas. Es la pequeña acción de la escena 4 (F2) y va con la cara `cerrada`."""
+    p = []
+    # las piernas cruzadas como una sola forma ancha y baja (leen en un vistazo), con dos
+    # pliegues que marcan las canillas cruzadas y las zapatillas asomando adelante
+    p.append(path("M 152 268 C 108 270, 66 296, 70 320 C 76 350, 140 356, 200 354 "
+                  "C 260 356, 324 350, 330 320 C 334 296, 292 270, 248 268 Z", fill=PANTALON))
+    p.append(path("M 92 322 C 150 334, 222 338, 296 304", stroke=UMBER, w=W_SEC))
+    p.append(path("M 308 322 C 250 334, 178 338, 104 304", stroke=UMBER, w=W_SEC))
+    p.append(path("M 150 338 C 136 344, 136 362, 154 366 L 184 366 C 194 358, 190 344, 178 338 Z", fill=IVORY, w=W_SEC + 1))
+    p.append(path("M 222 338 C 210 344, 206 358, 216 366 L 246 366 C 264 362, 264 344, 250 338 Z", fill=IVORY, w=W_SEC + 1))
+    # torso derecho (remera)
+    p.append(path("M 158 104 C 142 160, 146 230, 152 278 L 248 278 C 254 230, 258 160, 242 104 Z", fill=REMERA))
+    p.append(path("M 180 104 C 188 116, 212 116, 220 104", w=W_SEC))
+    # brazos relajados, codos hacia afuera, manos en las rodillas
+    p.append(miembro([(154, 120), (108, 200), (94, 292)], grosor=22))
+    p.append(miembro([(246, 120), (292, 200), (306, 292)], grosor=22))
+    p.append(circ(94, 298, 14, PIEL, UMBER, W_SEC)); p.append(circ(306, 298, 14, PIEL, UMBER, W_SEC))
+    return svg(p), {"cabeza": [200, 108], "escala": 0.72, "rot": 0, "z_cabeza": "delante",
+                    "pecho": [200, 170]}
+
+def teo_cuerpo_camina(fase=0.0):
+    """Camina erguido de perfil hacia la derecha, en 4 fases (como Pipo). Brazos y piernas se
+    cruzan; el cuerpo entero sube y baja apenas. Es el paseo de F2 y sirve para todo el arco."""
+    import math
+    sw = math.sin(fase * 2 * math.pi)
+    salto = 5 * abs(math.cos(fase * 2 * math.pi))
+    p = []
+    def zapatilla(fx, fy):
+        return path(f"M {fx - 20} {fy} C {fx - 26} {fy + 8}, {fx - 18} {fy + 16}, {fx - 6} {fy + 16} L {fx + 26} {fy + 16} "
+                    f"C {fx + 34} {fy + 12}, {fx + 32} {fy + 6}, {fx + 22} {fy} Z", fill=IVORY, w=W_SEC + 1)
+    # pierna y brazo de atrás (más oscuros, detrás del torso)
+    p.append(miembro([(196, 226), (196 - 24 * sw, 300), (196 - 50 * sw, 372)], grosor=30, color="#6f665b"))
+    p.append(zapatilla(196 - 50 * sw, 372))
+    p.append(miembro([(190, 116), (186 - 30 * sw, 172), (184 - 44 * sw, 222)], grosor=20, color="#e4d8c4"))
+    # torso de perfil, derecho, con el ancho del `parado`
+    p.append(path("M 158 96 C 140 132, 148 200, 156 232 L 246 232 C 256 200, 262 132, 244 96 Z", fill=REMERA))
+    p.append(path("M 180 96 C 188 108, 214 108, 222 96", w=W_SEC))
+    # pierna y brazo de adelante
+    p.append(miembro([(210, 226), (210 + 24 * sw, 300), (210 + 50 * sw, 372)], grosor=30, color=PANTALON))
+    p.append(zapatilla(210 + 50 * sw, 372))
+    p.append(miembro([(232, 116), (238 + 30 * sw, 172), (236 + 44 * sw, 222)], grosor=22))
+    p.append(circ(236 + 44 * sw, 226, 13, PIEL, UMBER, W_SEC))
+    return svg([grupo(p, f"translate(0 {-salto:.1f})")]), {"cabeza": [204, 100 - salto], "escala": 0.72, "rot": 0,
+                                                           "z_cabeza": "delante", "mano": [236 + 44 * sw, 226 - salto]}
+
+# =====================================================================================
+# PROPS · la escena de la magia (D1.2 · F): el teléfono que se pone verde · el cuadernito
+# Piezas grandes en su lienzo; se pegan con `escala_rel` × la escala del personaje.
+# =====================================================================================
+
+SAGE_LIGHT = "#b9cbb3"; SAGE_GLOW = "#d5e2cf"
+
+def prop_telefono(nivel=0):
+    """Algo parecido a un teléfono. nivel 0 = apagado · 1 = se enciende (desde abajo) ·
+    2 = pantalla entera salvia · 3 = salvia respirando (centro más claro). La pantalla ENTERA
+    se enciende, no un halo alrededor (pedido de Tomás, WS32)."""
+    p = []
+    defs = ('<defs>'
+            '<linearGradient id="enciende" x1="0" y1="0" x2="0" y2="1">'
+            f'<stop offset="0" stop-color="{NOSE}"/><stop offset="0.45" stop-color="{SAGE_DEEP}"/><stop offset="1" stop-color="{SAGE}"/>'
+            '</linearGradient>'
+            '<radialGradient id="respira" cx="0.5" cy="0.5" r="0.6">'
+            f'<stop offset="0" stop-color="{SAGE_GLOW}"/><stop offset="0.55" stop-color="{SAGE_LIGHT}"/><stop offset="1" stop-color="{SAGE}"/>'
+            '</radialGradient></defs>')
+    p.append(defs)
+    p.append(f'<rect x="118" y="60" width="164" height="280" rx="26" fill="{UMBER}" stroke="{UMBER}" stroke-width="{W_MAIN}"/>')
+    pantalla = {0: NOSE, 1: "url(#enciende)", 2: SAGE, 3: "url(#respira)"}[nivel]
+    p.append(f'<rect x="134" y="86" width="132" height="228" rx="12" fill="{pantalla}"/>')
+    if nivel == 0:      # reflejo apagado: una diagonal apenas
+        p.append(path("M 150 290 L 250 110", stroke="#5a524a", w=W_SEC))
+    p.append(path("M 182 74 L 218 74", stroke=DUST, w=4))
+    p.append(path("M 176 328 L 224 328", stroke=DUST, w=4))
+    return svg(p), {"centro": [200, 200], "escala_rel": 0.32, "tipo": "prop"}
+
+def prop_cuadernito(avance=0):
+    """Cuadernito abierto con lápiz. avance 0..3 = cuántas líneas ya escribió (el lápiz avanza)."""
+    p = []
+    p.append(f'<rect x="70" y="90" width="260" height="220" rx="10" fill="{IVORY}" stroke="{UMBER}" stroke-width="{W_MAIN - 2}"/>')
+    for k in range(6):
+        p.append(circ(70, 110 + k * 36, 8, "none", UMBER, W_SEC))
+    filas = [138, 180, 222, 264]
+    escrito = {0: [0, 0, 0, 0], 1: [1, 0.5, 0, 0], 2: [1, 1, 1, 0], 3: [1, 1, 1, 0.8]}[avance]
+    x0, x1 = 108, 300
+    for y, f in zip(filas, escrito):
+        p.append(path(f"M {x0} {y} L {x1} {y}", stroke=SAND, w=3))
+        if f > 0:
+            xf = x0 + (x1 - x0) * f
+            d = f"M {x0} {y}"
+            x = x0
+            while x < xf - 6:
+                d += f" q 6 -9 12 0 q 6 9 12 0"
+                x += 24
+            p.append(path(d, stroke=TAUPE, w=4))
+    # el lápiz: la punta en el final de la última línea escrita
+    ult = max([k for k, f in enumerate(escrito) if f > 0], default=0)
+    tx = x0 + (x1 - x0) * (escrito[ult] if escrito[ult] > 0 else 0)
+    ty = filas[ult]
+    p.append(path(f"M {tx} {ty} L {tx + 14} {ty - 22} L {tx + 96} {ty - 128} L {tx + 116} {ty - 112} L {tx + 34} {ty - 6} Z", fill=SAND, w=W_SEC + 1))
+    p.append(path(f"M {tx} {ty} L {tx + 14} {ty - 22} L {tx + 34} {ty - 6} Z", fill=UMBER, w=W_SEC))
+    return svg(p), {"centro": [200, 200], "escala_rel": 0.36, "tipo": "prop"}
+
+# =====================================================================================
 # render
 # =====================================================================================
 
@@ -480,8 +593,15 @@ def generar(solo=None):
             for b in BOCAS_TEO:
                 s, a = teo_cabeza(m, b); escribir("teo", f"cara_{m}_{b}", s, dict(a, tipo="cabeza"), indice)
         for nombre, fn, kw in (("parado", teo_cuerpo_parado, dict(postura=1.0)), ("encorvado", teo_cuerpo_parado, dict(postura=0.0)),
-                               ("sentado", teo_cuerpo_sentado, dict(encorvado=1.0)), ("sentado_erguido", teo_cuerpo_sentado, dict(encorvado=0.2))):
+                               ("sentado", teo_cuerpo_sentado, dict(encorvado=1.0)), ("sentado_erguido", teo_cuerpo_sentado, dict(encorvado=0.2)),
+                               ("medita", teo_cuerpo_medita, {})):
             s, a = fn(**kw); escribir("teo", "cuerpo_" + nombre, s, dict(a, tipo="cuerpo"), indice)
+        for k in range(4):   # el paseo erguido en 4 fases
+            s, a = teo_cuerpo_camina(k / 4); escribir("teo", "cuerpo_camina_%d" % k, s, dict(a, tipo="cuerpo"), indice)
+    if solo in (None, "props"):
+        for k in range(4):
+            s, a = prop_telefono(k); escribir("props", "telefono_%d" % k, s, a, indice)
+            s, a = prop_cuadernito(k); escribir("props", "cuadernito_%d" % k, s, a, indice)
     ruta = os.path.join(DESTINO, "partes.json")
     previo = {}
     if os.path.exists(ruta):
