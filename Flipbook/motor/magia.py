@@ -3,10 +3,12 @@
     python3 Flipbook/motor/magia.py                # hoja fija de los 5 cuadros clave + mp4
     python3 Flipbook/motor/magia.py --solo-hoja    # solo la hoja
 
-Los cinco momentos, en orden: (1) el teléfono se pone verde a nivel pantalla y el ruido se
-disuelve · (2) Teo medita con los ojos cerrados y la respiración se ve · (3) el paseo erguido,
-Pipo trotando adelante · (4) escribe en el diario con la burbuja de lo que importa · (5) Teo
-erguido con el aura salvia, Pipo orgulloso a cámara.
+Los cuatro momentos (Tomás, WS33: menos acciones, que no maree): (1) el teléfono se pone
+verde a nivel pantalla y el ruido se disuelve · (2) Teo medita con los ojos cerrados y el aura
+aparece · (3) escribe en el diario con la burbuja de lo que importa (el descubrimiento de
+cada volumen) · (4) con el aura, la acción que muestra el cambio (cambia por volumen; acá la
+cena familiar de Vínculos). La pequeña acción de (2) es un menú por volumen: medita o pasea
+(`sc_paseo` queda como alternativa, fuera de la secuencia).
 
 Hoja fija → `personajes/hoja_magia.png`. Video → `pruebas/magia.mp4` (los mp4 no van al repo).
 Todo lo de acá es un GUION DE PRUEBA: los fondos y la burbuja son capa simple (línea) y en
@@ -93,21 +95,23 @@ def sc_enciende(m, i, n, rng):
     return im
 
 def sc_medita(m, i, n, rng):
-    """F2a: sentado con las piernas cruzadas, ojos cerrados; la respiración se ve en círculos."""
+    """F2: sentado con las piernas cruzadas, ojos cerrados; el aura aparece mientras respira."""
     im = R.paper(rng); d = ImageDraw.Draw(im); p = i / n
     piso(d, rng)
     x, y = 540, 1160
     px, py = ancla(m, "teo", "medita", "pecho", x, y, E)
-    for k in range(3):                              # anillos que crecen desde el pecho
-        r = 150 + 110 * k + 40 * math.sin(i * 0.45 - k * 0.9)
-        R.circle(d, px, py, r, rng, width=(5 if k == 0 else 3), color=(R.SAGE if k == 0 else R.SAGE_LIGHT), amp=3, ry=r * 1.1)
-    m.pegar(im, "teo", "medita", "cerrada_sonrisa", x, y, escala=E, rng=rng)
+    for k in range(2):                              # dos anillos que crecen desde el pecho
+        r = 170 + 120 * k + 40 * math.sin(i * 0.45 - k * 0.9)
+        R.circle(d, px, py, r, rng, width=(4 if k == 0 else 3), color=R.SAGE_LIGHT, amp=3, ry=r * 1.1)
+    pulso = 0.5 + 0.5 * math.sin(i * 0.5)
+    m.pegar(im, "teo", "medita", "cerrada_sonrisa", x, y, escala=E, rng=rng, aura=min(1.0, max(0.0, (p - 0.15) * 1.6)), pulso=pulso)
     if p > 0.2:
         texto(d, "por suerte descubrió la Pausa.")
     return im
 
 def sc_paseo(m, i, n, rng):
-    """F2b: el paseo erguido; el fondo pasa (parallax) y Pipo trota adelante."""
+    """F2 alternativa (menú por volumen: medita o pasea): el paseo erguido con parallax y Pipo
+    trotando adelante. No está en la secuencia de prueba (Tomás, WS33: menos acciones)."""
     im = R.paper(rng); d = ImageDraw.Draw(im); p = i / n
     R.circle(d, 820, 420, 90, rng, width=8, color=R.SAGE)
     R.stroke(d, [(k * 40, PISO + 30 * math.sin(k / 6 + p * 2)) for k in range(0, 28)], rng, width=6, color=R.TAUPE, amp=1.5)
@@ -139,18 +143,46 @@ def sc_escribe(m, i, n, rng):
         texto(d, "escribió lo que importa.", y=300)
     return im
 
-def sc_aura(m, i, n, rng):
-    """F4: erguido, con el aura salvia que respira; Pipo a cámara, orgulloso."""
+def familiar(d, x, y, rng, abuela, s=1.9):
+    """Un secundario de línea simple sentado a la mesa, a la escala de Teo (capa simple; en D2
+    se detalla el de cada volumen)."""
+    R.circle(d, x, y, 44 * s, rng, width=6, color=R.TAUPE, fill=R.CREAM, ry=50 * s)
+    if abuela:
+        R.circle(d, x, y - 50 * s, 18 * s, rng, width=5, color=R.TAUPE, fill=R.SAND)
+    else:
+        for k in range(3):
+            R.stroke(d, [(x + (-14 + 14 * k) * s, y - 40 * s), (x + (-18 + 14 * k) * s, y - 60 * s)], rng, width=4, color=R.TAUPE)
+        R.stroke(d, [(x - 16 * s, y + 14 * s), (x + 16 * s, y + 14 * s)], rng, width=6, color=R.TAUPE)
+    for dx in (-15 * s, 15 * s):
+        d.ellipse((x + dx - 5, y - 10, x + dx + 5, y), fill=R.UMBER)
+    d.line(R.wobble(R.arc_pts(x, y + 6 * s, 16 * s, 9 * s, 0.15 * math.pi, 0.85 * math.pi, 6), rng, 1), fill=R.UMBER, width=5, joint="curve")
+    R.stroke(d, [(x, y + 50 * s), (x, y + 120 * s)], rng, width=8, color=R.TAUPE)                  # el cuerpo
+    R.stroke(d, [(x, y + 70 * s), (x - 60 * s, y + 105 * s)], rng, width=7, color=R.TAUPE)        # los brazos a la mesa
+    R.stroke(d, [(x, y + 70 * s), (x + 50 * s, y + 105 * s)], rng, width=7, color=R.TAUPE)
+
+def sc_accion(m, i, n, rng):
+    """F4: la acción que muestra el cambio, con el aura. Cambia por volumen; acá el ejemplo de
+    Vínculos: la cena familiar, Teo presente y de frente a los abuelos (antes, en el rincón)."""
     im = R.paper(rng); d = ImageDraw.Draw(im); p = i / n
     piso(d, rng)
+    familiar(d, 720, 900, rng, abuela=True)
+    familiar(d, 920, 890, rng, abuela=False)
+    # la mesa, delante de la familia
+    R.stroke(d, [(470, 1130), (1000, 1130)], rng, width=8, color=R.TAUPE)
+    R.stroke(d, [(520, 1130), (520, PISO)], rng, width=6, color=R.TAUPE); R.stroke(d, [(950, 1130), (950, PISO)], rng, width=6, color=R.TAUPE)
+    for cx in (620, 780, 900):                                                          # platos
+        R.circle(d, cx, 1122, 34, rng, width=4, color=R.TAUPE, fill=R.IVORY, ry=10)
+    # Teo en su silla, erguido, mirando a la familia, con el aura que respira
+    R.stroke(d, [(300, 1180), (460, 1180), (460, PISO)], rng, width=6, color=R.TAUPE); R.stroke(d, [(320, 1180), (320, PISO)], rng, width=6, color=R.TAUPE)
     pulso = 0.5 + 0.5 * math.sin(i * 0.6)
-    m.pegar(im, "teo", "parado", "frente_sonrisa", 500, 1100, escala=E, rng=rng, aura=min(1.0, 0.4 + p), pulso=pulso)
-    m.pegar(im, "pipo", "sentado", "orgullo", 860, 1290, escala=0.66, rng=rng)
+    m.pegar(im, "teo", "sentado_erguido", ("costado_sonrisa" if p < 0.6 else "costado_abierta"), 400, 1100, escala=E, rng=rng, aura=1.0, pulso=pulso)
+    m.pegar(im, "pipo", "sentado", "orgullo", 200, 1300, escala=0.6, rng=rng)
     if p > 0.2:
         texto(d, "y se le nota.")
     return im
 
-ESCENAS = [(sc_enciende, 3.0), (sc_medita, 2.0), (sc_paseo, 1.6), (sc_escribe, 2.2), (sc_aura, 1.8)]
+# la secuencia de prueba: 4 momentos (Tomás, WS33: menos acciones). El paseo queda como alternativa.
+ESCENAS = [(sc_enciende, 3.0), (sc_medita, 2.6), (sc_escribe, 2.4), (sc_accion, 2.4)]
 
 # ---------------- salidas ----------------
 
@@ -164,9 +196,9 @@ def hoja_fija(m):
         cuadros.append(R.chrome(fn(m, i, n, rng), 30 + k, 60, rng))
     esc = 0.42
     w, h = int(R.W * esc), int(R.H * esc)
-    im = Image.new("RGB", (w * 5 + 6 * 30, h + 60 + 60), (222, 211, 190))
+    im = Image.new("RGB", (w * len(cuadros) + (len(cuadros) + 1) * 30, h + 60 + 60), (222, 211, 190))
     d = ImageDraw.Draw(im)
-    d.text((im.width / 2, 34), "La escena de la magia · piezas de D1.2 (F) · se enciende · medita · paseo · escribe · aura", fill=R.UMBER, font=R.font(30), anchor="mm")
+    d.text((im.width / 2, 34), "La escena de la magia · piezas de D1.2 (F) · se enciende · medita con aura · escribe · la acción con aura", fill=R.UMBER, font=R.font(30), anchor="mm")
     for k, c in enumerate(cuadros):
         im.paste(c.resize((w, h), Image.LANCZOS), (30 + k * (w + 30), 70))
     return im
