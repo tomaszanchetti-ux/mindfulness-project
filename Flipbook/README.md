@@ -7,10 +7,10 @@ reglas de dibujo y animación, en [`REGLAS.md`](REGLAS.md).
 
 Estado (WS31 · 07/09/2026): **Bloque D en curso.** D0 cerrada: el formato v2 (5 escenas,
 cartel variable, cierre fijo con iris, banco de ideas por volumen) es la definición
-principal y vive en `guiones/00_FORMATO_Y_OPUESTOS.md`. **D1.1 construida (WS32 · 08/09):** las 6 caras y 5 poses
-de Pipo y Teo con el pelo nuevo son piezas ilustradas en `personajes/partes/`; hoja de
-personajes v2 a la espera de la aprobación de Tomás. Sigue **D1.2** (la fábrica: cartel,
-cierre, biblioteca de gestos, guion en archivo). Contrato en `WS/WS31_07-09-2026.md` §4.
+principal y vive en `guiones/00_FORMATO_Y_OPUESTOS.md`. **D1.1 cerrada (WS32 · 08/09):** las 6 caras y 5 poses
+de Pipo y Teo (sin anteojos, pelo nuevo) son piezas ilustradas en `personajes/partes/`,
+aprobadas por Tomás. Sigue **D1.2** (la fábrica: guion en archivo, cartel, cierre con iris,
+la escena de la magia y los gestos de Teo). Listado de assets en `WS/WS32_08-09-2026.md` §7.
 
 ## Carpetas
 

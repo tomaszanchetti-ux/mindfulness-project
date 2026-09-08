@@ -204,7 +204,7 @@ Seed C: `make demo-seed` crea un segundo y tercer usuario demo (uno público, un
 privado) con fichas, un vínculo aceptado, una solicitud pendiente, un reenvío
 recibido y dos recomendaciones.
 
-## 5b. Bloque D — Promoción en TikTok: el libro animado · 🟢 EN CURSO (D0 cerrada WS31 · D1.1 construida WS32 · próxima D1.2)
+## 5b. Bloque D — Promoción en TikTok: el libro animado · 🟢 EN CURSO (D0 cerrada WS31 · D1.1 cerrada WS32 · próxima D1.2, listado de assets en `WS/WS32` §7)
 
 Objetivo: dar a conocer Dwellia de forma indirecta, con una historia que la gente quiera
 seguir. Formato: **libros animados para hojear (flipbook)** de 25-30 s, verticales. Un
@@ -218,7 +218,7 @@ Tomás abre y opera la cuenta; Claude deja cada volumen listo.
 | Ola | Qué | Estado |
 |---|---|---|
 | **D0 · Definición principal** | Formato v2 (5 escenas), cartel de apertura variable por volumen con imagen fija de Teo y Pipo, cierre fijo (iris Looney Tunes + contratapa), banco de ideas y memes replicables por volumen, biblioteca de gestos, dónde va Dwellia en TikTok. | ✅ WS31 |
-| **D1.1 · Activos principales: Pipo y Teo** | **Capa ilustrada** (piezas transparentes, una vez, registradas en el motor; hoy el motor solo dibuja palitos). Las **6 caras de Pipo** (fastidio · resignación · sospecha · ¿en serio? · alegría sarcástica · orgullo) + sus poses (a cámara, camina, panza arriba, plantado, cae del sofá) · pulir a Teo (pelo). Hoja de personajes v2 aprobada por Tomás mirando PNG. | **construida WS32** (08/09): `motor/partes.py` + `personajes/partes/` + `marioneta.py` · hoja v2 y video de prueba · falta la aprobación de Tomás |
+| **D1.1 · Activos principales: Pipo y Teo** | **Capa ilustrada** (piezas transparentes, una vez, registradas en el motor; hoy el motor solo dibuja palitos). Las **6 caras de Pipo** (fastidio · resignación · sospecha · ¿en serio? · alegría sarcástica · orgullo) + sus poses (a cámara, camina, panza arriba, plantado, cae del sofá) · pulir a Teo (pelo). Hoja de personajes v2 aprobada por Tomás mirando PNG. | ✅ **CERRADA WS32** (08/09): `motor/partes.py` + `personajes/partes/` + `marioneta.py` · hoja v2 aprobada por Tomás en 4 vueltas (v3 caricatura amigable · Teo sin anteojos · orejas separadas + detalles achuchables) |
 | **D1.2 · La fábrica** | `render.py` generaliza: guion en archivo → marionetas → hojas → mp4. **Cartel** desde plantilla (imagen fija de Teo y Pipo a lo Tintín + color/formas/título por volumen) · **cierre fijo** (iris + contratapa) · **biblioteca de gestos de Teo** (encorvado, selfie, cara de piedra, paso de Spiderman, correr en el lugar, banco, escribir con burbuja, aura). Cada volumen nuevo suma ≤2-3 poses. | próxima |
 | **D2 · Temporada 1** | 6 volúmenes, uno por pilar, **todos desde cero** (el vol. 1 de la WS26 es un boceto). Orden por el chiste más claro (hoy: Vínculos, Spiderman). Guiones en `Flipbook/guiones/`, descripciones, comentario fijado y hashtags. **Una WS por historieta:** guion → elementos puntuales de ese volumen con detalle → render → revisión de Tomás. Fondos y props simples; Teo, Pipo y el elemento clave, bien bajados. | — |
 | **D3 · Puerta de entrada** | Landing para el link de la bio, links con seguimiento (UTM) y tablero mínimo de cuánta gente llega desde TikTok y cuánta completa el onboarding. | — |
