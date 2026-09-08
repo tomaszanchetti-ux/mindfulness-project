@@ -5,12 +5,27 @@ Pipo"**. Pipo (el pug) narra con humor cómo Teo (el héroe) se pierde en la vid
 crece con cada Pausa; Dwellia es la magia que lo impulsa y solo se nombra en la contratapa. El concepto completo está en [`CONCEPTO.md`](CONCEPTO.md); las
 reglas de dibujo y animación, en [`REGLAS.md`](REGLAS.md).
 
-Estado (WS31 · 07/09/2026): **Bloque D en curso.** D0 cerrada: el formato v2 (5 escenas,
-cartel variable, cierre fijo con iris, banco de ideas por volumen) es la definición
-principal y vive en `guiones/00_FORMATO_Y_OPUESTOS.md`. **D1.1 cerrada (WS32 · 08/09):** las 6 caras y 5 poses
-de Pipo y Teo (sin anteojos, pelo nuevo) son piezas ilustradas en `personajes/partes/`,
-aprobadas por Tomás. Sigue **D1.2** (la fábrica: guion en archivo, cartel, cierre con iris,
-la escena de la magia y los gestos de Teo). Listado de assets en `WS/WS32_08-09-2026.md` §7.
+Estado (WS34 · 08/09/2026): **D1 CERRADA, la fábrica funciona.** D0 = el formato v2 (5
+escenas, 6-8 imágenes, cartel variable, cierre fijo con iris) en
+`guiones/00_FORMATO_Y_OPUESTOS.md`. D1.1 = Teo y Pipo como piezas ilustradas, aprobadas.
+D1.2 = **un guion YAML se convierte en el mp4 completo sin tocar código** (`vol00_prueba.yaml`
+→ 31,9 s), con el cartel a lo Tintín, la escena de la magia como paquete fijo, el cierre con
+iris y contratapa, y el tempo validado en video por Tomás. **Sigue D2: una WS por volumen,
+empezando por Vínculos.** El detalle de cómo se llegó está en `WS/WS31` a `WS/WS34`.
+
+## Cómo se hace un volumen nuevo (D2, una WS por historieta)
+
+1. **El guion, en papel primero:** título satírico, el problema en 2 imágenes (la escena y
+   el zoom que delata), el espejo en 1, los tres huecos de la magia (la acción · la burbuja
+   · el resultado) y los globos de Pipo (≤12 palabras cada uno). Banco de ideas por pilar en
+   `00_FORMATO_Y_OPUESTOS.md` §5.
+2. **Lo que rodea a esa historia se dibuja en la WS:** ≤2-3 poses nuevas de Teo o Pipo, el
+   elemento clave del volumen y los secundarios con detalle (todo en `motor/partes.py`, se
+   regenera con `python3 Flipbook/motor/partes.py`). Fondos y props simples van en
+   `motor/libro.py` (`FONDOS`, `PROPS_SIMPLES`, `DIBUJOS`).
+3. **El guion en YAML** (`guiones/volNN_nombre.yaml`, vocabulario en `REGLAS.md` §7) →
+   `--solo-cuadros` para revisar la lectura → el video → Tomás valida mirando el mp4.
+4. La descripción del video, el comentario fijado y los hashtags van al final del guion.
 
 ## Carpetas
 
@@ -20,8 +35,8 @@ la escena de la magia y los gestos de Teo). Listado de assets en `WS/WS32_08-09-
 | `REGLAS.md` | La gramática visual: cómo se dibuja y se anima para que se lea como flipbook Dwellia. |
 | `personajes/` | Una **ficha** por personaje (`teo.md`, `pipo.md`) + la hoja de personajes dibujada (`hoja_de_personajes_v2.png`). **`partes/`** = las piezas ilustradas (SVG + PNG transparente + `partes.json` con las anclas), generadas por `motor/partes.py`. La plantilla para un personaje nuevo es `_plantilla.md`. |
 | `guiones/` | **`volNN.yaml` = el guion de cada volumen, lo que lee `motor/libro.py`** (`vol00_prueba.yaml` es el de prueba de la fábrica). **`00_FORMATO_Y_OPUESTOS.md` = el componente central (v2)**: las 5 escenas, el cartel y el cierre, los 6 pilares con su banco de ideas y memes replicables, las caras de Pipo, la biblioteca de gestos de Teo y dónde va Dwellia en TikTok. Después, un archivo por volumen (`vol01_lunes.md` es solo el boceto de mecánica de la WS26). |
-| `motor/` | **`libro.py` = la fábrica: lee un guion YAML y escribe el mp4 completo** (cartel · hojas · cierre) · `partes.py` dibuja las piezas ilustradas (capa de detalle) · `marioneta.py` las compone en una hoja · `hoja.py` arma la hoja de personajes y el video de prueba · `magia.py` = guion de prueba de la escena de la magia (referencia de dibujo) · `render.py` = los helpers de papel, línea y libro de la v1 · `inventario.py` lista qué personajes tienen fotos y ficha. |
-| `pruebas/` | Las pruebas de la WS26 (mp4 fuera del repo, hojas de contacto dentro). |
+| `motor/` | **`libro.py` = la fábrica: lee un guion YAML y escribe el mp4 completo** (cartel · hojas · magia · cierre; los globos, la vida del cuadro, los fondos y props simples) · `partes.py` dibuja las piezas ilustradas (capa de detalle: caras, cuerpos, props) · `marioneta.py` las compone en una hoja (anclas, temblor, aura, cabeceo, cabeza delante o detrás) · `hoja.py` arma la hoja de personajes y el video de prueba · `magia.py` = guion de prueba de la escena de la magia (referencia de dibujo) · `render.py` = los helpers de papel, línea y libro de la v1 · `fuentes/` = Fraunces Italic (la D de la contratapa) · `inventario.py` lista qué personajes tienen fotos y ficha. |
+| `pruebas/` | Las salidas del motor: `<nombre>.mp4` (fuera del repo) y `<nombre>_cuadros.png` (la hoja de revisión, dentro) · `cartel_vol00.png` (la viñeta del cartel) · `caras_pipo.mp4` y `magia.mp4` (pruebas de las piezas). |
 | `../Tiktok/` | **La bandeja de entrada de Tomás** (fuera del repo): una subcarpeta por personaje (`teo/`, `pipo/`) y `Ideas/` para material general de estilo (portadas, auras, viñetas que gusten). |
 
 ## Cómo cargar un personaje nuevo (el "producto", versión simple)
@@ -32,11 +47,11 @@ la escena de la magia y los gestos de Teo). Listado de assets en `WS/WS32_08-09-
    quién es en la historia, en qué volumen entra, qué lo hace reconocible. Si no sabés,
    dejalo en blanco: se completa en la sesión.
 3. En la siguiente sesión, Claude mira las fotos, saca **3 rasgos fijos** siguiendo
-   `REGLAS.md`, dibuja la marioneta en `motor/render.py`, y agrega el personaje a la hoja de
-   personajes para que lo apruebes. Recién entonces entra a un guion.
+   `REGLAS.md`, dibuja las piezas en `motor/partes.py` (SVG parametrizado → PNG), y agrega el
+   personaje a la hoja de personajes para que lo apruebes. Recién entonces entra a un guion.
 
-Así funcionó con Teo y Pipo: fotos en `Tiktok/teo/` y `Tiktok/pipo/` → rasgos → marioneta →
-hoja de personajes (`personajes/hoja_de_personajes_v1.png`) → Volumen 1.
+Así funcionó con Teo y Pipo: fotos en `Tiktok/teo/` y `Tiktok/pipo/` → rasgos → piezas →
+hoja de personajes (`personajes/hoja_de_personajes_v2.png`), aprobada en 4 vueltas.
 
 Corrección clara: la transformación foto → dibujo la hace Claude en la sesión leyendo la
 imagen; no hay un botón que lo haga solo. Lo que sí queda automático es lo caro: una vez
@@ -59,6 +74,21 @@ se elige al subir a TikTok.
 
 El motor v1 de palitos (`motor/render.py`) queda solo como biblioteca de helpers (papel,
 línea, temblor, taco de hojas, cuadro en vuelo); sus escenas y personajes ya no se usan.
+
+## Lo que el motor sabe hacer hoy (D1.2 · WS33-34)
+
+- **Piezas:** Pipo = 6 caras + 12 cuerpos (sentado · camina ×4 · panza arriba · plantado ·
+  cae · corre · buda · buda con la V) · Teo = 25 caras (5 miradas × 5 bocas) + 10 cuerpos
+  (parado · encorvado · sentado · sentado erguido · medita · camina ×4 · corre) · props
+  ilustrados: el teléfono en 4 niveles (se pone verde a nivel pantalla) y el cuadernito.
+- **La escena de la magia** como paquete fijo de 4 imágenes con 3 huecos (`accion` ·
+  `burbuja` · `resultado`). El aura sale de la silueta, sirve en cualquier pose.
+- **Los globos de Pipo:** hasta 12 palabras en 4 líneas, uno o varios sobre la misma imagen,
+  entran 0,5 s después de la imagen, el motor los ubica sin tapar caras.
+- **La vida del cuadro:** cabeceo automático, el globo flota, temblor de línea, props con ciclo.
+- **Cartel** (cuarta tinta + formas + título, viñeta fija a lo Tintín) y **cierre fijo** (Pipo
+  pícaro · iris · tapa · contratapa con la D de la app).
+- **Hoja de revisión** con un cuadro clave por globo, para leer un volumen sin abrir el video.
 
 ## Cómo se ve el inventario
 
