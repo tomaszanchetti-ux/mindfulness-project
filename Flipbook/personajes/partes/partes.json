@@ -16,7 +16,7 @@
     200,
     350
    ],
-   "tilt": -10,
+   "tilt": -14,
    "tipo": "cabeza",
    "png": "personajes/partes/pipo/cara_resignacion.png",
    "lienzo": 400,
@@ -38,7 +38,7 @@
     200,
     350
    ],
-   "tilt": 22,
+   "tilt": 28,
    "tipo": "cabeza",
    "png": "personajes/partes/pipo/cara_en_serio.png",
    "lienzo": 400,

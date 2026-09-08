@@ -8,7 +8,7 @@
 - **Referencias:** `Tiktok/teo/tomas.jpg` (de frente, fondo blanco).
 - **Lo que lo hace reconocible (3 rasgos fijos):**
   1. **Pelo ondulado con volumen hacia un lado** (3 bucles; relleno arena).
-  2. **Anteojos de sol apoyados sobre el pelo** (su prop fijo; nunca en los ojos).
+  2. ~~Anteojos de sol sobre el pelo~~ **Sin anteojos (decisión de Tomás, WS32: "sacamos las gafas y queda 10 puntos").** El segundo rasgo pasa a ser la **cara alargada con la mandíbula marcada**.
   3. **Barba de pocos días** en puntitos taupe sobre la mandíbula.
 - **Cómo se mueve / qué gesto lo define:** cuerpo delgado de línea; postura como termómetro
   (encorvado sobre el teléfono → erguido con aura). Gesto que lo define: levantar la vista.
@@ -19,4 +19,5 @@
   desparejos con volumen a la derecha (ya no parece gorro), anteojos sobre el pelo y barba
   de puntitos; 4 cuerpos base (`parado` · `encorvado` · `sentado` · `sentado_erguido`) con
   remera, pantalón y zapatillas. Los gestos de cada volumen (Spiderman, selfie, escribir con
-  burbuja…) se suman en D1.2. La marioneta v1 de palitos queda en `render.py` hasta entonces.
+  burbuja…) se construyen en el acto, en la WS de cada historieta (Tomás, WS32: "con Teo
+  alcanza con tener un boceto claro de su cara y cuerpo"). La marioneta v1 de palitos queda en `render.py` hasta entonces.

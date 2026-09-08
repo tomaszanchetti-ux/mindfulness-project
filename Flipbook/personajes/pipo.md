@@ -43,8 +43,11 @@
   generadas por `motor/partes.py`: las 6 caras (`cara_fastidio` · `cara_resignacion` ·
   `cara_sospecha` · `cara_en_serio` · `cara_alegria_sarcastica` · `cara_orgullo`) y 5
   cuerpos (`sentado` · `camina` en 4 fases · `panza_arriba` · `plantado` · `cae`). Se
-  componen con `motor/marioneta.py`. Cada cara es un juego de números en `CARAS_PIPO`
-  (arrugas, párpados, pupilas, orejas, boca, lengua, dientes, lágrima, inclinación): se
+  componen con `motor/marioneta.py`. **v3 (pedido de Tomás, WS32): más caricatura y más amigable**: ojos enormes,
+  cejas gruesas que llevan la expresión (en lugar de arrugas de viejo), boca grande y clara
+  sobre una máscara más chica, frente baja, guiño y estrellas en los ojos. Cada cara es un
+  juego de números en `CARAS_PIPO` (cejas, párpados, pupilas, orejas, boca, lengua, dientes,
+  lágrima, guiño, estrellas, inclinación): se
   ajusta y se regenera en minutos. La marioneta v1 de palitos (`render.py: pug`) queda hasta
   que D1.2 la reemplace. **Pendiente: la aprobación de Tomás mirando la hoja v2 sin rótulos.**
   Tomás: "el componente pug vale oro".

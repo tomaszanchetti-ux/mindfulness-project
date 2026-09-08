@@ -81,7 +81,7 @@ def pipo_oreja(lado, caida=0.0, atras=0.0):
     """Oreja negra plegada (botón), pegada al cráneo. lado = -1 izquierda · 1 derecha.
     caida 0..1 = la punta cuelga más; atras 0..1 = la oreja se aplasta hacia atrás (sospecha)."""
     s = lado
-    ax, ay = 200 + s * 104, 96                   # inserción en la esquina alta del cráneo
+    ax, ay = 200 + s * 108, 110                  # inserción en la esquina alta del cráneo
     ang = s * (-6 + 10 * caida - 38 * atras)
     d = (f"M {ax} {ay} C {ax + s * 36} {ay + 4}, {ax + s * 58} {ay + 44}, {ax + s * 46} {ay + 94} "
          f"C {ax + s * 40} {ay + 118}, {ax + s * 8} {ay + 116}, {ax - s * 4} {ay + 86} "
@@ -89,95 +89,104 @@ def pipo_oreja(lado, caida=0.0, atras=0.0):
     pliegue = f"M {ax + s * 8} {ay + 14} C {ax + s * 30} {ay + 30}, {ax + s * 40} {ay + 54}, {ax + s * 36} {ay + 84}"
     return grupo([path(d, fill=UMBER, w=W_SEC), path(pliegue, stroke=DUST, w=3)], f"rotate({ang} {ax} {ay})")
 
+def pipo_ceja(cx, y, ang, largo=52, w=W_MAIN - 1):
+    """Ceja gruesa (la arruga del pug convertida en ceja de historieta). ang > 0 = el extremo de
+    adentro (hacia la nariz) BAJA (enojo); ang < 0 = sube (pena / sorpresa). cx = centro del ojo."""
+    import math
+    hacia_nariz = 1 if cx < 200 else -1
+    dy = math.sin(math.radians(ang)) * largo / 2
+    dx = math.cos(math.radians(ang)) * largo / 2
+    ix, iy = cx + hacia_nariz * dx, y + dy        # extremo interno
+    ox, oy = cx - hacia_nariz * dx, y - dy        # extremo externo
+    return path(f"M {ox:.1f} {oy:.1f} Q {(ox + ix) / 2:.1f} {(oy + iy) / 2 - 8:.1f} {ix:.1f} {iy:.1f}", w=w)
+
 def pipo_cabeza(cara):
-    """Devuelve el SVG de la cabeza de Pipo con una de las 6 caras (dict de parámetros)."""
-    c = dict(mirada=(0, 0), parpado=(0, 0), parpado_abajo=(0, 0), ojos=(42, 42), brillo=1.0,
-             lagrima=False, arrugas="arco", boca="plana", lengua=False, dientes=False,
-             orejas=(0.0, 0.0), atras=0.0, tilt=0)
+    """Devuelve el SVG de la cabeza de Pipo con una de las 6 caras (dict de parámetros).
+    v3 (WS32, pedido de Tomás): más caricatura y más amigable: ojos enormes, cejas gruesas que
+    llevan la expresión, boca grande y clara sobre la máscara, sin arrugas de viejo."""
+    c = dict(mirada=(0, 0), parpado=(0, 0), parpado_abajo=(0, 0), ojos=(50, 50), brillo=1.0,
+             lagrima=False, cejas=(0, 0), cejas_y=(146, 146), boca="sonrisa", lengua=False, dientes=False,
+             orejas=(0.0, 0.0), atras=0.0, tilt=0, frente=0, guino=None, estrellas=False)
     c.update(cara)
     partes = []
-    # cráneo: ancho, con cachetes (jowls) abajo
-    craneo = ("M 58 212 C 58 118, 122 64, 200 64 C 278 64, 342 118, 342 212 "
-              "C 342 262, 330 300, 300 326 C 268 354, 236 360, 200 360 "
-              "C 164 360, 132 354, 100 326 C 70 300, 58 262, 58 212 Z")
+    # cráneo: ancho arriba, cachetes redondos abajo (forma de corazón blando)
+    craneo = ("M 48 208 C 48 116, 118 78, 200 78 C 282 78, 352 116, 352 208 "
+              "C 352 266, 336 314, 296 340 C 266 360, 234 366, 200 366 "
+              "C 166 366, 134 360, 104 340 C 64 314, 48 266, 48 208 Z")
     partes.append(path(craneo, fill=FAWN))
-    # sombra suave del cachete (línea clara: una sola forma más oscura por lado)
-    partes.append(path("M 84 268 C 96 306, 130 332, 172 340", stroke=FAWN_SOMBRA, w=W_SEC + 3))
-    partes.append(path("M 316 268 C 304 306, 270 332, 228 340", stroke=FAWN_SOMBRA, w=W_SEC + 3))
-    # orejas (detrás del cráneo en la foto, pero pegadas al borde: se dibujan encima del contorno)
     partes.append(pipo_oreja(-1, c["orejas"][0], c["atras"]))
     partes.append(pipo_oreja(1, c["orejas"][1], c["atras"]))
-    # máscara negra del hocico: sube en punta entre los ojos, ancha abajo
-    mascara = ("M 200 166 C 176 178, 124 210, 116 262 C 110 312, 150 344, 200 344 "
-               "C 250 344, 290 312, 284 262 C 276 210, 224 178, 200 166 Z")
+    # máscara negra del hocico: más chica que en la v2, deja aire para la sonrisa
+    mascara = ("M 200 184 C 178 194, 132 220, 126 266 C 122 314, 156 344, 200 344 "
+               "C 244 344, 278 314, 274 266 C 268 220, 222 194, 200 184 Z")
     partes.append(path(mascara, fill=UMBER, w=W_SEC))
-    # arrugas de la frente = las cejas del pug
-    if c["arrugas"] == "arco":          # preocupado / atento: dos arcos altos
-        partes.append(path("M 118 150 C 150 118, 250 118, 282 150", w=W_SEC))
-        partes.append(path("M 140 128 C 165 106, 235 106, 260 128", stroke=TAUPE, w=W_SEC - 1))
-        partes.append(path("M 200 166 C 196 150, 198 138, 204 128", stroke=TAUPE, w=W_SEC - 1))
-    elif c["arrugas"] == "v":           # fastidio: las cejas se juntan hacia adentro y abajo
-        partes.append(path("M 108 132 C 140 150, 170 160, 190 172", w=W_SEC))
-        partes.append(path("M 292 132 C 260 150, 230 160, 210 172", w=W_SEC))
-        partes.append(path("M 150 112 C 170 120, 190 128, 200 136", stroke=TAUPE, w=W_SEC - 1))
-        partes.append(path("M 250 112 C 230 120, 210 128, 200 136", stroke=TAUPE, w=W_SEC - 1))
-    elif c["arrugas"] == "alto":        # resignación: la frente entera se pliega hacia arriba
-        partes.append(path("M 112 150 C 150 112, 250 112, 288 150", w=W_SEC))
-        partes.append(path("M 130 124 C 160 96, 240 96, 270 124", stroke=TAUPE, w=W_SEC - 1))
-        partes.append(path("M 156 102 C 176 86, 224 86, 244 102", stroke=TAUPE, w=W_SEC - 1))
-    elif c["arrugas"] == "una":         # sospecha: una ceja arriba y la otra recta
-        partes.append(path("M 108 128 C 130 100, 170 104, 186 132", w=W_SEC))
-        partes.append(path("M 214 152 C 240 146, 268 148, 290 154", w=W_SEC))
-        partes.append(path("M 130 106 C 150 90, 176 92, 190 108", stroke=TAUPE, w=W_SEC - 1))
-    elif c["arrugas"] == "suave":       # orgullo / alegría: dos arcos tranquilos
-        partes.append(path("M 120 148 C 152 124, 248 124, 280 148", w=W_SEC))
-        partes.append(path("M 200 166 C 198 154, 200 144, 204 136", stroke=TAUPE, w=W_SEC - 1))
-    # ojos
-    partes.append(pipo_ojo(140, 200, c["ojos"][0], c["mirada"], c["parpado"][0], c["parpado_abajo"][0], c["brillo"]))
-    partes.append(pipo_ojo(260, 200, c["ojos"][1], c["mirada"], c["parpado"][1], c["parpado_abajo"][1], c["brillo"], lagrima=c["lagrima"]))
-    # nariz: un poco más clara que la máscara, con los dos orificios
-    partes.append(path("M 176 252 C 176 236, 224 236, 224 252 C 224 270, 208 280, 200 280 C 192 280, 176 270, 176 252 Z", fill=NOSE, stroke="none", w=0))
-    partes.append(path("M 188 258 C 184 262, 186 268, 192 266", stroke=DUST, w=3))
-    partes.append(path("M 212 258 C 216 262, 214 268, 208 266", stroke=DUST, w=3))
-    partes.append(path("M 200 280 L 200 298", stroke=DUST, w=3))
-    # boca (líneas claras sobre la máscara negra)
-    if c["boca"] == "plana":
-        partes.append(path("M 168 306 C 184 300, 216 300, 232 306", stroke=SAND, w=5))
-    elif c["boca"] == "caida":
-        partes.append(path("M 166 312 C 184 300, 216 300, 234 312", stroke=SAND, w=5))
-    elif c["boca"] == "sonrisa":
-        partes.append(path("M 156 298 C 176 322, 224 322, 244 298", stroke=SAND, w=5))
-    elif c["boca"] == "torcida":        # sonrisa de costado con la lengua afuera
-        partes.append(path("M 158 296 C 176 318, 218 326, 248 300", stroke=SAND, w=5))
-    elif c["boca"] == "chica":
-        partes.append(path("M 186 308 C 194 312, 206 312, 214 308", stroke=SAND, w=5))
-    elif c["boca"] == "abierta":        # boca abierta blanda (orgullo)
-        partes.append(path("M 168 300 C 180 330, 220 330, 232 300 Z", fill=NOSE, stroke=SAND, w=4))
+    # pliegue de la frente (solo si la cara lo pide: 1 = una línea, 2 = dos)
+    if c["frente"] >= 1:
+        partes.append(path("M 160 118 C 178 108, 222 108, 240 118", stroke=TAUPE, w=W_SEC))
+    if c["frente"] >= 2:
+        partes.append(path("M 172 102 C 186 94, 214 94, 228 102", stroke=TAUPE, w=W_SEC))
+    # ojos (o guiño)
+    for k, cx in enumerate((138, 262)):
+        if c["guino"] == k:
+            partes.append(path(f"M {cx - 30} 206 C {cx - 14} 190, {cx + 14} 190, {cx + 30} 206", w=W_MAIN))
+            continue
+        partes.append(pipo_ojo(cx, 206, c["ojos"][k], c["mirada"], c["parpado"][k], c["parpado_abajo"][k], c["brillo"],
+                               lagrima=(c["lagrima"] and k == 1)))
+        if c["estrellas"]:
+            partes.append(path(f"M {cx - 8} 194 l 4 8 l 8 2 l -6 6 l 1 8 l -7 -4 l -7 4 l 1 -8 l -6 -6 l 8 -2 Z", fill=IVORY, stroke="none", w=0))
+    # cejas
+    partes.append(pipo_ceja(138, c["cejas_y"][0], c["cejas"][0]))
+    partes.append(pipo_ceja(262, c["cejas_y"][1], c["cejas"][1]))
+    # nariz grande y redonda
+    partes.append(path("M 172 250 C 172 232, 228 232, 228 250 C 228 270, 210 282, 200 282 C 190 282, 172 270, 172 250 Z", fill=NOSE, stroke="none", w=0))
+    partes.append(path("M 186 254 C 182 258, 184 264, 190 262", stroke=DUST, w=3))
+    partes.append(path("M 214 254 C 218 258, 216 264, 210 262", stroke=DUST, w=3))
+    partes.append(path("M 200 282 L 200 296", stroke=SAND, w=4))
+    # boca, grande y clara sobre la máscara
+    B = c["boca"]
+    if B == "sonrisa":            # sonrisa amplia
+        partes.append(path("M 150 296 C 166 332, 234 332, 250 296", stroke=IVORY, w=6))
+    elif B == "sonrisa_abierta":  # boca abierta de alegría
+        partes.append(path("M 150 294 C 160 344, 240 344, 250 294 Z", fill=NOSE, stroke=IVORY, w=5))
+        partes.append(path("M 156 296 L 244 296", stroke=IVORY, w=8))
+    elif B == "torcida":          # sonrisa de costado, engreída
+        partes.append(path("M 152 306 C 176 300, 212 322, 254 288", stroke=IVORY, w=6))
+    elif B == "ondulada":         # boca de "no sé": una onda
+        partes.append(path("M 156 306 C 170 292, 186 320, 200 306 C 214 292, 230 320, 244 306", stroke=IVORY, w=6))
+    elif B == "caida":            # bajón
+        partes.append(path("M 156 318 C 172 296, 228 296, 244 318", stroke=IVORY, w=6))
+    elif B == "apretada":         # boca apretada, chiquita
+        partes.append(path("M 180 308 C 190 302, 210 302, 220 308", stroke=IVORY, w=6))
+    elif B == "o":                # boquita de sorpresa
+        partes.append(path("M 186 300 C 186 288, 214 288, 214 300 C 214 314, 186 314, 186 300 Z", fill=NOSE, stroke=IVORY, w=5))
     if c["lengua"]:
-        partes.append(path("M 206 306 C 200 336, 214 372, 244 366 C 268 360, 264 328, 250 306 Z", fill=TONGUE, stroke=UMBER, w=W_SEC))
-        partes.append(path("M 230 316 C 232 334, 236 350, 242 360", stroke=UMBER, w=3))
-    if c["dientes"]:                    # los dientes de abajo asomando (la foto "Enojado")
-        for x in (176, 192, 208, 224):
-            partes.append(f'<rect x="{x}" y="{298}" width="12" height="13" rx="3" fill="{IVORY}" stroke="{UMBER}" stroke-width="3"/>')
-    # contorno del cráneo otra vez, para que quede limpio arriba de la máscara y los cachetes
+        partes.append(path("M 204 308 C 196 340, 216 380, 250 372 C 276 366, 270 330, 254 304 Z", fill=TONGUE, stroke=UMBER, w=W_SEC))
+        partes.append(path("M 232 318 C 234 338, 238 354, 246 366", stroke=UMBER, w=3))
+    if c["dientes"]:              # los dientes de abajo asomando (foto Enojado), grandes
+        for x in (168, 188, 208, 228):
+            partes.append(f'<rect x="{x}" y="{298}" width="16" height="16" rx="4" fill="{IVORY}" stroke="{UMBER}" stroke-width="3"/>')
     partes.append(path(craneo, fill="none"))
     contenido = grupo(partes, f"rotate({c['tilt']} 200 230)")
     return svg([contenido]), {"cuello": [200, 350], "tilt": c["tilt"]}
 
 CARAS_PIPO = {
-    # 1. fastidio ("ay no"): cejas en V, ojos entrecerrados, dientes de abajo (foto Enojado)
-    "fastidio": dict(arrugas="v", parpado=(0.28, 0.28), boca="caida", dientes=True, orejas=(0.2, 0.2), brillo=0.8),
-    # 2. resignación ("otra vez"): cabeza inclinada, mira arriba, frente plegada (foto Clásica)
-    "resignacion": dict(arrugas="alto", mirada=(0.15, -0.75), boca="caida", tilt=-10, orejas=(0.5, 0.3), parpado=(0.12, 0.12)),
-    # 3. sospecha (side-eye): ojos al máximo, pupilas de reojo, orejas atrás, una ceja arriba (foto Sorpresa)
-    "sospecha": dict(arrugas="una", mirada=(-0.9, 0.05), ojos=(46, 46), boca="chica", atras=0.8, brillo=1.1),
-    # 4. ¿en serio?: cabeza ladeada, ojos parejos, una oreja arriba (foto No entender nada)
-    "en_serio": dict(arrugas="arco", tilt=22, orejas=(0.0, 0.8), boca="plana", mirada=(0.0, 0.1)),
-    # 5. alegría sarcástica ("te lo dije"): ladeada al otro lado, lengua afuera, ojos desparejos (foto Ironía)
-    "alegria_sarcastica": dict(arrugas="suave", tilt=-16, ojos=(44, 34), parpado=(0.0, 0.42), parpado_abajo=(0.18, 0.0),
-                               boca="torcida", lengua=True, mirada=(0.35, -0.15), orejas=(0.1, 0.6)),
-    # 6. orgullo: ojos enormes y brillantes, casi una lágrima, boca abierta blanda
-    "orgullo": dict(arrugas="suave", ojos=(46, 46), brillo=1.5, lagrima=True, boca="abierta", mirada=(0.0, -0.2), orejas=(0.4, 0.4)),
+    # 1. fastidio ("ay no"): cejas en V bien marcadas, ojos a medio cerrar, dientes de abajo, orejas caídas
+    "fastidio": dict(cejas=(28, 28), cejas_y=(160, 160), parpado=(0.34, 0.34), boca="caida", dientes=True,
+                     orejas=(0.6, 0.6), brillo=0.8, mirada=(0.0, 0.05)),
+    # 2. resignación ("otra vez"): cabeza ladeada, ojos al cielo, cejas de pena, boca ondulada, orejas caídas
+    "resignacion": dict(cejas=(-24, -24), cejas_y=(142, 142), frente=0, mirada=(0.1, -0.9), boca="ondulada",
+                        tilt=-14, orejas=(0.8, 0.5), ojos=(50, 50)),
+    # 3. sospecha (side-eye): un ojo entrecerrado y el otro enorme, pupilas de reojo, orejas atrás, boca apretada
+    "sospecha": dict(cejas=(30, -18), cejas_y=(164, 138), parpado=(0.5, 0.0), ojos=(46, 54), mirada=(-1.0, 0.1),
+                     boca="apretada", atras=0.5, brillo=1.1),
+    # 4. ¿en serio?: cabeza muy ladeada, cejas asimétricas, una oreja parada, boquita de "o"
+    "en_serio": dict(cejas=(-16, 10), cejas_y=(138, 152), tilt=28, orejas=(0.0, 1.0), boca="o", mirada=(0.15, 0.1), ojos=(52, 48)),
+    # 5. alegría sarcástica ("te lo dije"): guiño, sonrisa engreída de costado, lengua afuera, ladeada
+    "alegria_sarcastica": dict(cejas=(-8, 18), cejas_y=(142, 150), tilt=-16, guino=1, ojos=(52, 52), parpado_abajo=(0.2, 0.0),
+                               boca="torcida", lengua=True, mirada=(0.35, -0.15), orejas=(0.1, 0.5)),
+    # 6. orgullo: ojos enormes con estrellas y una lágrima, boca abierta de alegría, orejas relajadas
+    "orgullo": dict(cejas=(-12, -12), cejas_y=(136, 136), ojos=(54, 54), brillo=1.5, estrellas=True, lagrima=True,
+                    boca="sonrisa_abierta", mirada=(0.0, -0.15), orejas=(0.4, 0.4)),
 }
 
 # =====================================================================================
@@ -356,11 +365,6 @@ def teo_cabeza(mirada="frente", boca="plana"):
               "M 270 52 C 268 72, 262 92, 250 108", "M 322 70 C 310 86, 296 100, 280 112",
               "M 340 132 C 326 136, 312 146, 302 160"):
         p.append(path(d, w=W_SEC))
-    # anteojos de sol apoyados en el pelo (el prop fijo)
-    p.append(path("M 148 118 C 146 100, 172 96, 188 104 L 194 120 C 178 130, 152 132, 148 118 Z", fill=UMBER, w=W_SEC))
-    p.append(path("M 212 104 C 230 92, 258 96, 262 114 C 258 130, 232 130, 214 120 Z", fill=UMBER, w=W_SEC))
-    p.append(path("M 188 104 C 196 100, 206 100, 212 104", w=W_SEC))
-    p.append(path("M 262 108 C 276 104, 286 108, 292 120", w=W_SEC))
     # cejas finas
     p.append(path("M 148 176 C 160 168, 178 168, 190 174", stroke=TAUPE, w=W_SEC - 1))
     p.append(path("M 218 174 C 232 166, 250 166, 262 176", stroke=TAUPE, w=W_SEC - 1))
