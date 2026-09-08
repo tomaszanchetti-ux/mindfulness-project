@@ -98,10 +98,16 @@ en personaje y al escribir un guion.
 - Texto en pantalla = **la voz de Pipo, y va en un GLOBO DE DIÁLOGO a la audiencia**
   (Tomás, WS33: Pipo rompe la cuarta pared, formato Deadpool). Nunca suelto sobre la hoja:
   globo de historieta con relleno marfil, borde tierra, temblor, y la **colita apuntando a
-  la cabeza de Pipo**. Georgia, minúsculas, primera persona, **hasta 6 palabras por hoja**,
-  hasta 3 líneas cortas adentro del globo, con punto si es una frase ("otra vez el rincón." ·
-  "yo me veo perfecto."). Una idea larga se reparte en 2-3 hojas. **Español neutro** en
-  pantalla (nunca voseo). Sin voz grabada.
+  la cabeza de Pipo**. Georgia, minúsculas, primera persona, con punto si es una frase.
+  **El tempo (Tomás, WS34): hasta 12 palabras por globo, en 3-4 líneas cortas, y el globo
+  queda ≥3 s en pantalla** (se lee cómodo a ~3 palabras por segundo). Una idea más larga va
+  en **dos globos sobre la MISMA imagen** (`pipo_dice` como lista), nunca en otra imagen.
+  **La imagen entra sola 0,5 s y recién después aparece el globo** (`globo_desde`): el ojo
+  ve el chiste antes de leerlo. **Español neutro** en pantalla (nunca voseo). Sin voz grabada.
+- **La vida del cuadro (WS34):** una imagen que dura 3-4 s no puede estar quieta. El motor
+  la mueve solo: la cabeza de Pipo cabecea (±4°, un ciclo por segundo), la de Teo apenas y
+  lento, el globo flota, y siguen el temblor de línea y los ciclos de props (la pantalla que
+  respira, el lápiz que avanza). `vida: false` en un personaje lo deja quieto.
 - **Si Pipo no está en el cuadro, Pipo ASOMA:** se pega su cabeza sola por un borde lateral
   o inferior de la hoja para que el globo tenga de dónde salir. El motor lo hace solo
   (derecha abajo, con la cara de la escena) o el guion lo dice con `pipo_asoma`.
@@ -140,24 +146,24 @@ escenas:
   - tipo: problema              # problema | espejo | magia
     fondo: rincon
     cuadros:
-      - hojas: 16               # o `duracion: 1.6` (10 hojas = 1 s)
+      - hojas: 34               # o `duracion: 3.4` (10 hojas = 1 s)
         teo:  {cuerpo: sentado, cara: abajo_plana, x: 430, y: 1100, escala: 1.6,
                prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
         pipo: {cuerpo: sentado, cara: fastidio, x: 890, y: 1300, escala: 0.6}
         props: [{nombre: nube_garabatos, x: 610, y: 545, escala: 2.0, hacia_disolucion: 1.0}]
-        pipo_dice: otra vez el rincón.
-      - hojas: 10               # la hoja "acerca"
+        pipo_dice: otra vez en el rincón. dos horas mirando nada.
+      - hojas: 28               # la hoja "acerca"
         zoom: {pieza: props/telefono_0, escala: 2.7, rot: -12, manos: true}
         pipo_asoma: {lado: izquierda, cara: en_serio}
-        pipo_dice: y el pulgar no para.
+        pipo_dice: y el pulgar sube y sube, sin parar.
   - tipo: magia                 # bloque fijo de 4 momentos, tres huecos
     accion: medita              # medita | pasea
     burbuja: abuelos            # el descubrimiento del volumen
-    final:
+    resultado:
       fondo: mesa_familiar
       teo: {cuerpo: sentado_erguido, cara: costado_sonrisa}
       secundarios: [{tipo: abuela, x: 720, y: 900}, {tipo: abuelo, x: 930, y: 890}]
-      pipo_dice: y se le nota.
+      pipo_dice: y ahora se le nota, ¿no?
 ```
 
 El **cartel** (2 s) y el **cierre fijo** (Pipo · iris · tapa · contratapa, 5,5 s) los pone
@@ -173,17 +179,22 @@ el motor: no se declaran.
 | `props` | props simples: `nube_garabatos` (con `disolucion` 0..1), `burbuja_pensamiento` (con `dibujo` y `punta`), `correa`, `plato_croquetas`, `globo`. Cualquier opción admite `hacia_<opcion>` para interpolarla dentro del cuadro. `delante: true` los pone adelante del personaje. |
 | `secundarios` | gente de línea simple: `tipo` (`abuela`, `abuelo`, `chica`, `senor`), `x`, `y`, `escala`. |
 | `zoom` | la hoja "acerca": `pieza` (`teo/cara_…`, `pipo/…`, `props/…`) o `prop`, con `escala`, `rot`, `ciclo`, `manos: true`. |
-| `pipo_dice` | el texto del globo (≤6 palabras). |
+| `pipo_dice` | el texto del globo (≤12 palabras, 3-4 líneas), o una **lista** de textos = varios globos seguidos sobre la misma imagen. |
+| `globo_desde` | hojas que la imagen está sola antes del primer globo (5 por defecto = 0,5 s). |
 | `pipo_asoma` | `lado` (`izquierda`, `derecha`, `abajo`) y `cara`, para cuando Pipo no está en el cuadro. |
 | `parallax` | píxeles que corre el fondo por hoja (árboles de `calle` y `banco_plaza`). |
 
-**Regla del guion:** si algo tiene que moverse mucho, se mueve el fondo (§2). Un cuadro con
-un texto dura 12-16 hojas; uno de zoom, 7-10.
+**Regla del guion (el tempo, WS34):** pocas imágenes, **6-8 por volumen**, cada una **30-45
+hojas (3-4,5 s)**: ≥30 con un globo, ≥40 con dos. Si algo tiene que moverse mucho, se mueve
+el fondo (§2); lo demás lo mueve la vida del cuadro (§5).
 
 ### La escena de la magia
 
-Es un **paquete fijo** (WS33): (1) el teléfono se enciende, con la hoja "acerca" · (2) Teo
-carga el aura con la acción del menú · (3) Teo escribe y la burbuja muestra el descubrimiento
-del volumen · (4) Teo con el aura desplegada haciendo la acción que muestra el cambio. Solo
-se declaran los tres huecos: `accion`, `burbuja` y `final`. Un dibujo nuevo para la burbuja
-se agrega como función en `motor/libro.py` y se registra en `DIBUJOS`.
+Es un **paquete fijo** (WS33, recortado en la WS34): (1) el teléfono se enciende = SOLO la
+hoja "acerca" del teléfono poniéndose verde, Pipo asoma con duda · (2) Teo carga el aura con
+la acción del menú · (3) Teo escribe y la burbuja muestra el descubrimiento del volumen ·
+(4) **el resultado**: Teo con el aura desplegada haciendo la acción que muestra el cambio.
+Cuatro imágenes, 13,2 s. Solo se declaran los tres huecos: `accion`, `burbuja` y
+`resultado` (antes `final`, sigue aceptado). `textos:` y `hojas:` (claves `enciende`,
+`accion`, `escribe`, `resultado`) permiten ajustar los globos y las duraciones fijas. Un dibujo
+nuevo para la burbuja se agrega como función en `motor/libro.py` y se registra en `DIBUJOS`.

@@ -4,6 +4,11 @@
 #   python3 Flipbook/motor/libro.py Flipbook/guiones/vol00_prueba.yaml
 #
 # El vocabulario está explicado en REGLAS.md §7.
+#
+# El tempo (WS34, Tomás): POCAS imágenes (7 en total), cada una 3-4 s en pantalla con vida
+# (cabeceo, el globo flota), y globos más largos (hasta 12 palabras) que se llegan a leer.
+# Una idea larga = dos globos sobre la MISMA imagen (`pipo_dice` como lista), no otra imagen.
+# El globo aparece 0,5 s después de la imagen (el ojo ve el chiste antes de leerlo).
 
 volumen: 0
 titulo: LA PRUEBA
@@ -16,65 +21,49 @@ cartel:
 
 escenas:
 
-  # ---------------------------------------------------------------- 2 · el problema
+  # ---------------------------------------------------------------- 2 · el problema (2 imágenes)
   # Regla de caras (WS34): el problema arranca en sospecha y sube a fastidio; el espejo y la
   # magia van en orgullo (alegría); en_serio (duda) es para "algo se enciende"; el pícaro
   # (alegria_sarcastica) es solo el iris del cierre.
   - tipo: problema
     fondo: rincon
     cuadros:
-      - hojas: 16
-        teo: {cuerpo: sentado, cara: abajo_plana, x: 430, y: 1100, escala: 1.6,
-              prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
-        pipo: {cuerpo: sentado, cara: sospecha, x: 890, y: 1300, escala: 0.6}
-        pipo_dice: otra vez el rincón.
-
-      - hojas: 14
+      - hojas: 34
         teo: {cuerpo: sentado, cara: abajo_plana, x: 430, y: 1100, escala: 1.6,
               prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
         pipo: {cuerpo: sentado, cara: sospecha, x: 890, y: 1300, escala: 0.6}
         props:
-          - {nombre: nube_garabatos, x: 610, y: 545, escala: 2.0, disolucion: 0.0, hacia_disolucion: 0.0}
-        pipo_dice: dos horas mirando nada.
+          - {nombre: nube_garabatos, x: 250, y: 640, escala: 1.7}   # a la izquierda de la cabeza: arriba viven los globos
+        pipo_dice: otra vez en el rincón. dos horas mirando nada.
 
       # la hoja "acerca": el libro se acerca al detalle que delata
-      - hojas: 10
+      - hojas: 28
         zoom: {pieza: props/telefono_0, escala: 2.7, rot: -12, manos: true}
         pipo_asoma: {lado: izquierda, cara: fastidio}
-        pipo_dice: y el pulgar no para.
+        pipo_dice: y el pulgar sube y sube, sin parar.
 
-
-  # ---------------------------------------------------------------- 3 · el espejo de Pipo
+  # ---------------------------------------------------------------- 3 · el espejo de Pipo (1 imagen, 2 globos)
   - tipo: espejo
     fondo: sofa
     cuadros:
-      - hojas: 16
+      - hojas: 44
         pipo: {cuerpo: panza_arriba, cara: orgullo, x: 610, y: 1120, escala: 1.0}
         teo: {cuerpo: sentado, cara: abajo_plana, x: 175, y: 1330, escala: 0.9,
               prop: {nombre: telefono_0, dx: 8, dy: -22, rot: -24}}
-        pipo_dice: la vida pasa por otro lado.
+        pipo_dice:
+          - la vida pasa por otro lado, teito querido.
+          - yo ya lo entendí hace rato.
 
-      - hojas: 14
-        pipo: {cuerpo: panza_arriba, cara: orgullo, x: 610, y: 1120, escala: 1.0}
-        teo: {cuerpo: sentado, cara: abajo_plana, x: 175, y: 1330, escala: 0.9,
-              prop: {nombre: telefono_0, dx: 8, dy: -22, rot: -24}}
-        pipo_dice: teito querido.
-
-      - hojas: 12
-        pipo: {cuerpo: panza_arriba, cara: orgullo, x: 610, y: 1120, escala: 1.0}
-        teo: {cuerpo: sentado, cara: abajo_plana, x: 175, y: 1330, escala: 0.9,
-              prop: {nombre: telefono_0, dx: 8, dy: -22, rot: -24}}
-        pipo_dice: yo ya lo entendí.
-
-  # ---------------------------------------------------------------- 4 · la magia
-  # Bloque fijo de 4 momentos con tres huecos: la acción, la burbuja y el final.
+  # ---------------------------------------------------------------- 4 · la magia (3 imágenes) + el resultado (1)
+  # Bloque fijo: se enciende (la hoja "acerca") · la acción · escribe · el resultado.
+  # Tres huecos: la acción, la burbuja y el resultado.
   - tipo: magia
     accion: medita
     burbuja: abuelos
-    final:
+    resultado:
       fondo: mesa_familiar
       teo: {cuerpo: sentado_erguido, cara: costado_sonrisa}
       secundarios:
         - {tipo: abuela, x: 720, y: 900}
         - {tipo: abuelo, x: 930, y: 890}
-      pipo_dice: y se le nota.
+      pipo_dice: y ahora se le nota, ¿no?

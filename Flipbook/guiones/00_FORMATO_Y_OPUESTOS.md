@@ -35,15 +35,15 @@ todo simplón, un solo elemento con detalle por hoja, el que carga el chiste o l
 **situación** (lo que la sociedad moderna nos hace hacer), nunca sobre la persona. Si un
 chiste se ríe de Teo y no de la situación, está mal.
 
-## 2. El formato único: 5 escenas (25-30 s)
+## 2. El formato único: 5 escenas (25-32 s) · 6-8 imágenes
 
 | # | Escena | Qué pasa | Pipo | Dur. |
 |---|---|---|---|---|
 | 1 | **El cartel** (apertura) | "TEO Y PIPO en [TÍTULO SATÍRICO] · Vol. N". Cartel retro de historieta (ver §3). **Es el gancho del feed:** el título ya cuenta el chiste. | En la viñeta fija, mirando a cámara | 2 s |
-| 2 | **El problema** | La situación grotesca de la vida moderna, con una hoja de zoom al detalle que delata. Es el corazón cómico. | Narra en 2-3 hojas + cara de **fastidio** o **resignación** | 6-7 s |
-| 3 | **El espejo** | La MISMA escena vivida por Pipo, al revés: Teo en el rincón, Pipo en el centro, feliz. El aprendizaje sin explicarlo. | "la vida pasa por otro lado, Teito." + cara de **¿en serio?** | 4-5 s |
-| 4 | **La magia** | Algo parecido a un teléfono se enciende de verde. El ruido se disuelve. Teo escribe sobre lo que siente; **burbuja de pensamiento** con lo que importa (los abuelos, la familia). Después, **el acto que lo demuestra**, con aura. Es el corazón emocional. | "por suerte descubrió la Pausa." + cara de **orgullo** | 8-9 s |
-| 5 | **El cierre** (fijo) | Pipo a cámara con cara de "te lo dije"; **el iris se cierra** sobre su cara (ver §4). Contratapa: Dwellia · una Pausa al día, fuera del teléfono · **Teo y Pipo volverán próximamente** · link en la bio. | **Alegría sarcástica** | 5 s |
+| 2 | **El problema** | La situación grotesca de la vida moderna en **2 imágenes**: la escena y la hoja de zoom al detalle que delata. Es el corazón cómico. | Cara de **sospecha** que sube a **fastidio** | 6-7 s |
+| 3 | **El espejo** | La MISMA escena vivida por Pipo, al revés: Teo en el rincón, Pipo en el centro, feliz. **1 imagen** que dura, con uno o dos globos. El aprendizaje sin explicarlo. | "la vida pasa por otro lado, teito querido." + cara de **orgullo** | 4-5 s |
+| 4 | **La magia** | **3 imágenes fijas + el resultado:** el teléfono se enciende de verde (zoom) · Teo carga el aura con una pequeña acción · escribe con la **burbuja de pensamiento** de lo que importa (los abuelos, la familia) · **el resultado**: el acto que lo demuestra, con aura. Es el corazón emocional. | "por suerte, Teo descubrió la Pausa." + **duda** al encenderse, después **orgullo** | 13 s |
+| 5 | **El cierre** (fijo) | Pipo a cámara con cara de "te lo dije"; **el iris se cierra** sobre su cara (ver §4). Contratapa: **Teo y Pipo volverán próximamente** · la D · Dwellia · una Pausa al día, fuera del teléfono · link en la bio. | **Alegría sarcástica** (solo aquí) | 5,5 s |
 
 Reglas del formato:
 - **El chiste está en la escena 2 y en las caras de Pipo; el mensaje está en los textos y
@@ -76,8 +76,9 @@ Reglas del formato:
 - **El iris se cierra** sobre su cara, como el final de los Looney Tunes (el círculo que se
   achica hasta dejar solo la cara y después se apaga). Es la firma de la serie: el mismo
   gesto, el mismo ritmo, todos los volúmenes. Dura ~1,5 s.
-- La tapa se cierra (1 s) → contratapa 3 s: hoja salvia · "Dwellia" · "una Pausa al día,
-  fuera del teléfono" · "Teo y Pipo volverán próximamente" · "link en la bio".
+- La tapa se cierra (1 s) → contratapa 3 s: hoja salvia · primero y grande **"Teo y Pipo
+  volverán próximamente"** · abajo, más chico, el ícono de la app (la D) · "Dwellia" · "una
+  Pausa al día, fuera del teléfono" · "link en la bio" (orden invertido por Tomás, WS34).
 - Se construye una vez en D1.2 (plantilla) y no se vuelve a tocar.
 
 ## 5. Los 6 pilares y sus opuestos, con el banco de ideas
@@ -101,16 +102,18 @@ claro es el 3 (Vínculos, Spiderman). Los títulos se validan con cada guion.
 
 ## 6. Pipo: la voz y la cara
 
-- **Su voz = el texto en pantalla.** Primera persona, minúsculas, **hasta 6 palabras por
-  hoja**, con punto si es una frase. Una idea larga se **reparte en 2-3 hojas**, nunca se
-  aprieta en una: "todo el día pendiente de otros." / "y los que importan, esperando."
+- **Su voz = el texto en pantalla.** Primera persona, minúsculas, con punto si es una frase.
+  **El tempo (Tomás, WS34):** pocas imágenes que duran (3-4 s, con vida), y globos de
+  **hasta 12 palabras** que se llegan a leer (≥3 s en pantalla). Una idea larga va en **dos
+  globos sobre la misma imagen**, nunca en otra imagen: "todo el día pendiente de otros." /
+  "y los que importan, esperando."
   **Español neutro** en pantalla (como en la app); lo rioplatense queda en el chat.
   "Teito querido" sí es neutro y es puro Pipo.
 - **Su cara = el chiste.** Juego de **6 caras fijas** (activo principal, D1.1):
   1. **fastidio** ("ay no") · 2. **resignación** ("otra vez") · 3. **sospecha** (la mirada
   de reojo, el "side-eye dog") · 4. **¿en serio?** (cabeza ladeada) · 5. **alegría
   sarcástica** (el "te lo dije" del cierre; el perro engreído tipo "smug Doge") ·
-  6. **orgullo** (ojos brillantes, casi lágrima).
+  6. **orgullo** (ojos brillantes con estrellas; sin lágrima, es la alegría).
   Con la 3 y la 5 ancladas en memes que la gente reconoce al instante, las otras cuatro
   salen solas. Herramientas del pug: arrugas como cejas, orejas que suben o caen, lengua
   que asoma, cabeza ladeada. **Pipo mira a cámara**; Teo nunca.

@@ -307,6 +307,11 @@ def secundario(d, x, y, rng, tipo="abuela", escala=1.9):
 # audiencia desde un globo de historieta, con la colita apuntando a su cabeza (WS33).
 
 ANCHO_GLOBO = 330            # ancho máximo de una línea adentro del globo, en píxeles
+MAX_LINEAS_GLOBO = 4         # hasta 12 palabras en 3-4 líneas cortas (WS34, el tempo)
+GLOBO_DESDE = 5              # hojas que la imagen está SOLA antes de que aparezca el globo (0,5 s)
+# La vida del cuadro (WS34): cabeceo automático de la cabeza, (grados, radianes por hoja).
+# Pipo cabecea rápido y visible; Teo apenas, lento. `vida: false` en el personaje lo apaga.
+VIDA = {"pipo": (4.0, 0.62), "teo": (1.5, 0.27)}
 
 
 def _envolver(d, texto, f, ancho_max):
@@ -324,11 +329,11 @@ def _envolver(d, texto, f, ancho_max):
 
 
 def _texto_globo(d, texto, tam=52, minimo=38):
-    """Georgia, minúsculas, hasta 3 líneas cortas: un globo alto lee mejor que uno ancho."""
+    """Georgia, minúsculas, hasta 4 líneas cortas: un globo alto lee mejor que uno ancho."""
     while True:
         f = R.font(tam)
         lineas = _envolver(d, texto, f, ANCHO_GLOBO)
-        if len(lineas) <= 3 or tam <= minimo:
+        if len(lineas) <= MAX_LINEAS_GLOBO or tam <= minimo:
             return f, lineas, tam
         tam -= 4
 
@@ -343,11 +348,12 @@ def _colita(cx, cy, rx, ry, ax, ay):
     return b1, b2, base, punta
 
 
-def globo(d, texto, ancla, rng, evitar=(), forzar=None):
+def globo(d, texto, ancla, rng, evitar=(), forzar=None, flota=0.0):
     """Dibuja el globo de Pipo. `ancla` = (x, y) de su cabeza: de ahí sale la colita.
     `evitar` = cajas (x0, y0, x1, y1) que ni el globo ni la colita pueden tapar (las caras
     y la burbuja de pensamiento). Se prueban posiciones cerca de Pipo y se elige la primera
-    que no tape nada; si ninguna limpia, la menos mala."""
+    que no tape nada; si ninguna limpia, la menos mala. `flota` = píxeles que el globo sube o
+    baja en esta hoja (la vida del cuadro)."""
     if not texto:
         return
     f, lineas, tam = _texto_globo(d, texto)
@@ -380,6 +386,7 @@ def globo(d, texto, ancla, rng, evitar=(), forzar=None):
             if puntaje_mejor is None or puntaje < puntaje_mejor:
                 mejor, puntaje_mejor = (px, py), puntaje
         cx, cy = mejor
+    cy += flota
 
     R.circle(d, cx, cy, rx, rng, width=6, fill=R.IVORY, ry=ry, amp=2.5)
     b1, b2, _, punta = _colita(cx, cy, rx, ry, ax, ay)
@@ -473,8 +480,11 @@ def pegar_personaje(m, im, d, personaje, spec, i, n, t, rng, anclas_fondo):
     espejo = bool(spec.get("espejo", False))
     rot = float(spec.get("rot", 0))
     cara_pieza = cara if cara.startswith("cara_") else "cara_" + cara
+    amp, vel = VIDA.get(personaje, (0.0, 0.0))
+    fase = 0.0 if personaje == "pipo" else 1.3
+    rot_cabeza = amp * math.sin(i * vel + fase) if spec.get("vida", True) else 0.0
     punto = m.pegar(im, personaje, cuerpo, cara, x, y, escala=escala, rng=rng,
-                    rot=rot, espejo=espejo, aura=aura, pulso=pulso)
+                    rot=rot, espejo=espejo, aura=aura, pulso=pulso, rot_cabeza=rot_cabeza)
     cajas = []
     for p in _lista(spec.get("prop")):
         cajas.append(_prop_en_mano(m, im, personaje, cuerpo, p, x, y, escala, rng, i))
@@ -567,18 +577,37 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
     if cuadro.get("anillos"):                        # la respiración de la escena de la magia
         _anillos(d, m, cuadro, i, rng)
 
-    texto = cuadro.get("pipo_dice")
-    if texto and i >= 1:
+    texto = globo_en(cuadro, i, n)
+    if texto:
         if ancla_pipo is None:                       # Pipo no está en el cuadro: asoma por un borde
             ancla_pipo, caja = _pipo_asoma(m, im, cuadro, rng)
             caras.append(caja)
-        globo(d, texto, ancla_pipo, rng, evitar=caras)
+        globo(d, texto, ancla_pipo, rng, evitar=caras, flota=5.0 * math.sin(i * 0.5))
     return im
+
+
+def globos_de(cuadro):
+    """`pipo_dice` es un texto o una lista de textos: varios globos sobre la MISMA imagen."""
+    return [str(t) for t in _lista(cuadro.get("pipo_dice")) if str(t).strip()]
+
+
+def globo_en(cuadro, i, n):
+    """Qué globo se ve en la hoja `i` de `n` (WS34, el tempo): ninguno mientras la imagen está
+    sola (`globo_desde`, 0,5 s por defecto: el ojo ve el chiste antes de leerlo); después los
+    globos se reparten el resto del cuadro en partes iguales."""
+    textos = globos_de(cuadro)
+    if not textos:
+        return None
+    desde = int(cuadro.get("globo_desde", GLOBO_DESDE))
+    if i < desde:
+        return None
+    tramo = max(1.0, (n - desde) / len(textos))
+    return textos[min(len(textos) - 1, int((i - desde) / tramo))]
 
 
 def _props_sueltos(d, cuadro, anclas_fondo, t, rng, delante):
     """Dibuja los props sueltos de la capa pedida. Devuelve las cajas que el globo tiene que
-    esquivar (hoy, la burbuja de pensamiento: es lo único que ocupa media hoja)."""
+    esquivar (la burbuja de pensamiento y la nube de garabatos)."""
     cajas = []
     for p in _lista(cuadro.get("props")):
         if bool(p.get("delante", False)) != delante:
@@ -597,6 +626,9 @@ def _props_sueltos(d, cuadro, anclas_fondo, t, rng, delante):
         fn(d, px, py, esc, rng, t=t, **opciones)
         if p["nombre"] == "burbuja_pensamiento":
             cajas.append((px - 220 * esc, py - 160 * esc, px + 220 * esc, py + 160 * esc))
+        elif p["nombre"] == "nube_garabatos":          # el ruido mental tampoco se tapa (WS34)
+            r = 90 * esc * max(0.06, 1 - float(opciones.get("disolucion", 0)))
+            cajas.append((px - r, py - r, px + r, py + r))
     return cajas
 
 
@@ -660,9 +692,12 @@ def _zoom(m, im, d, spec, i, n, t, rng):
 # `accion` (medita | pasea), `burbuja` (el descubrimiento del volumen) y `final` (la acción
 # que muestra el cambio, con su entorno). Todo lo demás es fijo en todos los volúmenes.
 
-TEXTOS_MAGIA = {"enciende": "algo se enciende.", "medita": "por suerte descubrió la Pausa.",
-                "pasea": "por suerte descubrió la Pausa.", "escribe": "escribió lo que importa.",
-                "final": "y se le nota."}
+TEXTOS_MAGIA = {"enciende": "hasta que un día, algo se enciende.",
+                "medita": "por suerte, Teo descubrió la Pausa.",
+                "pasea": "por suerte, Teo descubrió la Pausa.",
+                "escribe": "y escribió lo que de verdad importa.",
+                "final": "y ahora se le nota."}
+HOJAS_MAGIA = {"enciende": 26, "accion": 34, "escribe": 34, "resultado": 38}   # 13,2 s
 TEO_MAGIA = 1.6
 
 
@@ -674,39 +709,28 @@ def cuadros_magia(esc):
     burbuja = esc.get("burbuja", "abuelos")
     if burbuja not in DIBUJOS:
         raise SystemExit("dibujo de burbuja desconocido: %s (hay: %s)" % (burbuja, ", ".join(DIBUJOS)))
-    fin = esc.get("final") or {}
+    fin = esc.get("resultado") or esc.get("final") or {}
     txt = dict(TEXTOS_MAGIA, **(esc.get("textos") or {}))
-    fondo1 = esc.get("fondo", "rincon")
+    hojas = dict(HOJAS_MAGIA, **(esc.get("hojas") or {}))
     teo = {"x": 420, "y": 1100, "escala": TEO_MAGIA}
     pipo = {"cuerpo": "sentado", "x": 890, "y": 1300, "escala": 0.58}
 
-    # momento 1 · el teléfono se enciende (fijo): el rincón → la hoja "acerca" → se endereza
-    c = [{"hojas": 9, "fondo": fondo1,
-          "teo": dict(teo, cuerpo="sentado", cara="abajo_plana",
-                      prop={"nombre": "telefono_0", "dx": 12, "dy": -34, "rot": -24}),
-          "pipo": dict(pipo, cara="en_serio"),
-          "props": [{"nombre": "nube_garabatos", "x": 600, "y": 530, "escala": 2.0,
-                     "disolucion": 0.0, "hacia_disolucion": 0.45}]},
-         {"hojas": 7, "zoom": {"pieza": "props/telefono_1", "escala": 2.7, "rot": -12, "manos": True,
-                               "ciclo": ["telefono_1", "telefono_2", "telefono_3", "telefono_2"]},
-          "pipo_dice": txt["enciende"], "pipo_asoma": {"lado": "izquierda", "cara": "en_serio"}},
-         {"hojas": 14, "fondo": fondo1,
-          "teo": dict(teo, cuerpo="sentado_erguido", cara="frente_sonrisa",
-                      prop={"ciclo": ["telefono_2", "telefono_3"], "nombre": "telefono_3", "dx": 12, "dy": -34, "rot": -24}),
-          "pipo": dict(pipo, cara="en_serio"),
-          "props": [{"nombre": "nube_garabatos", "x": 600, "y": 530, "escala": 2.0,
-                     "disolucion": 0.45, "hacia_disolucion": 1.0}],
-          "pipo_dice": txt["enciende"]}]
+    # momento 1 · el teléfono se enciende: SOLO la hoja "acerca" (WS34: Tomás sacó el rincón
+    # previo y el "se endereza"; la imagen buena es el teléfono grande poniéndose verde)
+    c = [{"hojas": hojas["enciende"],
+          "zoom": {"pieza": "props/telefono_1", "escala": 2.7, "rot": -12, "manos": True,
+                   "ciclo": ["telefono_1", "telefono_2", "telefono_3", "telefono_2"]},
+          "pipo_dice": txt["enciende"], "pipo_asoma": {"lado": "izquierda", "cara": "en_serio"}}]
 
     # momento 2 · la pequeña acción, cargando el aura (hueco 1: medita | pasea)
     if accion == "medita":
-        c.append({"hojas": 26, "fondo": esc.get("fondo_accion", "rincon"), "anillos": True,
+        c.append({"hojas": hojas["accion"], "fondo": esc.get("fondo_accion", "rincon"), "anillos": True,
                   "teo": dict(teo, cuerpo="medita", x=430, y=1180, aura="sube", pulso=True,
                               cara="cerrada_sonrisa"),
                   "pipo": dict(pipo, cara="orgullo"),
                   "pipo_dice": txt["medita"]})
     else:
-        c.append({"hojas": 26, "fondo": esc.get("fondo_accion", "calle"), "parallax": 26,
+        c.append({"hojas": hojas["accion"], "fondo": esc.get("fondo_accion", "calle"), "parallax": 26,
                   "teo": dict(teo, cuerpo="camina", ciclo=True, cara="costado_sonrisa", x=400, y=1120,
                               aura="sube", pulso=True),
                   "pipo": {"cuerpo": "camina", "ciclo": True, "fase": 2, "cara": "orgullo",
@@ -714,7 +738,7 @@ def cuadros_magia(esc):
                   "pipo_dice": txt["pasea"]})
 
     # momento 3 · escribe: la burbuja es el descubrimiento del volumen (hueco 2)
-    c.append({"hojas": 26, "fondo": "banco_plaza",
+    c.append({"hojas": hojas["escribe"], "fondo": "banco_plaza",
               "teo": dict(teo, cuerpo="sentado_erguido", cara="abajo_sonrisa", x=330, y=1090,
                           prop={"nombre": "cuadernito_0", "ciclo": ["cuadernito_0", "cuadernito_1", "cuadernito_2", "cuadernito_3"],
                                 "dx": 30, "dy": -10, "rot": -10}),
@@ -723,8 +747,8 @@ def cuadros_magia(esc):
                          "dibujo": burbuja, "punta": (370, 610), "delante": True}],
               "pipo_dice": txt["escribe"]})
 
-    # momento 4 · la acción con el aura desplegada (hueco 3: lo que cambia por volumen)
-    ultimo = {"hojas": 26, "fondo": fin.get("fondo", "mesa_familiar"),
+    # momento 4 · el RESULTADO (Tomás, WS34): la acción con el aura desplegada (hueco 3)
+    ultimo = {"hojas": hojas["resultado"], "fondo": fin.get("fondo", "mesa_familiar"),
               "teo": dict(teo, cuerpo="sentado_erguido", cara="costado_sonrisa", x=400, y=1100, aura=1.0, pulso=True),
               "pipo": {"cuerpo": "sentado", "cara": "orgullo", "x": 185, "y": 1345, "escala": 0.55},
               "secundarios": fin.get("secundarios", [{"tipo": "abuela", "x": 720, "y": 900},
@@ -1008,10 +1032,19 @@ def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30):
     pagina = 0
     for k, c in enumerate(cuadros):
         n = c["hojas"]
-        i = int(n * 0.72)
+        textos = globos_de(c)
+        desde = int(c.get("globo_desde", GLOBO_DESDE))
+        # un cuadro clave por globo (en el medio de su tramo); sin globo, al 72 % del cuadro
+        if textos:
+            tramo = max(1.0, (n - desde) / len(textos))
+            claves = [min(n - 1, int(desde + tramo * (j + 0.5))) for j in range(len(textos))]
+        else:
+            claves = [int(n * 0.72)]
+        for j, i in enumerate(claves):
+            rng = random.Random(pagina + i + 1)
+            rotulo = "%d · %s" % (k + 1, c["escena"]) + (" (%d/%d)" % (j + 1, len(claves)) if len(claves) > 1 else "")
+            piezas.append((rotulo, R.chrome(hoja_de(m, c, i, n, rng, 0.0), pagina + i + 1, total_hojas, rng)))
         pagina += n
-        rng = random.Random(pagina)
-        piezas.append(("%d · %s" % (k + 1, c["escena"]), R.chrome(hoja_de(m, c, i, n, rng, 0.0), pagina, total_hojas, rng)))
     piezas.append(("cierre", R.chrome(hoja_pipo_camara(m, 0, N_PIPO, random.Random(5)), total_hojas, total_hojas, random.Random(5))))
     piezas.append(("contratapa", contratapa(random.Random(77))))
 

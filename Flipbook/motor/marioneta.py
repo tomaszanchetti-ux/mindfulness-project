@@ -48,14 +48,16 @@ class Marioneta:
         return big, (lado / 2, lado / 2)
 
     def pegar(self, hoja, personaje, cuerpo, cara, x, y, escala=1.0, rng=None, temblor=True, rot=0.0, espejo=False,
-              aura=0.0, pulso=0.0):
+              aura=0.0, pulso=0.0, rot_cabeza=0.0):
         """Pega cuerpo + cabeza. cuerpo/cara son nombres de pieza sin el prefijo o con él.
         aura 0..1 = el halo salvia alrededor de la silueta (F4, la escena de la magia): se calcula
         de la silueta del personaje ya compuesto, así sirve para cualquier pose. pulso 0..1 lo
-        hace respirar hoja a hoja."""
+        hace respirar hoja a hoja. rot_cabeza = grados extra SOLO de la cabeza (el cabeceo de la
+        vida del cuadro, WS34): el cuerpo no se mueve."""
         if aura > 0:
             capa = Image.new("RGBA", hoja.size, (0, 0, 0, 0))
-            punto = self.pegar(capa, personaje, cuerpo, cara, x, y, escala, rng, temblor, rot, espejo)
+            punto = self.pegar(capa, personaje, cuerpo, cara, x, y, escala, rng, temblor, rot, espejo,
+                               rot_cabeza=rot_cabeza)
             self.halo(hoja, capa, aura, pulso)
             hoja.paste(capa, (0, 0), capa)
             return punto
@@ -78,7 +80,7 @@ class Marioneta:
         ax = x + dx * math.cos(r) - dy * math.sin(r)
         ay = y + dx * math.sin(r) + dy * math.cos(r)
         acab = self.anclas(personaje, cara)
-        rot_cab = rot + (-ac["rot"] if espejo else ac["rot"])
+        rot_cab = rot + (-ac["rot"] if espejo else ac["rot"]) + rot_cabeza
         big, (cx, cy) = self._pieza(personaje, cara, escala * ac["escala"], rot_cab, acab["cuello"], rng, temblor)
         if espejo:
             big = big.transpose(Image.FLIP_LEFT_RIGHT)
