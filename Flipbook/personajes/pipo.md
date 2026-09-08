@@ -39,6 +39,12 @@
 - **Su voz:** el texto en pantalla, primera persona, minúsculas, hasta 6 palabras por hoja.
 - **Cómo se mueve:** cuerpo redondo, trote corto con saltito; sentado se vuelve una pelota.
 - **No usa Dwellia.** No lo necesita; la magia es para humanos.
-- **Estado en el motor:** marioneta v1 lista (`motor/render.py`: `pug`, camina y sentado,
-  con sonrisa). **Pendiente D1a:** las 6 caras + la pose a cámara; hoy tiene una sola
-  expresión y eso ya no alcanza. Tomás: "el componente pug vale oro".
+- **Estado en el motor (WS32 · D1.1):** **piezas ilustradas** en `personajes/partes/pipo/`
+  generadas por `motor/partes.py`: las 6 caras (`cara_fastidio` · `cara_resignacion` ·
+  `cara_sospecha` · `cara_en_serio` · `cara_alegria_sarcastica` · `cara_orgullo`) y 5
+  cuerpos (`sentado` · `camina` en 4 fases · `panza_arriba` · `plantado` · `cae`). Se
+  componen con `motor/marioneta.py`. Cada cara es un juego de números en `CARAS_PIPO`
+  (arrugas, párpados, pupilas, orejas, boca, lengua, dientes, lágrima, inclinación): se
+  ajusta y se regenera en minutos. La marioneta v1 de palitos (`render.py: pug`) queda hasta
+  que D1.2 la reemplace. **Pendiente: la aprobación de Tomás mirando la hoja v2 sin rótulos.**
+  Tomás: "el componente pug vale oro".

@@ -13,7 +13,10 @@
 - **Cómo se mueve / qué gesto lo define:** cuerpo delgado de línea; postura como termómetro
   (encorvado sobre el teléfono → erguido con aura). Gesto que lo define: levantar la vista.
 - **Acento salvia:** no lleva; el acento de sus hojas es el objeto que se enciende o el aura.
-- **Estado en el motor:** marioneta lista (`motor/render.py`: `head`, `body_sit`, `body_walk`) ·
-  en la hoja de personajes v1 · en el guion del vol. 1.
-- **Pendiente (aprobado por Tomás, "por acá"):** pulir el pelo (hoy parece un gorro: hacerlo
-  más despeinado, menos macizo) y una pasada de edición general con material de referencia.
+- **Estado en el motor (WS32 · D1.1):** **piezas ilustradas** en `personajes/partes/teo/`
+  (`motor/partes.py`): 20 cabezas = 4 miradas (abajo · frente · arriba · costado) × 5 bocas
+  (plana · sonrisa · abierta · fruncida · triste), con el pelo rehecho como mechones
+  desparejos con volumen a la derecha (ya no parece gorro), anteojos sobre el pelo y barba
+  de puntitos; 4 cuerpos base (`parado` · `encorvado` · `sentado` · `sentado_erguido`) con
+  remera, pantalón y zapatillas. Los gestos de cada volumen (Spiderman, selfie, escribir con
+  burbuja…) se suman en D1.2. La marioneta v1 de palitos queda en `render.py` hasta entonces.

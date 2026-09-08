@@ -1,0 +1,469 @@
+{
+ "pipo": {
+  "cara_fastidio": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tilt": 0,
+   "tipo": "cabeza",
+   "png": "personajes/partes/pipo/cara_fastidio.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_resignacion": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tilt": -10,
+   "tipo": "cabeza",
+   "png": "personajes/partes/pipo/cara_resignacion.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_sospecha": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tilt": 0,
+   "tipo": "cabeza",
+   "png": "personajes/partes/pipo/cara_sospecha.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_en_serio": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tilt": 22,
+   "tipo": "cabeza",
+   "png": "personajes/partes/pipo/cara_en_serio.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_alegria_sarcastica": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tilt": -16,
+   "tipo": "cabeza",
+   "png": "personajes/partes/pipo/cara_alegria_sarcastica.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_orgullo": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tilt": 0,
+   "tipo": "cabeza",
+   "png": "personajes/partes/pipo/cara_orgullo.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_sentado": {
+   "cabeza": [
+    200,
+    150
+   ],
+   "escala": 1.0,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_sentado.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_camina": {
+   "cabeza": [
+    268,
+    176
+   ],
+   "escala": 0.88,
+   "rot": 8,
+   "z_cabeza": "delante",
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_camina.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_panza_arriba": {
+   "cabeza": [
+    262,
+    218
+   ],
+   "escala": 0.86,
+   "rot": 118,
+   "z_cabeza": "delante",
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_panza_arriba.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_plantado": {
+   "cabeza": [
+    270,
+    168
+   ],
+   "escala": 0.88,
+   "rot": -6,
+   "z_cabeza": "delante",
+   "correa": [
+    300,
+    186
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_plantado.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_cae": {
+   "cabeza": [
+    204,
+    276
+   ],
+   "escala": 0.92,
+   "rot": 170,
+   "z_cabeza": "delante",
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_cae.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_camina_0": {
+   "cabeza": [
+    268,
+    176
+   ],
+   "escala": 0.88,
+   "rot": 8,
+   "z_cabeza": "delante",
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_camina_0.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_camina_1": {
+   "cabeza": [
+    268,
+    176
+   ],
+   "escala": 0.88,
+   "rot": 8,
+   "z_cabeza": "delante",
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_camina_1.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_camina_2": {
+   "cabeza": [
+    268,
+    176
+   ],
+   "escala": 0.88,
+   "rot": 8,
+   "z_cabeza": "delante",
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_camina_2.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_camina_3": {
+   "cabeza": [
+    268,
+    176
+   ],
+   "escala": 0.88,
+   "rot": 8,
+   "z_cabeza": "delante",
+   "tipo": "cuerpo",
+   "png": "personajes/partes/pipo/cuerpo_camina_3.png",
+   "lienzo": 400,
+   "escala_png": 2
+  }
+ },
+ "teo": {
+  "cara_abajo_plana": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_abajo_plana.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_abajo_sonrisa": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_abajo_sonrisa.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_abajo_abierta": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_abajo_abierta.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_abajo_fruncida": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_abajo_fruncida.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_abajo_triste": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_abajo_triste.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_frente_plana": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_frente_plana.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_frente_sonrisa": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_frente_sonrisa.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_frente_abierta": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_frente_abierta.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_frente_fruncida": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_frente_fruncida.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_frente_triste": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_frente_triste.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_arriba_plana": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_arriba_plana.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_arriba_sonrisa": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_arriba_sonrisa.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_arriba_abierta": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_arriba_abierta.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_arriba_fruncida": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_arriba_fruncida.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_arriba_triste": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_arriba_triste.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_costado_plana": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_costado_plana.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_costado_sonrisa": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_costado_sonrisa.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_costado_abierta": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_costado_abierta.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_costado_fruncida": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_costado_fruncida.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_costado_triste": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_costado_triste.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_parado": {
+   "cabeza": [
+    201.0,
+    96.0
+   ],
+   "escala": 0.72,
+   "rot": 0.0,
+   "z_cabeza": "delante",
+   "mano_izq": [
+    138,
+    226
+   ],
+   "mano_der": [
+    262,
+    226
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_parado.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_encorvado": {
+   "cabeza": [
+    247.0,
+    122.0
+   ],
+   "escala": 0.72,
+   "rot": 20.0,
+   "z_cabeza": "delante",
+   "mano_izq": [
+    138,
+    226
+   ],
+   "mano_der": [
+    262,
+    226
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_encorvado.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_sentado": {
+   "cabeza": [
+    252.0,
+    144.0
+   ],
+   "escala": 0.72,
+   "rot": 24.0,
+   "z_cabeza": "delante",
+   "manos": [
+    246,
+    214
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_sentado.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_sentado_erguido": {
+   "cabeza": [
+    208.8,
+    116.8
+   ],
+   "escala": 0.72,
+   "rot": 4.800000000000001,
+   "z_cabeza": "delante",
+   "manos": [
+    246,
+    214
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_sentado_erguido.png",
+   "lienzo": 400,
+   "escala_png": 2
+  }
+ }
+}

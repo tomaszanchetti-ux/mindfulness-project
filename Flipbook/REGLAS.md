@@ -72,8 +72,11 @@ en personaje y al escribir un guion.
   sospecha · ¿en serio? · alegría sarcástica · orgullo) con las herramientas del pug (arrugas
   como cejas, orejas, lengua, cabeza ladeada). **Pipo mira a cámara.** Teo lleva el arco,
   Pipo lleva la cara.
-- Cada personaje es una **marioneta de partes** en `motor/render.py`: cabeza, cuerpo, poses
-  (sentado, camina, erguido). Una pose nueva se agrega una vez y sirve para todos los volúmenes.
+- Cada personaje es una **marioneta de piezas ilustradas** (`motor/partes.py` las dibuja como
+  SVG y las renderiza a PNG transparente en `personajes/partes/`; `motor/marioneta.py` las
+  compone con anclas y temblor): una cabeza por cara, un cuerpo por pose. Una pieza nueva se
+  agrega una vez y sirve para todos los volúmenes. Se regenera todo con
+  `python3 Flipbook/motor/partes.py`.
 
 ## 5. La historia
 - Cada volumen sigue el **formato único de 5 escenas** de `guiones/00_FORMATO_Y_OPUESTOS.md`:
