@@ -190,8 +190,8 @@ CARAS_PIPO = {
     # 5. alegría sarcástica ("te lo dije"): guiño, sonrisa engreída de costado, lengua afuera, ladeada
     "alegria_sarcastica": dict(cejas=(-8, 18), cejas_y=(142, 150), tilt=-16, guino=1, ojos=(52, 52), parpado_abajo=(0.2, 0.0),
                                boca="torcida", lengua=True, mirada=(0.35, -0.15), orejas=(0.1, 0.5)),
-    # 6. orgullo: ojos enormes con estrellas y una lágrima, boca abierta de alegría, orejas relajadas
-    "orgullo": dict(cejas=(-12, -12), cejas_y=(136, 136), ojos=(54, 54), brillo=1.5, estrellas=True, lagrima=True,
+    # 6. orgullo (la Alegría de Tomás, WS34): ojos enormes con estrellas, SIN lágrima, boca abierta de alegría, orejas relajadas
+    "orgullo": dict(cejas=(-12, -12), cejas_y=(136, 136), ojos=(54, 54), brillo=1.5, estrellas=True, lagrima=False,
                     boca="sonrisa_abierta", mirada=(0.0, -0.15), orejas=(0.4, 0.4)),
 }
 

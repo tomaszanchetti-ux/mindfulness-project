@@ -17,19 +17,22 @@ cartel:
 escenas:
 
   # ---------------------------------------------------------------- 2 · el problema
+  # Regla de caras (WS34): el problema arranca en sospecha y sube a fastidio; el espejo y la
+  # magia van en orgullo (alegría); en_serio (duda) es para "algo se enciende"; el pícaro
+  # (alegria_sarcastica) es solo el iris del cierre.
   - tipo: problema
     fondo: rincon
     cuadros:
       - hojas: 16
         teo: {cuerpo: sentado, cara: abajo_plana, x: 430, y: 1100, escala: 1.6,
               prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
-        pipo: {cuerpo: sentado, cara: fastidio, x: 890, y: 1300, escala: 0.6}
+        pipo: {cuerpo: sentado, cara: sospecha, x: 890, y: 1300, escala: 0.6}
         pipo_dice: otra vez el rincón.
 
       - hojas: 14
         teo: {cuerpo: sentado, cara: abajo_plana, x: 430, y: 1100, escala: 1.6,
               prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
-        pipo: {cuerpo: sentado, cara: resignacion, x: 890, y: 1300, escala: 0.6}
+        pipo: {cuerpo: sentado, cara: sospecha, x: 890, y: 1300, escala: 0.6}
         props:
           - {nombre: nube_garabatos, x: 610, y: 545, escala: 2.0, disolucion: 0.0, hacia_disolucion: 0.0}
         pipo_dice: dos horas mirando nada.
@@ -37,14 +40,9 @@ escenas:
       # la hoja "acerca": el libro se acerca al detalle que delata
       - hojas: 10
         zoom: {pieza: props/telefono_0, escala: 2.7, rot: -12, manos: true}
-        pipo_asoma: {lado: izquierda, cara: en_serio}
+        pipo_asoma: {lado: izquierda, cara: fastidio}
         pipo_dice: y el pulgar no para.
 
-      - hojas: 16
-        teo: {cuerpo: sentado, cara: abajo_triste, x: 430, y: 1100, escala: 1.6,
-              prop: {nombre: telefono_0, dx: 12, dy: -34, rot: -24}}
-        pipo: {cuerpo: sentado, cara: en_serio, x: 890, y: 1300, escala: 0.6}
-        pipo_dice: teito, mira para arriba.
 
   # ---------------------------------------------------------------- 3 · el espejo de Pipo
   - tipo: espejo
@@ -57,13 +55,13 @@ escenas:
         pipo_dice: la vida pasa por otro lado.
 
       - hojas: 14
-        pipo: {cuerpo: panza_arriba, cara: alegria_sarcastica, x: 610, y: 1120, escala: 1.0}
+        pipo: {cuerpo: panza_arriba, cara: orgullo, x: 610, y: 1120, escala: 1.0}
         teo: {cuerpo: sentado, cara: abajo_plana, x: 175, y: 1330, escala: 0.9,
               prop: {nombre: telefono_0, dx: 8, dy: -22, rot: -24}}
         pipo_dice: teito querido.
 
       - hojas: 12
-        pipo: {cuerpo: panza_arriba, cara: en_serio, x: 610, y: 1120, escala: 1.0}
+        pipo: {cuerpo: panza_arriba, cara: orgullo, x: 610, y: 1120, escala: 1.0}
         teo: {cuerpo: sentado, cara: abajo_plana, x: 175, y: 1330, escala: 0.9,
               prop: {nombre: telefono_0, dx: 8, dy: -22, rot: -24}}
         pipo_dice: yo ya lo entendí.

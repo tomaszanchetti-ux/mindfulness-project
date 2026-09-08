@@ -25,7 +25,7 @@ import subprocess
 import sys
 
 import yaml
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import render as R                       # noqa: E402  (helpers de la v1: papel, línea, libro)
@@ -527,7 +527,9 @@ def _posicion(spec, anclas_fondo, t):
 
 # ---------------------------------------------------------------- una hoja
 
-CARAS_ASOMA = {"problema": "fastidio", "espejo": "en_serio", "magia": "orgullo", "cartel": "alegria_sarcastica"}
+# Regla de caras (WS34): problema = sospecha → fastidio · espejo y magia = orgullo (alegría) ·
+# en_serio (duda) solo para "algo se enciende" · alegria_sarcastica (pícaro) solo en el iris.
+CARAS_ASOMA = {"problema": "fastidio", "espejo": "orgullo", "magia": "orgullo", "cartel": "alegria_sarcastica"}
 
 
 def hoja_de(m, cuadro, i, n, rng, desp=0.0):
@@ -682,16 +684,16 @@ def cuadros_magia(esc):
     c = [{"hojas": 9, "fondo": fondo1,
           "teo": dict(teo, cuerpo="sentado", cara="abajo_plana",
                       prop={"nombre": "telefono_0", "dx": 12, "dy": -34, "rot": -24}),
-          "pipo": dict(pipo, cara="sospecha"),
+          "pipo": dict(pipo, cara="en_serio"),
           "props": [{"nombre": "nube_garabatos", "x": 600, "y": 530, "escala": 2.0,
                      "disolucion": 0.0, "hacia_disolucion": 0.45}]},
          {"hojas": 7, "zoom": {"pieza": "props/telefono_1", "escala": 2.7, "rot": -12, "manos": True,
                                "ciclo": ["telefono_1", "telefono_2", "telefono_3", "telefono_2"]},
-          "pipo_dice": txt["enciende"], "pipo_asoma": {"lado": "izquierda", "cara": "sospecha"}},
+          "pipo_dice": txt["enciende"], "pipo_asoma": {"lado": "izquierda", "cara": "en_serio"}},
          {"hojas": 14, "fondo": fondo1,
           "teo": dict(teo, cuerpo="sentado_erguido", cara="frente_sonrisa",
                       prop={"ciclo": ["telefono_2", "telefono_3"], "nombre": "telefono_3", "dx": 12, "dy": -34, "rot": -24}),
-          "pipo": dict(pipo, cara="sospecha"),
+          "pipo": dict(pipo, cara="en_serio"),
           "props": [{"nombre": "nube_garabatos", "x": 600, "y": 530, "escala": 2.0,
                      "disolucion": 0.45, "hacia_disolucion": 1.0}],
           "pipo_dice": txt["enciende"]}]
@@ -707,7 +709,7 @@ def cuadros_magia(esc):
         c.append({"hojas": 26, "fondo": esc.get("fondo_accion", "calle"), "parallax": 26,
                   "teo": dict(teo, cuerpo="camina", ciclo=True, cara="costado_sonrisa", x=400, y=1120,
                               aura="sube", pulso=True),
-                  "pipo": {"cuerpo": "camina", "ciclo": True, "fase": 2, "cara": "alegria_sarcastica",
+                  "pipo": {"cuerpo": "camina", "ciclo": True, "fase": 2, "cara": "orgullo",
                            "x": 790, "y": 1290, "escala": 0.7},
                   "pipo_dice": txt["pasea"]})
 
@@ -828,8 +830,8 @@ def cartel(g, m, i, n, rng):
 
 # ---------------------------------------------------------------- C · el cierre fijo
 
-TEXTOS_CONTRATAPA = ["Dwellia", "una Pausa al día, fuera del teléfono",
-                     "Teo y Pipo volverán próximamente", "link en la bio"]
+TEXTOS_CONTRATAPA = ["Teo y Pipo volverán", "próximamente",
+                     "Dwellia", "una Pausa al día, fuera del teléfono", "link en la bio"]
 
 
 CARA_CIERRE, ESC_CIERRE, POS_CIERRE, PIVOTE_CIERRE = "cara_alegria_sarcastica", 2.15, (R.W / 2, 1010), (200, 210)
@@ -865,16 +867,34 @@ def frames_iris(base, cx, cy, cuantos):
     return fuera
 
 
+def aro_dwellia(im, cx, cy, r, rng):
+    """El símbolo de Dwellia (WS34): un aro salvia claro con un halo suave alrededor, el mismo
+    lenguaje que el aura de Teo y la calma-como-halo del onboarding. Reemplaza al rombo provisorio."""
+    halo = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    hd = ImageDraw.Draw(halo)
+    for k, (dr, a) in enumerate(((r * 0.95, 70), (r * 0.65, 55), (r * 0.35, 40))):
+        hd.ellipse((cx - r - dr, cy - r - dr, cx + r + dr, cy + r + dr), fill=R.SAGE_LIGHT + (a,))
+    halo = halo.filter(ImageFilter.GaussianBlur(r * 0.45))
+    im.paste(halo, (0, 0), halo)
+    d = ImageDraw.Draw(im)
+    R.circle(d, cx, cy, r, rng, width=max(6, int(r * 0.16)), color=R.IVORY, amp=1.2)
+    R.circle(d, cx, cy, r * 0.62, rng, width=max(3, int(r * 0.06)), color=mezcla(R.SAGE_DEEP, R.IVORY, 0.55), amp=1.0)
+
+
 def contratapa(rng):
-    """C3: hoja salvia con los cuatro textos en crema/marfil. Fija para todos los volúmenes."""
+    """C3: hoja salvia. Primero y GRANDE "Teo y Pipo volverán próximamente"; abajo y más chico el
+    bloque de Dwellia con el aro (WS34, orden invertido por Tomás). Fija para todos los volúmenes."""
     im = R.paper(rng, base=R.SAGE_DEEP)
     d = ImageDraw.Draw(im)
     d.rounded_rectangle((80, 120, R.W - 80, R.H - 120), 30, outline=mezcla(R.SAGE_DEEP, R.CREAM, 0.45), width=5)
-    R.leaf(d, R.W / 2, 760, rng, s=1.5)
-    d.text((R.W / 2, 990), TEXTOS_CONTRATAPA[0], fill=R.IVORY, font=R.font(112, bold=True), anchor="mm")
-    d.text((R.W / 2, 1092), TEXTOS_CONTRATAPA[1], fill=R.CREAM, font=R.font(44), anchor="mm")
-    d.text((R.W / 2, 1300), TEXTOS_CONTRATAPA[2], fill=R.IVORY, font=R.font(50), anchor="mm")
-    d.text((R.W / 2, 1660), TEXTOS_CONTRATAPA[3], fill=mezcla(R.SAGE_DEEP, R.CREAM, 0.78), font=R.font(40), anchor="mm")
+    d.text((R.W / 2, 560), TEXTOS_CONTRATAPA[0], fill=R.IVORY, font=font_que_entra(d, TEXTOS_CONTRATAPA[0], 880, 108, condensada=False), anchor="mm")
+    d.text((R.W / 2, 690), TEXTOS_CONTRATAPA[1], fill=R.IVORY, font=font_que_entra(d, TEXTOS_CONTRATAPA[1], 880, 108, condensada=False), anchor="mm")
+    R.stroke(d, [(400, 840), (680, 840)], rng, width=4, color=mezcla(R.SAGE_DEEP, R.CREAM, 0.5), amp=1.2)
+    aro_dwellia(im, R.W / 2, 1120, 78, rng)
+    d = ImageDraw.Draw(im)
+    d.text((R.W / 2, 1300), TEXTOS_CONTRATAPA[2], fill=R.IVORY, font=R.font(84, bold=True), anchor="mm")
+    d.text((R.W / 2, 1385), TEXTOS_CONTRATAPA[3], fill=R.CREAM, font=R.font(40), anchor="mm")
+    d.text((R.W / 2, 1660), TEXTOS_CONTRATAPA[4], fill=mezcla(R.SAGE_DEEP, R.CREAM, 0.78), font=R.font(38), anchor="mm")
     return im
 
 
