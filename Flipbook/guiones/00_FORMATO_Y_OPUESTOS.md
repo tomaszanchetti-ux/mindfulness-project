@@ -150,12 +150,17 @@ Cuatro lugares, en orden de importancia:
 3. **Un comentario propio fijado** arriba de todos: la Pausa del volumen + "link en la bio".
 4. **La bio** con el link (D3: landing + seguimiento).
 
-Datos de la plataforma a verificar al abrir la cuenta: una cuenta personal necesita
-~1.000 seguidores para poner link en la bio; una cuenta de empresa lo permite desde el
-día uno pero limita la música a un catálogo comercial (sin canciones virales). Propuesta:
-arrancar **personal** (la música pesa en un flipbook) y usar el comentario fijado hasta
-llegar a los mil. Agrupar los volúmenes en una **lista de reproducción "El diario de
-Pipo"** para que se miren de corrido. Claude no crea ni opera la cuenta.
+**Verificado el 08/09/2026 en la documentación oficial** (el detalle y las fuentes, en
+`Flipbook/cuenta_tiktok.md`): el link clicleable en la bio pide **1.000 seguidores** en una
+cuenta general, y en una cuenta de empresa ya **no alcanza con cambiar el tipo de cuenta**:
+hay que **verificar la empresa con un documento mercantil real** (en España, certificado de
+constitución, registro mercantil o IVA). Además, la cuenta de empresa pierde el catálogo
+general de música y se queda con la Biblioteca Musical Comercial, sin audios en tendencia.
+**Decisión: cuenta general**, con la dirección como texto en la bio y en el comentario
+fijado hasta llegar a los mil. Ojo: TikTok **ya no permite enlazar el perfil de Instagram o
+YouTube** desde el perfil, y penaliza las cadenas de enlaces (mejor link directo que
+Linktree). Agrupar los volúmenes en una **lista de reproducción "El diario de Pipo"** para
+que se miren de corrido. Claude no crea ni opera la cuenta.
 
 ## 9. Lo que cambió respecto de la v1 (WS26)
 
