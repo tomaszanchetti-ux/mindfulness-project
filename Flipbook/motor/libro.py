@@ -11,7 +11,7 @@ Qué hace este archivo, en orden:
   1. lee el guion (`cargar`) y lo aplana en una lista de CUADROS (beats) de N hojas cada uno;
   2. dibuja cada hoja (`hoja_de`): papel → fondo → secundarios → props → personajes → globo;
   3. le pone el libro encima (`R.chrome`, `R.page_turn`) y emite los frames;
-  4. el cartel de apertura (B2) y el cierre fijo (C) se suman en los pasos siguientes.
+  4. el cartel de apertura y el cierre fijo se suman en los pasos B2 y C.
 
 La capa de detalle (Teo, Pipo, teléfono, cuadernito) entra SIEMPRE por `Marioneta`; los
 fondos, los props sueltos, los secundarios y el globo son capa simple, programados acá.
@@ -35,6 +35,11 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))      # Flipbo
 PISO = 1420                              # la línea del piso en una hoja
 HOJAS_POR_SEG = R.FPS / R.HOLD           # 10 hojas por segundo (REGLAS §2)
 
+# La cuarta tinta, reservada solo para carteles (REGLAS §3): apagadas, retro, conviven con
+# crema, tierra y salvia.
+TINTAS = {"ocre": (181, 141, 78), "ladrillo": (164, 92, 71), "azul_cartel": (73, 97, 117)}
+
+
 # ---------------------------------------------------------------- utilidades chicas
 
 def entre(v, a, b):
@@ -49,9 +54,30 @@ def mezcla(c1, c2, t):
     return tuple(int(lerp(a, b, t)) for a, b in zip(c1, c2))
 
 
+def font_condensada(tam):
+    """La tipografía del cartel: condensada, grande, tipo cartel de los años 30."""
+    for p in ("/System/Library/Fonts/Supplemental/DIN Condensed Bold.ttf",
+              "/System/Library/Fonts/Supplemental/Impact.ttf",
+              "/System/Library/Fonts/Supplemental/Arial Narrow Bold.ttf",
+              "/System/Library/Fonts/Avenir Next Condensed.ttc"):
+        if os.path.exists(p):
+            return ImageFont.truetype(p, tam)
+    return R.font(tam, bold=True)         # respaldo: Georgia Bold
+
+
 def ancho(d, texto, f):
     caja = d.textbbox((0, 0), texto, font=f)
     return caja[2] - caja[0], caja[3] - caja[1]
+
+
+def font_que_entra(d, texto, ancho_max, tam, condensada=True, minimo=28):
+    """Achica la tipografía hasta que el texto entre en `ancho_max`."""
+    while tam > minimo:
+        f = font_condensada(tam) if condensada else R.font(tam)
+        if ancho(d, texto, f)[0] <= ancho_max:
+            return f
+        tam -= 4
+    return font_condensada(minimo) if condensada else R.font(minimo)
 
 
 # ---------------------------------------------------------------- fondos (capa simple)
@@ -747,6 +773,59 @@ def aplanar(g):
     return fuera
 
 
+# ---------------------------------------------------------------- B2 · el cartel de apertura
+
+def imagen_cartel(im, m, rng, cx, cy, r):
+    """Provisorio: Teo y Pipo trotando dentro de un círculo crema, con las piezas que hay.
+    B1 (capa de detalle) va a reemplazar el cuerpo de esta función por un PNG ilustrado
+    a lo Tintín; el círculo, el tamaño y el centro se quedan como están."""
+    d = ImageDraw.Draw(im)
+    R.circle(d, cx, cy, r, rng, width=9, color=R.UMBER, fill=R.CREAM)
+    m.pegar(im, "teo", "camina_1", "cara_costado_sonrisa", cx - 85, cy + 40, escala=1.12, rng=rng)
+    m.pegar(im, "pipo", "camina_2", "cara_alegria_sarcastica", cx + 140, cy + 175, escala=0.62, rng=rng)
+
+
+def _formas(d, rng, tinta, forma, claro, oscuro):
+    if forma == "diagonales":
+        for k in range(-3, 9):
+            x = k * 210
+            d.polygon([(x, 0), (x + 95, 0), (x + 95 - 620, R.H), (x - 620, R.H)], fill=claro if k % 2 else oscuro)
+    elif forma == "rayos":
+        for k in range(16):
+            a0, a1 = k * math.pi / 8, k * math.pi / 8 + math.pi / 16
+            d.polygon([(540, 1010), (540 + 2400 * math.cos(a0), 1010 + 2400 * math.sin(a0)),
+                       (540 + 2400 * math.cos(a1), 1010 + 2400 * math.sin(a1))], fill=claro)
+    elif forma == "circulo":
+        R.circle(d, 540, 1010, 470, rng, width=0, fill=claro, amp=4)
+        R.circle(d, 540, 1010, 470, rng, width=10, color=oscuro, amp=4)
+    elif forma == "franja":
+        d.rectangle((0, 300, R.W, 620), fill=claro)
+        d.rectangle((0, 1330, R.W, 1560), fill=claro)
+    elif forma == "marco":
+        d.rectangle((60, 90, R.W - 60, R.H - 90), outline=claro, width=26)
+        d.rectangle((110, 140, R.W - 110, R.H - 140), outline=oscuro, width=6)
+
+
+def cartel(g, m, i, n, rng):
+    """2 s, respira sin pasar página. Cuarta tinta + formas por volumen (REGLAS §3)."""
+    c = g.get("cartel") or {}
+    tinta = TINTAS.get(c.get("tinta", "ocre"), TINTAS["ocre"])
+    im = R.paper(rng, base=tinta)
+    d = ImageDraw.Draw(im)
+    _formas(d, rng, tinta, c.get("formas", "diagonales"), mezcla(tinta, R.CREAM, 0.26), mezcla(tinta, R.UMBER, 0.35))
+    f = font_que_entra(d, "TEO Y PIPO", 900, 210)
+    d.text((R.W / 2, 400), "TEO Y PIPO", fill=R.IVORY, font=f, anchor="mm")
+    R.stroke(d, [(240, 520), (840, 520)], rng, width=6, color=R.IVORY, amp=1.5)
+    imagen_cartel(im, m, rng, R.W / 2, 1030, 340)
+    d = ImageDraw.Draw(im)
+    titulo = str(g.get("titulo", "SIN TÍTULO")).upper()
+    d.text((R.W / 2, 1480), "en", fill=R.IVORY, font=R.font(52), anchor="mm")
+    d.text((R.W / 2, 1600), titulo, fill=R.IVORY, font=font_que_entra(d, titulo, 900, 120), anchor="mm")
+    d.text((R.W / 2, 1740), "Vol. %s" % g.get("volumen", 0), fill=mezcla(tinta, R.CREAM, 0.75),
+           font=R.font(54), anchor="mm")
+    return im
+
+
 # ---------------------------------------------------------------- el render
 
 def render(ruta_guion, solo_cuadros=False):
@@ -775,8 +854,15 @@ def render(ruta_guion, solo_cuadros=False):
             im.save(os.path.join(frames, "f%05d.png" % k[0]))
             k[0] += 1
 
-    # la historia
+    # el cartel (2 s, sin pasar página)
+    seg_cartel = float((g.get("cartel") or {}).get("duracion", 2.0))
+    n_cartel = max(1, int(seg_cartel * HOJAS_POR_SEG))
     previo = None
+    for i in range(n_cartel):
+        previo = cartel(g, m, i, n_cartel, random.Random(9000 + i))
+        emitir(previo, R.HOLD)
+
+    # la historia
     pagina = 0
     desp = 0.0
     for c in cuadros:
@@ -785,11 +871,8 @@ def render(ruta_guion, solo_cuadros=False):
             pagina += 1
             rng = random.Random(pagina)
             im = R.chrome(hoja_de(m, c, i, n, rng, desp), pagina, total_hojas, rng)
-            if previo is None:
-                emitir(im, R.HOLD)
-            else:
-                emitir(R.page_turn(previo, im, 0.5), 1)
-                emitir(im, R.HOLD - 1)
+            emitir(R.page_turn(previo, im, 0.5), 1)
+            emitir(im, R.HOLD - 1)
             previo = im
             desp += float(c.get("parallax", 0) or 0)
 
@@ -805,7 +888,7 @@ def render(ruta_guion, solo_cuadros=False):
 def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30):
     """La hoja fija: un cuadro clave de cada cuadro del guion (más el cartel y el cierre),
     para revisar la lectura sin abrir el video."""
-    piezas = []
+    piezas = [("cartel", cartel(g, m, 0, 1, random.Random(9000)))]
     pagina = 0
     for k, c in enumerate(cuadros):
         n = c["hojas"]
