@@ -444,33 +444,31 @@ def teo_cabeza(mirada="frente", boca="plana", pelo="normal", gesto=None, apriete
               "M 340 132 C 326 136, 312 146, 302 160"):
         p.append(path(d, w=W_SEC))
     if gesto == "pose":
-        # --- LA cara del espejo -------------------------------------------------------
-        # Se dibuja sobre la misma geometría que el resto de las caras de Teo (ojos en y=196,
-        # nariz en 208, boca en 278): moverlas hacia abajo le come el aire a los labios y
-        # todo queda apretado contra el mentón.
-        ap = 5 * apriete                             # cuánto se aprieta en la variante 1
-        # los huecos de las mejillas: curvas cortas y VERTICALES pegadas al borde de la cara,
-        # a la altura del pómulo. Largas y hacia el centro leen como surco o como lágrima.
-        p.append(path(f"M {132 + ap} 226 C {142 + ap} 248, {143 + ap} 268, {137 + ap} 288", stroke=TAUPE, w=W_SEC))
-        p.append(path(f"M {272 - ap} 226 C {262 - ap} 248, {261 - ap} 268, {267 - ap} 288", stroke=TAUPE, w=W_SEC))
-        # cejas gruesas y asimétricas: la izquierda baja y recta, la derecha arqueada y alta
-        p.append(path(f"M 142 {180 - ap} C 158 {174 - ap}, 180 {174 - ap}, 194 {181 - ap}", stroke=UMBER, w=W_SEC))
-        p.append(path(f"M 214 {172 - ap} C 230 {158 - ap}, 252 {159 - ap}, 266 {171 - ap}", stroke=UMBER, w=W_SEC))
-        # ojos entrecerrados con la pupila grande, de frente: la intensidad
+        # --- LA cara del espejo (la caricatura de la pose de revista) -----------------
+        # Referencia que pasó Tomás: mejillas MUY chupadas, labios empujados hacia adelante
+        # en una boquita chica, cejas JUNTAS y levantadas por dentro, y los ojos bien
+        # ABIERTOS mirando fijo (no entrecerrados: eso la apagaba). Es el gesto, no el actor.
+        ap = 5 * apriete                             # cuánto la aprieta la variante 1
+        # los huecos de las mejillas: curvas verticales pegadas al borde, a la altura del pómulo
+        p.append(path(f"M {132 + ap} 224 C {144 + ap} 250, {145 + ap} 272, {138 + ap} 292", stroke=TAUPE, w=W_SEC))
+        p.append(path(f"M {272 - ap} 224 C {260 - ap} 250, {259 - ap} 272, {266 - ap} 292", stroke=TAUPE, w=W_SEC))
+        # cejas gruesas, JUNTAS y levantadas por dentro: es lo que da la intensidad
+        p.append(path(f"M 140 {180 + ap} C 156 {170 + ap}, 180 {166 - ap}, 196 {172 - ap}", stroke=UMBER, w=W_SEC + 1))
+        p.append(path(f"M 212 {172 - ap} C 228 {166 - ap}, 252 {170 + ap}, 268 {180 + ap}", stroke=UMBER, w=W_SEC + 1))
+        # ojos bien abiertos, pupila grande, mirando fijo
         for cx in (166, 240):
-            p.append(path(f"M {cx - 18} {194 + ap * 0.4} C {cx - 8} {185 + ap}, {cx + 8} {185 + ap}, {cx + 18} {194 + ap * 0.4}", w=W_SEC))
-            p.append(path(f"M {cx - 16} 204 C {cx - 6} 209, {cx + 6} 209, {cx + 16} 204", stroke=TAUPE, w=W_SEC - 1))
-            p.append(circ(cx, 199, 7.0, UMBER))
-            p.append(circ(cx + 2.6, 196.6, 2.2, IVORY))
-        p.append(path("M 206 208 C 212 226, 216 238, 206 244 C 200 246, 194 244, 192 240", w=W_SEC))
-        # los labios empujados: MÁS ANCHOS QUE ALTOS y bien abajo, para que no se mezclen con
-        # los puntitos del bigote. Labio de arriba en pico, el de abajo lleno.
-        lx = 4 * apriete
-        p.append(path(f"M {164 + lx} 288 C {176 + lx} 268, {228 - lx} 268, {240 - lx} 288 "
-                      f"C {236 - lx} 310, {220 - lx} 320, 202 320 C 184 320, {168 + lx} 310, {164 + lx} 288 Z",
+            p.append(path(f"M {cx - 19} 198 C {cx - 10} 186, {cx + 10} 186, {cx + 19} 198 "
+                          f"C {cx + 10} 212, {cx - 10} 212, {cx - 19} 198 Z", fill=IVORY, w=W_SEC))
+            p.append(circ(cx, 198, 8.0, UMBER))
+            p.append(circ(cx + 2.8, 195, 2.4, IVORY))
+        p.append(path("M 206 210 C 212 228, 216 240, 206 246 C 200 248, 194 246, 192 242", w=W_SEC))
+        # la boquita empujada hacia adelante: chica, alta y llena, con la línea de los labios
+        lx = 3 * apriete
+        p.append(path(f"M {180 + lx} 292 C {184 + lx} 274, {220 - lx} 274, {224 - lx} 292 "
+                      f"C {226 - lx} 308, {214 - lx} 316, 202 316 C 190 316, {178 + lx} 308, {180 + lx} 292 Z",
                       fill=PIEL, w=W_SEC))
-        p.append(path(f"M {172 + lx} 288 C 186 296, 218 296, {232 - lx} 288", stroke=UMBER, w=W_SEC))
-        p.append(path("M 190 278 C 196 272, 208 272, 214 278", stroke=TAUPE, w=W_SEC - 1))   # el arco del labio
+        p.append(path(f"M {186 + lx} 292 C 194 298, 210 298, {218 - lx} 292", stroke=UMBER, w=W_SEC))
+        p.append(path("M 194 322 C 200 326, 208 326, 212 322", stroke=TAUPE, w=W_SEC - 1))
         if pelo == "caido":
             p.append(path("M 176 96 C 232 92, 272 130, 266 214 C 262 232, 238 232, 238 212 "
                           "C 240 176, 222 140, 176 128 Z", fill=SAND))
@@ -550,6 +548,55 @@ def teo_cuerpo_parado(postura=1.0):
     p.append(path(f"M {180 + lean} {sy} C {188 + lean} {sy + 12}, {214 + lean} {sy + 12}, {222 + lean} {sy}", w=W_SEC))
     return svg(p), {"cabeza": [201 + lean, sy + 4], "escala": 0.72, "rot": (1 - postura) * 20, "z_cabeza": "delante",
                     "mano_izq": [138, 226], "mano_der": [262, 226]}
+
+def teo_nuca():
+    """Teo visto DE ESPALDAS. De atrás la cabeza es CASI TODA PELO: se cubre el óvalo entero
+    y solo queda un borde de piel abajo (la nuca) más las orejas asomando a los costados. Se
+    le suma la misma mata despeinada de la cara de frente, que es lo que lo hace reconocible.
+    Sin rasgos: su cara aparece solo en el reflejo del espejo (WS36)."""
+    p = []
+    p.append(path("M 176 318 L 172 366 L 230 366 L 226 318 Z", fill=PIEL))
+    p.append(path("M 118 190 C 118 120, 152 84, 200 84 C 250 84, 284 122, 284 196 "
+                  "C 284 250, 268 296, 236 322 C 222 334, 180 334, 166 322 C 134 296, 118 250, 118 190 Z", fill=PIEL))
+    # el pelo tapa casi todo el óvalo; abajo queda el filo de la nuca
+    p.append(path("M 120 198 C 116 124, 152 86, 200 86 C 250 86, 286 124, 282 198 "
+                  "C 278 254, 264 284, 246 298 C 228 308, 174 308, 156 298 "
+                  "C 138 284, 124 254, 120 198 Z", fill=SAND))
+    # la mata despeinada de siempre, para reconocerlo
+    p.append(path("M 112 178 C 104 150, 108 118, 128 100 C 122 84, 138 68, 156 76 "
+                  "C 158 50, 190 38, 210 56 C 220 34, 256 30, 270 52 C 286 30, 322 40, 322 70 "
+                  "C 348 74, 358 110, 340 132 C 356 150, 344 178, 322 172 C 330 190, 314 202, 300 188 "
+                  "C 292 160, 278 140, 260 132 C 236 122, 214 130, 196 136 C 176 128, 148 134, 134 158 "
+                  "C 128 168, 122 178, 112 178 Z", fill=SAND))
+    for d in ("M 158 140 C 168 190, 170 240, 164 286", "M 200 132 C 206 190, 206 244, 202 292",
+              "M 244 140 C 236 190, 234 240, 240 286"):
+        p.append(path(d, stroke=UMBER, w=W_SEC - 1))
+    # las orejas, ENCIMA del pelo
+    p.append(path("M 124 194 C 102 186, 98 218, 116 236 C 122 240, 126 236, 126 224", fill=PIEL, w=W_SEC + 1))
+    p.append(path("M 278 194 C 300 186, 304 218, 286 236 C 280 240, 276 236, 276 224", fill=PIEL, w=W_SEC + 1))
+    return svg(p), {"cuello": [200, 350]}
+
+
+def teo_cuerpo_espaldas():
+    """De espaldas frente al espejo, con el brazo derecho levantado sosteniendo el teléfono
+    hacia el vidrio (ancla `mano`). Va con la cara `nuca`."""
+    p = []
+    p.append(path("M 176 232 L 170 340 C 166 356, 160 372, 158 388 L 196 388 L 198 340 L 202 232 Z", fill=PANTALON))
+    p.append(path("M 206 232 L 212 340 C 216 356, 222 372, 226 388 L 262 388 L 248 340 L 238 232 Z", fill=PANTALON))
+    p.append(path("M 150 388 C 148 398, 154 404, 166 404 L 202 404 C 206 400, 204 392, 198 388 Z", fill=IVORY, w=W_SEC + 1))
+    p.append(path("M 220 388 C 216 398, 222 404, 234 404 L 274 404 C 278 400, 276 392, 268 388 Z", fill=IVORY, w=W_SEC + 1))
+    # la espalda: un poco más ancha de hombros y sin el cuello en V
+    p.append(path("M 160 96 C 124 108, 128 154, 140 236 L 260 236 C 272 154, 276 108, 240 96 Z", fill=REMERA))
+    p.append(path("M 200 104 C 200 150, 200 196, 200 232", stroke=UMBER, w=W_SEC - 1))   # la costura del medio
+    p.append(path("M 176 98 C 188 108, 212 108, 224 98", w=W_SEC))                        # el cuello de la remera
+    # el brazo del teléfono, levantado hacia el espejo
+    p.append(miembro([(248, 114), (306, 86), (338, 40)], grosor=21))
+    p.append(circ(342, 32, 15, PIEL, UMBER, W_SEC))
+    p.append(miembro([(152, 114), (116, 172), (146, 224)], grosor=21))
+    p.append(circ(146, 228, 14, PIEL, UMBER, W_SEC))
+    return svg(p), {"cabeza": [200, 100], "escala": 0.72, "rot": 0, "z_cabeza": "delante",
+                    "mano": [342, 32], "mano_otra": [146, 228]}
+
 
 def teo_cuerpo_selfie(flex=False):
     """De pie, erguido, con el brazo derecho estirado ARRIBA Y HACIA AFUERA sosteniendo el
@@ -1023,11 +1070,13 @@ def generar(solo=None):
                                ("sentado", teo_cuerpo_sentado, dict(encorvado=1.0)), ("sentado_erguido", teo_cuerpo_sentado, dict(encorvado=0.2)),
                                ("medita", teo_cuerpo_medita, {}), ("medita_toma", teo_cuerpo_medita, dict(toma=True)),
                                ("selfie", teo_cuerpo_selfie, {}), ("selfie_flex", teo_cuerpo_selfie, dict(flex=True)),
+                               ("espaldas", teo_cuerpo_espaldas, {}),
                                ("corre", teo_cuerpo_corre, {}),
                                ("spiderman", teo_cuerpo_spiderman, {})):
             s, a = fn(**kw); escribir("teo", "cuerpo_" + nombre, s, dict(a, tipo="cuerpo"), indice)
         for k in range(4):   # el paseo erguido en 4 fases
             s, a = teo_cuerpo_camina(k / 4); escribir("teo", "cuerpo_camina_%d" % k, s, dict(a, tipo="cuerpo"), indice)
+        s, a = teo_nuca(); escribir("teo", "cara_nuca", s, dict(a, tipo="cabeza"), indice)
         for k in range(2):                # WS36: LA cara del espejo, en dos aprietes
             s, a = teo_cabeza(gesto="pose", apriete=k); escribir("teo", "cara_pose_%d" % k, s, dict(a, tipo="cabeza"), indice)
         for m in ("costado", "frente"):   # vol. 1: la cara con el pelo caído (Bully Maguire)

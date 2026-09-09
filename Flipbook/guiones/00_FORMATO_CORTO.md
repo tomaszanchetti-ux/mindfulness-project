@@ -47,9 +47,16 @@ contar una cosa.
 - **El chiste vive en una cara o en un gesto, dibujados en serio.** Si hay que dibujar algo
   nuevo, que sea eso. `cara_pose_0/1` de Teo (las mejillas hundidas, los labios empujados,
   la ceja alta) es todo el volumen de "El dilema del espejo".
-- **El plano se acerca.** Si la escena es una cara, la cámara tiene que estar encima de la
-  cara (`camara: {desde: 1.6, hasta: 1.8, y: 250}`). En un plano cercano los brazos
-  levantados leen como tubos sueltos: el cuerpo se queda quieto y la cara hace todo.
+- **El plano se acerca**, con la cámara (`camara:`), que agranda la escena entera y no solo
+  al personaje. En un plano cercano los brazos levantados leen como tubos sueltos.
+- **El decorado tiene que estar EN la acción, no detrás.** 🔴 Error de la primera versión de
+  "El dilema del espejo": el espejo estaba de fondo y Teo ni lo miraba. Si la píldora se
+  llama "el espejo", el espejo va **de frente** y el personaje **de espaldas**, mirándolo.
+  Hay DOS Teos: el de espaldas en primer plano y su reflejo dentro del óvalo (`piezas` con
+  `en: espejo`). Preguntarse siempre: *¿el personaje está haciendo lo que dice el título?*
+- **Lo que muta es UNA cosa.** En esta píldora, la cara del reflejo: normal → boquita → la
+  caricatura de la pose. Todo lo demás se queda quieto. Tres cuadros del mismo encuadre son
+  UNA escena, no tres.
 - **Pipo entra dos veces y se va**: una para señalar el problema, otra para nombrar el
   presente. Entre medio no está (ventanas `desde`/`hasta`).
 - **El cierre puede no decir nada.** La cara de Pipo y el círculo alcanzan.
@@ -105,7 +112,7 @@ solo escribir el YAML.
 
 | # | Píldora | Teo | Pipo | Lugar | Piezas |
 |---|---|---|---|---|---|
-| 1 | **El dilema del espejo** (amor propio) ✅ **HECHA** (`p01_espejo`, 10,1 s) | posa frente al espejo haciendo LA cara, primer plano | entra fastidiado y vuelve con la ceja levantada | `espejo_bano` | `cara_pose_0/1` (dibujada) · `selfie`, `selfie_flex` y la boca `pico` quedaron en la biblioteca |
+| 1 | **El dilema del espejo** (amor propio) ✅ **HECHA** (`p01_espejo`, 10,1 s) | de espaldas, teléfono en alto; su cara en el reflejo muta a la pose de revista | entra fastidiado y vuelve con la ceja levantada | `espejo_bano` | `cara_pose_0/1` + `cara_nuca` + `cuerpo_espaldas` (dibujadas) · `selfie`, `selfie_flex` y la boca `pico` quedaron en la biblioteca |
 | 2 | **Meditar** (sentido) ✅ **HECHA** (`p02_meditar`, 12,8 s) | medita en paz hasta que el teléfono se enciende y le gana | asoma, anuncia "toma uno" y vuelve enojado | `habitacion` | `medita_toma` (dibujada) |
 | 3 | **El paseo** (perspectiva) | camina rápido mirando el teléfono, tira de la correa | `plantado`, cuatro minutos en la misma flor | `banco_plaza` | ✅ ninguna |
 | 4 | **La caída** (resiliencia) | un mal día y se derrumba | se cae del sofá, se levanta y sigue. Tres veces | `sofa` | ✅ ninguna |

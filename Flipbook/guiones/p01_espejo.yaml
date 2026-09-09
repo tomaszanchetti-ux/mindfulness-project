@@ -1,9 +1,12 @@
-# PÍLDORA · "EL DILEMA DEL ESPEJO" — el pilar Amor propio, el opuesto: gustarse por
-# aprobación. UNA SOLA ESCENA, bien hecha (regla de Tomás, WS36).
+# PÍLDORA · "EL DILEMA DEL ESPEJO" — el pilar Amor propio. UNA SOLA ESCENA, bien hecha.
 #
-# Teo posa frente al espejo haciendo LA cara: mejillas chupadas, labios empujados, mirada
-# intensa, una ceja más alta que la otra. Alterna dos poses y dos aprietes de la cara: el
-# chiste no está dibujado, PASA. Pipo entra dos veces y se va; el cierre no dice nada.
+# La puesta en escena (Tomás, WS36): Teo DE ESPALDAS en primer plano, con el teléfono en alto
+# apuntando al espejo · el espejo de frente, grande · y adentro del espejo SU CARA, de frente.
+# Hay dos Teos: el de espaldas y el reflejo. Lo único que cambia en toda la píldora es la
+# cara del reflejo, que MUTA: normal → boquita → la caricatura de la pose de revista.
+#
+# Pipo aparece DOS veces y nada más: una para señalar el problema, otra para nombrar el
+# presente. El cierre es su cara y el círculo, sin decir nada.
 #
 #   python3 Flipbook/motor/libro.py Flipbook/guiones/p01_espejo.yaml
 
@@ -16,35 +19,42 @@ globos: abajo
 subir_escena: 220
 
 cierre:
-  pipo: 0.7                      # la cara de Pipo y el círculo, sin decir nada
+  pipo: 0.7                       # la cara de Pipo y el círculo, sin decir nada
 
 escenas:
   - tipo: problema
     fondo: espejo_bano
+    estado: desconexion
     cuadros:
 
-      # ------------------------------- una sola escena: Teo y el espejo · 6,2 s
-      - hojas: 62
-        estado: desconexion
-        # PLANO CERCANO: la cara es la escena. El zoom agranda a Teo Y el óvalo del espejo,
-        # así queda enmarcado; agrandar solo a Teo dejaba el espejo chiquito y perdía el chiste.
-        camara: {desde: 1.62, hasta: 1.82, y: 250}
-        teo:
-          # En primer plano los brazos levantados leen como tubos sueltos: el cuerpo se
-          # queda quieto y TODO lo hace la cara (que es de lo que va esta píldora).
-          cuerpo: parado
-          cara: [pose_0, pose_1]            # LA cara, en sus dos aprietes
-          boca_libre: true                  # acá la cara es el chiste, no el estado
-          ritmo: 5
-          x: 500
-          y: 1380
-          escala: 2.0
-          vida: 1.4
-          rot: -2
-          hacia_rot: 3
-          sacude: 1.2
+      # --------------------------------------------- 1 · la cara normal · 2,2 s
+      - hojas: 22
+        camara: {desde: 1.0, hasta: 1.07}
+        teo: {cuerpo: espaldas, cara: nuca, x: 540, y: 1850, escala: 2.0, vida: 0.8,
+              prop: {nombre: telefono_0, ancla: mano, escala: 0.92, rot: -34}}
+        piezas:
+          - {pieza: teo/cara_frente_plana, en: espejo, dx: -35, escala: 1.55}
         pipo_asoma: {lado: izquierda}
         pipo_dice:
-          - {texto: "todo el día la misma historia con el espejito.", desde: 3, hasta: 28, cara: fastidio}
-          # entre las dos ventanas Pipo NO está: se fue y vuelve
-          - {texto: "vuelve al presente, teito.", desde: 36, hasta: 62, cara: en_serio}
+          - {texto: "todo el día la misma historia con el espejito.", desde: 2, hasta: 22, cara: fastidio}
+
+      # ------------------------------------------------ 2 · la boquita · 2,0 s
+      - hojas: 20
+        camara: {desde: 1.07, hasta: 1.14}
+        teo: {cuerpo: espaldas, cara: nuca, x: 540, y: 1850, escala: 2.0, vida: 1.0,
+              prop: {nombre: telefono_0, ancla: mano, escala: 0.92, rot: -34}}
+        piezas:
+          - {pieza: teo/cara_frente_pico, en: espejo, dx: -35, escala: 1.6}
+
+      # ------------------------------- 3 · la caricatura de la pose · 2,8 s
+      - hojas: 28
+        camara: {desde: 1.14, hasta: 1.24}
+        teo: {cuerpo: espaldas, cara: nuca, x: 540, y: 1850, escala: 2.0, vida: 1.2,
+              prop: {nombre: telefono_0, ancla: mano, escala: 0.92, rot: -34}}
+        piezas:
+          # los dos aprietes alternan: la cara "trabaja" sola delante del espejo
+          - {pieza: teo/cara_pose_0, alterna: [teo/cara_pose_0, teo/cara_pose_1], ritmo: 4,
+             en: espejo, dx: -35, escala: 1.66}
+        pipo_asoma: {lado: izquierda}
+        pipo_dice:
+          - {texto: "vuelve al presente, teito.", desde: 6, hasta: 28, cara: en_serio}

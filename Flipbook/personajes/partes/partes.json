@@ -696,6 +696,27 @@
    "lienzo": 400,
    "escala_png": 2
   },
+  "cuerpo_espaldas": {
+   "cabeza": [
+    200,
+    100
+   ],
+   "escala": 0.72,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "mano": [
+    342,
+    32
+   ],
+   "mano_otra": [
+    146,
+    228
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_espaldas.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
   "cuerpo_corre": {
    "cabeza": [
     268,
@@ -795,6 +816,16 @@
    ],
    "tipo": "cuerpo",
    "png": "personajes/partes/teo/cuerpo_camina_3.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_nuca": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_nuca.png",
    "lienzo": 400,
    "escala_png": 2
   },
