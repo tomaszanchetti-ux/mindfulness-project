@@ -286,6 +286,16 @@
    "lienzo": 400,
    "escala_png": 2
   },
+  "cara_abajo_pico": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_abajo_pico.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
   "cara_frente_plana": {
    "cuello": [
     200,
@@ -333,6 +343,16 @@
    ],
    "tipo": "cabeza",
    "png": "personajes/partes/teo/cara_frente_triste.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_frente_pico": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_frente_pico.png",
    "lienzo": 400,
    "escala_png": 2
   },
@@ -386,6 +406,16 @@
    "lienzo": 400,
    "escala_png": 2
   },
+  "cara_arriba_pico": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_arriba_pico.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
   "cara_costado_plana": {
    "cuello": [
     200,
@@ -436,6 +466,16 @@
    "lienzo": 400,
    "escala_png": 2
   },
+  "cara_costado_pico": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_costado_pico.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
   "cara_cerrada_plana": {
    "cuello": [
     200,
@@ -483,6 +523,16 @@
    ],
    "tipo": "cabeza",
    "png": "personajes/partes/teo/cara_cerrada_triste.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_cerrada_pico": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_cerrada_pico.png",
    "lienzo": 400,
    "escala_png": 2
   },
@@ -601,6 +651,48 @@
    ],
    "tipo": "cuerpo",
    "png": "personajes/partes/teo/cuerpo_medita_toma.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_selfie": {
+   "cabeza": [
+    201,
+    96
+   ],
+   "escala": 0.72,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "mano": [
+    352,
+    52
+   ],
+   "mano_otra": [
+    152,
+    220
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_selfie.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_selfie_flex": {
+   "cabeza": [
+    201,
+    96
+   ],
+   "escala": 0.72,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "mano": [
+    352,
+    52
+   ],
+   "mano_otra": [
+    154,
+    98
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_selfie_flex.png",
    "lienzo": 400,
    "escala_png": 2
   },

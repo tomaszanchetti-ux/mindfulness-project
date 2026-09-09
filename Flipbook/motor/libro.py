@@ -858,7 +858,11 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
 
     g = globo_en(cuadro, i, n)
     if g:
-        if ancla_pipo is None:                       # Pipo no está en el cuadro: asoma por un borde
+        fijo = g.get("ancla") or cuadro.get("globo_ancla")
+        if fijo:                                     # WS36: el globo cuelga de un punto del cuadro
+            ancla_pipo = (float(fijo["x"]), float(fijo["y"]) - int(SUBE_ESCENA[0]))
+            ancla_menton = (ancla_pipo[0], ancla_pipo[1] + float(fijo.get("alto", 150)))
+        elif ancla_pipo is None:                     # Pipo no está en el cuadro: asoma por un borde
             ancla_pipo, caja = _pipo_asoma(m, im, cuadro, rng, cara=g.get("cara"))
             caras.append(caja)
         globo(d, g["texto"], ancla_pipo, rng, evitar=caras, flota=5.0 * math.sin(i * 0.5),
@@ -922,13 +926,25 @@ def _pieza_suelta(m, im, spec, anclas_fondo, t, rng):
         i_h = int(spec.get("_i", 0))
         _resplandor(im, x, y, 210 * escala, brillo * (0.72 + 0.28 * math.sin(i_h * 0.5)),
                     rng=rng, color=spec.get("brillo_color", "salvia"))
-    if spec.get("espejo"):
+    ap = spec.get("aplasta")                 # WS36: el espejo que deforma (ancho × alto)
+    if spec.get("espejo") or ap:
         capa = Image.new("RGBA", im.size, (0, 0, 0, 0))
         m.solo(capa, personaje, nombre, x, y, escala=escala, rng=rng, rot=_num(spec, "rot", 0, t), pivote=pivote)
         caja = capa.getbbox()
-        capa = capa.transpose(Image.FLIP_LEFT_RIGHT)
+        if spec.get("espejo"):
+            capa = capa.transpose(Image.FLIP_LEFT_RIGHT)
+            caja = (im.width - caja[2], caja[1], im.width - caja[0], caja[3]) if caja else None
+        if ap and caja:
+            kx, ky = float(ap.get("x", 1.0)), float(ap.get("y", 1.0))
+            trozo = capa.crop(caja)
+            w2, h2 = max(1, int(trozo.width * kx)), max(1, int(trozo.height * ky))
+            trozo = trozo.resize((w2, h2), Image.LANCZOS)
+            cx, cy = (caja[0] + caja[2]) / 2, (caja[1] + caja[3]) / 2
+            capa = Image.new("RGBA", im.size, (0, 0, 0, 0))
+            capa.paste(trozo, (int(cx - w2 / 2), int(cy - h2 / 2)))
+            caja = (cx - w2 / 2, cy - h2 / 2, cx + w2 / 2, cy + h2 / 2)
         im.paste(capa, (0, 0), capa)
-        return (im.width - caja[2], caja[1], im.width - caja[0], caja[3]) if caja else (x, y, x, y)
+        return caja if caja else (x, y, x, y)
     m.solo(im, personaje, nombre, x, y, escala=escala, rng=rng, rot=_num(spec, "rot", 0, t), pivote=pivote)
     png = m._png(personaje, nombre)
     b = png.getbbox() or (0, 0, png.width, png.height)

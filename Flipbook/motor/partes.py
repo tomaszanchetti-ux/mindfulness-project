@@ -456,7 +456,11 @@ def teo_cabeza(mirada="frente", boca="plana", pelo="normal"):
              "sonrisa": "M 174 278 C 190 296, 220 296, 234 276",
              "abierta": "M 178 278 C 192 300, 218 300, 230 278 Z",
              "fruncida": "M 194 276 C 200 270, 212 270, 216 278 C 212 288, 198 288, 194 276 Z",
-             "triste": "M 178 288 C 192 276, 216 276, 228 290"}
+             "triste": "M 178 288 C 192 276, 216 276, 228 290",
+             # el pico de pato de la selfie (WS36): los labios empujados hacia adelante, la
+             # boca chica y alta, con la sombra del labio de abajo. Es LA cara de la foto.
+             "pico": "M 186 278 C 190 264, 214 264, 220 278 C 224 288, 214 298, 202 298 "
+                     "C 190 298, 182 290, 186 278 Z"}
     p.append(path(bocas[boca], fill=(UMBER if boca in ("abierta",) else "none"), w=W_SEC))
     if pelo == "caido":
         # el mechón caído (Bully Maguire): un mechón grande que cae desde la coronilla y tapa
@@ -470,7 +474,7 @@ def teo_cabeza(mirada="frente", boca="plana", pelo="normal"):
     return svg(p), {"cuello": [200, 350]}
 
 MIRADAS_TEO = ["abajo", "frente", "arriba", "costado", "cerrada"]
-BOCAS_TEO = ["plana", "sonrisa", "abierta", "fruncida", "triste"]
+BOCAS_TEO = ["plana", "sonrisa", "abierta", "fruncida", "triste", "pico"]
 
 # =====================================================================================
 # TEO · cuerpos base (remera y pantalón; los gestos de cada volumen se suman en D1.2)
@@ -505,6 +509,37 @@ def teo_cuerpo_parado(postura=1.0):
     p.append(path(f"M {180 + lean} {sy} C {188 + lean} {sy + 12}, {214 + lean} {sy + 12}, {222 + lean} {sy}", w=W_SEC))
     return svg(p), {"cabeza": [201 + lean, sy + 4], "escala": 0.72, "rot": (1 - postura) * 20, "z_cabeza": "delante",
                     "mano_izq": [138, 226], "mano_der": [262, 226]}
+
+def teo_cuerpo_selfie(flex=False):
+    """De pie, erguido, con el brazo derecho estirado ARRIBA Y HACIA AFUERA sosteniendo el
+    teléfono (ancla `mano`): la pose universal de la selfie. `flex=True` cambia el otro brazo
+    por el bíceps del gimnasio. La cara la pone el guion — con la boca `pico` es la foto.
+
+    Los cuerpos de la sesión de fotos van de a dos y ALTERNAN dentro del mismo cuadro
+    (`cuerpo: [selfie, selfie_flex]`): el chiste no está dibujado, PASA."""
+    p = []
+    # piernas y zapatillas, las mismas del cuerpo erguido
+    p.append(path("M 176 232 L 170 340 C 166 356, 160 372, 158 388 L 196 388 L 198 340 L 202 232 Z", fill=PANTALON))
+    p.append(path("M 206 232 L 212 340 C 216 356, 222 372, 226 388 L 262 388 L 248 340 L 238 232 Z", fill=PANTALON))
+    p.append(path("M 150 388 C 148 398, 154 404, 166 404 L 202 404 C 206 400, 204 392, 198 388 Z", fill=IVORY, w=W_SEC + 1))
+    p.append(path("M 220 388 C 216 398, 222 404, 234 404 L 274 404 C 278 400, 276 392, 268 388 Z", fill=IVORY, w=W_SEC + 1))
+    p.append(path("M 166 92 C 130 102, 132 150, 142 236 L 258 236 C 262 180, 262 130, 236 92 Z", fill=REMERA))
+    # el brazo del teléfono: hombro → codo alto → mano estirada afuera
+    p.append(miembro([(244, 110), (302, 84), (348, 58)], grosor=21))
+    p.append(circ(352, 52, 15, PIEL, UMBER, W_SEC))
+    if flex:                      # el otro brazo, bíceps de gimnasio
+        p.append(miembro([(158, 110), (112, 168), (152, 104)], grosor=21))
+        p.append(circ(154, 98, 14, PIEL, UMBER, W_SEC))
+        p.append(path("M 126 140 C 138 128, 150 130, 156 142", w=W_SEC - 1))     # el bulto del bíceps
+        otra = [154, 98]
+    else:                         # la mano en la cadera: el codo hacia afuera
+        p.append(miembro([(158, 110), (116, 168), (152, 216)], grosor=21))
+        p.append(circ(152, 220, 14, PIEL, UMBER, W_SEC))
+        otra = [152, 220]
+    p.append(path("M 180 92 C 188 104, 214 104, 222 92", w=W_SEC))
+    return svg(p), {"cabeza": [201, 96], "escala": 0.72, "rot": 0, "z_cabeza": "delante",
+                    "mano": [352, 52], "mano_otra": otra}
+
 
 def teo_cuerpo_sentado(encorvado=1.0):
     """Sentado de perfil (banco, silla, rincón), manos adelante: el teléfono o el cuadernito.
@@ -946,6 +981,7 @@ def generar(solo=None):
         for nombre, fn, kw in (("parado", teo_cuerpo_parado, dict(postura=1.0)), ("encorvado", teo_cuerpo_parado, dict(postura=0.0)),
                                ("sentado", teo_cuerpo_sentado, dict(encorvado=1.0)), ("sentado_erguido", teo_cuerpo_sentado, dict(encorvado=0.2)),
                                ("medita", teo_cuerpo_medita, {}), ("medita_toma", teo_cuerpo_medita, dict(toma=True)),
+                               ("selfie", teo_cuerpo_selfie, {}), ("selfie_flex", teo_cuerpo_selfie, dict(flex=True)),
                                ("corre", teo_cuerpo_corre, {}),
                                ("spiderman", teo_cuerpo_spiderman, {})):
             s, a = fn(**kw); escribir("teo", "cuerpo_" + nombre, s, dict(a, tipo="cuerpo"), indice)

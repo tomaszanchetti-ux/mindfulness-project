@@ -87,8 +87,8 @@ solo escribir el YAML.
 
 | # | Píldora | Teo | Pipo | Lugar | Piezas |
 |---|---|---|---|---|---|
-| 1 | **Mil selfies** (amor propio) | se saca cuarenta fotos buscando el ángulo | se mira una vez, se ve horrible y se encanta | `espejo_bano` | brazo con teléfono · cara de pico · Pipo aplastado |
-| 2 | **Meditar** (sentido) | no aguanta quieto: se rasca, mira el reloj, espía el teléfono | `buda`, inmóvil, después la V de la victoria | `habitacion` | ✅ ninguna |
+| 1 | **Mil selfies** (amor propio) ✅ **HECHA** (`p01_selfies`, 13,6 s) | se saca cuarenta fotos buscando el ángulo | pega la cara al vidrio, se ve horrible y le encanta | `espejo_bano` | `selfie` + `selfie_flex` + boca `pico` (dibujadas) |
+| 2 | **Meditar** (sentido) ✅ **HECHA** (`p02_meditar`, 12,8 s) | medita en paz hasta que el teléfono se enciende y le gana | asoma, anuncia "toma uno" y vuelve enojado | `habitacion` | `medita_toma` (dibujada) |
 | 3 | **El paseo** (perspectiva) | camina rápido mirando el teléfono, tira de la correa | `plantado`, cuatro minutos en la misma flor | `banco_plaza` | ✅ ninguna |
 | 4 | **La caída** (resiliencia) | un mal día y se derrumba | se cae del sofá, se levanta y sigue. Tres veces | `sofa` | ✅ ninguna |
 | 5 | **Escribir** (gratitud) · **clase B** | mil notas, listas, recordatorios, nada le alcanza | una croqueta y le cambia el día | `mesa_familiar` | plato de croquetas (prop simple, ya existe) |

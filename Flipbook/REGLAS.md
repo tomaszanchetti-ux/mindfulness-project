@@ -246,6 +246,8 @@ a TikTok como **portada** del video.
 | `hacia_escala` / `hacia_rot` | la escala o la inclinación al final del cuadro (se acerca, se inclina). |
 | `sacude` | vibración corta en píxeles (el remate de un chiste, el nervio). |
 | `vida` | multiplica el cabeceo del personaje (`0` lo apaga, `1.8` lo exagera). |
+| `globo_ancla` | `{x, y, alto}`: el globo cuelga de un PUNTO del cuadro y no de Pipo (WS36 — sirve cuando el que habla es un reflejo, un objeto o algo que no es su cuerpo entero). También por globo, con `ancla`. |
+| `aplasta` | en una pieza suelta, `{x, y}` = escala no uniforme. **El espejo que deforma**: la cara de Pipo aplastada contra el vidrio, sin dibujar nada nuevo. |
 | `estado` | **la gramática de la serie (WS36)**: `conexion` (Teo con aura verde y boca sonriendo · Pipo contento) o `desconexion` (Teo triste y sin aura · Pipo enojado). Se puede poner en la escena entera. `boca_libre: true` en Teo deja su boca como está. |
 | `pipo_dice` con ventana | cada globo puede ser un mapa `{texto, desde, hasta, cara, lado}`: **entre ventanas no hay globo y Pipo desaparece de escena**. La `cara` del globo manda sobre la de `pipo_asoma`. |
 | `piezas` sueltas que se encienden | `brillo` (0..1, o `sube`/`baja`) y `brillo_color` (`salvia` \| `blanco`) también en `piezas` y en `prop`. **El teléfono que desconecta usa `props/telefono_4`, la pantalla blanca fría**: el salvia es el color del presente. |
