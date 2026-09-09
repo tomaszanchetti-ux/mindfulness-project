@@ -1,6 +1,11 @@
-# PÍLDORA · "CINCO MINUTOS DE PAZ" — el pilar Sentido, el opuesto: no aguantar quieto.
-# Formato corto (`guiones/00_FORMATO_CORTO.md`): dos imágenes, un chiste, el mensaje, y afuera.
-# CERO piezas nuevas: todo estaba dibujado desde la D1.1.
+# PÍLDORA · "CINCO MINUTOS DE PAZ" — UNA sola situación, contada con un beat adentro.
+#
+# La coreografía (Tomás, WS36): Teo medita en paz con el teléfono apagado al costado, en el
+# piso, VISIBLE · Pipo asoma contento y anuncia "toma uno" · se va · el teléfono se enciende
+# con luz BLANCA y fría · Teo estira el brazo y lo agarra sin pensarlo · Pipo vuelve, enojado.
+#
+# La gramática de la serie (`estado:`): meditar CONECTA (Pipo contento, Teo con aura verde y
+# sonrisa) · agarrar el teléfono DESCONECTA (Pipo enojado, Teo triste y sin aura).
 #
 #   python3 Flipbook/motor/libro.py Flipbook/guiones/p02_meditar.yaml
 
@@ -12,37 +17,61 @@ cartel: {tinta: azul_cartel, formas: circulo, vineta: tintin}
 globos: abajo
 subir_escena: 220
 
-escenas:
+cierre:
+  pipo: 2.4                       # lo que tarda en leerse el mensaje
+  contratapa: 1.5
+  dice: lo importante es intentarlo, y que se vuelva parte de tu vida.
 
-  # --------------------------------------------------- imagen 1 · Teo no aguanta quieto
+escenas:
   - tipo: problema
     fondo: habitacion
     cuadros:
-      - hojas: 45
-        camara: empuje
-        teo:
-          cuerpo: medita
-          # la cara alterna: ojos cerrados → espía de reojo → frunce → mira para abajo
-          cara: [cerrada_plana, costado_plana, cerrada_fruncida, abajo_plana]
-          ritmo: 7
-          x: 500
-          y: 1270
-          escala: 1.5
-          sacude: 2.0
-          vida: 1.5
-          prop: {nombre: telefono_0, ancla: pecho, dx: 6, dy: 10, rot: -12}
-        pipo_asoma: {lado: izquierda, cara: sospecha}
-        pipo_dice: cinco minutos de calma. van cuarenta segundos.
 
-  # ------------------------------------------- imagen 2 · el mismo cuarto, el mismo rato
-  - tipo: espejo
-    fondo: habitacion
-    cuadros:
-      - hojas: 45
-        camara: {desde: 1.10, hasta: 1.0}
-        teo: {cuerpo: medita, cara: [cerrada_fruncida, costado_plana], ritmo: 9,
-              x: 230, y: 1300, escala: 1.0, sacude: 1.6, vida: 1.4,
-              prop: {nombre: telefono_0, ancla: pecho, dx: 6, dy: 10, rot: -12}}
-        pipo: {cuerpo: [buda, buda, buda_victoria], ritmo: 16, cara: orgullo,
-               x: 700, y: 1310, escala: 1.5, vida: 0.6}
-        pipo_dice: yo no medito. yo ya estoy aquí.
+      # ------------------------------------------------ 1 · la paz (CONEXIÓN) · 3,0 s
+      - hojas: 26
+        estado: conexion
+        camara: {hasta: 1.08}
+        teo: {cuerpo: medita, cara: cerrada_plana, aura: 1, x: 470, y: 1250, escala: 1.5, vida: 1.2}
+        piezas:
+          - {pieza: props/telefono_0, x: 705, y: 1392, escala: 0.55, rot: -8}
+        pipo_asoma: {lado: izquierda}
+        pipo_dice:
+          # Pipo entra, lo anuncia y SE VA: la ventana termina antes que el cuadro
+          - {texto: "Teo meditando. toma uno.", desde: 2, hasta: 21}
+
+      # -------------------------------- 2 · el teléfono se enciende (luz blanca) · 1,4 s
+      - hojas: 14
+        estado: conexion
+        teo: {cuerpo: medita, cara: costado_abierta, boca_libre: true, aura: 1,
+              x: 470, y: 1250, escala: 1.5, vida: 1.5}
+        piezas:
+          - {pieza: props/telefono_4, x: 705, y: 1392, escala: 0.55, rot: -8,
+             brillo: sube, brillo_color: blanco}
+
+      # ------------------------------- 3 · estira el brazo, el aura se apaga · 0,7 s
+      # El agarre son DOS beats: primero la mano va, después el teléfono ya está en ella.
+      # Con uno solo el cambio de pose pasa de golpe y no se lee el movimiento.
+      - hojas: 7
+        estado: desconexion
+        teo: {cuerpo: medita_toma, cara: costado_abierta, boca_libre: true, aura: baja,
+              x: 470, y: 1250, escala: 1.5, vida: 1.5}
+        piezas:
+          - {pieza: props/telefono_4, x: 705, y: 1392, escala: 0.55, rot: -8,
+             brillo: 1, brillo_color: blanco}
+
+      # ---------------------------------------- 4 · lo tiene (DESCONEXIÓN) · 2,8 s
+      - hojas: 28
+        estado: desconexion
+        camara: {hasta: 1.12}
+        teo:
+          cuerpo: medita_toma
+          cara: abajo_plana
+          x: 470
+          y: 1250
+          escala: 1.5
+          vida: 0.8
+          prop: {nombre: telefono_4, ancla: mano, escala: 1.15, dy: -8, rot: -8,
+                 brillo: 0.85, brillo_color: blanco}
+        pipo_asoma: {lado: izquierda}
+        pipo_dice:
+          - {texto: "no aguantó ni dos segundos.", desde: 3, hasta: 28}

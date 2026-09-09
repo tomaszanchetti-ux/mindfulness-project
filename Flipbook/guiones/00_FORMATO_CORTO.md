@@ -36,23 +36,47 @@ Cómo aterriza en cada pieza, en orden de importancia:
 Si solo hubiera píldoras A, la cuenta sería graciosa y nadie sabría para qué existe. Si solo
 hubiera B, sería un anuncio. La proporción es el producto.
 
+## La gramática de la serie (el patrón que se repite SIEMPRE)
+
+> **Tomás, 09/09/2026.** Habrá escenas de conexión y escenas de desconexión, en mil
+> situaciones distintas — pero lo que se repite, píldora tras píldora, es esto:
+
+| | Pipo | Teo |
+|---|---|---|
+| **CONEXIÓN** — algo que lo trae al presente (meditar, escribir, mirar a alguien, oler una flor) | **contento** | **aura verde** y la boca sonriendo |
+| **DESCONEXIÓN** — algo que se lo lleva (el teléfono, la comparación, la queja, el piloto automático) | **enojado** | **triste, sin aura** |
+
+Eso es lo que enseña a leer la cuenta sin explicar nada: a la tercera píldora, cualquiera
+sabe qué significa el verde. **No es decoración: es el idioma.**
+
+Está metido en el motor, no en la buena voluntad del guionista: se escribe `estado:
+conexion` o `estado: desconexion` en el cuadro y el motor pone el aura, la boca de Teo y la
+cara de Pipo. El guion sigue eligiendo la MIRADA (`cerrada`, `abajo`, `costado`…) y puede
+pisar cualquier cosa a mano (`boca_libre: true`, o una `cara` explícita en Pipo).
+
+**El teléfono que desconecta se enciende BLANCO, nunca verde** (`props/telefono_4`): el
+salvia es el color del presente y de Dwellia; lo que te saca del presente no puede usar el
+color del presente. Es la misma regla vista desde el otro lado.
+
 ## Qué es una píldora
 
 **10-14 segundos. Dos imágenes. Un solo chiste.** El mismo lugar visto por los dos:
 
 | # | Imagen | Qué pasa | Dur. |
 |---|---|---|---|
-| 1 | **Teo, el humano moderno** | Hace la cosa de todos los días, exagerada, **y la hace EN MOVIMIENTO** (poses que alternan, la cámara que empuja). Un globo de Pipo, ≤8 palabras. | 4-5 s |
-| 2 | **Pipo, en el mismo lugar** | Lo mismo, pero como lo hace un perro: bien, sin esfuerzo, feliz. Un globo, ≤8 palabras. | 4-5 s |
-| 3 | **El cierre** (el de siempre) | Pipo a cámara → iris → contratapa: Dwellia y la Pausa. | 3,7 s |
+| 1 | **UNA situación, con un beat adentro** | No dos láminas: una sola escena que **cambia de estado** delante de la cámara. Teo empieza conectado (aura) y algo se lo lleva, o al revés. El cambio se cuenta en 3-4 cuadros del mismo lugar: el estado, el disparador, el movimiento, el resultado. | 7-9 s |
+| 2 | **Pipo entra y sale** | Aparece para comentar y **se va** (`desde`/`hasta` en su globo), y vuelve con la otra cara cuando la cosa cambió. Dos globos, ≤8 palabras cada uno. | (sobre la misma escena) |
+| 3 | **El cierre** | Pipo a cámara **con su globo**: ahí va el mensaje de la cuenta, y el iris se cierra sobre eso. Después, el cierre de siempre: "Teo y Pipo volverán próximamente" y el bloque de Dwellia — **eso no se toca**. | 5,3 s |
 
 Reglas duras (salen de los números del vol. 1, `REGLAS.md` §3):
 - **La imagen 1 abre el video, con su globo ya puesto.** El título va de rótulo arriba.
 - **Ningún cuadro quieto** (la ley del movimiento). En la píldora se nota el doble: con dos
   imágenes, si una está congelada, medio video está congelado.
-- **En las píldoras A no hay escena de la magia ni resultado.** El mensaje vive en el último
-  globo, la contratapa y la descripción. En las **B**, la tercera imagen ES la Pausa: Teo
-  deja el teléfono, escribe una línea en el cuadernito, y ahí sí aparece el aura.
+- **Nada de escena de la magia.** El mensaje vive en el globo del cierre y en la descripción.
+  En las píldoras **B**, la conexión ES la acción: Teo deja el teléfono, escribe una línea en
+  el cuadernito, y ahí aparece el aura verde. Es la gramática, no una escena aparte.
+- **Menos escenas, mejores escenas.** Antes que agregar una lámina, hacer que la que hay
+  cambie: es lo que separa un video de una ilustración con texto.
 - **El cartel se sube como PORTADA**, no se emite.
 - La imagen 2 y la 1 son **el mismo lugar**: el bucle empalma solo.
 

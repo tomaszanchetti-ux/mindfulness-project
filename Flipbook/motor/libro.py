@@ -707,14 +707,19 @@ def pegar_personaje(m, im, d, personaje, spec, i, n, t, rng, anclas_fondo):
     return punto, cajas
 
 
-def _resplandor(im, cx, cy, r, fuerza=1.0, rng=None):
+COLORES_BRILLO = {"salvia": (R.SAGE_LIGHT, R.SAGE, R.SAGE_DEEP),
+                  "blanco": ((255, 255, 255), (255, 252, 244), (236, 226, 206))}
+
+
+def _resplandor(im, cx, cy, r, fuerza=1.0, rng=None, color="salvia"):
     """El resplandor salvia detrás de una pieza chica (el teléfono que se enciende en la
     mano, WS35): un halo difuminado + rayitos de línea. Sin esto, a la escala de la mano el
     verde no se lee."""
+    claro, medio, linea = COLORES_BRILLO.get(color, COLORES_BRILLO["salvia"])
     capa = Image.new("RGBA", im.size, (0, 0, 0, 0))
     dd = ImageDraw.Draw(capa)
     for k, (rr, op) in enumerate(((r * 2.1, 46), (r * 1.55, 70), (r * 1.1, 98))):
-        col = R.SAGE_LIGHT if k == 0 else R.SAGE
+        col = claro if k == 0 else medio
         dd.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), fill=col + (int(op * fuerza),))
     capa = capa.filter(ImageFilter.GaussianBlur(r * 0.5))
     im.paste(capa, (0, 0), capa)
@@ -724,7 +729,7 @@ def _resplandor(im, cx, cy, r, fuerza=1.0, rng=None):
             a = k * math.pi / 3 + 0.35
             p0 = (cx + math.cos(a) * r * 1.15, cy + math.sin(a) * r * 1.15)
             p1 = (cx + math.cos(a) * r * 1.5, cy + math.sin(a) * r * 1.5)
-            R.stroke(d2, [p0, p1], rng, width=max(3, int(r * 0.06)), color=R.SAGE_DEEP, amp=0.8)
+            R.stroke(d2, [p0, p1], rng, width=max(3, int(r * 0.06)), color=linea, amp=0.8)
 
 
 def _prop_en_mano(m, im, personaje, cuerpo, spec, x, y, escala, rng, i):
@@ -748,7 +753,7 @@ def _prop_en_mano(m, im, personaje, cuerpo, spec, x, y, escala, rng, i):
     brillo = float(spec.get("brillo", 0) or 0)
     if brillo:                       # el resplandor va DEBAJO de la pieza
         pulso = 0.72 + 0.28 * math.sin(i * 0.5)
-        _resplandor(im, px, py, 200 * esc, brillo * pulso, rng=rng)
+        _resplandor(im, px, py, 200 * esc, brillo * pulso, rng=rng, color=spec.get("brillo_color", "salvia"))
     m.solo(im, "props", nombre, px, py, escala=esc, rng=rng, rot=float(spec.get("rot", 0)))
     x0, y0, x1, y1 = caja_pieza(m, "props", nombre)                 # el objeto que sostiene
     return (px + x0 * esc, py + y0 * esc, px + x1 * esc, py + y1 * esc)   # tampoco se tapa
@@ -851,13 +856,13 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
         if ancla_menton:
             ancla_menton = (ancla_menton[0], ancla_menton[1] - sube)
 
-    texto = globo_en(cuadro, i, n)
-    if texto:
+    g = globo_en(cuadro, i, n)
+    if g:
         if ancla_pipo is None:                       # Pipo no está en el cuadro: asoma por un borde
-            ancla_pipo, caja = _pipo_asoma(m, im, cuadro, rng)
+            ancla_pipo, caja = _pipo_asoma(m, im, cuadro, rng, cara=g.get("cara"))
             caras.append(caja)
-        globo(d, texto, ancla_pipo, rng, evitar=caras, flota=5.0 * math.sin(i * 0.5),
-              modo=cuadro.get("globo_lado"), ancla_abajo=ancla_menton)
+        globo(d, g["texto"], ancla_pipo, rng, evitar=caras, flota=5.0 * math.sin(i * 0.5),
+              modo=g.get("lado", cuadro.get("globo_lado")), ancla_abajo=ancla_menton)
 
     f = cuadro.get("flash")                          # WS36: el fogonazo (el flash de una foto)
     if f:
@@ -869,22 +874,34 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
 
 
 def globos_de(cuadro):
-    """`pipo_dice` es un texto o una lista de textos: varios globos sobre la MISMA imagen."""
-    return [str(t) for t in _lista(cuadro.get("pipo_dice")) if str(t).strip()]
+    """`pipo_dice` es un texto, una lista de textos (varios globos sobre la misma imagen), o
+    una lista de mapas `{texto, desde, hasta, cara}` (WS36): así un globo tiene VENTANA
+    propia y Pipo **entra y se va de escena** en el medio del cuadro, con la cara que le toca."""
+    fuera = []
+    for t in _lista(cuadro.get("pipo_dice")):
+        g = t if isinstance(t, dict) else {"texto": t}
+        if str(g.get("texto", "")).strip():
+            fuera.append(dict(g, texto=str(g["texto"])))
+    return fuera
 
 
 def globo_en(cuadro, i, n):
-    """Qué globo se ve en la hoja `i` de `n` (WS34, el tempo): ninguno mientras la imagen está
-    sola (`globo_desde`, 0,5 s por defecto: el ojo ve el chiste antes de leerlo); después los
-    globos se reparten el resto del cuadro en partes iguales."""
-    textos = globos_de(cuadro)
-    if not textos:
+    """Qué globo se ve en la hoja `i` de `n`. Con `desde`/`hasta` manda la ventana (y entre
+    ventanas NO hay globo: Pipo desaparece). Sin ellos, el reparto parejo de la WS34: la
+    imagen está sola `globo_desde` hojas y después los globos se reparten el resto."""
+    globos = globos_de(cuadro)
+    if not globos:
+        return None
+    if any("desde" in g or "hasta" in g for g in globos):
+        for g in globos:
+            if int(g.get("desde", 0)) <= i < int(g.get("hasta", n)):
+                return g
         return None
     desde = int(cuadro.get("globo_desde", GLOBO_DESDE))
     if i < desde:
         return None
-    tramo = max(1.0, (n - desde) / len(textos))
-    return textos[min(len(textos) - 1, int((i - desde) / tramo))]
+    tramo = max(1.0, (n - desde) / len(globos))
+    return globos[min(len(globos) - 1, int((i - desde) / tramo))]
 
 
 def _pieza_suelta(m, im, spec, anclas_fondo, t, rng):
@@ -900,6 +917,11 @@ def _pieza_suelta(m, im, spec, anclas_fondo, t, rng):
     escala = _num(spec, "escala", 1.0, t)
     a = m.anclas(personaje, nombre)
     pivote = tuple(a.get("centro", [200, 200]))
+    brillo = _valor(spec.get("brillo", 0), t)        # WS36: una pieza suelta también se enciende
+    if brillo:
+        i_h = int(spec.get("_i", 0))
+        _resplandor(im, x, y, 210 * escala, brillo * (0.72 + 0.28 * math.sin(i_h * 0.5)),
+                    rng=rng, color=spec.get("brillo_color", "salvia"))
     if spec.get("espejo"):
         capa = Image.new("RGBA", im.size, (0, 0, 0, 0))
         m.solo(capa, personaje, nombre, x, y, escala=escala, rng=rng, rot=_num(spec, "rot", 0, t), pivote=pivote)
@@ -956,11 +978,12 @@ def _anillos(d, m, cuadro, i, rng):
         R.circle(d, px, py, r, rng, width=(4 if k == 0 else 3), color=R.SAGE_LIGHT, amp=3, ry=r * 1.1)
 
 
-def _pipo_asoma(m, im, cuadro, rng):
-    """Pipo no está en el cuadro pero habla: se pega su cabeza sola asomando por un borde."""
+def _pipo_asoma(m, im, cuadro, rng, cara=None):
+    """Pipo no está en el cuadro pero habla: se pega su cabeza sola asomando por un borde.
+    La cara del GLOBO manda sobre la del cuadro (WS36: Pipo entra contento y vuelve enojado)."""
     spec = cuadro.get("pipo_asoma") or {}
     lado = spec.get("lado", "derecha")
-    cara = "cara_" + spec.get("cara", CARAS_ASOMA.get(cuadro.get("escena"), "alegria_sarcastica"))
+    cara = "cara_" + (cara or spec.get("cara", CARAS_ASOMA.get(cuadro.get("escena"), "alegria_sarcastica")))
     escala = float(spec.get("escala", 1.15))
     # la esquina de abajo a la derecha es del pulgar y del número de página: Pipo no va ahí
     x, y = {"izquierda": (100, 1420), "derecha": (R.W - 100, 1420), "abajo": (320, R.H - 70)}[lado]
@@ -1120,6 +1143,53 @@ def cargar(ruta):
     return g
 
 
+# ---------------------------------------------------------------- la gramática de la serie
+# Tomás, WS36. Todas las píldoras repiten el MISMO patrón visual, y eso es lo que enseña a
+# la gente a leer la cuenta sin que nadie se lo explique:
+#
+#   CONEXIÓN    (algo que trae a Teo al presente)   → Pipo CONTENTO · Teo con AURA verde y sonrisa
+#   DESCONEXIÓN (algo que se lo lleva del presente) → Pipo ENOJADO  · Teo TRISTE y sin aura
+#
+# Se declara con una palabra en el cuadro (`estado: conexion | desconexion`) y el motor pone
+# el aura, la boca de Teo y la cara de Pipo. El guion sigue eligiendo la MIRADA de Teo
+# (abajo, cerrada, costado…) y puede pisar cualquier cosa a mano.
+
+BOCAS_TEO = ("abierta", "fruncida", "plana", "sonrisa", "triste")
+ESTADOS = {"conexion": {"aura": "sube", "boca": "sonrisa", "pipo": "orgullo"},
+           "desconexion": {"aura": 0, "boca": "triste", "pipo": "fastidio"}}
+
+
+def _con_boca(cara, boca):
+    """Cambia SOLO la boca de una cara de Teo (`cerrada_plana` → `cerrada_triste`)."""
+    if isinstance(cara, list):
+        return [_con_boca(c, boca) for c in cara]
+    partes = str(cara).split("_")
+    for k in (-1, -2):                       # -2 cubre las caras con el pelo `_caido`
+        if len(partes) >= abs(k) + 1 and partes[k] in BOCAS_TEO:
+            partes[k] = boca
+            break
+    return "_".join(partes)
+
+
+def _aplicar_estado(c):
+    """`estado: conexion | desconexion` en un cuadro: pone la gramática y no pisa lo explícito."""
+    e = ESTADOS.get(c.get("estado"))
+    if not e:
+        return c
+    teo = dict(c["teo"]) if c.get("teo") else None
+    if teo:
+        teo.setdefault("aura", e["aura"])
+        if "cara" in teo and not teo.get("boca_libre"):
+            teo["cara"] = _con_boca(teo["cara"], e["boca"])
+        c["teo"] = teo
+    if c.get("pipo") and "cara" not in c["pipo"]:
+        c["pipo"] = dict(c["pipo"], cara=e["pipo"])
+    asoma = dict(c.get("pipo_asoma") or {})
+    asoma.setdefault("cara", e["pipo"])
+    c["pipo_asoma"] = asoma
+    return c
+
+
 def aplanar(g):
     """Convierte el guion en una lista plana de cuadros, cada uno con sus hojas."""
     fuera = []
@@ -1136,6 +1206,8 @@ def aplanar(g):
             c.setdefault("fondo", esc.get("fondo", "ninguno"))
             c.setdefault("parallax", esc.get("parallax", 0))
             c["escena"] = tipo
+            c.setdefault("estado", esc.get("estado"))
+            c = _aplicar_estado(c)
             if "duracion" in c:
                 c["hojas"] = max(1, int(round(float(c["duracion"]) * HOJAS_POR_SEG)))
             c["hojas"] = int(c.get("hojas", 10))
@@ -1305,22 +1377,35 @@ def cartel(g, m, i, n, rng):
 
 # ---------------------------------------------------------------- C · el cierre fijo
 
-# La contratapa es el ÚNICO lugar donde Dwellia habla, así que dice el mensaje general de la
-# cuenta (Tomás, WS36): **vivir el presente, y cómo una Pausa escrita te trae de vuelta**.
-# Hasta la WS35 el primer renglón era el gancho de la serie ("Teo y Pipo volverán
-# próximamente"); con píldoras publicadas seguido, el gancho importa menos que la tesis.
-# Se puede cambiar por guion con `cierre: {textos: [a, b, c, d, e]}`.
-TEXTOS_CONTRATAPA = ["una Pausa al día", "para volver al presente",
-                     "Dwellia", "una línea escrita, fuera del teléfono", "link en la bio"]
+# La contratapa NO se toca (Tomás, WS36, explícito): el gancho de la serie va primero y
+# grande, y abajo el bloque de Dwellia. El mensaje general de la cuenta se dice en el globo
+# del cierre, no acá. Igual quedó configurable por guion: `cierre: {textos: [a, b, c, d, e]}`.
+TEXTOS_CONTRATAPA = ["Teo y Pipo volverán", "próximamente",
+                     "Dwellia", "una Pausa al día, fuera del teléfono", "link en la bio"]
 
 
 CARA_CIERRE, ESC_CIERRE, POS_CIERRE, PIVOTE_CIERRE = "cara_alegria_sarcastica", 2.15, (R.W / 2, 1010), (200, 210)
 
 
-def hoja_pipo_camara(m, i, n, rng):
-    """C1: Pipo a cámara, cabeza grande, alegría sarcástica."""
+def caja_cierre(m):
+    """La caja de la cara de Pipo en la hoja del cierre, en coordenadas de la hoja."""
+    x0, y0, x1, y1 = caja_pieza(m, "pipo", CARA_CIERRE)
+    dy = m.anclas("pipo", CARA_CIERRE)["cuello"][1] - PIVOTE_CIERRE[1]
+    return (POS_CIERRE[0] + x0 * ESC_CIERRE, POS_CIERRE[1] + (y0 + dy) * ESC_CIERRE,
+            POS_CIERRE[0] + x1 * ESC_CIERRE, POS_CIERRE[1] + (y1 + dy) * ESC_CIERRE)
+
+
+def hoja_pipo_camara(m, i, n, rng, dice=None):
+    """C1: Pipo a cámara, cabeza grande, alegría sarcástica. `dice` (WS36) le pone su globo:
+    es el único lugar donde Pipo le habla derecho a la persona, y ahí va el mensaje de la
+    cuenta — el iris se cierra sobre eso."""
     im = R.paper(rng)
     m.solo(im, "pipo", CARA_CIERRE, POS_CIERRE[0], POS_CIERRE[1], escala=ESC_CIERRE, rng=rng, pivote=PIVOTE_CIERRE)
+    if dice:
+        caja = caja_cierre(m)
+        cx = (caja[0] + caja[2]) / 2
+        globo(ImageDraw.Draw(im), dice, (cx, caja[1] + 0.3 * (caja[3] - caja[1])), rng,
+              evitar=[caja], flota=4.0 * math.sin(i * 0.4), modo="abajo", ancla_abajo=(cx, caja[3] + 14))
     return im
 
 
@@ -1420,7 +1505,7 @@ def render(ruta_guion, solo_cuadros=False):
     hojas_rotulo = int(float(c_cartel.get("rotulo_seg", ROTULO_SEG)) * HOJAS_POR_SEG) if modo_cartel == "rotulo" else 0
     hojas_funde = max(1, int(float(c_cartel.get("rotulo_funde", ROTULO_FUNDE)) * HOJAS_POR_SEG))
     cie = g.get("cierre") or {}
-    n_pipo = max(1, int(float(cie.get("pipo", 0.5)) * HOJAS_POR_SEG))
+    n_pipo = max(1, int(float(cie.get("pipo", 3.0 if cie.get("dice") else 0.5)) * HOJAS_POR_SEG))
     seg_iris = float(cie.get("iris", 0.9))
     seg_tapa = float(cie.get("tapa", 0.5))
     seg_contratapa = float(cie.get("contratapa", 1.8))
@@ -1430,7 +1515,7 @@ def render(ruta_guion, solo_cuadros=False):
     os.makedirs(pruebas, exist_ok=True)
     png = os.path.join(pruebas, "%s_cuadros.png" % nombre)
     hoja_de_cuadros(g, m, cuadros, total_hojas, modo_cartel=modo_cartel,
-                    textos_cierre=cie.get("textos")).save(png)
+                    textos_cierre=cie.get("textos"), dice_cierre=cie.get("dice")).save(png)
     print("cuadros ->", png)
     # el cartel, siempre, como PORTADA para la grilla del perfil de TikTok
     portada = os.path.join(pruebas, "%s_portada.png" % nombre)
@@ -1479,7 +1564,7 @@ def render(ruta_guion, solo_cuadros=False):
     for i in range(n_pipo):
         pagina += 1
         rng = random.Random(pagina)
-        im = R.chrome(hoja_pipo_camara(m, i, n_pipo, rng), pagina, total_hojas, rng)
+        im = R.chrome(hoja_pipo_camara(m, i, n_pipo, rng, cie.get("dice")), pagina, total_hojas, rng)
         emitir(R.page_turn(previo, im, 0.5), 1)
         emitir(im, R.HOLD - 1)
         previo = im
@@ -1507,7 +1592,7 @@ def render(ruta_guion, solo_cuadros=False):
 # pueden mover por guion (`cierre: {pipo, iris, tapa, contratapa}`, en segundos).
 
 
-def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30, modo_cartel="rotulo", textos_cierre=None):
+def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30, modo_cartel="rotulo", textos_cierre=None, dice_cierre=None):
     """La hoja fija: un cuadro clave de cada cuadro del guion (más el cartel y el cierre),
     para revisar la lectura sin abrir el video. Con el envase del feed (WS36) el cartel ya no
     es la primera pantalla: aparece rotulado como PORTADA y el rótulo se dibuja sobre la
@@ -1517,12 +1602,14 @@ def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30, modo_ca
     pagina = 0
     for k, c in enumerate(cuadros):
         n = c["hojas"]
-        textos = globos_de(c)
+        gs = globos_de(c)
         desde = int(c.get("globo_desde", GLOBO_DESDE))
-        # un cuadro clave por globo (en el medio de su tramo); sin globo, al 72 % del cuadro
-        if textos:
-            tramo = max(1.0, (n - desde) / len(textos))
-            claves = [min(n - 1, int(desde + tramo * (j + 0.5))) for j in range(len(textos))]
+        # un cuadro clave por globo (en el medio de su ventana o de su tramo); sin globo, al 72 %
+        if gs and any("desde" in g or "hasta" in g for g in gs):
+            claves = [min(n - 1, int((int(g.get("desde", 0)) + int(g.get("hasta", n))) / 2)) for g in gs]
+        elif gs:
+            tramo = max(1.0, (n - desde) / len(gs))
+            claves = [min(n - 1, int(desde + tramo * (j + 0.5))) for j in range(len(gs))]
         else:
             claves = [int(n * 0.72)]
         for j, i in enumerate(claves):
@@ -1534,7 +1621,7 @@ def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30, modo_ca
                 etiqueta += " · con rótulo"
             piezas.append((etiqueta, pieza))
         pagina += n
-    piezas.append(("cierre", R.chrome(hoja_pipo_camara(m, 0, 6, random.Random(5)), total_hojas, total_hojas, random.Random(5))))
+    piezas.append(("cierre", R.chrome(hoja_pipo_camara(m, 0, 6, random.Random(5), dice_cierre), total_hojas, total_hojas, random.Random(5))))
     piezas.append(("contratapa", contratapa(random.Random(77), textos_cierre)))
 
     w, h = int(R.W * escala), int(R.H * escala)

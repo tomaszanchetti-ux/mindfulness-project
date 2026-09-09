@@ -574,8 +574,33 @@
     200,
     170
    ],
+   "mano": [
+    306,
+    298
+   ],
    "tipo": "cuerpo",
    "png": "personajes/partes/teo/cuerpo_medita.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cuerpo_medita_toma": {
+   "cabeza": [
+    200,
+    108
+   ],
+   "escala": 0.72,
+   "rot": 0,
+   "z_cabeza": "delante",
+   "pecho": [
+    200,
+    170
+   ],
+   "mano": [
+    354,
+    304
+   ],
+   "tipo": "cuerpo",
+   "png": "personajes/partes/teo/cuerpo_medita_toma.png",
    "lienzo": 400,
    "escala_png": 2
   },
@@ -788,6 +813,17 @@
    "escala_rel": 0.36,
    "tipo": "prop",
    "png": "personajes/partes/props/cuadernito_3.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "telefono_4": {
+   "centro": [
+    200,
+    200
+   ],
+   "escala_rel": 0.32,
+   "tipo": "prop",
+   "png": "personajes/partes/props/telefono_4.png",
    "lienzo": 400,
    "escala_png": 2
   }

@@ -534,9 +534,11 @@ def teo_cuerpo_sentado(encorvado=1.0):
 # TEO · la escena de la magia (D1.2 · F, WS33): medita · camina erguido
 # =====================================================================================
 
-def teo_cuerpo_medita():
+def teo_cuerpo_medita(toma=False):
     """Sentado de frente con las piernas cruzadas, la espalda derecha y las manos apoyadas
-    en las rodillas. Es la pequeña acción de la escena 4 (F2) y va con la cara `cerrada`."""
+    en las rodillas. Es la pequeña acción de la escena 4 (F2) y va con la cara `cerrada`.
+    `toma=True` (WS36): el brazo derecho baja y se estira al piso, la mano abierta —
+    el momento en que el teléfono se enciende al lado y Teo lo agarra sin pensarlo."""
     p = []
     # las piernas cruzadas como una sola forma ancha y baja (leen en un vistazo), con dos
     # pliegues que marcan las canillas cruzadas y las zapatillas asomando adelante
@@ -551,10 +553,19 @@ def teo_cuerpo_medita():
     p.append(path("M 180 104 C 188 116, 212 116, 220 104", w=W_SEC))
     # brazos relajados, codos hacia afuera, manos en las rodillas
     p.append(miembro([(154, 120), (108, 200), (94, 292)], grosor=22))
-    p.append(miembro([(246, 120), (292, 200), (306, 292)], grosor=22))
-    p.append(circ(94, 298, 14, PIEL, UMBER, W_SEC)); p.append(circ(306, 298, 14, PIEL, UMBER, W_SEC))
+    if toma:                       # el brazo derecho se descuelga hacia el piso, a buscarlo
+        # el brazo sale MÁS al costado que hacia abajo: si baja demasiado, la mano queda por
+        # debajo de la línea del piso y parece que la atraviesa
+        p.append(miembro([(246, 120), (312, 208), (354, 296)], grosor=22))
+        p.append(circ(354, 304, 15, PIEL, UMBER, W_SEC))
+        mano = [354, 304]
+    else:
+        p.append(miembro([(246, 120), (292, 200), (306, 292)], grosor=22))
+        p.append(circ(306, 298, 14, PIEL, UMBER, W_SEC))
+        mano = [306, 298]
+    p.append(circ(94, 298, 14, PIEL, UMBER, W_SEC))
     return svg(p), {"cabeza": [200, 108], "escala": 0.72, "rot": 0, "z_cabeza": "delante",
-                    "pecho": [200, 170]}
+                    "pecho": [200, 170], "mano": mano}
 
 def teo_cuerpo_camina(fase=0.0):
     """Camina erguido de perfil hacia la derecha, en 4 fases (como Pipo). Brazos y piernas se
@@ -848,8 +859,12 @@ SAGE_LIGHT = "#b9cbb3"; SAGE_GLOW = "#d5e2cf"
 
 def prop_telefono(nivel=0):
     """Algo parecido a un teléfono. nivel 0 = apagado · 1 = se enciende (desde abajo) ·
-    2 = pantalla entera salvia · 3 = salvia respirando (centro más claro). La pantalla ENTERA
-    se enciende, no un halo alrededor (pedido de Tomás, WS32)."""
+    2 = pantalla entera salvia · 3 = salvia respirando (centro más claro) · **4 = luz BLANCA
+    fría** (WS36). La pantalla ENTERA se enciende, no un halo alrededor (Tomás, WS32).
+
+    Por qué el nivel 4: el salvia es el color de Dwellia y del presente. Cuando el teléfono
+    es el que se lleva a Teo del presente, NO puede encenderse del color del presente: se
+    enciende blanco y frío, como una pantalla de verdad a las tres de la mañana."""
     p = []
     defs = ('<defs>'
             '<linearGradient id="enciende" x1="0" y1="0" x2="0" y2="1">'
@@ -857,10 +872,14 @@ def prop_telefono(nivel=0):
             '</linearGradient>'
             '<radialGradient id="respira" cx="0.5" cy="0.5" r="0.6">'
             f'<stop offset="0" stop-color="{SAGE_GLOW}"/><stop offset="0.55" stop-color="{SAGE_LIGHT}"/><stop offset="1" stop-color="{SAGE}"/>'
+            '</radialGradient>'
+            '<radialGradient id="frio" cx="0.5" cy="0.42" r="0.72">'
+            '<stop offset="0" stop-color="#ffffff"/><stop offset="0.6" stop-color="#f2f4f6"/>'
+            '<stop offset="1" stop-color="#d9dee3"/>'
             '</radialGradient></defs>')
     p.append(defs)
     p.append(f'<rect x="118" y="60" width="164" height="280" rx="26" fill="{UMBER}" stroke="{UMBER}" stroke-width="{W_MAIN}"/>')
-    pantalla = {0: NOSE, 1: "url(#enciende)", 2: SAGE, 3: "url(#respira)"}[nivel]
+    pantalla = {0: NOSE, 1: "url(#enciende)", 2: SAGE, 3: "url(#respira)", 4: "url(#frio)"}[nivel]
     p.append(f'<rect x="134" y="86" width="132" height="228" rx="12" fill="{pantalla}"/>')
     if nivel == 0:      # reflejo apagado: una diagonal apenas
         p.append(path("M 150 290 L 250 110", stroke="#5a524a", w=W_SEC))
@@ -926,7 +945,8 @@ def generar(solo=None):
                 s, a = teo_cabeza(m, b); escribir("teo", f"cara_{m}_{b}", s, dict(a, tipo="cabeza"), indice)
         for nombre, fn, kw in (("parado", teo_cuerpo_parado, dict(postura=1.0)), ("encorvado", teo_cuerpo_parado, dict(postura=0.0)),
                                ("sentado", teo_cuerpo_sentado, dict(encorvado=1.0)), ("sentado_erguido", teo_cuerpo_sentado, dict(encorvado=0.2)),
-                               ("medita", teo_cuerpo_medita, {}), ("corre", teo_cuerpo_corre, {}),
+                               ("medita", teo_cuerpo_medita, {}), ("medita_toma", teo_cuerpo_medita, dict(toma=True)),
+                               ("corre", teo_cuerpo_corre, {}),
                                ("spiderman", teo_cuerpo_spiderman, {})):
             s, a = fn(**kw); escribir("teo", "cuerpo_" + nombre, s, dict(a, tipo="cuerpo"), indice)
         for k in range(4):   # el paseo erguido en 4 fases
@@ -938,9 +958,10 @@ def generar(solo=None):
             s, a = familia(estado); escribir("familia", "familia_" + estado, s, a, indice)
         s, a = chicas_pasan(); escribir("extras", "chicas_pasan", s, a, indice)
     if solo in (None, "props"):
-        for k in range(4):
+        for k in range(5):
             s, a = prop_telefono(k); escribir("props", "telefono_%d" % k, s, a, indice)
-            s, a = prop_cuadernito(k); escribir("props", "cuadernito_%d" % k, s, a, indice)
+            if k < 4:
+                s, a = prop_cuadernito(k); escribir("props", "cuadernito_%d" % k, s, a, indice)
     ruta = os.path.join(DESTINO, "partes.json")
     previo = {}
     if os.path.exists(ruta):

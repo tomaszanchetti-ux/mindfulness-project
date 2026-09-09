@@ -246,6 +246,10 @@ a TikTok como **portada** del video.
 | `hacia_escala` / `hacia_rot` | la escala o la inclinación al final del cuadro (se acerca, se inclina). |
 | `sacude` | vibración corta en píxeles (el remate de un chiste, el nervio). |
 | `vida` | multiplica el cabeceo del personaje (`0` lo apaga, `1.8` lo exagera). |
+| `estado` | **la gramática de la serie (WS36)**: `conexion` (Teo con aura verde y boca sonriendo · Pipo contento) o `desconexion` (Teo triste y sin aura · Pipo enojado). Se puede poner en la escena entera. `boca_libre: true` en Teo deja su boca como está. |
+| `pipo_dice` con ventana | cada globo puede ser un mapa `{texto, desde, hasta, cara, lado}`: **entre ventanas no hay globo y Pipo desaparece de escena**. La `cara` del globo manda sobre la de `pipo_asoma`. |
+| `piezas` sueltas que se encienden | `brillo` (0..1, o `sube`/`baja`) y `brillo_color` (`salvia` \| `blanco`) también en `piezas` y en `prop`. **El teléfono que desconecta usa `props/telefono_4`, la pantalla blanca fría**: el salvia es el color del presente. |
+| `cierre: {dice, pipo, textos}` | el globo de Pipo a cámara antes del iris (ahí va el mensaje de la cuenta), cuánto dura, y los cinco renglones de la contratapa si alguna vez hiciera falta cambiarlos. |
 | `cuerpo` / `cara` como **lista** | poses o caras que **alternan** dentro del mismo cuadro cada `ritmo` hojas (3 por defecto): la sesión de fotos, el que gesticula. Distinto de `ciclo: true`, que es el ciclo de caminata `_0..3`. |
 
 **Regla del guion (el tempo, WS34):** pocas imágenes, **6-8 por volumen**, cada una **30-45
