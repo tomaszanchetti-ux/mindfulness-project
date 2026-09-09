@@ -370,6 +370,55 @@ def prop_plato_croquetas(d, x, y, escala, rng, t=0.0, cuantas=5, **kw):
                  13 * escala, rng, width=4, color=R.TAUPE, fill=R.SAND, ry=10 * escala)
 
 
+def prop_diario(d, x, y, escala, rng, t=0.0, avance=3, desde=0, hasta=4, lapiz=True, **kw):
+    """La hoja del diario, para la hoja "acerca" (WS37, "Querido Diario"): el encabezado en la
+    itálica de la marca y, debajo, el dibujito del auto — el cuadrado con ruedas que dibuja
+    todo el mundo. `avance` 0..3 es cuánto lleva dibujado (título · carrocería · techo ·
+    ruedas): así el auto se DIBUJA delante de la cámara en vez de aparecer entero.
+
+    Va trazado con la línea temblorosa de siempre a propósito: lo dibujó Teo, no el motor."""
+    s = escala
+    px = lambda ux, uy: (x + ux * s, y + uy * s)                        # noqa: E731
+    # `avance: dibuja` reparte los cuatro estados a lo largo del cuadro: el auto se dibuja
+    # solo, sin partir el beat en cuatro cuadros
+    if avance == "dibuja":
+        avance = int(entre(int(desde) + t * (int(hasta) + 1 - int(desde)), int(desde), int(hasta)))
+    avance = int(avance)
+    d.rounded_rectangle((px(-130, -180) + px(130, 180)), 12 * s, fill=R.IVORY,
+                        outline=R.UMBER, width=max(3, int(2.2 * s)))
+    for k in range(5):                                                  # las anillas de arriba
+        cx, cy = px(-84 + k * 42, -180)
+        R.circle(d, cx, cy, 9 * s, rng, width=max(2, int(1.6 * s)), color=R.TAUPE)
+    for k in range(6):                                                  # los renglones
+        R.stroke(d, [px(-104, -58 + k * 42), px(104, -58 + k * 42)], rng,
+                 width=max(1, int(1.0 * s)), color=R.SAND, amp=1.0)
+    tam = max(12, int(30 * s))
+    d.text(px(-104, -122), "Querido Diario", fill=R.UMBER, font=font_fraunces(tam), anchor="lm")
+    R.stroke(d, [px(-104, -98), px(96, -98)], rng, width=max(2, int(1.4 * s)), color=R.SAND)
+    g = max(3, int(2.4 * s))
+    punta = px(-104, -98)
+    if avance >= 1:                                                     # la carrocería
+        R.stroke(d, [px(-78, 16), px(84, 16), px(84, 74), px(-78, 74), px(-78, 16)], rng, width=g)
+        punta = px(-78, 16)
+    if avance >= 2:                                                     # el techo y la ventanilla
+        R.stroke(d, [px(-34, 16), px(-24, -30), px(48, -30), px(52, 16)], rng, width=g)
+        R.stroke(d, [px(12, -30), px(12, 16)], rng, width=g)
+        punta = px(52, 16)
+    if avance >= 3:                                                     # las ruedas
+        for cx, cy in (px(-44, 80), px(50, 80)):
+            R.circle(d, cx, cy, 21 * s, rng, width=g)
+        punta = px(78, 92)
+    if avance >= 4:                                                     # la puerta, el último detalle
+        R.stroke(d, [px(-6, 22), px(-6, 68)], rng, width=g)
+        R.circle(d, *px(-16, 46), 4 * s, rng, width=max(2, int(1.6 * s)))
+        punta = px(-6, 74)
+    if lapiz:                                                           # el lápiz, en el trazo
+        lx, ly = punta[0] + 6 * s, punta[1] + 4 * s
+        d.polygon([(lx, ly), (lx + 12 * s, ly + 14 * s), (lx + 52 * s, ly + 62 * s),
+                   (lx + 68 * s, ly + 48 * s), (lx + 28 * s, ly - 2 * s)], fill=R.SAND, outline=R.UMBER)
+        d.polygon([(lx, ly), (lx + 12 * s, ly + 14 * s), (lx + 28 * s, ly - 2 * s)], fill=R.UMBER)
+
+
 def prop_globo(d, x, y, escala, rng, t=0.0, texto="", hacia=None, **kw):
     """El globo de diálogo suelto (lo normal es pedirlo con `pipo_dice`)."""
     globo(d, texto, hacia or (x, y + 260), rng, forzar=(x, y))
@@ -377,7 +426,7 @@ def prop_globo(d, x, y, escala, rng, t=0.0, texto="", hacia=None, **kw):
 
 PROPS_SIMPLES = {"nube_garabatos": prop_nube_garabatos, "burbuja_pensamiento": prop_burbuja_pensamiento,
                  "correa": prop_correa, "plato_croquetas": prop_plato_croquetas, "globo": prop_globo,
-                 "flor": prop_flor}
+                 "flor": prop_flor, "diario": prop_diario}
 
 
 # ---------------------------------------------------------------- secundarios de línea

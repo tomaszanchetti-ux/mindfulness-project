@@ -1,0 +1,77 @@
+# PÍLDORA · "QUERIDO DIARIO" — la primera de CLASE B (la Pausa): Teo se detiene y escribe.
+#
+# La idea es de Tomás (WS37): Pipo asoma contento —"miralo a Teito escribiendo sus
+# emociones"— y la hoja "acerca" descubre lo que en realidad está haciendo: el cuadrado con
+# ruedas que dibuja todo el mundo. Pipo vuelve con la ceja levantada, "ya va a llegar...",
+# y cierra con ternura: "pequeños grandes pasos, Teito".
+#
+# 🔴 La regla que manda acá: escribir CONECTA, así que Teo tiene AURA y sonrisa y Pipo está
+# contento — y **el aura NO se apaga con el chiste**. Si se apagara, el video diría "escribir
+# no te sirvió", que es lo contrario de lo que cuenta la cuenta. La ceja de Pipo es ternura,
+# no reproche: el remate lo dice en voz alta.
+#
+# Es la píldora que nombra la herramienta: una de cada tres (`00_FORMATO_CORTO.md`).
+#
+#   python3 Flipbook/motor/libro.py Flipbook/guiones/p04_diario.yaml
+
+volumen: 5
+titulo: QUERIDO DIARIO
+nombre: p04_diario
+
+cartel: {tinta: ocre, formas: circulo, vineta: iluminado}
+globos: abajo
+subir_escena: 300
+
+cierre:
+  pipo: 2.2
+  contratapa: 1.5
+  dice: pequeños grandes pasos, Teito.
+
+escenas:
+  - tipo: problema
+    fondo: rincon        # su rincón: el sofá de frente le cruzaba el respaldo por el cuerpo
+    estado: conexion
+    cuadros:
+
+      # ------------------------------ 1 · Teo escribiendo · 3,2 s
+      # El cuadernito CICLA: el lápiz avanza renglón a renglón, así la escena no está quieta.
+      - hojas: 32
+        camara: {desde: 1.12, hasta: 1.20}
+        teo:
+          cuerpo: sentado_erguido
+          cara: abajo_sonrisa
+          en: banquito
+          dx: -20
+          dy: -96
+          escala: 1.5
+          aura: 1
+          pulso: true
+          vida: 1.0
+          prop: {nombre: cuadernito_0, ciclo: [cuadernito_0, cuadernito_1, cuadernito_2, cuadernito_3],
+                 dx: 40, dy: 10, rot: -10}
+        pipo_asoma: {lado: izquierda}
+        pipo_dice:
+          - {texto: "miralo a Teito escribiendo sus emociones.", desde: 0, hasta: 32}
+
+      # ------------------------------ 2 · la hoja "acerca" · 2,0 s
+      # 🔴 La hoja NO puede bajar más: si su caja invade el tercio de abajo, el globo del
+      # cuadro siguiente se va arriba y la colita cruza el dibujo entero.
+      # El auto se DIBUJA delante de la cámara (`avance: dibuja`): carrocería, techo, ruedas.
+      # Sin globo: que se lea "Querido Diario" y que el chiste entre por el ojo, no por el texto.
+      - hojas: 20
+        camara: {desde: 1.0, hasta: 1.06}
+        zoom: {prop: diario, x: 540, y: 1085, escala: 2.5, avance: dibuja, desde: 0, hasta: 3}
+
+      # ------------------------------ 3 · la ceja de Pipo · 2,2 s
+      # Y Teo, impertérrito, le agrega la puerta: ningún cuadro quieto (la ley del movimiento).
+      - hojas: 22
+        camara: {desde: 1.06, hasta: 1.12}
+        zoom: {prop: diario, x: 540, y: 1085, escala: 2.5, avance: dibuja, desde: 3, hasta: 4}
+        pipo_asoma: {lado: izquierda, cara: en_serio}
+        pipo_dice:
+          - {texto: "ya va a llegar...", desde: 3, hasta: 22, cara: en_serio}
+
+# ------------------------------------------------------------------ para publicar
+# Descripción: no importa lo que salga. Importa que se haya sentado a hacerlo.
+# Comentario fijado: el primer día también dibujás un auto. El diario no se estrena bien.
+# Hashtags: #mindfulness #diario #escribir #momentopresente #dwellia
