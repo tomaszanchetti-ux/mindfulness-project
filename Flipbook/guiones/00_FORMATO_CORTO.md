@@ -61,6 +61,20 @@ contar una cosa.
   presente. Entre medio no está (ventanas `desde`/`hasta`).
 - **El cierre puede no decir nada.** La cara de Pipo y el círculo alcanzan.
 
+### Dos cosas que aprendimos haciéndolas (WS37)
+
+- **Si el chiste está en un objeto, el objeto tiene que estar VISIBLE — y si el personaje lo
+  tapa, se cambia la POSE, no se insiste.** 🔴 En "El paseo", con Pipo agachado oliendo la
+  flor, el collar se lo tapaba su propia cabeza: no había tirón que mostrar por más que la
+  correa estuviera tensa. La solución fue narrativa: el tirón LO LEVANTA (`plantado`, las
+  patas clavadas, el collar a la vista) y recién en el beat siguiente lo arrastra.
+- **Un beat de reacción vale 0,7-0,9 s y hace legible cualquier cambio brusco.** El agarre
+  del teléfono (p02) y el tirón de la correa (p03) son los dos casos: sin el beat del medio,
+  el cambio de pose pasa de golpe y se lee como un corte, no como un movimiento.
+- **La franja de abajo es del globo y no se negocia.** Si una hoja "acerca" (o cualquier
+  cosa grande) invade el tercio inferior, el globo se va arriba y la colita cruza el dibujo
+  entero. Se achica la lámina, no se pelea con el globo.
+
 ## La gramática de la serie (el patrón que se repite SIEMPRE)
 
 > **Tomás, 09/09/2026.** Habrá escenas de conexión y escenas de desconexión, en mil
@@ -114,10 +128,10 @@ solo escribir el YAML.
 |---|---|---|---|---|---|
 | 1 | **El dilema del espejo** (amor propio) ✅ **HECHA** (`p01_espejo`, 10,1 s) | de espaldas, teléfono en alto; su cara en el reflejo muta a la pose de revista | entra fastidiado y vuelve con la ceja levantada | `espejo_bano` | `cara_pose_0/1` + `cara_nuca` + `cuerpo_espaldas` (dibujadas) · `selfie`, `selfie_flex` y la boca `pico` quedaron en la biblioteca |
 | 2 | **Meditar** (sentido) ✅ **HECHA** (`p02_meditar`, 12,8 s) | medita en paz hasta que el teléfono se enciende y le gana | asoma, anuncia "toma uno" y vuelve enojado | `habitacion` | `medita_toma` (dibujada) |
-| 3 | **El paseo** (perspectiva) | camina rápido mirando el teléfono, tira de la correa | `plantado`, cuatro minutos en la misma flor | `banco_plaza` | ✅ ninguna |
+| 3 | **El paseo** (perspectiva) ✅ **HECHA** (`p03_paseo`, 13,2 s) | camina mirando el teléfono y TIRA de la correa | la nariz en una flor que el tirón le pasa de largo | `calle` | `pipo cuerpo_estira` + `teo cuerpo_pasea_0..3` (dibujadas) · `flor` y `tension`/`tiron` en la correa |
 | 4 | **La caída** (resiliencia) | un mal día y se derrumba | se cae del sofá, se levanta y sigue. Tres veces | `sofa` | ✅ ninguna |
-| 5 | **Escribir** (gratitud) · **clase B** | mil notas, listas, recordatorios, nada le alcanza | una croqueta y le cambia el día | `mesa_familiar` | plato de croquetas (prop simple, ya existe) |
-| 7 | **La Pausa** (clase B, la píldora madre) | scrollea sin fin, la cara vacía | espera al lado, tranquilo | `sofa` | ✅ ninguna (cuadernito ya existe) |
+| 5 | **Querido Diario** · **clase B** ✅ **HECHA** (`p04_diario`, 12,5 s) | escribe en el diario, con aura — y lo que dibuja es un auto de palitos | asoma contento y vuelve con la ceja levantada | `rincon` | `diario` (prop simple, con el auto que se dibuja solo) |
+| 7 | **La Pausa** (clase B) | scrollea sin fin, la cara vacía | espera al lado, tranquilo | `sofa` | ✅ ninguna (cuadernito ya existe) |
 | 6 | **El café** (gratitud) | café perfecto, sol, y él mirando vacaciones ajenas | el mismo plato de siempre, como una fiesta | `mesa_familiar` | ✅ ninguna |
 
 El número del rótulo es el **orden de publicación**, no el de esta tabla.

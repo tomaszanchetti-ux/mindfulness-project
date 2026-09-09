@@ -18,9 +18,10 @@ general de la cuenta, la regla de oro (**una escena, bien hecha**), la gramátic
 conexión/desconexión y el banco de píldoras. La gramática visual sigue en
 [`REGLAS.md`](REGLAS.md) y el formato largo en `guiones/00_FORMATO_Y_OPUESTOS.md`.
 
-Hechas: **`p01_espejo`** ("EL DILEMA DEL ESPEJO", 10,9 s) y **`p02_meditar`** ("CINCO MINUTOS
-DE PAZ", 12,8 s), cada una con su portada. El vol. 1 largo sigue en `vol01_vinculos`.
-El detalle de cómo se llegó está en `WS/WS31` a `WS/WS36`.
+Hechas: **`p01_espejo`** ("EL DILEMA DEL ESPEJO", 10,9 s) · **`p02_meditar`** ("CINCO MINUTOS
+DE PAZ", 12,8 s) · **`p03_paseo`** ("EL PASEO", 13,2 s) · **`p04_diario`** ("QUERIDO DIARIO",
+12,5 s, la primera de **clase B**), cada una con su portada. El vol. 1 largo sigue en
+`vol01_vinculos`. El detalle de cómo se llegó está en `WS/WS31` a `WS/WS37`.
 
 ## Cómo se hace un volumen nuevo (D2, una WS por historieta)
 
