@@ -1,0 +1,112 @@
+# PÍLDORA · "EL PASEO" — el pilar Perspectiva. UNA SOLA ESCENA, bien hecha.
+#
+# La puesta en escena (Tomás, WS37): los dos paseando, de perfil, avanzando a la derecha.
+# Teo adelante, sin levantar la vista del teléfono, TIRANDO de la correa. Pipo atrás, con
+# el cuello estirado y la nariz en una flor que no llega a oler: el tirón se lo lleva y la
+# flor queda atrás.
+#
+# El decorado está EN la acción (regla de oro, WS36): la flor no es fondo, es lo que Pipo
+# está haciendo, y la correa tensa es la línea que une a los dos. Lo único que muta en toda
+# la píldora es la distancia entre el hocico y la flor.
+#
+# El acento salvia de la hoja es la FLOR (el presente); el teléfono que se lo lleva se
+# enciende BLANCO. Es la gramática de la serie, vista desde los dos lados.
+#
+# El mundo ACELERA con el tirón: `parallax` 2 → 12 → 9. Mientras Pipo resiste casi no
+# avanzan; cuando la correa gana, el fondo sale disparado. La física cuenta el chiste.
+#
+#   python3 Flipbook/motor/libro.py Flipbook/guiones/p03_paseo.yaml
+
+volumen: 4
+titulo: EL PASEO
+nombre: p03_paseo
+
+cartel: {tinta: ladrillo, formas: franja, vineta: tintin}
+globos: abajo
+subir_escena: 340       # la acción vive en el piso: sin esto queda medio cuadro de aire arriba
+
+cierre:
+  pipo: 2.2                       # lo que tarda en leerse el remate
+  contratapa: 1.5
+  dice: el paseo era la flor, teito.
+
+escenas:
+  - tipo: problema
+    fondo: calle
+    estado: desconexion
+    cuadros:
+
+      # ------------------------------ 1 · la nariz en la flor · 3,2 s
+      # Abre con la escena entera contada: Pipo abajo, en la flor; Teo arriba, en la pantalla.
+      - hojas: 32
+        parallax: 2               # casi no avanzan: Pipo está frenando
+        camara: {desde: 1.38, hasta: 1.45, y: 110}
+        teo:
+          cuerpo: [pasea_0, pasea_1, pasea_2, pasea_3]
+          ritmo: 3                # una fase cada 3 hojas: el paso corto del que va frenado
+          cara: abajo_plana
+          x: 690
+          y: 1150
+          escala: 1.35
+          vida: 0.6
+          prop: {nombre: telefono_4, ancla: mano, escala: 1.0, dy: 26, rot: -18,
+                 brillo: 0.5, brillo_color: blanco}
+        pipo: {cuerpo: estira, cara: en_serio, x: 290, y: 1300, escala: 0.95, vida: 1.3}
+        props:
+          # la correa va DETRÁS de los dos: el tramo que se ve es el que los une
+          - {nombre: correa, x: 639, y: 1204, hasta: [286, 1270], escala: 1.0,
+             tension: 0.5, hacia_tension: 0.92}
+          - {nombre: flor, x: 556, y: 1424, escala: 0.95, tallo: 0.6, hacia: {x: 524}, delante: true}
+        pipo_dice:
+          - {texto: "si estuvieras presente, teo...", desde: 4, hasta: 32}
+
+      # ------------------------------------------- 2 · el tirón · 1,4 s
+      # El beat: la correa termina de tensarse, el mundo acelera de golpe y la flor se va.
+      - hojas: 14
+        parallax: 12
+        camara: {desde: 1.45, hasta: 1.47, y: 110}
+        teo:
+          cuerpo: [pasea_1, pasea_2, pasea_3, pasea_0]
+          ritmo: 2
+          cara: abajo_plana
+          x: 690
+          y: 1150
+          escala: 1.35
+          vida: 0.6
+          prop: {nombre: telefono_4, ancla: mano, escala: 1.0, dy: 26, rot: -18,
+                 brillo: 0.5, brillo_color: blanco}
+        # el tirón lo LEVANTA del suelo: de `estira` (la nariz en la flor) a `plantado`
+        # (las patas clavadas, la cabeza arriba). El cambio de pose ES el beat.
+        pipo: {cuerpo: plantado, cara: en_serio, x: 340, y: 1310, escala: 0.9,
+               vida: 1.6, sacude: 5, hacia: {x: 390}}
+        props:
+          - {nombre: correa, x: 639, y: 1204, hasta: [455, 1297], escala: 1.0, tension: 1.0}
+          - {nombre: flor, x: 524, y: 1424, escala: 0.95, tallo: 0.6, hacia: {x: 300}, delante: true}
+
+      # ------------------------- 3 · la flor quedó atrás · 3,0 s
+      # Ya está plantado y resignado: la cara pasa de `en_serio` (todavía la miraba)
+      # a `fastidio`. La flor se va del cuadro por la izquierda.
+      - hojas: 30
+        parallax: 6
+        camara: {desde: 1.47, hasta: 1.52, y: 110}
+        teo:
+          cuerpo: [pasea_0, pasea_1, pasea_2, pasea_3]
+          ritmo: 2
+          cara: abajo_plana
+          x: 690
+          y: 1150
+          escala: 1.35
+          vida: 0.6
+          prop: {nombre: telefono_4, ancla: mano, escala: 1.0, dy: 26, rot: -18,
+                 brillo: 0.5, brillo_color: blanco}
+        pipo: {cuerpo: plantado, cara: fastidio, x: 390, y: 1310, escala: 0.9, vida: 1.2}
+        props:
+          - {nombre: correa, x: 639, y: 1204, hasta: [480, 1297], escala: 1.0, tension: 1.0}
+          - {nombre: flor, x: 300, y: 1424, escala: 0.95, tallo: 0.6, hacia: {x: 120}, delante: true}
+        pipo_dice:
+          - {texto: "disfrutarías de las pequeñas cosas.", desde: 3, hasta: 30}
+
+# ------------------------------------------------------------------ para publicar
+# Descripción: Teo hace el mismo paseo todos los días. Pipo hace uno distinto cada vez.
+# Comentario fijado: la flor estuvo ahí los dos minutos enteros. El teléfono también.
+# Hashtags: #mindfulness #momentopresente #perro #humor #dwellia

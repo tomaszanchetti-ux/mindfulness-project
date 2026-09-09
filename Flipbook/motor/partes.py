@@ -308,6 +308,40 @@ def pipo_cuerpo_plantado():
     p.append(circ(300, 186, 7, SAGE_DEEP))
     return svg(p), {"cabeza": [270, 168], "escala": 0.88, "rot": -6, "z_cabeza": "delante", "correa": [300, 186]}
 
+def pipo_cuerpo_estira():
+    """El estirón hacia la flor (WS37, "El paseo"): el cuerpo bajo y echado hacia adelante,
+    las cuatro patas clavadas y derrapando hacia atrás, el cuello ESTIRADO hacia abajo y
+    adelante. Es el gesto que carga la píldora: el perro que quiere quedarse en el presente
+    dos segundos más mientras el otro tira. El ancla `cabeza` cae a la altura de la flor y
+    el gancho de la correa queda arriba del lomo, lejos de la cara."""
+    p = []
+    p.append(pipo_cola(96, 206, s=1.0, rot=-46))          # la cola arriba, tirada por el envión
+    def pata(x, y, dx, largo=88, atras=False):
+        col = FAWN_SOMBRA if atras else FAWN
+        return path(f"M {x - 14} {y} C {x - 20} {y + largo * 0.4}, {x - 14 + dx} {y + largo * 0.7}, {x - 22 + dx} {y + largo} "
+                    f"C {x - 26 + dx} {y + largo + 14}, {x + 16 + dx} {y + largo + 14}, {x + 14 + dx} {y + largo} "
+                    f"C {x + 12 + dx} {y + largo * 0.7}, {x + 14} {y + largo * 0.4}, {x + 14} {y} Z", fill=col)
+    # patas traseras: clavadas y echadas hacia atrás (el freno)
+    p.append(pata(132, 232, -30, largo=96, atras=True))
+    p.append(pata(208, 240, -34, largo=92, atras=True))
+    # el cuerpo, inclinado: la grupa arriba a la izquierda, el pecho abajo a la derecha
+    p.append(path("M 110 226 C 102 180, 134 146, 192 150 C 250 154, 292 196, 300 246 "
+                  "C 308 288, 266 312, 204 308 C 144 304, 118 272, 110 226 Z", fill=FAWN))
+    # el cuello estirado: sale del pecho hacia abajo y adelante, donde se pega la cabeza
+    p.append(path("M 268 220 C 300 232, 326 258, 332 296 C 336 320, 302 328, 288 306 "
+                  "C 276 286, 262 258, 254 240 Z", fill=FAWN))
+    p.append(path("M 254 296 C 282 288, 300 264, 296 236 C 292 218, 272 216, 264 240 "
+                  "C 258 262, 256 280, 254 296 Z", fill=IVORY, stroke="none", w=0))
+    # patas delanteras: rectas y frenando
+    p.append(pata(160, 244, -18, largo=94))
+    p.append(pata(232, 250, -22, largo=88))
+    p.append(pipo_collar(300, 268, 34, ry=10))
+    p.append(circ(196, 168, 7, SAGE_DEEP))                # el gancho de la correa, sobre el lomo
+    # la cabeza gira en ANTIHORARIO (rot negativo): así el hocico apunta abajo y ADELANTE,
+    # hacia la flor. Con el signo al revés el perro huele hacia atrás.
+    return svg(p), {"cabeza": [366, 320], "escala": 0.88, "rot": -26, "z_cabeza": "delante",
+                    "correa": [196, 168]}
+
 def pipo_cuerpo_cae():
     """Cae del sofá: en el aire, panza al frente, patas abiertas; la cabeza abajo."""
     p = []
@@ -396,6 +430,7 @@ CUERPOS_PIPO = {
     "camina": pipo_cuerpo_camina,
     "panza_arriba": pipo_cuerpo_panza_arriba,
     "plantado": pipo_cuerpo_plantado,
+    "estira": pipo_cuerpo_estira,
     "cae": pipo_cuerpo_cae,
 }
 
@@ -690,9 +725,14 @@ def teo_cuerpo_medita(toma=False):
     return svg(p), {"cabeza": [200, 108], "escala": 0.72, "rot": 0, "z_cabeza": "delante",
                     "pecho": [200, 170], "mano": mano}
 
-def teo_cuerpo_camina(fase=0.0):
+def teo_cuerpo_camina(fase=0.0, mirando=False):
     """Camina erguido de perfil hacia la derecha, en 4 fases (como Pipo). Brazos y piernas se
-    cruzan; el cuerpo entero sube y baja apenas. Es el paseo de F2 y sirve para todo el arco."""
+    cruzan; el cuerpo entero sube y baja apenas. Es el paseo de F2 y sirve para todo el arco.
+
+    `mirando=True` (WS37, "El paseo"): las piernas siguen el ciclo, pero los DOS brazos se
+    quedan quietos — uno doblado adelante con el teléfono a la altura de la cara, el otro
+    caído atrás con la correa. Sin esto el teléfono viaja con el balanceo del brazo (88 px
+    de ida y vuelta por paso) y no se lee que lo está mirando: se lee que lo agita."""
     import math
     sw = math.sin(fase * 2 * math.pi)
     salto = 5 * abs(math.cos(fase * 2 * math.pi))
@@ -703,17 +743,30 @@ def teo_cuerpo_camina(fase=0.0):
     # pierna y brazo de atrás (más oscuros, detrás del torso)
     p.append(miembro([(196, 226), (196 - 24 * sw, 300), (196 - 50 * sw, 372)], grosor=30, color="#6f665b"))
     p.append(zapatilla(196 - 50 * sw, 372))
-    p.append(miembro([(190, 116), (186 - 30 * sw, 172), (184 - 44 * sw, 222)], grosor=20, color="#e4d8c4"))
+    if mirando:                       # el brazo de atrás cuelga quieto: en esa mano va la correa
+        p.append(miembro([(190, 116), (178, 176), (172, 234)], grosor=20, color="#e4d8c4"))
+        p.append(circ(170, 240, 12, "#e4d8c4", UMBER, W_SEC))
+    else:
+        p.append(miembro([(190, 116), (186 - 30 * sw, 172), (184 - 44 * sw, 222)], grosor=20, color="#e4d8c4"))
     # torso de perfil, derecho, con el ancho del `parado`
     p.append(path("M 158 96 C 140 132, 148 200, 156 232 L 246 232 C 256 200, 262 132, 244 96 Z", fill=REMERA))
     p.append(path("M 180 96 C 188 108, 214 108, 222 96", w=W_SEC))
     # pierna y brazo de adelante
     p.append(miembro([(210, 226), (210 + 24 * sw, 300), (210 + 50 * sw, 372)], grosor=30, color=PANTALON))
     p.append(zapatilla(210 + 50 * sw, 372))
-    p.append(miembro([(232, 116), (238 + 30 * sw, 172), (236 + 44 * sw, 222)], grosor=22))
-    p.append(circ(236 + 44 * sw, 226, 13, PIEL, UMBER, W_SEC))
-    return svg([grupo(p, f"translate(0 {-salto:.1f})")]), {"cabeza": [204, 100 - salto], "escala": 0.72, "rot": 0,
-                                                           "z_cabeza": "delante", "mano": [236 + 44 * sw, 226 - salto]}
+    if mirando:                       # el codo doblado y la mano ADELANTE DE LA CARA, quieta
+        p.append(miembro([(232, 116), (266, 176), (296, 132)], grosor=22))
+        p.append(circ(300, 126, 13, PIEL, UMBER, W_SEC))
+        mano = [300, 126]
+    else:
+        p.append(miembro([(232, 116), (238 + 30 * sw, 172), (236 + 44 * sw, 222)], grosor=22))
+        p.append(circ(236 + 44 * sw, 226, 13, PIEL, UMBER, W_SEC))
+        mano = [236 + 44 * sw, 226]
+    anclas = {"cabeza": [204, 100 - salto], "escala": 0.72, "rot": 0,
+              "z_cabeza": "delante", "mano": [mano[0], mano[1] - salto]}
+    if mirando:
+        anclas["correa"] = [170, 240 - salto]
+    return svg([grupo(p, f"translate(0 {-salto:.1f})")]), anclas
 
 def teo_cuerpo_corre():
     """Corre de perfil hacia la derecha, a lo Tintín en la tapa (B1, WS34): el torso bien
@@ -1076,6 +1129,8 @@ def generar(solo=None):
             s, a = fn(**kw); escribir("teo", "cuerpo_" + nombre, s, dict(a, tipo="cuerpo"), indice)
         for k in range(4):   # el paseo erguido en 4 fases
             s, a = teo_cuerpo_camina(k / 4); escribir("teo", "cuerpo_camina_%d" % k, s, dict(a, tipo="cuerpo"), indice)
+        for k in range(4):   # WS37: el mismo paseo, pero sin levantar la vista del teléfono
+            s, a = teo_cuerpo_camina(k / 4, mirando=True); escribir("teo", "cuerpo_pasea_%d" % k, s, dict(a, tipo="cuerpo"), indice)
         s, a = teo_nuca(); escribir("teo", "cara_nuca", s, dict(a, tipo="cabeza"), indice)
         for k in range(2):                # WS36: LA cara del espejo, en dos aprietes
             s, a = teo_cabeza(gesto="pose", apriete=k); escribir("teo", "cara_pose_%d" % k, s, dict(a, tipo="cabeza"), indice)

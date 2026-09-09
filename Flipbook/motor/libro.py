@@ -307,11 +307,32 @@ def prop_burbuja_pensamiento(d, x, y, escala, rng, t=0.0, dibujo="abuelos", punt
         fn(d, x, y, rng, s=escala)
 
 
-def prop_correa(d, x, y, escala, rng, t=0.0, hasta=None, **kw):
-    """La correa: una curva floja entre la mano y el collar."""
+def prop_correa(d, x, y, escala, rng, t=0.0, hasta=None, tension=0.0, **kw):
+    """La correa entre la mano de Teo y el collar de Pipo. `tension` 0..1: en 0 cuelga floja,
+    en 1 va recta, tirante y sin temblor — el que tira es Teo (WS37, "El paseo"). Con
+    `hacia_tension` la correa se va tensando DENTRO del cuadro, que es el tirón."""
     hasta = hasta or (x + 240, y + 120)
-    mx, my = (x + hasta[0]) / 2, (y + hasta[1]) / 2 + 60 * escala
-    R.stroke(d, [(x, y), (mx, my), tuple(hasta)], rng, width=4, color=R.TAUPE)
+    tension = entre(float(tension), 0.0, 1.0)
+    mx, my = (x + hasta[0]) / 2, (y + hasta[1]) / 2 + 60 * escala * (1 - tension)
+    R.stroke(d, [(x, y), (mx, my), tuple(hasta)], rng, width=4, color=R.TAUPE, amp=2.2 - 1.7 * tension)
+
+
+def prop_flor(d, x, y, escala, rng, t=0.0, petalos=6, tallo=1.0, **kw):
+    """La flor del paseo: tallo, dos hojitas y la corola. Es EL acento salvia de la hoja
+    (REGLAS §1) y no por decoración: lo que trae al presente se dibuja en salvia, y lo que
+    se lo lleva (el teléfono, `telefono_4`) en blanco frío. La flor ES el presente."""
+    s = escala
+    alto = 150 * s * float(tallo)
+    tope = (x - 14 * s, y - alto)
+    R.stroke(d, [(x, y), (x + 12 * s, y - alto * 0.55), tope], rng, width=5, color=R.SAGE_DEEP)
+    for lado, h in ((-1, 0.42), (1, 0.66)):
+        R.stroke(d, [(x + 6 * s, y - alto * h), (x + lado * 34 * s, y - alto * h - 24 * s)],
+                 rng, width=5, color=R.SAGE_DEEP)
+    for k in range(int(petalos)):
+        a = k * 2 * math.pi / int(petalos)
+        R.circle(d, tope[0] + 27 * s * math.cos(a), tope[1] + 27 * s * math.sin(a), 20 * s, rng,
+                 width=5, color=R.SAGE_DEEP, fill=R.SAGE_LIGHT)
+    R.circle(d, tope[0], tope[1], 15 * s, rng, width=4, color=R.SAGE_DEEP, fill=R.CREAM)
 
 
 def prop_plato_croquetas(d, x, y, escala, rng, t=0.0, cuantas=5, **kw):
@@ -329,7 +350,8 @@ def prop_globo(d, x, y, escala, rng, t=0.0, texto="", hacia=None, **kw):
 
 
 PROPS_SIMPLES = {"nube_garabatos": prop_nube_garabatos, "burbuja_pensamiento": prop_burbuja_pensamiento,
-                 "correa": prop_correa, "plato_croquetas": prop_plato_croquetas, "globo": prop_globo}
+                 "correa": prop_correa, "plato_croquetas": prop_plato_croquetas, "globo": prop_globo,
+                 "flor": prop_flor}
 
 
 # ---------------------------------------------------------------- secundarios de línea
