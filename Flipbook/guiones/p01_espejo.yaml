@@ -1,0 +1,50 @@
+# PÍLDORA · "EL DILEMA DEL ESPEJO" — el pilar Amor propio, el opuesto: gustarse por
+# aprobación. UNA SOLA ESCENA, bien hecha (regla de Tomás, WS36).
+#
+# Teo posa frente al espejo haciendo LA cara: mejillas chupadas, labios empujados, mirada
+# intensa, una ceja más alta que la otra. Alterna dos poses y dos aprietes de la cara: el
+# chiste no está dibujado, PASA. Pipo entra dos veces y se va; el cierre no dice nada.
+#
+#   python3 Flipbook/motor/libro.py Flipbook/guiones/p01_espejo.yaml
+
+volumen: 3
+titulo: EL DILEMA DEL ESPEJO
+nombre: p01_espejo
+
+cartel: {tinta: ocre, formas: diagonales, vineta: tintin}
+globos: abajo
+subir_escena: 220
+
+cierre:
+  pipo: 0.7                      # la cara de Pipo y el círculo, sin decir nada
+
+escenas:
+  - tipo: problema
+    fondo: espejo_bano
+    cuadros:
+
+      # ------------------------------- una sola escena: Teo y el espejo · 6,2 s
+      - hojas: 62
+        estado: desconexion
+        # PLANO CERCANO: la cara es la escena. El zoom agranda a Teo Y el óvalo del espejo,
+        # así queda enmarcado; agrandar solo a Teo dejaba el espejo chiquito y perdía el chiste.
+        camara: {desde: 1.62, hasta: 1.82, y: 250}
+        teo:
+          # En primer plano los brazos levantados leen como tubos sueltos: el cuerpo se
+          # queda quieto y TODO lo hace la cara (que es de lo que va esta píldora).
+          cuerpo: parado
+          cara: [pose_0, pose_1]            # LA cara, en sus dos aprietes
+          boca_libre: true                  # acá la cara es el chiste, no el estado
+          ritmo: 5
+          x: 500
+          y: 1380
+          escala: 2.0
+          vida: 1.4
+          rot: -2
+          hacia_rot: 3
+          sacude: 1.2
+        pipo_asoma: {lado: izquierda}
+        pipo_dice:
+          - {texto: "todo el día la misma historia con el espejito.", desde: 3, hasta: 28, cara: fastidio}
+          # entre las dos ventanas Pipo NO está: se fue y vuelve
+          - {texto: "vuelve al presente, teito.", desde: 36, hasta: 62, cara: en_serio}

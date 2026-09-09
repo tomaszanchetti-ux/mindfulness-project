@@ -36,6 +36,24 @@ Cómo aterriza en cada pieza, en orden de importancia:
 Si solo hubiera píldoras A, la cuenta sería graciosa y nadie sabría para qué existe. Si solo
 hubiera B, sería un anuncio. La proporción es el producto.
 
+## La regla de oro: UNA escena, bien hecha
+
+> **Tomás, 09/09/2026.** Antes que sumar una lámina, hacer que la que hay esté **mejor**.
+
+Una píldora es **una sola escena**. Todo el presupuesto de la sesión se gasta ahí: en la
+cara, en el gesto, en el detalle que carga el chiste. Nada de recorrer tres lugares para
+contar una cosa.
+
+- **El chiste vive en una cara o en un gesto, dibujados en serio.** Si hay que dibujar algo
+  nuevo, que sea eso. `cara_pose_0/1` de Teo (las mejillas hundidas, los labios empujados,
+  la ceja alta) es todo el volumen de "El dilema del espejo".
+- **El plano se acerca.** Si la escena es una cara, la cámara tiene que estar encima de la
+  cara (`camara: {desde: 1.6, hasta: 1.8, y: 250}`). En un plano cercano los brazos
+  levantados leen como tubos sueltos: el cuerpo se queda quieto y la cara hace todo.
+- **Pipo entra dos veces y se va**: una para señalar el problema, otra para nombrar el
+  presente. Entre medio no está (ventanas `desde`/`hasta`).
+- **El cierre puede no decir nada.** La cara de Pipo y el círculo alcanzan.
+
 ## La gramática de la serie (el patrón que se repite SIEMPRE)
 
 > **Tomás, 09/09/2026.** Habrá escenas de conexión y escenas de desconexión, en mil
@@ -87,7 +105,7 @@ solo escribir el YAML.
 
 | # | Píldora | Teo | Pipo | Lugar | Piezas |
 |---|---|---|---|---|---|
-| 1 | **Mil selfies** (amor propio) ✅ **HECHA** (`p01_selfies`, 13,6 s) | se saca cuarenta fotos buscando el ángulo | pega la cara al vidrio, se ve horrible y le encanta | `espejo_bano` | `selfie` + `selfie_flex` + boca `pico` (dibujadas) |
+| 1 | **El dilema del espejo** (amor propio) ✅ **HECHA** (`p01_espejo`, 10,1 s) | posa frente al espejo haciendo LA cara, primer plano | entra fastidiado y vuelve con la ceja levantada | `espejo_bano` | `cara_pose_0/1` (dibujada) · `selfie`, `selfie_flex` y la boca `pico` quedaron en la biblioteca |
 | 2 | **Meditar** (sentido) ✅ **HECHA** (`p02_meditar`, 12,8 s) | medita en paz hasta que el teléfono se enciende y le gana | asoma, anuncia "toma uno" y vuelve enojado | `habitacion` | `medita_toma` (dibujada) |
 | 3 | **El paseo** (perspectiva) | camina rápido mirando el teléfono, tira de la correa | `plantado`, cuatro minutos en la misma flor | `banco_plaza` | ✅ ninguna |
 | 4 | **La caída** (resiliencia) | un mal día y se derrumba | se cae del sofá, se levanta y sigue. Tres veces | `sofa` | ✅ ninguna |

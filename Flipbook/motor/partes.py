@@ -403,8 +403,16 @@ CUERPOS_PIPO = {
 # TEO · la cabeza (3/4, nunca a cámara) con miradas y bocas; el pelo despeinado
 # =====================================================================================
 
-def teo_cabeza(mirada="frente", boca="plana", pelo="normal"):
-    """pelo: normal (despeinado) · caido (el mechón sobre la frente, Bully Maguire · vol. 1)."""
+def teo_cabeza(mirada="frente", boca="plana", pelo="normal", gesto=None, apriete=0):
+    """pelo: normal (despeinado) · caido (el mechón sobre la frente, Bully Maguire · vol. 1).
+
+    `gesto="pose"` (WS36) = LA cara del espejo: mejillas chupadas, labios empujados hacia
+    adelante y mirada intensa, con una ceja más alta que la otra. Reemplaza cejas, ojos y
+    boca, y agrega los pómulos. `apriete` (0 o 1) es cuánto la aprieta: alternando las dos, la cara
+    "trabaja" sola delante del espejo.
+
+    Es el GESTO, no el actor: la regla de la serie (`00_FORMATO_Y_OPUESTOS` §5) es que un
+    muñeco de línea puede hacer una pose reconocible, nunca parecerse a una persona real."""
     p = []
     # cuello
     p.append(path("M 176 318 L 172 366 L 230 366 L 226 318 Z", fill=PIEL))
@@ -435,6 +443,39 @@ def teo_cabeza(mirada="frente", boca="plana", pelo="normal"):
               "M 270 52 C 268 72, 262 92, 250 108", "M 322 70 C 310 86, 296 100, 280 112",
               "M 340 132 C 326 136, 312 146, 302 160"):
         p.append(path(d, w=W_SEC))
+    if gesto == "pose":
+        # --- LA cara del espejo -------------------------------------------------------
+        # Se dibuja sobre la misma geometría que el resto de las caras de Teo (ojos en y=196,
+        # nariz en 208, boca en 278): moverlas hacia abajo le come el aire a los labios y
+        # todo queda apretado contra el mentón.
+        ap = 5 * apriete                             # cuánto se aprieta en la variante 1
+        # los huecos de las mejillas: curvas cortas y VERTICALES pegadas al borde de la cara,
+        # a la altura del pómulo. Largas y hacia el centro leen como surco o como lágrima.
+        p.append(path(f"M {132 + ap} 226 C {142 + ap} 248, {143 + ap} 268, {137 + ap} 288", stroke=TAUPE, w=W_SEC))
+        p.append(path(f"M {272 - ap} 226 C {262 - ap} 248, {261 - ap} 268, {267 - ap} 288", stroke=TAUPE, w=W_SEC))
+        # cejas gruesas y asimétricas: la izquierda baja y recta, la derecha arqueada y alta
+        p.append(path(f"M 142 {180 - ap} C 158 {174 - ap}, 180 {174 - ap}, 194 {181 - ap}", stroke=UMBER, w=W_SEC))
+        p.append(path(f"M 214 {172 - ap} C 230 {158 - ap}, 252 {159 - ap}, 266 {171 - ap}", stroke=UMBER, w=W_SEC))
+        # ojos entrecerrados con la pupila grande, de frente: la intensidad
+        for cx in (166, 240):
+            p.append(path(f"M {cx - 18} {194 + ap * 0.4} C {cx - 8} {185 + ap}, {cx + 8} {185 + ap}, {cx + 18} {194 + ap * 0.4}", w=W_SEC))
+            p.append(path(f"M {cx - 16} 204 C {cx - 6} 209, {cx + 6} 209, {cx + 16} 204", stroke=TAUPE, w=W_SEC - 1))
+            p.append(circ(cx, 199, 7.0, UMBER))
+            p.append(circ(cx + 2.6, 196.6, 2.2, IVORY))
+        p.append(path("M 206 208 C 212 226, 216 238, 206 244 C 200 246, 194 244, 192 240", w=W_SEC))
+        # los labios empujados: MÁS ANCHOS QUE ALTOS y bien abajo, para que no se mezclen con
+        # los puntitos del bigote. Labio de arriba en pico, el de abajo lleno.
+        lx = 4 * apriete
+        p.append(path(f"M {164 + lx} 288 C {176 + lx} 268, {228 - lx} 268, {240 - lx} 288 "
+                      f"C {236 - lx} 310, {220 - lx} 320, 202 320 C 184 320, {168 + lx} 310, {164 + lx} 288 Z",
+                      fill=PIEL, w=W_SEC))
+        p.append(path(f"M {172 + lx} 288 C 186 296, 218 296, {232 - lx} 288", stroke=UMBER, w=W_SEC))
+        p.append(path("M 190 278 C 196 272, 208 272, 214 278", stroke=TAUPE, w=W_SEC - 1))   # el arco del labio
+        if pelo == "caido":
+            p.append(path("M 176 96 C 232 92, 272 130, 266 214 C 262 232, 238 232, 238 212 "
+                          "C 240 176, 222 140, 176 128 Z", fill=SAND))
+        return svg(p), {"cuello": [200, 350]}
+
     # cejas finas
     p.append(path("M 148 176 C 160 168, 178 168, 190 174", stroke=TAUPE, w=W_SEC - 1))
     p.append(path("M 218 174 C 232 166, 250 166, 262 176", stroke=TAUPE, w=W_SEC - 1))
@@ -987,6 +1028,8 @@ def generar(solo=None):
             s, a = fn(**kw); escribir("teo", "cuerpo_" + nombre, s, dict(a, tipo="cuerpo"), indice)
         for k in range(4):   # el paseo erguido en 4 fases
             s, a = teo_cuerpo_camina(k / 4); escribir("teo", "cuerpo_camina_%d" % k, s, dict(a, tipo="cuerpo"), indice)
+        for k in range(2):                # WS36: LA cara del espejo, en dos aprietes
+            s, a = teo_cabeza(gesto="pose", apriete=k); escribir("teo", "cara_pose_%d" % k, s, dict(a, tipo="cabeza"), indice)
         for m in ("costado", "frente"):   # vol. 1: la cara con el pelo caído (Bully Maguire)
             s, a = teo_cabeza(m, "sonrisa", pelo="caido"); escribir("teo", f"cara_{m}_sonrisa_caido", s, dict(a, tipo="cabeza"), indice)
     if solo in (None, "familia"):

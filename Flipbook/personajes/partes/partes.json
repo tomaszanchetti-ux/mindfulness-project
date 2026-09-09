@@ -798,6 +798,26 @@
    "lienzo": 400,
    "escala_png": 2
   },
+  "cara_pose_0": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_pose_0.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
+  "cara_pose_1": {
+   "cuello": [
+    200,
+    350
+   ],
+   "tipo": "cabeza",
+   "png": "personajes/partes/teo/cara_pose_1.png",
+   "lienzo": 400,
+   "escala_png": 2
+  },
   "cara_costado_sonrisa_caido": {
    "cuello": [
     200,
