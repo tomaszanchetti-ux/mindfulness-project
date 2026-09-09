@@ -1048,7 +1048,63 @@ def aplanar(g):
             if c["fondo"] not in FONDOS:
                 raise SystemExit("fondo desconocido: %s (hay: %s)" % (c["fondo"], ", ".join(sorted(FONDOS))))
             fuera.append(c)
+    if fuera:
+        # WS36: el PRIMER cuadro entra con su globo desde la hoja 0. En el resto la imagen
+        # respira medio segundo sola (el ojo ve el chiste antes de leerlo), pero al principio
+        # del video medio segundo sin texto es medio segundo para irse.
+        fuera[0].setdefault("globo_desde", 0)
     return fuera
+
+
+# ------------------------------------------------- B2b · el rótulo del arranque (WS36)
+# El vol. 1 midió 3,64 s de tiempo medio de visualización sobre 30,7 s (11,8 % de retención,
+# 1,7 % de completado): la gente se iba ANTES del primer chiste, durante los 2 s de cartel
+# quieto. En el feed, una pantalla fija al principio se lee como "esto va lento" y el dedo
+# sube. Desde acá el video ABRE con la primera imagen y su globo, y el título viaja como
+# RÓTULO superpuesto arriba. El cartel no se pierde: se guarda como PORTADA del video
+# (`<nombre>_portada.png`), que es donde de verdad trabaja, en la grilla del perfil.
+
+ROTULO_SEG = 2.4                 # cuánto se queda el rótulo sobre la imagen viva
+ROTULO_FUNDE = 0.5               # los últimos segundos se va con un fundido
+ROTULO_Y = (150, 390)            # la banda vive debajo de la barra "Para ti" de TikTok
+
+
+def _alpha_rotulo(pagina, hojas, funde):
+    """1 mientras el rótulo está entero, baja a 0 en las últimas `funde` hojas."""
+    if hojas <= 0 or pagina > hojas:
+        return 0.0
+    if pagina <= hojas - funde:
+        return 1.0
+    return max(0.0, (hojas - pagina + 1) / (funde + 1.0))
+
+
+def rotulo_titulo(im, g, rng, alpha=1.0):
+    """El título del volumen superpuesto arriba de la imagen, sobre el video ya compuesto
+    (no es papel: no se dobla con el paso de página). Cuarta tinta del volumen, como el cartel."""
+    if alpha <= 0.01:
+        return im
+    c = g.get("cartel") or {}
+    tinta = TINTAS.get(c.get("tinta", "ocre"), TINTAS["ocre"])
+    tmb = (rng.randint(-2, 2), rng.randint(-2, 2))            # temblor: que se sienta dibujado
+    y0, y1 = ROTULO_Y[0] + tmb[1], ROTULO_Y[1] + tmb[1]
+    x0, x1 = 66 + tmb[0], R.W - 66 + tmb[0]
+    capa = Image.new("RGBA", (R.W, R.H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(capa)
+    d.rounded_rectangle((x0, y0, x1, y1), 28, fill=tinta + (255,))
+    d.rounded_rectangle((x0 + 10, y0 + 10, x1 - 10, y1 - 10), 20,
+                        outline=mezcla(tinta, R.IVORY, 0.5) + (255,), width=4)
+    cx = (x0 + x1) / 2
+    d.text((cx, y0 + 62), "TEO Y PIPO EN", fill=R.CREAM + (240,), font=R.font(46, bold=True), anchor="mm")
+    titulo = str(g.get("titulo", "")).upper()
+    d.text((cx, y0 + 152), titulo, fill=R.IVORY + (255,),
+           font=font_que_entra(d, titulo, x1 - x0 - 96, 108), anchor="mm")
+    d.text((x1 - 36, y1 - 34), "VOL. %s" % g.get("volumen", 0),
+           fill=mezcla(tinta, R.CREAM, 0.8) + (255,), font=R.font(30), anchor="rm")
+    if alpha < 1.0:
+        capa.putalpha(capa.getchannel("A").point(lambda v: int(v * alpha)))
+    fuera = im.convert("RGBA")
+    fuera.alpha_composite(capa)
+    return fuera.convert("RGB")
 
 
 # ---------------------------------------------------------------- B2 · el cartel de apertura
@@ -1256,13 +1312,29 @@ def render(ruta_guion, solo_cuadros=False):
     SUBE_ESCENA[0] = int(g.get("subir_escena", 220 if MODO_GLOBO[0] == "abajo" else 0))
     m = Marioneta()
     cuadros = aplanar(g)
-    total_hojas = sum(c["hojas"] for c in cuadros) + HOJAS_CIERRE
+
+    # El envase del feed (WS36): por defecto el video ABRE con la historia y el título va como
+    # rótulo; `cartel: {modo: apertura}` vuelve a la pantalla fija de 2 s del vol. 1.
+    c_cartel = g.get("cartel") or {}
+    modo_cartel = c_cartel.get("modo", "rotulo")
+    hojas_rotulo = int(float(c_cartel.get("rotulo_seg", ROTULO_SEG)) * HOJAS_POR_SEG) if modo_cartel == "rotulo" else 0
+    hojas_funde = max(1, int(float(c_cartel.get("rotulo_funde", ROTULO_FUNDE)) * HOJAS_POR_SEG))
+    cie = g.get("cierre") or {}
+    n_pipo = max(1, int(float(cie.get("pipo", 0.5)) * HOJAS_POR_SEG))
+    seg_iris = float(cie.get("iris", 0.9))
+    seg_tapa = float(cie.get("tapa", 0.5))
+    seg_contratapa = float(cie.get("contratapa", 1.8))
+    total_hojas = sum(c["hojas"] for c in cuadros) + n_pipo
 
     pruebas = os.path.join(RAIZ, "pruebas")
     os.makedirs(pruebas, exist_ok=True)
     png = os.path.join(pruebas, "%s_cuadros.png" % nombre)
-    hoja_de_cuadros(g, m, cuadros, total_hojas).save(png)
+    hoja_de_cuadros(g, m, cuadros, total_hojas, modo_cartel=modo_cartel).save(png)
     print("cuadros ->", png)
+    # el cartel, siempre, como PORTADA para la grilla del perfil de TikTok
+    portada = os.path.join(pruebas, "%s_portada.png" % nombre)
+    cartel(g, m, 0, 1, random.Random(9000)).save(portada)
+    print("portada ->", portada)
     if solo_cuadros:
         return
 
@@ -1277,13 +1349,14 @@ def render(ruta_guion, solo_cuadros=False):
             im.save(os.path.join(frames, "f%05d.png" % k[0]))
             k[0] += 1
 
-    # el cartel (2 s, sin pasar página)
-    seg_cartel = float((g.get("cartel") or {}).get("duracion", 2.0))
-    n_cartel = max(1, int(seg_cartel * HOJAS_POR_SEG))
+    # el cartel como PANTALLA solo en modo apertura (el del vol. 1). Por defecto no se emite:
+    # el video arranca con la historia y el título viaja de rótulo.
     previo = None
-    for i in range(n_cartel):
-        previo = cartel(g, m, i, n_cartel, random.Random(9000 + i))
-        emitir(previo, R.HOLD)
+    if modo_cartel == "apertura":
+        n_cartel = max(1, int(float(c_cartel.get("duracion", 2.0)) * HOJAS_POR_SEG))
+        for i in range(n_cartel):
+            previo = cartel(g, m, i, n_cartel, random.Random(9000 + i))
+            emitir(previo, R.HOLD)
 
     # la historia
     pagina = 0
@@ -1294,27 +1367,30 @@ def render(ruta_guion, solo_cuadros=False):
             pagina += 1
             rng = random.Random(pagina)
             im = R.chrome(hoja_de(m, c, i, n, rng, desp), pagina, total_hojas, rng)
-            emitir(R.page_turn(previo, im, 0.5), 1)
-            emitir(im, R.HOLD - 1)
+            a = _alpha_rotulo(pagina, hojas_rotulo, hojas_funde)
+            paso = R.page_turn(previo, im, 0.5) if previo is not None else im
+            emitir(rotulo_titulo(paso, g, rng, a), 1)
+            emitir(rotulo_titulo(im, g, rng, a), R.HOLD - 1)
             previo = im
             desp += float(c.get("parallax", 0) or 0)
 
     # el cierre fijo
-    for i in range(N_PIPO):
+    for i in range(n_pipo):
         pagina += 1
         rng = random.Random(pagina)
-        im = R.chrome(hoja_pipo_camara(m, i, N_PIPO, rng), pagina, total_hojas, rng)
+        im = R.chrome(hoja_pipo_camara(m, i, n_pipo, rng), pagina, total_hojas, rng)
         emitir(R.page_turn(previo, im, 0.5), 1)
         emitir(im, R.HOLD - 1)
         previo = im
     cx, cy = centro_cierre(m)
-    for im in frames_iris(previo, cx, cy, int(1.5 * R.FPS)):
+    for im in frames_iris(previo, cx, cy, max(1, int(seg_iris * R.FPS))):
         emitir(im, 1)
     tapa = contratapa(random.Random(77))
     cerrado = Image.new("RGB", (R.W, R.H), R.UMBER)          # el iris terminó en tinta tierra
-    for i in range(R.FPS):
-        emitir(R.close_book(cerrado, tapa, (i + 1) / R.FPS), 1)
-    for i in range(int(3.0 * HOJAS_POR_SEG)):
+    n_tapa = max(1, int(seg_tapa * R.FPS))
+    for i in range(n_tapa):
+        emitir(R.close_book(cerrado, tapa, (i + 1) / n_tapa), 1)
+    for i in range(max(1, int(seg_contratapa * HOJAS_POR_SEG))):
         emitir(contratapa(random.Random(7000 + i)), R.HOLD)
 
     salida = os.path.join(pruebas, "%s.mp4" % nombre)
@@ -1324,14 +1400,18 @@ def render(ruta_guion, solo_cuadros=False):
     print("hojas:", total_hojas, "cuadros de video:", k[0], "seg:", round(k[0] / R.FPS, 1), "->", salida)
 
 
-N_PIPO = 6                                   # hojas del Pipo a cámara del cierre (0,6 s)
-HOJAS_CIERRE = N_PIPO
+# El cierre (WS36): se acorta de 6,1 s a ~3,7 s. Con 1,7 % de completado en el vol. 1, la
+# contratapa la veían 3 personas de 183 y las otras 180 pagaban el peaje. Los tiempos se
+# pueden mover por guion (`cierre: {pipo, iris, tapa, contratapa}`, en segundos).
 
 
-def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30):
+def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30, modo_cartel="rotulo"):
     """La hoja fija: un cuadro clave de cada cuadro del guion (más el cartel y el cierre),
-    para revisar la lectura sin abrir el video."""
-    piezas = [("cartel", cartel(g, m, 0, 1, random.Random(9000)))]
+    para revisar la lectura sin abrir el video. Con el envase del feed (WS36) el cartel ya no
+    es la primera pantalla: aparece rotulado como PORTADA y el rótulo se dibuja sobre la
+    primera imagen, que es lo que la persona ve de verdad en el segundo cero."""
+    piezas = [("portada (grilla)" if modo_cartel == "rotulo" else "cartel",
+               cartel(g, m, 0, 1, random.Random(9000)))]
     pagina = 0
     for k, c in enumerate(cuadros):
         n = c["hojas"]
@@ -1345,10 +1425,14 @@ def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30):
             claves = [int(n * 0.72)]
         for j, i in enumerate(claves):
             rng = random.Random(pagina + i + 1)
-            rotulo = "%d · %s" % (k + 1, c["escena"]) + (" (%d/%d)" % (j + 1, len(claves)) if len(claves) > 1 else "")
-            piezas.append((rotulo, R.chrome(hoja_de(m, c, i, n, rng, 0.0), pagina + i + 1, total_hojas, rng)))
+            etiqueta = "%d · %s" % (k + 1, c["escena"]) + (" (%d/%d)" % (j + 1, len(claves)) if len(claves) > 1 else "")
+            pieza = R.chrome(hoja_de(m, c, i, n, rng, 0.0), pagina + i + 1, total_hojas, rng)
+            if modo_cartel == "rotulo" and k == 0 and j == 0:
+                pieza = rotulo_titulo(pieza, g, random.Random(1), 1.0)
+                etiqueta += " · con rótulo"
+            piezas.append((etiqueta, pieza))
         pagina += n
-    piezas.append(("cierre", R.chrome(hoja_pipo_camara(m, 0, N_PIPO, random.Random(5)), total_hojas, total_hojas, random.Random(5))))
+    piezas.append(("cierre", R.chrome(hoja_pipo_camara(m, 0, 6, random.Random(5)), total_hojas, total_hojas, random.Random(5))))
     piezas.append(("contratapa", contratapa(random.Random(77))))
 
     w, h = int(R.W * escala), int(R.H * escala)

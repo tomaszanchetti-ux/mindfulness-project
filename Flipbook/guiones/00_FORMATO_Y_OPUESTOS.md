@@ -1,7 +1,16 @@
 # El componente central: el formato único y los opuestos de los 6 pilares (v2 · D0)
 
-> **v2 cerrada con Tomás el 07/09/2026 (WS31, ola D0).** Es la definición principal del
-> Bloque D: sobre esto se escriben TODOS los volúmenes y se dibujan los activos de D1.1/D1.2.
+> **v2 cerrada con Tomás el 07/09/2026 (WS31, ola D0); revisada a v2.1 en la WS36 (09/09)
+> con los números reales del vol. 1.** Es la definición principal del Bloque D: sobre esto se
+> escriben TODOS los volúmenes y se dibujan los activos de D1.1/D1.2.
+>
+> 🔴 **Lo que midió el vol. 1 publicado:** 183 visualizaciones · **3,64 s de tiempo medio**
+> sobre 30,7 s (11,8 % de retención) · **1,7 % lo vio completo** · 0 seguidores nuevos · la
+> distribución se cortó a las 7 h. El espectador promedio se iba **durante el cartel**, antes
+> del primer chiste. No es la cuenta nueva: TikTok reparte según retención. De ahí salen los
+> tres cambios de la v2.1: **el cartel deja de ser la primera pantalla y pasa a ser la
+> portada** · **el video abre con la historia y el globo ya puestos** · **todo lo que no es
+> historia se acorta** (cierre de 6,1 s → 3,7 s; volumen de ~30 s → 20-24 s).
 > La v1 (WS26, 8 bloques) queda superada; lo que cambió está en §7. Los mini-guiones
 > específicos se trabajan después, uno por uno, en D2. Nada de lo de abajo es un guion:
 > son los cimientos.
@@ -35,15 +44,15 @@ todo simplón, un solo elemento con detalle por hoja, el que carga el chiste o l
 **situación** (lo que la sociedad moderna nos hace hacer), nunca sobre la persona. Si un
 chiste se ríe de Teo y no de la situación, está mal.
 
-## 2. El formato único: 5 escenas (25-32 s) · 6-8 imágenes
+## 2. El formato único: 5 escenas (20-24 s) · 5-7 imágenes
 
 | # | Escena | Qué pasa | Pipo | Dur. |
 |---|---|---|---|---|
-| 1 | **El cartel** (apertura) | "TEO Y PIPO en [TÍTULO SATÍRICO] · Vol. N". Cartel retro de historieta (ver §3). **Es el gancho del feed:** el título ya cuenta el chiste. | En la viñeta fija, mirando a cámara | 2 s |
+| 1 | **El rótulo** (v2.1) | El video **abre con la primera imagen de la historia y su globo**. El título va como **banda superpuesta arriba**: "TEO Y PIPO EN [TÍTULO] · Vol. N", en la cuarta tinta del volumen, y se va con un fundido. El cartel dibujado (§3) **no desaparece: es la PORTADA** del video en la grilla del perfil. | Ya en la escena | 0 s (viaja sobre la escena 2) |
 | 2 | **El problema** | La situación grotesca de la vida moderna en **2 imágenes**: la escena y la hoja de zoom al detalle que delata. Es el corazón cómico. | Cara de **sospecha** que sube a **fastidio** | 6-7 s |
 | 3 | **El espejo** | La MISMA escena vivida por Pipo, al revés: Teo en el rincón, Pipo en el centro, feliz. **1 imagen** que dura, con uno o dos globos. El aprendizaje sin explicarlo. | "la vida pasa por otro lado, teito querido." + cara de **orgullo** | 4-5 s |
 | 4 | **La magia** | **3 imágenes fijas + el resultado:** el teléfono se enciende de verde (con zoom, o **en la mano sobre la misma imagen anterior**, vol. 1) · Teo carga el aura con una pequeña acción · escribe con la **burbuja de pensamiento** de lo que importa (los abuelos, la familia) · **el resultado**: el acto que lo demuestra, con aura. Es el corazón emocional. | "por suerte, Teo descubrió la Pausa." + **duda** al encenderse, después **orgullo** | 13 s |
-| 5 | **El cierre** (fijo) | Pipo a cámara con cara de "te lo dije"; **el iris se cierra** sobre su cara (ver §4). Contratapa: **Teo y Pipo volverán próximamente** · la D · Dwellia · una Pausa al día, fuera del teléfono · link en la bio. | **Alegría sarcástica** (solo aquí) | 5,5 s |
+| 5 | **El cierre** (fijo) | Pipo a cámara con cara de "te lo dije"; **el iris se cierra** sobre su cara (ver §4). Contratapa: **Teo y Pipo volverán próximamente** · la D · Dwellia · una Pausa al día, fuera del teléfono · link en la bio. | **Alegría sarcástica** (solo aquí) | **3,7 s** (era 5,5) |
 
 Reglas del formato:
 - **El chiste está en la escena 2 y en las caras de Pipo; el mensaje está en los textos y
@@ -53,10 +62,19 @@ Reglas del formato:
   imagen cuenta las dos cosas a la vez (vol. 1: la familia riéndose con Pipo en el centro
   y Teo en el rincón con el teléfono). Es más corto y se lee de un golpe.
 - Dwellia aparece **solo** en la contratapa. Sin cartas, sin pantallas, sin logo adentro.
-- TikTok repite el video en bucle: el libro cerrado del final vuelve solo al cartel del
-  principio. El cierre tiene que "pedir" la apertura.
+- TikTok repite el video en bucle: el libro cerrado del final vuelve solo al principio.
+  **La última imagen de la historia y la primera tienen que poder empalmar** (mismo lugar,
+  mismo encuadre): el rebobinado cuenta como visualización nueva y sube la retención.
+- **La primera imagen es la más graciosa del volumen, sin excepción.** No se guarda el mejor
+  chiste para el medio: en el feed, el medio no existe si el principio no retiene.
 
-## 3. El cartel de apertura (varía por volumen)
+## 3. El cartel, que ahora es la PORTADA (varía por volumen)
+
+> **v2.1 (WS36):** el cartel ya no se emite como pantalla de apertura — ahí perdía la mitad
+> de la audiencia. Se sigue dibujando igual y se guarda en `pruebas/<nombre>_portada.png`
+> para **subirlo a TikTok como portada del video**: es lo que se ve en la grilla del perfil,
+> que es la que decide si alguien mira los otros cinco volúmenes. En el video, su trabajo lo
+> hace el **rótulo** superpuesto sobre la primera imagen.
 
 - **Lo fijo:** la imagen de Teo y Pipo, a lo Tintín (los dos en movimiento, Pipo adelante),
   dibujada UNA vez en D1.2 y usada en todos los volúmenes. El rótulo "TEO Y PIPO" con
@@ -77,9 +95,9 @@ Reglas del formato:
 - Pipo a cámara con la cara de "te lo dije" (alegría sarcástica).
 - **El iris se cierra** sobre su cara, como el final de los Looney Tunes (el círculo que se
   achica hasta dejar solo la cara y después se apaga). Es la firma de la serie: el mismo
-  gesto, el mismo ritmo, todos los volúmenes. Dura ~1,5 s.
-- La tapa se cierra (1 s) → contratapa 3 s: hoja salvia · primero y grande **"Teo y Pipo
-  volverán próximamente"** · abajo, más chico, el ícono de la app (la D) · "Dwellia" · "una
+  gesto, el mismo ritmo, todos los volúmenes. Dura **0,9 s** (v2.1; eran 1,5).
+- La tapa se cierra (**0,5 s**) → contratapa **1,8 s**: hoja salvia · primero y grande
+  **"Teo y Pipo volverán próximamente"** · abajo, más chico, el ícono de la app (la D) · "Dwellia" · "una
   Pausa al día, fuera del teléfono" · "link en la bio" (orden invertido por Tomás, WS34).
 - Se construye una vez en D1.2 (plantilla) y no se vuelve a tocar.
 

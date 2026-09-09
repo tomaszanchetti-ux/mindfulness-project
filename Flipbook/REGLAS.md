@@ -45,20 +45,34 @@ en personaje y al escribir un guion.
   Sin City. Nunca se muestra una marca ni una interfaz real: fotitos una atrás de otra, no
   una app.
 
-## 3. El libro (v2 · WS31)
-- **Cartel de apertura** (2 s, respira sin pasar página): cartel retro de historieta,
-  **distinto por volumen** (color de fondo, formas, título) con **lo fijo**: la imagen de Teo
-  y Pipo a lo Tintín y el rótulo "TEO Y PIPO" en tipografía condensada grande. Título en el
-  formato **"Teo y Pipo en [TÍTULO SATÍRICO] · Vol. N"**. El cartel es otro objeto, no una
-  hoja: además de crema, tierra y salvia usa **una cuarta tinta reservada solo para carteles**,
-  distinta por volumen. Es el gancho del feed: el título ya cuenta el chiste.
-- **Historia** 20-24 s, 3 escenas (problema · espejo · magia), ver
-  `guiones/00_FORMATO_Y_OPUESTOS.md` §2.
-- **Cierre, siempre el mismo:** Pipo a cámara con alegría sarcástica → **el iris se cierra**
-  sobre su cara al estilo Looney Tunes (~1,5 s) → la tapa se cierra (1 s) → **contratapa** 3 s:
-  hoja salvia, "Dwellia", "una Pausa al día, fuera del teléfono", "Teo y Pipo volverán
-  próximamente", "link en la bio". Dwellia **solo** aparece aquí. Se construye una vez (D1.2).
-- TikTok repite en bucle: el libro cerrado vuelve solo al cartel. El cierre pide la apertura.
+## 3. El libro (v2.1 · WS31, revisado en la WS36 con los números del vol. 1)
+
+> **Por qué cambió.** El vol. 1 se publicó y midió **3,64 s de tiempo medio sobre 30,7 s**
+> (11,8 % de retención, 1,7 % de completado, 183 visualizaciones, 0 seguidores nuevos).
+> El espectador promedio se iba **durante el cartel**, antes del primer chiste. En el feed,
+> una pantalla fija al principio se lee como "esto va lento". La regla que sale de ahí:
+> **el video abre con la historia; todo lo que no es historia se acorta o se saca.**
+
+- **El arranque: rótulo, no pantalla.** El video **abre con la primera imagen y su globo ya
+  puesto** (`globo_desde: 0` automático en el primer cuadro). El título viaja como **rótulo
+  superpuesto arriba** ("TEO Y PIPO EN / [TÍTULO] · Vol. N", en la cuarta tinta del volumen),
+  2,4 s y se va con un fundido. La banda vive entre y=150 y y=390: debajo de la barra
+  "Para ti" de TikTok y encima de la escena, que ya sube 220 px por los globos de abajo.
+- **El cartel sigue existiendo, como PORTADA.** Se guarda siempre en
+  `pruebas/<nombre>_portada.png` y se sube a TikTok como portada del video: ahí es donde de
+  verdad trabaja, en la grilla del perfil, que es la que decide si alguien mira los otros
+  cinco. Mismo dibujo de antes (Tintín, cuarta tinta, formas por volumen). `cartel: {modo:
+  apertura}` recupera la pantalla fija de 2 s del vol. 1, por si alguna vez conviene.
+- **Historia 16-20 s**, 3 escenas (problema · espejo · magia), ver
+  `guiones/00_FORMATO_Y_OPUESTOS.md` §2. Más corto que el vol. 1 a propósito: con 1,7 % de
+  completado, cada segundo de más resta.
+- **Cierre, siempre el mismo, pero de 3,7 s** (era 6,1 s): Pipo a cámara con alegría
+  sarcástica (0,5 s) → **el iris se cierra** sobre su cara al estilo Looney Tunes (0,9 s) →
+  la tapa se cierra (0,5 s) → **contratapa** 1,8 s. Dwellia **solo** aparece aquí. Los cuatro
+  tiempos se mueven por guion (`cierre:`). El branding largo no vive en el video: vive en la
+  descripción, el comentario fijado y la bio, que sí se leen sin pagar segundos.
+- TikTok repite en bucle: **la última imagen de la historia y la primera tienen que
+  poder empalmar**, para que el rebobinado sume como visualización nueva.
 
 ## 4. Los personajes
 - **Uno principal (Teo)** y secundarios que entran de a uno por volumen (**Pipo** desde el 1).
@@ -174,8 +188,22 @@ escenas:
       pipo_dice: y ahora se le nota, ¿no?
 ```
 
-El **cartel** (2 s) y el **cierre fijo** (Pipo · iris · tapa · contratapa, 5,5 s) los pone
-el motor: no se declaran.
+El **cierre fijo** (Pipo · iris · tapa · contratapa) lo pone el motor: no se declara. Desde
+la WS36 dura **3,7 s** y sus cuatro tiempos se pueden mover, en segundos:
+
+```yaml
+cartel:
+  modo: rotulo                  # rotulo (por defecto: banda sobre la primera imagen) | apertura (pantalla fija de 2 s)
+  rotulo_seg: 2.4               # cuánto se queda el rótulo antes del fundido
+cierre:
+  pipo: 0.5                     # Pipo a cámara
+  iris: 0.9                     # el iris Looney Tunes
+  tapa: 0.5                     # la tapa que se cierra
+  contratapa: 1.8               # la hoja salvia con la D
+```
+
+El cartel se dibuja igual siempre y se guarda como `pruebas/<nombre>_portada.png` para subirlo
+a TikTok como **portada** del video.
 
 ### Qué puede llevar un cuadro
 
@@ -189,7 +217,7 @@ el motor: no se declaran.
 | `secundarios` | gente de línea simple: `tipo` (`abuela`, `abuelo`, `chica`, `senor`), `x`, `y`, `escala`. |
 | `zoom` | la hoja "acerca": `pieza` (`teo/cara_…`, `pipo/…`, `props/…`) o `prop`, con `escala`, `rot`, `ciclo`, `manos: true`. |
 | `pipo_dice` | el texto del globo (≤12 palabras, 3-4 líneas), o una **lista** de textos = varios globos seguidos sobre la misma imagen. |
-| `globo_desde` | hojas que la imagen está sola antes del primer globo (5 por defecto = 0,5 s). |
+| `globo_desde` | hojas que la imagen está sola antes del primer globo (5 por defecto = 0,5 s). **En el PRIMER cuadro del volumen el motor lo pone en 0**: al principio del video, medio segundo sin texto es medio segundo para irse. |
 | `globo_lado` | `abajo` (por defecto desde la WS35) o `arriba`, por cuadro. A nivel guion: `globos: abajo \| arriba` y `subir_escena: 220` (píxeles que sube la escena entera; 220 con globos abajo, 0 con arriba). |
 | `pipo_asoma` | `lado` (`izquierda`, `derecha`, `abajo`) y `cara`, para cuando Pipo no está en el cuadro. |
 | `parallax` | píxeles que corre el fondo por hoja (árboles de `calle` y `banco_plaza`). |
