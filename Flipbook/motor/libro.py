@@ -307,14 +307,40 @@ def prop_burbuja_pensamiento(d, x, y, escala, rng, t=0.0, dibujo="abuelos", punt
         fn(d, x, y, rng, s=escala)
 
 
-def prop_correa(d, x, y, escala, rng, t=0.0, hasta=None, tension=0.0, **kw):
+def prop_correa(d, x, y, escala, rng, t=0.0, hasta=None, tension=0.0, tiron=0.0, **kw):
     """La correa entre la mano de Teo y el collar de Pipo. `tension` 0..1: en 0 cuelga floja,
     en 1 va recta, tirante y sin temblor — el que tira es Teo (WS37, "El paseo"). Con
-    `hacia_tension` la correa se va tensando DENTRO del cuadro, que es el tirón."""
-    hasta = hasta or (x + 240, y + 120)
+    `hacia_tension` la correa se va tensando DENTRO del cuadro.
+
+    `tiron` 0..1 (Tomás, WS37) es el TIRÓN dibujado, que es lo que le genera el malestar a
+    Pipo: la cuerda vibra en zigzag y salen tres rayitas de fuerza del collar, hacia atrás.
+    Sin esto el tirón solo se deduce del cambio de pose; con esto se VE quién tira."""
+    hasta = tuple(hasta or (x + 240, y + 120))
     tension = entre(float(tension), 0.0, 1.0)
+    tiron = entre(float(tiron), 0.0, 1.0)
     mx, my = (x + hasta[0]) / 2, (y + hasta[1]) / 2 + 60 * escala * (1 - tension)
-    R.stroke(d, [(x, y), (mx, my), tuple(hasta)], rng, width=4, color=R.TAUPE, amp=2.2 - 1.7 * tension)
+    grosor = 5 + int(2 * tiron)
+    if tiron > 0.05:                      # la cuerda tensa vibra: un zigzag chico sobre la recta
+        largo = math.hypot(hasta[0] - x, hasta[1] - y) or 1.0
+        nx, ny = -(hasta[1] - y) / largo, (hasta[0] - x) / largo         # la normal a la cuerda
+        pts = []
+        for k in range(15):
+            f = k / 14.0
+            v = 9 * escala * tiron * math.sin(f * math.pi) * (1 if k % 2 else -1)
+            pts.append((lerp(x, hasta[0], f) + nx * v, lerp(y, hasta[1], f) + ny * v))
+        R.stroke(d, pts, rng, width=grosor, color=R.TAUPE, amp=1.0)
+        # las rayitas de vibración van PARALELAS a la cuerda y en el AIRE, en el tramo que
+        # queda entre los dos: pegadas al collar caen sobre la cara o el pecho y ensucian
+        ux, uy = (hasta[0] - x) / largo, (hasta[1] - y) / largo
+        cx2, cy2 = lerp(x, hasta[0], 0.45), lerp(y, hasta[1], 0.45)
+        for lado in (-1, 1):
+            ox, oy = nx * 26 * escala * lado, ny * 26 * escala * lado
+            l = 34 * escala * tiron
+            R.stroke(d, [(cx2 + ox - ux * l, cy2 + oy - uy * l),
+                         (cx2 + ox + ux * l, cy2 + oy + uy * l)],
+                     rng, width=5, color=R.TAUPE, amp=1.0)
+        return
+    R.stroke(d, [(x, y), (mx, my), hasta], rng, width=grosor, color=R.TAUPE, amp=2.2 - 1.7 * tension)
 
 
 def prop_flor(d, x, y, escala, rng, t=0.0, petalos=6, tallo=1.0, **kw):

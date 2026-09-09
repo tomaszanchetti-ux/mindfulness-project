@@ -12,8 +12,14 @@
 # El acento salvia de la hoja es la FLOR (el presente); el teléfono que se lo lleva se
 # enciende BLANCO. Es la gramática de la serie, vista desde los dos lados.
 #
-# El mundo ACELERA con el tirón: `parallax` 2 → 12 → 9. Mientras Pipo resiste casi no
+# El mundo ACELERA con el tirón: `parallax` 2 → 4 → 12 → 6. Mientras Pipo resiste casi no
 # avanzan; cuando la correa gana, el fondo sale disparado. La física cuenta el chiste.
+#
+# El TIRÓN es lo que le genera el malestar a Pipo, así que se ve en la CORREA (Tomás, WS37):
+# arranca colgando floja, se tensa dentro del primer cuadro, y en el beat 2 se pone recta
+# con el zigzag de vibración y las rayitas de fuerza saliendo del collar (`tiron`). Recién
+# entonces cede y lo levanta. Son dos beats, como el agarre del teléfono de la p02: con uno
+# solo el cambio de pose pasa de golpe y no se lee el movimiento.
 #
 #   python3 Flipbook/motor/libro.py Flipbook/guiones/p03_paseo.yaml
 
@@ -28,7 +34,7 @@ subir_escena: 340       # la acción vive en el piso: sin esto queda medio cuadr
 cierre:
   pipo: 2.2                       # lo que tarda en leerse el remate
   contratapa: 1.5
-  dice: el paseo era la flor, teito.
+  dice: el paseo era la flor, Teito.
 
 escenas:
   - tipo: problema
@@ -36,9 +42,10 @@ escenas:
     estado: desconexion
     cuadros:
 
-      # ------------------------------ 1 · la nariz en la flor · 3,2 s
+      # ------------------------------ 1 · la nariz en la flor · 2,8 s
       # Abre con la escena entera contada: Pipo abajo, en la flor; Teo arriba, en la pantalla.
-      - hojas: 32
+      # La correa CUELGA floja y se va tensando: el tirón se anuncia antes de pasar.
+      - hojas: 28
         parallax: 2               # casi no avanzan: Pipo está frenando
         camara: {desde: 1.38, hasta: 1.45, y: 110}
         teo:
@@ -55,16 +62,19 @@ escenas:
         props:
           # la correa va DETRÁS de los dos: el tramo que se ve es el que los une
           - {nombre: correa, x: 639, y: 1204, hasta: [286, 1270], escala: 1.0,
-             tension: 0.5, hacia_tension: 0.92}
+             tension: 0.12, hacia_tension: 0.95}
           - {nombre: flor, x: 556, y: 1424, escala: 0.95, tallo: 0.6, hacia: {x: 524}, delante: true}
         pipo_dice:
-          - {texto: "si estuvieras presente, teo...", desde: 4, hasta: 32}
+          - {texto: "si estuvieras presente, Teo...", desde: 4, hasta: 28}
 
-      # ------------------------------------------- 2 · el tirón · 1,4 s
-      # El beat: la correa termina de tensarse, el mundo acelera de golpe y la flor se va.
-      - hojas: 14
-        parallax: 12
-        camara: {desde: 1.45, hasta: 1.47, y: 110}
+      # ------------------------------- 2 · el LATIGAZO · 0,9 s
+      # La correa se pone recta y VIBRA, con las rayitas de fuerza saliendo del collar. El
+      # tirón lo levanta del suelo pero todavía no lo mueve: se clava en el lugar y la cara
+      # se le arruga. Acá el collar SE VE — agachado se lo tapaba su propia cabeza —, y por
+      # eso el tirón se ve en la correa y no solo se deduce del cambio de pose.
+      - hojas: 9
+        parallax: 4
+        camara: {desde: 1.45, hasta: 1.49, y: 110}   # el golpe de cámara del impacto
         teo:
           cuerpo: [pasea_1, pasea_2, pasea_3, pasea_0]
           ritmo: 2
@@ -75,20 +85,44 @@ escenas:
           vida: 0.6
           prop: {nombre: telefono_4, ancla: mano, escala: 1.0, dy: 26, rot: -18,
                  brillo: 0.5, brillo_color: blanco}
-        # el tirón lo LEVANTA del suelo: de `estira` (la nariz en la flor) a `plantado`
-        # (las patas clavadas, la cabeza arriba). El cambio de pose ES el beat.
-        pipo: {cuerpo: plantado, cara: en_serio, x: 340, y: 1310, escala: 0.9,
-               vida: 1.6, sacude: 5, hacia: {x: 390}}
+        pipo: {cuerpo: plantado, cara: fastidio, x: 305, y: 1310, escala: 0.9,
+               vida: 1.8, sacude: 6}
         props:
-          - {nombre: correa, x: 639, y: 1204, hasta: [455, 1297], escala: 1.0, tension: 1.0}
-          - {nombre: flor, x: 524, y: 1424, escala: 0.95, tallo: 0.6, hacia: {x: 300}, delante: true}
+          # la correa va DELANTE en el latigazo: es el objeto del beat, no puede quedar
+          # atrás del cuerpo justo cuando es lo único que importa
+          - {nombre: correa, x: 639, y: 1240, hasta: [395, 1297], escala: 1.0,
+             tension: 1.0, tiron: 1.0, delante: true}
+          - {nombre: flor, x: 524, y: 1424, escala: 0.95, tallo: 0.6, hacia: {x: 512}, delante: true}
 
-      # ------------------------- 3 · la flor quedó atrás · 3,0 s
+      # ------------------------------------------- 3 · lo arrastra · 1,4 s
+      # El beat: la correa termina de tensarse, el mundo acelera de golpe y la flor se va.
+      - hojas: 14
+        parallax: 12
+        camara: {desde: 1.49, hasta: 1.50, y: 110}
+        teo:
+          cuerpo: [pasea_1, pasea_2, pasea_3, pasea_0]
+          ritmo: 2
+          cara: abajo_plana
+          x: 690
+          y: 1150
+          escala: 1.35
+          vida: 0.6
+          prop: {nombre: telefono_4, ancla: mano, escala: 1.0, dy: 26, rot: -18,
+                 brillo: 0.5, brillo_color: blanco}
+        # ya cedió: las patas siguen clavadas pero el piso se le va. La flor pasa de largo.
+        pipo: {cuerpo: plantado, cara: fastidio, x: 320, y: 1310, escala: 0.9,
+               vida: 1.6, sacude: 3, hacia: {x: 390}}
+        props:
+          - {nombre: correa, x: 639, y: 1240, hasta: [440, 1297], escala: 1.0,
+             tension: 1.0, tiron: 0.7, hacia_tiron: 0.15, delante: true}
+          - {nombre: flor, x: 512, y: 1424, escala: 0.95, tallo: 0.6, hacia: {x: 300}, delante: true}
+
+      # ------------------------- 4 · la flor quedó atrás · 3,0 s
       # Ya está plantado y resignado: la cara pasa de `en_serio` (todavía la miraba)
       # a `fastidio`. La flor se va del cuadro por la izquierda.
       - hojas: 30
         parallax: 6
-        camara: {desde: 1.47, hasta: 1.52, y: 110}
+        camara: {desde: 1.50, hasta: 1.54, y: 110}
         teo:
           cuerpo: [pasea_0, pasea_1, pasea_2, pasea_3]
           ritmo: 2

@@ -57,4 +57,4 @@ escenas:
              en: espejo, dx: -35, escala: 1.66}
         pipo_asoma: {lado: izquierda}
         pipo_dice:
-          - {texto: "vuelve al presente, teito.", desde: 6, hasta: 28, cara: en_serio}
+          - {texto: "vuelve al presente, Teito.", desde: 6, hasta: 28, cara: en_serio}
