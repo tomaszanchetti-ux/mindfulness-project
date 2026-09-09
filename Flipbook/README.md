@@ -5,15 +5,22 @@ Pipo"**. Pipo (el pug) narra con humor cómo Teo (el héroe) se pierde en la vid
 crece con cada Pausa; Dwellia es la magia que lo impulsa y solo se nombra en la contratapa. El concepto completo está en [`CONCEPTO.md`](CONCEPTO.md); las
 reglas de dibujo y animación, en [`REGLAS.md`](REGLAS.md).
 
-Estado (WS35 · 08/09/2026): **D2 EN CURSO — el vol. 1 está hecho.** D0 = el formato v2 (5
-escenas, 6-8 imágenes, cartel variable, cierre fijo con iris) en
-`guiones/00_FORMATO_Y_OPUESTOS.md`. D1.1 = Teo y Pipo como piezas ilustradas, aprobadas.
-D1.2 = **un guion YAML se convierte en el mp4 completo sin tocar código** (`vol00_prueba.yaml`
-→ 31,9 s), con el cartel a lo Tintín, la escena de la magia como paquete fijo, el cierre con
-iris y contratapa, y el tempo validado en video por Tomás. **D2 = una WS por volumen:** el
-primero es **Vínculos, "LA MIRADA DE LOS OTROS" (Vol. 1)**, guion en papel en
-`guiones/vol01_vinculos.md`, guion del motor en `vol01_vinculos.yaml`, video de 30,7 s.
-El detalle de cómo se llegó está en `WS/WS31` a `WS/WS35`.
+Estado (WS36 · 09/09/2026): **D2 son PÍLDORAS.** El vol. 1 se publicó y midió **3,64 s de
+tiempo medio sobre 30,7 s** (11,8 % de retención, 1,7 % de completado): la gente se iba
+durante el cartel, antes del primer chiste. De ahí salió todo lo de la WS36 — el envase del
+feed (el cartel pasa a ser PORTADA y el título va de rótulo sobre la primera imagen; el
+cierre baja a 3,7 s), la **ley del movimiento** (ningún cuadro quieto), y el cambio de plan:
+**muchos mini-videos de 10-14 s, un chiste cada uno**, en vez de seis volúmenes largos. El
+formato largo no se tira: queda para cuando una historia lo merezca.
+
+**Leer primero [`guiones/00_FORMATO_CORTO.md`](guiones/00_FORMATO_CORTO.md)**: el mensaje
+general de la cuenta, la regla de oro (**una escena, bien hecha**), la gramática
+conexión/desconexión y el banco de píldoras. La gramática visual sigue en
+[`REGLAS.md`](REGLAS.md) y el formato largo en `guiones/00_FORMATO_Y_OPUESTOS.md`.
+
+Hechas: **`p01_espejo`** ("EL DILEMA DEL ESPEJO", 10,9 s) y **`p02_meditar`** ("CINCO MINUTOS
+DE PAZ", 12,8 s), cada una con su portada. El vol. 1 largo sigue en `vol01_vinculos`.
+El detalle de cómo se llegó está en `WS/WS31` a `WS/WS36`.
 
 ## Cómo se hace un volumen nuevo (D2, una WS por historieta)
 
