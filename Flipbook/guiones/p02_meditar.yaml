@@ -1,0 +1,48 @@
+# PÍLDORA · "CINCO MINUTOS DE PAZ" — el pilar Sentido, el opuesto: no aguantar quieto.
+# Formato corto (`guiones/00_FORMATO_CORTO.md`): dos imágenes, un chiste, el mensaje, y afuera.
+# CERO piezas nuevas: todo estaba dibujado desde la D1.1.
+#
+#   python3 Flipbook/motor/libro.py Flipbook/guiones/p02_meditar.yaml
+
+volumen: 2
+titulo: CINCO MINUTOS DE PAZ
+nombre: p02_meditar
+
+cartel: {tinta: azul_cartel, formas: circulo, vineta: tintin}
+globos: abajo
+subir_escena: 220
+
+escenas:
+
+  # --------------------------------------------------- imagen 1 · Teo no aguanta quieto
+  - tipo: problema
+    fondo: habitacion
+    cuadros:
+      - hojas: 45
+        camara: empuje
+        teo:
+          cuerpo: medita
+          # la cara alterna: ojos cerrados → espía de reojo → frunce → mira para abajo
+          cara: [cerrada_plana, costado_plana, cerrada_fruncida, abajo_plana]
+          ritmo: 7
+          x: 500
+          y: 1270
+          escala: 1.5
+          sacude: 2.0
+          vida: 1.5
+          prop: {nombre: telefono_0, ancla: pecho, dx: 6, dy: 10, rot: -12}
+        pipo_asoma: {lado: izquierda, cara: sospecha}
+        pipo_dice: cinco minutos de calma. van cuarenta segundos.
+
+  # ------------------------------------------- imagen 2 · el mismo cuarto, el mismo rato
+  - tipo: espejo
+    fondo: habitacion
+    cuadros:
+      - hojas: 45
+        camara: {desde: 1.10, hasta: 1.0}
+        teo: {cuerpo: medita, cara: [cerrada_fruncida, costado_plana], ritmo: 9,
+              x: 230, y: 1300, escala: 1.0, sacude: 1.6, vida: 1.4,
+              prop: {nombre: telefono_0, ancla: pecho, dx: 6, dy: 10, rot: -12}}
+        pipo: {cuerpo: [buda, buda, buda_victoria], ritmo: 16, cara: orgullo,
+               x: 700, y: 1310, escala: 1.5, vida: 0.6}
+        pipo_dice: yo no medito. yo simplemente estoy.
