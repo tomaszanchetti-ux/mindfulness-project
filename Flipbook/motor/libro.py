@@ -1305,8 +1305,13 @@ def cartel(g, m, i, n, rng):
 
 # ---------------------------------------------------------------- C · el cierre fijo
 
-TEXTOS_CONTRATAPA = ["Teo y Pipo volverán", "próximamente",
-                     "Dwellia", "una Pausa al día, fuera del teléfono", "link en la bio"]
+# La contratapa es el ÚNICO lugar donde Dwellia habla, así que dice el mensaje general de la
+# cuenta (Tomás, WS36): **vivir el presente, y cómo una Pausa escrita te trae de vuelta**.
+# Hasta la WS35 el primer renglón era el gancho de la serie ("Teo y Pipo volverán
+# próximamente"); con píldoras publicadas seguido, el gancho importa menos que la tesis.
+# Se puede cambiar por guion con `cierre: {textos: [a, b, c, d, e]}`.
+TEXTOS_CONTRATAPA = ["una Pausa al día", "para volver al presente",
+                     "Dwellia", "una línea escrita, fuera del teléfono", "link en la bio"]
 
 
 CARA_CIERRE, ESC_CIERRE, POS_CIERRE, PIVOTE_CIERRE = "cara_alegria_sarcastica", 2.15, (R.W / 2, 1010), (200, 210)
@@ -1380,20 +1385,21 @@ def icono_dwellia(im, cx, cy, lado):
     d.text((cx, cy - lado * 0.02), "D", fill=(251, 245, 232), font=font_fraunces(int(lado * 340 / 512)), anchor="mm")
 
 
-def contratapa(rng):
+def contratapa(rng, textos=None):
     """C3: hoja salvia. Primero y GRANDE "Teo y Pipo volverán próximamente"; abajo y más chico el
     bloque de Dwellia con el ícono de la app (WS34, orden invertido por Tomás). Fija para todos los volúmenes."""
+    T = list(textos or TEXTOS_CONTRATAPA)
     im = R.paper(rng, base=R.SAGE_DEEP)
     d = ImageDraw.Draw(im)
     d.rounded_rectangle((80, 120, R.W - 80, R.H - 120), 30, outline=mezcla(R.SAGE_DEEP, R.CREAM, 0.45), width=5)
-    d.text((R.W / 2, 560), TEXTOS_CONTRATAPA[0], fill=R.IVORY, font=font_que_entra(d, TEXTOS_CONTRATAPA[0], 880, 108, condensada=False), anchor="mm")
-    d.text((R.W / 2, 690), TEXTOS_CONTRATAPA[1], fill=R.IVORY, font=font_que_entra(d, TEXTOS_CONTRATAPA[1], 880, 108, condensada=False), anchor="mm")
+    d.text((R.W / 2, 560), T[0], fill=R.IVORY, font=font_que_entra(d, T[0], 880, 108, condensada=False), anchor="mm")
+    d.text((R.W / 2, 690), T[1], fill=R.IVORY, font=font_que_entra(d, T[1], 880, 108, condensada=False), anchor="mm")
     R.stroke(d, [(400, 840), (680, 840)], rng, width=4, color=mezcla(R.SAGE_DEEP, R.CREAM, 0.5), amp=1.2)
     icono_dwellia(im, R.W / 2, 1110, 200)
     d = ImageDraw.Draw(im)
-    d.text((R.W / 2, 1300), TEXTOS_CONTRATAPA[2], fill=R.IVORY, font=R.font(84, bold=True), anchor="mm")
-    d.text((R.W / 2, 1385), TEXTOS_CONTRATAPA[3], fill=R.CREAM, font=R.font(40), anchor="mm")
-    d.text((R.W / 2, 1660), TEXTOS_CONTRATAPA[4], fill=mezcla(R.SAGE_DEEP, R.CREAM, 0.78), font=R.font(38), anchor="mm")
+    d.text((R.W / 2, 1300), T[2], fill=R.IVORY, font=R.font(84, bold=True), anchor="mm")
+    d.text((R.W / 2, 1385), T[3], fill=R.CREAM, font=R.font(40), anchor="mm")
+    d.text((R.W / 2, 1660), T[4], fill=mezcla(R.SAGE_DEEP, R.CREAM, 0.78), font=R.font(38), anchor="mm")
     return im
 
 
@@ -1423,7 +1429,8 @@ def render(ruta_guion, solo_cuadros=False):
     pruebas = os.path.join(RAIZ, "pruebas")
     os.makedirs(pruebas, exist_ok=True)
     png = os.path.join(pruebas, "%s_cuadros.png" % nombre)
-    hoja_de_cuadros(g, m, cuadros, total_hojas, modo_cartel=modo_cartel).save(png)
+    hoja_de_cuadros(g, m, cuadros, total_hojas, modo_cartel=modo_cartel,
+                    textos_cierre=cie.get("textos")).save(png)
     print("cuadros ->", png)
     # el cartel, siempre, como PORTADA para la grilla del perfil de TikTok
     portada = os.path.join(pruebas, "%s_portada.png" % nombre)
@@ -1479,13 +1486,14 @@ def render(ruta_guion, solo_cuadros=False):
     cx, cy = centro_cierre(m)
     for im in frames_iris(previo, cx, cy, max(1, int(seg_iris * R.FPS))):
         emitir(im, 1)
-    tapa = contratapa(random.Random(77))
+    textos_ct = cie.get("textos")
+    tapa = contratapa(random.Random(77), textos_ct)
     cerrado = Image.new("RGB", (R.W, R.H), R.UMBER)          # el iris terminó en tinta tierra
     n_tapa = max(1, int(seg_tapa * R.FPS))
     for i in range(n_tapa):
         emitir(R.close_book(cerrado, tapa, (i + 1) / n_tapa), 1)
     for i in range(max(1, int(seg_contratapa * HOJAS_POR_SEG))):
-        emitir(contratapa(random.Random(7000 + i)), R.HOLD)
+        emitir(contratapa(random.Random(7000 + i), textos_ct), R.HOLD)
 
     salida = os.path.join(pruebas, "%s.mp4" % nombre)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(R.FPS),
@@ -1499,7 +1507,7 @@ def render(ruta_guion, solo_cuadros=False):
 # pueden mover por guion (`cierre: {pipo, iris, tapa, contratapa}`, en segundos).
 
 
-def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30, modo_cartel="rotulo"):
+def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30, modo_cartel="rotulo", textos_cierre=None):
     """La hoja fija: un cuadro clave de cada cuadro del guion (más el cartel y el cierre),
     para revisar la lectura sin abrir el video. Con el envase del feed (WS36) el cartel ya no
     es la primera pantalla: aparece rotulado como PORTADA y el rótulo se dibuja sobre la
@@ -1527,7 +1535,7 @@ def hoja_de_cuadros(g, m, cuadros, total_hojas, columnas=6, escala=0.30, modo_ca
             piezas.append((etiqueta, pieza))
         pagina += n
     piezas.append(("cierre", R.chrome(hoja_pipo_camara(m, 0, 6, random.Random(5)), total_hojas, total_hojas, random.Random(5))))
-    piezas.append(("contratapa", contratapa(random.Random(77))))
+    piezas.append(("contratapa", contratapa(random.Random(77), textos_cierre)))
 
     w, h = int(R.W * escala), int(R.H * escala)
     filas = (len(piezas) + columnas - 1) // columnas

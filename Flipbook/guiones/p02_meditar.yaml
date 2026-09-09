@@ -45,4 +45,4 @@ escenas:
               prop: {nombre: telefono_0, ancla: pecho, dx: 6, dy: 10, rot: -12}}
         pipo: {cuerpo: [buda, buda, buda_victoria], ritmo: 16, cara: orgullo,
                x: 700, y: 1310, escala: 1.5, vida: 0.6}
-        pipo_dice: yo no medito. yo simplemente estoy.
+        pipo_dice: yo no medito. yo ya estoy aquí.
