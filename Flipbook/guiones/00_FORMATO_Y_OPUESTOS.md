@@ -67,6 +67,11 @@ Reglas del formato:
   mismo encuadre): el rebobinado cuenta como visualización nueva y sube la retención.
 - **La primera imagen es la más graciosa del volumen, sin excepción.** No se guarda el mejor
   chiste para el medio: en el feed, el medio no existe si el principio no retiene.
+- **Ningún cuadro se queda quieto** (la ley del movimiento, `REGLAS.md` §3): alguien se
+  desplaza, alguien cambia de pose, la cámara empuja o el mundo se mueve. El vol. 1 salió
+  con la escena congelada y eso fue parte de lo que costó la tracción. **El chiste tiene que
+  PASAR delante de la cámara, no estar dibujado.**
+- **Duración: 18-22 s.** Menos imágenes no; imágenes más vivas y más cortas sí.
 
 ## 3. El cartel, que ahora es la PORTADA (varía por volumen)
 

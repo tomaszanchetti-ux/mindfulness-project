@@ -379,7 +379,9 @@ SUBE_ESCENA = [0]            # píxeles que la escena entera sube (WS35): TikTok
                              # descripción y el usuario; con la escena más arriba, el globo de abajo queda en zona segura
 # La vida del cuadro (WS34): cabeceo automático de la cabeza, (grados, radianes por hoja).
 # Pipo cabecea rápido y visible; Teo apenas, lento. `vida: false` en el personaje lo apaga.
-VIDA = {"pipo": (4.0, 0.62), "teo": (1.5, 0.27)}
+# WS36: el cabeceo sube (era 4,0/1,5). A escala de teléfono el movimiento chico no se ve;
+# `vida: 0` lo apaga en un cuadro y `vida: 1.8` lo exagera.
+VIDA = {"pipo": (5.5, 0.72), "teo": (3.0, 0.5)}
 
 
 def _envolver(d, texto, f, ancho_max):
@@ -599,12 +601,76 @@ def _ancla_hoja(m, personaje, cuerpo, nombre, x, y, escala):
     return x + (a[0] - 200) * escala, y + (a[1] - 200) * escala
 
 
+def _alterna(v, i, ritmo, fase=0):
+    """Una lista en el guion = poses (o caras) que ALTERNAN dentro del mismo cuadro, cada
+    `ritmo` hojas. WS36: la escena se mueve aunque el personaje no se desplace."""
+    return v[(i // max(1, int(ritmo)) + int(fase)) % len(v)]
+
+
 def _cuerpo_de(spec, i):
-    """`ciclo: true` convierte `camina` en camina_0..3, una fase por hoja."""
+    """`ciclo: true` convierte `camina` en camina_0..3, una fase por hoja. Una LISTA de
+    cuerpos alterna entre ellos cada `ritmo` hojas (3 por defecto, 0,3 s)."""
     cuerpo = spec["cuerpo"]
+    if isinstance(cuerpo, list):
+        return _alterna(cuerpo, i, spec.get("ritmo", 3), spec.get("fase", 0))
     if spec.get("ciclo"):
         cuerpo = "%s_%d" % (cuerpo, (i + int(spec.get("fase", 0))) % 4)
     return cuerpo
+
+
+def _cara_de(spec, i):
+    """Igual que el cuerpo: una lista de caras alterna dentro del cuadro."""
+    cara = spec.get("cara", "frente_plana")
+    if isinstance(cara, list):
+        return _alterna(cara, i, spec.get("ritmo_cara", spec.get("ritmo", 3)), spec.get("fase_cara", 0))
+    return cara
+
+
+def _num(spec, clave, defecto, t):
+    """Un número del guion, interpolado dentro del cuadro si hay `hacia_<clave>` (WS36):
+    `escala` + `hacia_escala` = el personaje se acerca; `rot` + `hacia_rot` = se inclina."""
+    v = float(spec.get(clave, defecto) or 0)
+    h = spec.get("hacia_" + clave)
+    return lerp(v, float(h), t) if h is not None else v
+
+
+def _sacudida(spec, i):
+    """`sacude: <px>` = vibración corta y nerviosa (el remate de un chiste)."""
+    a = float(spec.get("sacude", 0) or 0)
+    if not a:
+        return 0.0, 0.0
+    return a * math.sin(i * 2.6), a * 0.6 * math.cos(i * 3.1)
+
+
+# --- la cámara (WS36) -------------------------------------------------------------------
+# El vol. 1 se publicó con la escena CONGELADA: el papel pasaba, pero adentro no se movía
+# nada (Tomás, 09/09). En el feed eso se lee como una lámina, no como un video. La cámara es
+# el movimiento más barato y el que más rinde: sirve en CUALQUIER cuadro, sin dibujar nada.
+
+def _camara(spec, t):
+    """(zoom, dx, dy) en el instante `t` del cuadro. `empuje` / `retroceso` son atajos."""
+    if not spec:
+        return 1.0, 0.0, 0.0
+    if isinstance(spec, str):
+        spec = {"empuje": {"hasta": 1.12}, "empuje_fuerte": {"hasta": 1.28},
+                "retroceso": {"desde": 1.12, "hasta": 1.0}}.get(spec, {})
+    desde = max(1.0, float(spec.get("desde", 1.0)))
+    hasta = max(1.0, float(spec.get("hasta", spec.get("zoom", desde))))
+    e = t * t * (3 - 2 * t)                       # suavizado: arranca y termina sin tirón
+    return lerp(desde, hasta, e), lerp(0.0, float(spec.get("x", 0)), e), lerp(0.0, float(spec.get("y", 0)), e)
+
+
+def _aplicar_camara(lienzo, caras, z, dx, dy):
+    """Recorta y agranda la ESCENA (el globo y el libro no se mueven con la cámara)."""
+    if z <= 1.001 and not dx and not dy:
+        return lienzo, caras
+    w, h = lienzo.size
+    grande = lienzo.resize((max(w, int(w * z)), max(h, int(h * z))), Image.LANCZOS)
+    ox = entre((grande.width - w) / 2 - dx, 0, grande.width - w)
+    oy = entre((grande.height - h) / 2 - dy, 0, grande.height - h)
+    recorte = grande.crop((int(ox), int(oy), int(ox) + w, int(oy) + h))
+    mover = lambda x, y: (x * z - ox, y * z - oy)                                  # noqa: E731
+    return recorte, [mover(c[0], c[1]) + mover(c[2], c[3]) for c in caras]
 
 
 def _valor(v, t):
@@ -617,17 +683,21 @@ def _valor(v, t):
 def pegar_personaje(m, im, d, personaje, spec, i, n, t, rng, anclas_fondo):
     """Pega un personaje con su prop en la mano. Devuelve (punto de cuello, caja de cara)."""
     cuerpo = _cuerpo_de(spec, i)
-    cara = spec.get("cara", "frente_plana")
+    cara = _cara_de(spec, i)
     x, y = _posicion(spec, anclas_fondo, t)
-    escala = float(spec.get("escala", 1.0))
+    sx, sy = _sacudida(spec, i)
+    x, y = x + sx, y + sy
+    escala = _num(spec, "escala", 1.0, t)
     aura = _valor(spec.get("aura", 0), t)
     pulso = (0.5 + 0.5 * math.sin(i * 0.55)) if spec.get("pulso", aura > 0) else 0.0
     espejo = bool(spec.get("espejo", False))
-    rot = float(spec.get("rot", 0))
+    rot = _num(spec, "rot", 0, t)
     cara_pieza = cara if cara.startswith("cara_") else "cara_" + cara
     amp, vel = VIDA.get(personaje, (0.0, 0.0))
     fase = 0.0 if personaje == "pipo" else 1.3
-    rot_cabeza = amp * math.sin(i * vel + fase) if spec.get("vida", True) else 0.0
+    vida = spec.get("vida", True)
+    amp *= float(vida) if not isinstance(vida, bool) else 1.0
+    rot_cabeza = amp * math.sin(i * vel + fase) if vida else 0.0
     punto = m.pegar(im, personaje, cuerpo, cara, x, y, escala=escala, rng=rng,
                     rot=rot, espejo=espejo, aura=aura, pulso=pulso, rot_cabeza=rot_cabeza)
     cajas = []
@@ -716,11 +786,14 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
     """Dibuja UNA hoja del cuadro (beat) `cuadro`, hoja número `i` de `n`."""
     im = R.paper(rng)
     sube = int(SUBE_ESCENA[0])
-    # la escena se dibuja sobre un papel OPACO (no una capa transparente: el aura y los bordes
-    # antialiasados se oscurecen al componer sobre alfa cero) y se pega corrida hacia arriba
-    lienzo = R.paper(random.Random(rng.randint(0, 10 ** 6))) if sube else im
-    d = ImageDraw.Draw(lienzo)
     t = i / max(1, n - 1)
+    cam = _camara(cuadro.get("camara"), t)
+    # la escena se dibuja sobre un papel OPACO (no una capa transparente: el aura y los bordes
+    # antialiasados se oscurecen al componer sobre alfa cero) y se pega corrida hacia arriba.
+    # También va aparte cuando hay cámara: el zoom es de la ESCENA, no del globo ni del libro.
+    aparte = bool(sube) or cam[0] > 1.001 or bool(cam[1]) or bool(cam[2])
+    lienzo = R.paper(random.Random(rng.randint(0, 10 ** 6))) if aparte else im
+    d = ImageDraw.Draw(lienzo)
     caras = []
     anclas_fondo = {}
     ancla_pipo = None
@@ -737,6 +810,7 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
             secundario(d, sx, sy, rng, tipo=sec.get("tipo", "abuela"), escala=se)
             caras.append((sx - 48 * se, sy - 58 * se, sx + 48 * se, sy + 56 * se))
         for pz in _lista(cuadro.get("piezas")):
+            pz = dict(pz, _i=i)                       # la hoja, para `alterna` y `sacude`
             caras.append(_pieza_suelta(m, lienzo, pz, anclas_fondo, t, rng))
         fn(d, rng, desp, "delante")
         caras += _props_sueltos(d, cuadro, anclas_fondo, t, rng, delante=False)
@@ -760,12 +834,21 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
     if cuadro.get("anillos"):                        # la respiración de la escena de la magia
         _anillos(d, m, cuadro, i, rng)
 
-    if sube:                                         # la escena entera sube; las cajas y anclas también
+    if aparte:                       # la cámara mueve la escena; después sube; cajas y anclas la siguen
+        n_caras = len(caras)
+        extra = [(p[0], p[1], p[0], p[1]) for p in (ancla_pipo, ancla_menton) if p]
+        lienzo, todo = _aplicar_camara(lienzo, caras + extra, *cam)
+        caras, resto = todo[:n_caras], list(todo[n_caras:])
+        if ancla_pipo:
+            ancla_pipo = (resto.pop(0)[:2])
+        if ancla_menton:
+            ancla_menton = (resto.pop(0)[:2])
         im.paste(lienzo, (0, -sube))
         d = ImageDraw.Draw(im)
         caras = [(c[0], c[1] - sube, c[2], c[3] - sube) for c in caras]
         if ancla_pipo:
             ancla_pipo = (ancla_pipo[0], ancla_pipo[1] - sube)
+        if ancla_menton:
             ancla_menton = (ancla_menton[0], ancla_menton[1] - sube)
 
     texto = globo_en(cuadro, i, n)
@@ -775,6 +858,13 @@ def hoja_de(m, cuadro, i, n, rng, desp=0.0):
             caras.append(caja)
         globo(d, texto, ancla_pipo, rng, evitar=caras, flota=5.0 * math.sin(i * 0.5),
               modo=cuadro.get("globo_lado"), ancla_abajo=ancla_menton)
+
+    f = cuadro.get("flash")                          # WS36: el fogonazo (el flash de una foto)
+    if f:
+        f = f if isinstance(f, dict) else {}
+        desde, cada, dura = int(f.get("desde", 3)), max(1, int(f.get("cada", 8))), max(1, int(f.get("dura", 1)))
+        if i >= desde and (i - desde) % cada < dura:
+            im = Image.blend(im, Image.new("RGB", im.size, (255, 255, 255)), float(f.get("fuerza", 0.8)))
     return im
 
 
@@ -802,18 +892,22 @@ def _pieza_suelta(m, im, spec, anclas_fondo, t, rng):
     `pieza: familia/familia_living`, `x`, `y`, `escala`, `rot`, `espejo`. Devuelve la caja
     real (del alfa) para que el globo no la tape."""
     personaje, nombre = spec["pieza"].split("/")
+    if isinstance(spec.get("pieza"), str) and isinstance(spec.get("alterna"), list):
+        personaje, nombre = _alterna(spec["alterna"], int(spec.get("_i", 0)), spec.get("ritmo", 3)).split("/")
     x, y = _posicion(spec, anclas_fondo, t)
-    escala = float(spec.get("escala", 1.0))
+    sx, sy = _sacudida(spec, int(spec.get("_i", 0)))
+    x, y = x + sx, y + sy
+    escala = _num(spec, "escala", 1.0, t)
     a = m.anclas(personaje, nombre)
     pivote = tuple(a.get("centro", [200, 200]))
     if spec.get("espejo"):
         capa = Image.new("RGBA", im.size, (0, 0, 0, 0))
-        m.solo(capa, personaje, nombre, x, y, escala=escala, rng=rng, rot=float(spec.get("rot", 0)), pivote=pivote)
+        m.solo(capa, personaje, nombre, x, y, escala=escala, rng=rng, rot=_num(spec, "rot", 0, t), pivote=pivote)
         caja = capa.getbbox()
         capa = capa.transpose(Image.FLIP_LEFT_RIGHT)
         im.paste(capa, (0, 0), capa)
         return (im.width - caja[2], caja[1], im.width - caja[0], caja[3]) if caja else (x, y, x, y)
-    m.solo(im, personaje, nombre, x, y, escala=escala, rng=rng, rot=float(spec.get("rot", 0)), pivote=pivote)
+    m.solo(im, personaje, nombre, x, y, escala=escala, rng=rng, rot=_num(spec, "rot", 0, t), pivote=pivote)
     png = m._png(personaje, nombre)
     b = png.getbbox() or (0, 0, png.width, png.height)
     k = escala / a["escala_png"]

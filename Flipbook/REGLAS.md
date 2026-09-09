@@ -74,6 +74,25 @@ en personaje y al escribir un guion.
 - TikTok repite en bucle: **la última imagen de la historia y la primera tienen que
   poder empalmar**, para que el rebobinado sume como visualización nueva.
 
+### La ley del movimiento (WS36, Tomás)
+
+> El vol. 1 salió con la escena **congelada**: el papel pasaba, pero adentro no se movía
+> nada. Las chicas eran una estampa pegada y Teo una pose fija. En el feed eso se lee como
+> una lámina, no como un video, y el pulgar sigue de largo.
+
+**Ningún cuadro se queda quieto.** Cada cuadro tiene que tener al menos UNA de estas cuatro,
+y el primero del volumen tiene que tenerla **desde la hoja 0**:
+
+1. **Alguien se desplaza** (`hacia`) — entra, sale, cruza, se acerca.
+2. **Alguien cambia de pose** (`cuerpo` como lista, `ciclo`) — el chiste que se repite.
+3. **La cámara se mueve** (`camara`) — el recurso comodín: no hay que dibujar nada y sirve
+   en cualquier cuadro. Cuando no se te ocurre qué mover, empujá la cámara.
+4. **El mundo se mueve** (`parallax`, `flash`, `sacude`) — la calle que corre, el fogonazo.
+
+El cabeceo y el temblor de línea NO cuentan: son la textura del dibujo, no movimiento.
+La regla de costo no cambia (≤2-3 poses nuevas por volumen); el movimiento se saca del
+guion, no de dibujar más.
+
 ## 4. Los personajes
 - **Uno principal (Teo)** y secundarios que entran de a uno por volumen (**Pipo** desde el 1).
 - Cada personaje se define por **3 rasgos fijos** que se reconozcan en cualquier hoja y a
@@ -221,6 +240,13 @@ a TikTok como **portada** del video.
 | `globo_lado` | `abajo` (por defecto desde la WS35) o `arriba`, por cuadro. A nivel guion: `globos: abajo \| arriba` y `subir_escena: 220` (píxeles que sube la escena entera; 220 con globos abajo, 0 con arriba). |
 | `pipo_asoma` | `lado` (`izquierda`, `derecha`, `abajo`) y `cara`, para cuando Pipo no está en el cuadro. |
 | `parallax` | píxeles que corre el fondo por hoja (árboles de `calle` y `banco_plaza`). |
+| `camara` | **el movimiento más barato (WS36)**: `empuje` (zoom 1→1,12) · `empuje_fuerte` (1→1,28) · `retroceso` (1,12→1) · o `{desde, hasta, x, y}` con el paneo en píxeles. Mueve la ESCENA, no el globo ni el libro. |
+| `flash` | el fogonazo de una foto: `{desde, cada, dura, fuerza}` en hojas (por defecto uno cada 8 hojas desde la 3ª). |
+| `hacia` | en `teo`, `pipo`, `piezas` y `secundarios`: `{x, y}` de destino; la posición se interpola dentro del cuadro. **Ya existía y el vol. 1 no lo usó: por eso las chicas no se movían.** |
+| `hacia_escala` / `hacia_rot` | la escala o la inclinación al final del cuadro (se acerca, se inclina). |
+| `sacude` | vibración corta en píxeles (el remate de un chiste, el nervio). |
+| `vida` | multiplica el cabeceo del personaje (`0` lo apaga, `1.8` lo exagera). |
+| `cuerpo` / `cara` como **lista** | poses o caras que **alternan** dentro del mismo cuadro cada `ritmo` hojas (3 por defecto): la sesión de fotos, el que gesticula. Distinto de `ciclo: true`, que es el ciclo de caminata `_0..3`. |
 
 **Regla del guion (el tempo, WS34):** pocas imágenes, **6-8 por volumen**, cada una **30-45
 hojas (3-4,5 s)**: ≥30 con un globo, ≥40 con dos. Si algo tiene que moverse mucho, se mueve
